@@ -1,0 +1,108 @@
+import type { Dictionary } from "../types";
+
+export const pl: Dictionary = {
+  app: {
+    name: "HomeBack.app",
+    tagline: "Wszystko o Twoim domu w jednym miejscu",
+  },
+  navigation: {
+    dashboard: "Dashboard",
+    items: "Rzeczy",
+    home: "Dom",
+    family: "Rodzina",
+    documents: "Dokumenty",
+    categories: "Kategorie",
+    settings: "Ustawienia",
+  },
+  auth: {
+    loginTitle: "Logowanie",
+    registerTitle: "Rejestracja",
+    householdSetupTitle: "Utwórz gospodarstwo",
+    householdSetupDescription:
+      "To będzie wspólna przestrzeń dla Twojego domu i rodziny.",
+    checkEmailTitle: "Sprawdź skrzynkę e-mail",
+    checkEmailDescription:
+      "Wysłaliśmy link potwierdzający. Po jego otwarciu dokończysz tworzenie gospodarstwa.",
+    email: "E-mail",
+    password: "Hasło",
+    passwordHint: "Minimum 8 znaków",
+    name: "Imię",
+    householdName: "Nazwa gospodarstwa",
+    householdType: "Typ gospodarstwa",
+    householdTypes: {
+      house: "Dom",
+      apartment: "Mieszkanie",
+      garage: "Garaż",
+    },
+    signIn: "Zaloguj",
+    createAccount: "Utwórz konto",
+    createHousehold: "Utwórz gospodarstwo",
+    signOut: "Wyloguj",
+    backToLogin: "Wróć do logowania",
+    signedInAs: "Zalogowano jako",
+    roles: {
+      admin: "Administrator",
+      member: "Domownik",
+      child: "Dziecko",
+      guest: "Gość",
+    },
+    errors: {
+      confirmationFailed: "Link potwierdzający jest nieprawidłowy lub wygasł.",
+      householdFailed: "Nie udało się utworzyć gospodarstwa.",
+      invalidCredentials: "Nieprawidłowy e-mail lub hasło.",
+      missingFields: "Uzupełnij wszystkie wymagane pola.",
+      passwordTooShort: "Hasło musi mieć co najmniej 8 znaków.",
+      sessionExpired: "Sesja wygasła. Zaloguj się ponownie.",
+      signupFailed: "Nie udało się utworzyć konta.",
+      unknown: "Wystąpił nieoczekiwany błąd.",
+    },
+  },
+  dashboard: {
+    title: "Dashboard",
+    greeting: "Dzień dobry",
+    addItem: "Dodaj przedmiot",
+    recentItems: "Ostatnio dodane",
+    expiringItems: "Terminy ważności",
+    categoryCount: "Rzeczy według kategorii",
+    activity: "Ostatnia aktywność",
+    empty: "Brak danych",
+  },
+  modules: {
+    items: {
+      title: "Rzeczy",
+      search: "Szukaj rzeczy",
+      category: "Kategoria",
+      room: "Pomieszczenie",
+      empty: "Brak zapisanych rzeczy",
+    },
+    home: {
+      title: "Dom",
+      rooms: "Pomieszczenia",
+      locations: "Miejsca przechowywania",
+      empty: "Brak zapisanej struktury domu",
+    },
+    family: {
+      title: "Rodzina",
+      members: "Członkowie",
+      invite: "Zaproś",
+      empty: "Brak członków do wyświetlenia",
+    },
+    documents: {
+      title: "Dokumenty",
+      upload: "Dodaj dokument",
+      empty: "Brak dokumentów",
+    },
+    categories: {
+      title: "Kategorie",
+      system: "Systemowe",
+      custom: "Własne",
+      empty: "Brak kategorii własnych",
+    },
+    settings: {
+      title: "Ustawienia",
+      household: "Gospodarstwo",
+      account: "Konto",
+      export: "Eksport",
+    },
+  },
+};

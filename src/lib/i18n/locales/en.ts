@@ -1,0 +1,108 @@
+import type { Dictionary } from "../types";
+
+export const en: Dictionary = {
+  app: {
+    name: "HomeBack.app",
+    tagline: "Everything about your home in one place",
+  },
+  navigation: {
+    dashboard: "Dashboard",
+    items: "Items",
+    home: "Home",
+    family: "Family",
+    documents: "Documents",
+    categories: "Categories",
+    settings: "Settings",
+  },
+  auth: {
+    loginTitle: "Login",
+    registerTitle: "Register",
+    householdSetupTitle: "Create household",
+    householdSetupDescription:
+      "This will be the shared space for your home and family.",
+    checkEmailTitle: "Check your email",
+    checkEmailDescription:
+      "We sent a confirmation link. Open it to finish creating your household.",
+    email: "Email",
+    password: "Password",
+    passwordHint: "At least 8 characters",
+    name: "Name",
+    householdName: "Household name",
+    householdType: "Household type",
+    householdTypes: {
+      house: "House",
+      apartment: "Apartment",
+      garage: "Garage",
+    },
+    signIn: "Sign in",
+    createAccount: "Create account",
+    createHousehold: "Create household",
+    signOut: "Sign out",
+    backToLogin: "Back to login",
+    signedInAs: "Signed in as",
+    roles: {
+      admin: "Administrator",
+      member: "Member",
+      child: "Child",
+      guest: "Guest",
+    },
+    errors: {
+      confirmationFailed: "The confirmation link is invalid or has expired.",
+      householdFailed: "We could not create the household.",
+      invalidCredentials: "Invalid email or password.",
+      missingFields: "Complete all required fields.",
+      passwordTooShort: "The password must contain at least 8 characters.",
+      sessionExpired: "Your session expired. Sign in again.",
+      signupFailed: "We could not create the account.",
+      unknown: "An unexpected error occurred.",
+    },
+  },
+  dashboard: {
+    title: "Dashboard",
+    greeting: "Good morning",
+    addItem: "Add item",
+    recentItems: "Recently added",
+    expiringItems: "Expiration dates",
+    categoryCount: "Items by category",
+    activity: "Recent activity",
+    empty: "No data",
+  },
+  modules: {
+    items: {
+      title: "Items",
+      search: "Search items",
+      category: "Category",
+      room: "Room",
+      empty: "No saved items",
+    },
+    home: {
+      title: "Home",
+      rooms: "Rooms",
+      locations: "Storage locations",
+      empty: "No home structure saved",
+    },
+    family: {
+      title: "Family",
+      members: "Members",
+      invite: "Invite",
+      empty: "No members to show",
+    },
+    documents: {
+      title: "Documents",
+      upload: "Add document",
+      empty: "No documents",
+    },
+    categories: {
+      title: "Categories",
+      system: "System",
+      custom: "Custom",
+      empty: "No custom categories",
+    },
+    settings: {
+      title: "Settings",
+      household: "Household",
+      account: "Account",
+      export: "Export",
+    },
+  },
+};
