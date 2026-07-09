@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BrandLogo } from "@/components/brand-logo";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -56,9 +57,9 @@ export default async function RegisterPage({
     return (
       <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
         <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6 text-center">
-          <p className="text-sm font-semibold text-primary-strong">
-            {t.app.name}
-          </p>
+          <div className="flex justify-center">
+            <BrandLogo className="w-44 sm:w-52" priority variant="vertical" />
+          </div>
           <h1 className="mt-3 text-2xl font-semibold">
             {t.auth.checkEmailTitle}
           </h1>
@@ -89,7 +90,10 @@ export default async function RegisterPage({
     return (
       <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
         <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6">
-          <h1 className="text-2xl font-semibold">
+          <div className="flex justify-center">
+            <BrandLogo className="w-44 sm:w-52" priority variant="vertical" />
+          </div>
+          <h1 className="mt-4 text-2xl font-semibold">
             {t.auth.householdSetupTitle}
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted">
@@ -152,7 +156,10 @@ export default async function RegisterPage({
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
       <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6">
-        <h1 className="text-2xl font-semibold">{t.auth.registerTitle}</h1>
+        <div className="flex justify-center">
+          <BrandLogo className="w-44 sm:w-52" priority variant="vertical" />
+        </div>
+        <h1 className="mt-4 text-2xl font-semibold">{t.auth.registerTitle}</h1>
         <AuthMessage message={errorMessage} />
         <form action={register} className="mt-6 space-y-4">
           <label className="block text-sm font-medium">

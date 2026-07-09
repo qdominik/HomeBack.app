@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BrandLogo } from "@/components/brand-logo";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -38,7 +39,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
       <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6">
-        <h1 className="text-2xl font-semibold">{t.auth.loginTitle}</h1>
+        <div className="flex justify-center">
+          <BrandLogo className="w-44 sm:w-52" priority variant="vertical" />
+        </div>
+        <h1 className="mt-4 text-2xl font-semibold">{t.auth.loginTitle}</h1>
         {errorMessage ? (
           <p className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
             {errorMessage}

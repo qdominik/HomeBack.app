@@ -2,8 +2,15 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HomeBack.app",
-  description: "Domowa baza rzeczy, dokumentów i lokalizacji.",
+  title: {
+    default: "HomeBack.app",
+    template: "%s | HomeBack.app",
+  },
+  description: "Domowa baza rzeczy, dokumentow i lokalizacji.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({

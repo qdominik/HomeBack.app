@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { BrandLogo } from "@/components/brand-logo";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
@@ -47,8 +48,17 @@ export function AppShell({
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
-            <Link className="text-xl font-semibold text-primary-strong" href={routes.dashboard}>
-              {t.app.name}
+            <Link
+              aria-label={t.app.name}
+              className="block w-[150px] shrink-0 sm:w-[220px]"
+              href={routes.dashboard}
+            >
+              <span className="sm:hidden">
+                <BrandLogo className="w-11" variant="icon" />
+              </span>
+              <span className="hidden sm:block">
+                <BrandLogo className="w-full" variant="horizontal" />
+              </span>
             </Link>
             <div className="flex items-center gap-3">
               <div className="hidden text-right sm:block">
