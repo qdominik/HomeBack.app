@@ -1,0 +1,72 @@
+Pracuj w repozytorium:
+C:\Users\qdomi\Desktop\Homeback.app
+
+Zaimplementuj M2 — Moduł Dom / Structure zgodnie z planem:
+docs/decisions/home-structure-module-plan.md
+
+Najpierw przeczytaj:
+- README.md
+- docs/product/homebase-product-spec.md
+- docs/ai/vibecoding-guardrails.md
+- docs/decisions/decision-log.md
+- docs/decisions/first-working-prototype-plan.md
+- docs/decisions/milestone-01-first-working-prototype.md
+- docs/decisions/home-structure-module-plan.md
+
+Kontekst:
+M1 jest zamknięty. Działa Auth, rejestracja, potwierdzenie e-mail, gospodarstwo, pierwszy administrator, Dashboard, wylogowanie, ochrona tras, Supabase Auth SSR, PostgreSQL, RLS, pgTAP, lint i build.
+
+Zasady:
+- Nie implementuj CRUD przedmiotów.
+- Nie dodawaj AI, Home Assistant, QR/NFC, zdjęć pomieszczeń, Storage bucketów, dokumentów, multi-household ani płatności.
+- Nie zmieniaj stacku, routingu ani modelu danych bez wskazania [WYMAGA DECYZJI].
+- Każdy odczyt i zapis musi respektować household_id oraz RLS.
+- Nie wyłączaj RLS.
+- Nie dodawaj sekretów.
+- Nie używaj service_role po stronie klienta.
+
+Zakres implementacji:
+1. Rozbuduj trasę /home.
+2. Dodaj listę pomieszczeń.
+3. Dodaj formularz dodawania, edycji i usuwania pustych pomieszczeń.
+4. Dodaj miejsca przechowywania L2 dla pomieszczeń.
+5. Dodaj pozycje szczegółowe L3 dla miejsc L2.
+6. Dodaj generowanie albo bezpieczny zapis kodu lokalizacji L3.
+7. Zapis struktury domu ma mieć tylko admin.
+8. Domownik i dziecko mogą tylko odczytywać strukturę domu.
+9. Użytkownik nie może widzieć ani modyfikować struktury innego gospodarstwa.
+10. Jeżeli obecne RLS jest niewystarczające, dodaj migrację supabase/migrations/0003_home_structure_rls.sql i test supabase/tests/0003_home_structure_rls.test.sql.
+11. Dopisz decyzję do docs/decisions/decision-log.md.
+12. Po zakończeniu przygotuj raport docs/decisions/milestone-02-home-structure.md.
+
+Pliki preferowane:
+- src/app/(app)/home/page.tsx
+- src/app/(app)/home/actions.ts
+- src/components/home/room-card.tsx
+- src/components/home/room-form.tsx
+- src/components/home/storage-location-l2-card.tsx
+- src/components/home/storage-location-l2-form.tsx
+- src/components/home/storage-location-l3-card.tsx
+- src/components/home/storage-location-l3-form.tsx
+- src/lib/home/location-code.ts
+- src/lib/i18n/locales/pl.ts
+- src/lib/i18n/locales/en.ts
+- src/lib/i18n/types.ts
+
+Testy do uruchomienia:
+- npx.cmd supabase db reset
+- npx.cmd supabase test db
+- npm.cmd run lint
+- npm.cmd run build
+- npm.cmd audit --omit=dev
+
+Po zakończeniu odpowiedz raportem:
+- co zmieniono,
+- pliki,
+- zgodność z MVP,
+- baza danych,
+- RLS,
+- bezpieczeństwo,
+- testy,
+- kwestie wymagające decyzji,
+- następny logiczny etap.
