@@ -1,6 +1,6 @@
 # Plan: M2 — Moduł Dom / Structure
 
-Status: projekt planu do akceptacji  
+Status: zaakceptowany przez polecenie implementacji, wykonany i zweryfikowany lokalnie  
 Data: 2026-07-09  
 Projekt: HomeBack.app  
 Poprzedni milestone: M1 — Pierwszy działający prototyp: Auth + Household + Dashboard

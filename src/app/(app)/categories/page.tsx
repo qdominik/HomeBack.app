@@ -1,39 +1,139 @@
+import { createCustomCategory } from "@/app/(app)/categories/actions";
+import { CategoryCard } from "@/components/categories/category-card";
+import { CategoryForm } from "@/components/categories/category-form";
 import { EmptyState } from "@/components/empty-state";
 import { ModulePage } from "@/components/module-page";
 import { t } from "@/lib/i18n";
+import { createClient } from "@/lib/supabase/server";
 
-const systemCategories = [
-  "Leki",
-  "Żywność",
-  "Dokumenty",
-  "Ubrania zimowe",
-  "Elektronika",
-  "Narzędzia",
-  "Książki",
-  "Części zapasowe",
-];
+type CategoriesPageProps = {
+  searchParams: Promise<{
+    error?: string;
+    status?: string;
+  }>;
+};
 
-export default function CategoriesPage() {
+const errorMessages: Record<string, string> = {
+  action_failed: t.modules.categories.errors.actionFailed,
+  admin_required: t.modules.categories.errors.adminRequired,
+  category_in_use: t.modules.categories.errors.categoryInUse,
+  missing_fields: t.modules.categories.errors.missingFields,
+};
+
+const statusMessages: Record<string, string> = {
+  category_available: t.modules.categories.statuses.categoryAvailable,
+  category_created: t.modules.categories.statuses.categoryCreated,
+  category_deleted: t.modules.categories.statuses.categoryDeleted,
+  category_exists: t.modules.categories.statuses.categoryExists,
+  category_updated: t.modules.categories.statuses.categoryUpdated,
+};
+
+export default async function CategoriesPage({
+  searchParams,
+}: CategoriesPageProps) {
+  const params = await searchParams;
+  const supabase = await createClient();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+
+  const { data: profile } = userId
+    ? await supabase
+        .from("profile")
+        .select("household_id, rola")
+        .eq("id", userId)
+        .maybeSingle()
+    : { data: null };
+
+  const { data: categoriesData } = await supabase
+    .from("category")
+    .select("*")
+    .order("czy_systemowa", { ascending: false })
+    .order("created_at", { ascending: true });
+
+  const categories = categoriesData ?? [];
+  const systemCategories = categories.filter((category) => category.czy_systemowa);
+  const customCategories = categories.filter(
+    (category) => !category.czy_systemowa,
+  );
+  const isAdmin = profile?.rola === "admin";
+  const errorMessage = params.error
+    ? (errorMessages[params.error] ?? t.modules.categories.errors.unknown)
+    : null;
+  const statusMessage = params.status ? statusMessages[params.status] : null;
+
   return (
-    <ModulePage title={t.modules.categories.title}>
-      <section className="rounded-md border border-line bg-surface p-4">
-        <h2 className="text-base font-semibold">{t.modules.categories.system}</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {systemCategories.map((category) => (
-            <span
-              className="rounded-md border border-line bg-surface-muted px-3 py-2 text-sm text-foreground"
-              key={category}
-            >
-              {category}
-            </span>
-          ))}
-        </div>
+    <ModulePage
+      action={
+        isAdmin ? (
+          <details className="w-full rounded-md border border-line bg-surface p-3 sm:w-auto sm:min-w-80">
+            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+              {t.modules.categories.addCategory}
+            </summary>
+            <div className="mt-4">
+              <CategoryForm
+                action={createCustomCategory}
+                submitLabel={t.modules.categories.createCategory}
+              />
+            </div>
+          </details>
+        ) : null
+      }
+      title={t.modules.categories.title}
+    >
+      <section className="border-b border-line pb-5">
+        {!isAdmin ? (
+          <p className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-muted">
+            {t.modules.categories.readOnly}
+          </p>
+        ) : null}
+        {errorMessage ? (
+          <p className="mt-3 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+            {errorMessage}
+          </p>
+        ) : null}
+        {statusMessage ? (
+          <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-primary-strong">
+            {statusMessage}
+          </p>
+        ) : null}
       </section>
-      <section className="rounded-md border border-line bg-surface p-4">
-        <h2 className="text-base font-semibold">{t.modules.categories.custom}</h2>
-        <div className="mt-4">
+
+      <section className="space-y-3">
+        <h2 className="text-base font-semibold text-foreground">
+          {t.modules.categories.system}
+        </h2>
+        {systemCategories.length ? (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {systemCategories.map((category) => (
+              <CategoryCard
+                category={category}
+                isAdmin={isAdmin}
+                key={category.id}
+              />
+            ))}
+          </div>
+        ) : (
           <EmptyState text={t.modules.categories.empty} />
-        </div>
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-base font-semibold text-foreground">
+          {t.modules.categories.custom}
+        </h2>
+        {customCategories.length ? (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {customCategories.map((category) => (
+              <CategoryCard
+                category={category}
+                isAdmin={isAdmin}
+                key={category.id}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyState text={t.modules.categories.empty} />
+        )}
       </section>
     </ModulePage>
   );

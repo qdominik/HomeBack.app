@@ -73,9 +73,72 @@ export type Dictionary = {
     };
     home: {
       title: string;
-      rooms: string;
-      locations: string;
+      subtitle: string;
+      household: string;
+      saveChanges: string;
+      generatedCode: string;
+      readOnly: string;
       empty: string;
+      noLocations: string;
+      noPositions: string;
+      entityActions: {
+        add: string;
+        create: string;
+        delete: string;
+        edit: string;
+      };
+      entityLabels: {
+        room: {
+          singular: string;
+          plural: string;
+        };
+        storage: {
+          singular: string;
+          plural: string;
+        };
+        position: {
+          singular: string;
+          plural: string;
+        };
+      };
+      fields: {
+        description: string;
+        icon: string;
+        locationCode: string;
+        name: string;
+        order: string;
+        type: string;
+        customRoomType: string;
+        customStorageType: string;
+        typeHelp: string;
+        typePlaceholder: string;
+      };
+      roomTypeSuggestions: string[];
+      storageTypeSuggestions: string[];
+      errors: {
+        actionFailed: string;
+        adminRequired: string;
+        duplicateLocation: string;
+        duplicatePosition: string;
+        duplicateRoom: string;
+        invalidOrder: string;
+        locationNotEmpty: string;
+        missingFields: string;
+        positionInUse: string;
+        roomNotEmpty: string;
+        unknown: string;
+      };
+      statuses: {
+        locationCreated: string;
+        locationDeleted: string;
+        locationUpdated: string;
+        positionCreated: string;
+        positionDeleted: string;
+        positionUpdated: string;
+        roomCreated: string;
+        roomDeleted: string;
+        roomUpdated: string;
+      };
     };
     family: {
       title: string;
@@ -93,6 +156,31 @@ export type Dictionary = {
       system: string;
       custom: string;
       empty: string;
+      addCategory: string;
+      createCategory: string;
+      editCategory: string;
+      deleteCategory: string;
+      saveChanges: string;
+      readOnly: string;
+      fields: {
+        name: string;
+        customName: string;
+        nameHelp: string;
+      };
+      errors: {
+        actionFailed: string;
+        adminRequired: string;
+        categoryInUse: string;
+        missingFields: string;
+        unknown: string;
+      };
+      statuses: {
+        categoryAvailable: string;
+        categoryCreated: string;
+        categoryDeleted: string;
+        categoryExists: string;
+        categoryUpdated: string;
+      };
     };
     settings: {
       title: string;

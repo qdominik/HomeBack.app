@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = extensions, public;
 
-select plan(28);
+select plan(30);
 
 select has_table('public', 'household', 'household exists');
 select has_table('public', 'profile', 'profile exists');
@@ -107,13 +107,104 @@ select has_function(
   'updated_at trigger function exists'
 );
 
-select col_not_null('public', 'profile', 'household_id');
-select col_not_null('public', 'profile', 'rola');
-select col_not_null('public', 'item', 'household_id');
-select col_not_null('public', 'item', 'created_by_id');
-select col_has_default('public', 'household', 'id');
-select col_has_default('public', 'household', 'kod_zaproszenia');
-select col_has_default('public', 'item', 'przechowywany_w_sejfie');
+select ok(
+  (
+    select is_nullable = 'NO'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'profile'
+      and column_name = 'household_id'
+  ),
+  'profile.household_id is not nullable'
+);
+
+select ok(
+  (
+    select is_nullable = 'NO'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'profile'
+      and column_name = 'rola'
+  ),
+  'profile.rola is not nullable'
+);
+
+select ok(
+  (
+    select is_nullable = 'NO'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'item'
+      and column_name = 'household_id'
+  ),
+  'item.household_id is not nullable'
+);
+
+select ok(
+  (
+    select is_nullable = 'NO'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'item'
+      and column_name = 'created_by_id'
+  ),
+  'item.created_by_id is not nullable'
+);
+
+select ok(
+  (
+    select column_default is not null
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'household'
+      and column_name = 'id'
+  ),
+  'household.id has default'
+);
+
+select ok(
+  (
+    select column_default is not null
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'household'
+      and column_name = 'kod_zaproszenia'
+  ),
+  'household.kod_zaproszenia has default'
+);
+
+select ok(
+  (
+    select column_default is not null
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'item'
+      and column_name = 'przechowywany_w_sejfie'
+  ),
+  'item.przechowywany_w_sejfie has default'
+);
+
+select ok(
+  (
+    select data_type = 'text'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'room'
+      and column_name = 'typ'
+  ),
+  'room.typ uses text'
+);
+
+select ok(
+  (
+    select data_type = 'text'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'storage_location_l2'
+      and column_name = 'typ'
+  ),
+  'storage_location_l2.typ uses text'
+);
 select fk_ok(
   'public',
   'profile',
@@ -126,4 +217,3 @@ select fk_ok(
 
 select * from finish();
 rollback;
-

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": ".test-build",
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "include": [
+    "src/lib/categories/category-template-options.ts",
+    "src/lib/home/home-template-options.ts",
+    "src/lib/home/infer-home-kind.ts",
+    "src/lib/templates/**/*.ts",
+    "tests/unit/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

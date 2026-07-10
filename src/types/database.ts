@@ -284,7 +284,7 @@ export type Database = {
           id: string;
           household_id: string;
           nazwa: string;
-          typ: Database["public"]["Enums"]["room_type"];
+          typ: string;
           ikona: string | null;
           opis: string | null;
           kolejność: number;
@@ -295,7 +295,7 @@ export type Database = {
           id?: string;
           household_id: string;
           nazwa: string;
-          typ: Database["public"]["Enums"]["room_type"];
+          typ: string;
           ikona?: string | null;
           opis?: string | null;
           kolejność: number;
@@ -306,7 +306,7 @@ export type Database = {
           id?: string;
           household_id?: string;
           nazwa?: string;
-          typ?: Database["public"]["Enums"]["room_type"];
+          typ?: string;
           ikona?: string | null;
           opis?: string | null;
           kolejność?: number;
@@ -320,7 +320,7 @@ export type Database = {
           id: string;
           room_id: string;
           nazwa: string;
-          typ: Database["public"]["Enums"]["storage_location_type"];
+          typ: string;
           opis: string | null;
           kolejność: number;
           created_at: string;
@@ -330,7 +330,7 @@ export type Database = {
           id?: string;
           room_id: string;
           nazwa: string;
-          typ: Database["public"]["Enums"]["storage_location_type"];
+          typ: string;
           opis?: string | null;
           kolejność: number;
           created_at?: string;
@@ -340,7 +340,7 @@ export type Database = {
           id?: string;
           room_id?: string;
           nazwa?: string;
-          typ?: Database["public"]["Enums"]["storage_location_type"];
+          typ?: string;
           opis?: string | null;
           kolejność?: number;
           created_at?: string;
@@ -425,23 +425,7 @@ export type Database = {
       log_object_type: "ITEM" | "ROOM" | "CATEGORY" | "PROFILE";
       profile_role: "admin" | "domownik" | "dziecko" | "gość";
       profile_status: "aktywny" | "zaproszony" | "nieaktywny";
-      room_type:
-        | "salon"
-        | "sypialnia"
-        | "kuchnia"
-        | "garaż"
-        | "piwnica"
-        | "biuro";
-      storage_location_type:
-        | "szafa"
-        | "komoda"
-        | "regał"
-        | "półka"
-        | "szuflada"
-        | "pudełko"
-        | "pojemnik";
     };
     CompositeTypes: Record<never, never>;
   };
 };
-
