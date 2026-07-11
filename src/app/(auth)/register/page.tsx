@@ -15,6 +15,7 @@ type RegisterPageProps = {
 };
 
 const errorMessages: Record<string, string> = {
+  email_already_registered: t.auth.errors.emailAlreadyRegistered,
   household_failed: t.auth.errors.householdFailed,
   missing_fields: t.auth.errors.missingFields,
   password_too_short: t.auth.errors.passwordTooShort,

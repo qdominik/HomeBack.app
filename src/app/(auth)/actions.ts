@@ -21,6 +21,20 @@ function redirectWithError(path: string, error: string): never {
   redirect(`${path}?error=${encodeURIComponent(error)}`);
 }
 
+function isEmailAlreadyRegisteredError(error: {
+  code?: string;
+  message?: string;
+}) {
+  const errorCode = error.code?.toLowerCase();
+  const errorMessage = error.message?.toLowerCase() ?? "";
+
+  return (
+    errorCode === "user_already_exists" ||
+    errorCode === "email_exists" ||
+    errorMessage.includes("user already registered")
+  );
+}
+
 export async function login(formData: FormData) {
   const email = value(formData, "email");
   const password = value(formData, "password");
@@ -69,6 +83,10 @@ export async function register(formData: FormData) {
   });
 
   if (error) {
+    if (isEmailAlreadyRegisteredError(error)) {
+      redirectWithError(routes.register, "email_already_registered");
+    }
+
     redirectWithError(routes.register, "signup_failed");
   }
 

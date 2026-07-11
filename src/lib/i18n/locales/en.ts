@@ -48,6 +48,8 @@ export const en: Dictionary = {
     },
     errors: {
       confirmationFailed: "The confirmation link is invalid or has expired.",
+      emailAlreadyRegistered:
+        "An account with this email already exists. Sign in.",
       householdFailed: "We could not create the household.",
       invalidCredentials: "Invalid email or password.",
       missingFields: "Complete all required fields.",

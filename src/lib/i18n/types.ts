@@ -44,6 +44,7 @@ export type Dictionary = {
     };
     errors: {
       confirmationFailed: string;
+      emailAlreadyRegistered: string;
       householdFailed: string;
       invalidCredentials: string;
       missingFields: string;

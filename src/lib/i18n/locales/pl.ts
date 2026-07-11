@@ -48,6 +48,8 @@ export const pl: Dictionary = {
     },
     errors: {
       confirmationFailed: "Link potwierdzający jest nieprawidłowy lub wygasł.",
+      emailAlreadyRegistered:
+        "Konto z tym adresem e-mail już istnieje. Zaloguj się.",
       householdFailed: "Nie udało się utworzyć gospodarstwa.",
       invalidCredentials: "Nieprawidłowy e-mail lub hasło.",
       missingFields: "Uzupełnij wszystkie wymagane pola.",
