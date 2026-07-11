@@ -6,17 +6,24 @@ import type {
 } from "@/components/home/home-types";
 import { RoomCard } from "@/components/home/room-card";
 import { RoomForm } from "@/components/home/room-form";
+import { HomeSearch } from "@/components/home/home-search";
 import { ModulePage } from "@/components/module-page";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
   resolveEntityLabels,
 } from "@/lib/i18n/entity-labels";
+import {
+  filterHomeStructure,
+  parseHomeSearchParams,
+} from "@/lib/home/home-search";
 import { createClient } from "@/lib/supabase/server";
 
 type HomeStructurePageProps = {
   searchParams: Promise<{
     error?: string;
+    q?: string;
+    scope?: string;
     status?: string;
   }>;
 };
@@ -59,6 +66,7 @@ export default async function HomeStructurePage({
   searchParams,
 }: HomeStructurePageProps) {
   const params = await searchParams;
+  const search = parseHomeSearchParams(params);
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -143,6 +151,21 @@ export default async function HomeStructurePage({
     0,
   );
   const isAdmin = profile?.rola === "admin";
+  const filteredRooms = filterHomeStructure(rooms, search) as RoomWithLocations[];
+  const filteredLocationCount = filteredRooms.reduce(
+    (total, room) => total + room.locations.length,
+    0,
+  );
+  const filteredPositionCount = filteredRooms.reduce(
+    (total, room) =>
+      total +
+      room.locations.reduce(
+        (locationTotal, location) =>
+          locationTotal + location.positions.length,
+        0,
+      ),
+    0,
+  );
   const errorMessage = params.error
     ? (errorMessages[params.error] ?? t.modules.home.errors.unknown)
     : null;
@@ -172,6 +195,7 @@ export default async function HomeStructurePage({
         <p className="mt-2 text-sm font-medium text-foreground">
           {t.modules.home.household}: {household?.nazwa ?? ""}
         </p>
+        <HomeSearch search={search} />
         {!isAdmin ? (
           <p className="mt-3 rounded-md border border-line bg-surface px-3 py-2 text-sm text-muted">
             {t.modules.home.readOnly}
@@ -193,28 +217,30 @@ export default async function HomeStructurePage({
         <div className="rounded-md border border-line bg-surface p-4">
           <p className="text-sm text-muted">{entityLabels.room.plural}</p>
           <p className="mt-1 text-2xl font-semibold text-foreground">
-            {rooms.length}
+            {search.query ? filteredRooms.length : rooms.length}
           </p>
         </div>
         <div className="rounded-md border border-line bg-surface p-4">
           <p className="text-sm text-muted">{entityLabels.storage.plural}</p>
           <p className="mt-1 text-2xl font-semibold text-foreground">
-            {locationCount}
+            {search.query ? filteredLocationCount : locationCount}
           </p>
         </div>
         <div className="rounded-md border border-line bg-surface p-4">
           <p className="text-sm text-muted">{entityLabels.position.plural}</p>
           <p className="mt-1 text-2xl font-semibold text-foreground">
-            {positionCount}
+            {search.query ? filteredPositionCount : positionCount}
           </p>
         </div>
       </section>
 
       <section className="space-y-4">
-        {rooms.length ? (
-          rooms.map((room) => (
+        {filteredRooms.length ? (
+          filteredRooms.map((room) => (
             <RoomCard isAdmin={isAdmin} key={room.id} room={room} />
           ))
+        ) : search.query ? (
+          <EmptyState text={t.modules.home.search.noResults} />
         ) : (
           <EmptyState text={t.modules.home.empty} />
         )}

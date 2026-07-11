@@ -68,9 +68,38 @@ export type Dictionary = {
     items: {
       title: string;
       search: string;
+      searchPlaceholder: string;
       category: string;
       room: string;
+      storage: string;
+      position: string;
+      status: string;
+      sort: string;
+      filter: string;
+      clearFilters: string;
+      allCategories: string;
+      allRooms: string;
+      allStorageLocations: string;
+      allPositions: string;
+      allStatuses: string;
       empty: string;
+      noResults: string;
+      location: string;
+      noLocation: string;
+      locationCode: string;
+      addedOn: string;
+      sortOptions: {
+        recent: string;
+        name: string;
+        category: string;
+        location: string;
+      };
+      statuses: {
+        atHome: string;
+        consumed: string;
+        borrowed: string;
+        archived: string;
+      };
     };
     home: {
       title: string;
@@ -82,6 +111,20 @@ export type Dictionary = {
       empty: string;
       noLocations: string;
       noPositions: string;
+      search: {
+        label: string;
+        placeholder: string;
+        scope: string;
+        clear: string;
+        submit: string;
+        noResults: string;
+        scopes: {
+          all: string;
+          rooms: string;
+          storage: string;
+          positions: string;
+        };
+      };
       entityActions: {
         add: string;
         create: string;
