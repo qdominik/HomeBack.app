@@ -51,3 +51,5 @@ next-env.d.ts
 /.supabase
 /.docker-config
 /homebase-next-scaffold
+
+.next-dev*.log
