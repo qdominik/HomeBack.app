@@ -67,6 +67,46 @@ export type Dictionary = {
   modules: {
     items: {
       title: string;
+      addItem: string;
+      createItem: string;
+      editItem: string;
+      archiveItem: string;
+      saveChanges: string;
+      saving: string;
+      archiving: string;
+      loading: string;
+      readOnly: string;
+      name: string;
+      description: string;
+      itemType: string;
+      quantity: string;
+      selectCategory: string;
+      selectRoom: string;
+      selectStorage: string;
+      selectPosition: string;
+      locationHelp: string;
+      categoryUnavailable: string;
+      itemTypes: {
+        unique: string;
+        stock: string;
+        set: string;
+      };
+      errors: {
+        actionFailed: string;
+        adminRequired: string;
+        invalidCategory: string;
+        invalidItemType: string;
+        invalidLocation: string;
+        invalidQuantity: string;
+        itemNotFound: string;
+        missingFields: string;
+        unknown: string;
+      };
+      feedback: {
+        itemCreated: string;
+        itemUpdated: string;
+        itemArchived: string;
+      };
       search: string;
       searchPlaceholder: string;
       category: string;

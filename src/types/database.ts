@@ -410,6 +410,13 @@ export type Database = {
         Args: { target_household_id: string };
         Returns: boolean;
       };
+      set_item_primary_location: {
+        Args: {
+          p_item_id: string;
+          p_storage_location_l3_id?: string | null;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       file_type: "zdjecie" | "skan" | "pdf" | "dokument";
