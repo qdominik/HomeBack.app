@@ -86,6 +86,15 @@ export type Dictionary = {
       selectPosition: string;
       locationHelp: string;
       categoryUnavailable: string;
+      systemCategories: string;
+      customCategories: string;
+      anotherCategory: string;
+      newCategoryName: string;
+      addQuickCategory: string;
+      manageCategories: string;
+      categoryCreatedAndSelected: string;
+      categoryAlreadyExists: string;
+      quickCategoryMissing: string;
       itemTypes: {
         unique: string;
         stock: string;

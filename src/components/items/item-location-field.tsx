@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { t } from "@/lib/i18n";
-import type { ItemLocationSelectorOptions } from "@/lib/items/item-options";
+import {
+  getInitialItemLocationSelection,
+  getPositionOptionsForStorage,
+  getStorageOptionsForRoom,
+  selectItemLocationRoom,
+  selectItemLocationStorage,
+  type ItemLocationSelectorOptions,
+} from "@/lib/items/item-options";
 
 type ItemLocationFieldProps = {
   options: ItemLocationSelectorOptions;
@@ -13,17 +20,14 @@ export function ItemLocationField({
   options,
   selectedPositionId,
 }: ItemLocationFieldProps) {
-  const initialOption =
-    options.positions.find((option) => option.id === selectedPositionId) ?? null;
-  const [roomId, setRoomId] = useState(initialOption?.roomId ?? "");
-  const [storageId, setStorageId] = useState(initialOption?.storageId ?? "");
-  const [positionId, setPositionId] = useState(initialOption?.id ?? "");
-
-  const storageOptions = options.storageLocations.filter(
-    (option) => option.roomId === roomId,
+  const [selection, setSelection] = useState(() =>
+    getInitialItemLocationSelection(options, selectedPositionId),
   );
-  const positionOptions = options.positions.filter(
-    (option) => option.storageId === storageId,
+
+  const storageOptions = getStorageOptionsForRoom(options, selection.roomId);
+  const positionOptions = getPositionOptionsForStorage(
+    options,
+    selection.storageId,
   );
 
   return (
@@ -35,11 +39,9 @@ export function ItemLocationField({
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
           name="room_id"
           onChange={(event) => {
-            setRoomId(event.currentTarget.value);
-            setStorageId("");
-            setPositionId("");
+            setSelection(selectItemLocationRoom(event.currentTarget.value));
           }}
-          value={roomId}
+          value={selection.roomId}
         >
           <option value="">{t.modules.items.selectRoom}</option>
           {options.rooms.map((room) => (
@@ -53,13 +55,16 @@ export function ItemLocationField({
         {t.modules.items.storage}
         <select
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={!roomId}
+          disabled={!selection.roomId || storageOptions.length === 0}
           name="storage_location_l2_id"
           onChange={(event) => {
-            setStorageId(event.currentTarget.value);
-            setPositionId("");
+            const storageId = event.currentTarget.value;
+
+            setSelection((currentSelection) =>
+              selectItemLocationStorage(currentSelection, storageId),
+            );
           }}
-          value={storageId}
+          value={selection.storageId}
         >
           <option value="">{t.modules.items.selectStorage}</option>
           {storageOptions.map((storage) => (
@@ -73,10 +78,17 @@ export function ItemLocationField({
         {t.modules.items.position}
         <select
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={!storageId}
+          disabled={!selection.storageId || positionOptions.length === 0}
           name="storage_location_l3_id"
-          onChange={(event) => setPositionId(event.currentTarget.value)}
-          value={positionId}
+          onChange={(event) => {
+            const positionId = event.currentTarget.value;
+
+            setSelection((currentSelection) => ({
+              ...currentSelection,
+              positionId,
+            }));
+          }}
+          value={selection.positionId}
         >
           <option value="">{t.modules.items.selectPosition}</option>
           {positionOptions.map((position) => (

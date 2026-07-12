@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
 import { redirect } from "next/navigation";
 import {
   parseItemType,
@@ -316,4 +317,14 @@ export async function archiveItem(formData: FormData) {
 
   revalidatePath(routes.items);
   redirectWithStatus("item_archived");
+}
+
+export async function createQuickCustomCategory(submittedName: string) {
+  const result = await createCustomCategoryForActiveAdmin(submittedName);
+
+  if (result.status === "created") {
+    revalidatePath(routes.categories);
+  }
+
+  return result;
 }

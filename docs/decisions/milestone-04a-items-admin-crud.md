@@ -10,6 +10,8 @@ M4A wprowadza podstawowy CRUD Rzeczy na istniejacej trasie `/items`:
 - lista aktywnych rzeczy odczytywana zgodnie z RLS;
 - dodawanie, edycja i archiwizacja tylko dla administratora;
 - formularz z nazwa, opcjonalnym opisem, kategoria, typem i warunkowa iloscia;
+- wybor kategorii systemowej albo wlasnej oraz szybkie utworzenie wlasnej
+  kategorii bez opuszczania formularza;
 - opcjonalny wybor lokalizacji: Pomieszczenie -> Schowek -> Pozycja L3;
 - wyswietlanie pelnej sciezki lokalizacji;
 - domyslne ukrycie rekordow o statusie `archiwalne`;

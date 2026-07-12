@@ -1,5 +1,6 @@
 export type ItemCategoryOption = {
   id: string;
+  isSystem: boolean;
   label: string;
 };
 
@@ -28,6 +29,12 @@ export type ItemLocationSelectorOptions = {
   positions: ItemLocationOption[];
   rooms: ItemRoomOption[];
   storageLocations: ItemStorageOption[];
+};
+
+export type ItemLocationSelection = {
+  positionId: string;
+  roomId: string;
+  storageId: string;
 };
 
 type RoomSource = {
@@ -100,4 +107,70 @@ export function buildItemLocationSelectorOptions({
     rooms: roomOptions,
     storageLocations: storageOptions,
   };
+}
+
+export function getStorageOptionsForRoom(
+  options: ItemLocationSelectorOptions,
+  roomId: string,
+) {
+  return options.storageLocations.filter((option) => option.roomId === roomId);
+}
+
+export function getPositionOptionsForStorage(
+  options: ItemLocationSelectorOptions,
+  storageId: string,
+) {
+  return options.positions.filter((option) => option.storageId === storageId);
+}
+
+export function getInitialItemLocationSelection(
+  options: ItemLocationSelectorOptions,
+  selectedPositionId?: string | null,
+): ItemLocationSelection {
+  const initialOption =
+    options.positions.find((option) => option.id === selectedPositionId) ?? null;
+
+  return {
+    positionId: initialOption?.id ?? "",
+    roomId: initialOption?.roomId ?? "",
+    storageId: initialOption?.storageId ?? "",
+  };
+}
+
+export function getItemEditFormLocationProps(
+  locationOptions: ItemLocationSelectorOptions,
+  location: ItemLocationOption | null,
+) {
+  return {
+    locationOptions,
+    selectedPositionId: location?.id ?? null,
+  };
+}
+
+export function getItemLocationFieldKey(
+  itemId?: string | null,
+  selectedPositionId?: string | null,
+) {
+  return `${itemId ?? "new"}:${selectedPositionId ?? "none"}`;
+}
+
+export function getItemLocationFieldProps(
+  options: ItemLocationSelectorOptions,
+  selectedPositionId?: string | null,
+) {
+  return {
+    options,
+    selectedPositionId: selectedPositionId ?? null,
+  };
+}
+
+export function selectItemLocationRoom(roomId: string): ItemLocationSelection {
+  return { roomId, storageId: "", positionId: "" };
+}
+
+export function selectItemLocationStorage(
+  selection: ItemLocationSelection,
+  storageId: string,
+): ItemLocationSelection {
+  return { ...selection, storageId, positionId: "" };
 }

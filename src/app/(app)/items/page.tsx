@@ -3,6 +3,7 @@ import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
 import { EmptyState } from "@/components/empty-state";
 import { ModulePage } from "@/components/module-page";
+import { getItemCategoryOptions } from "@/lib/categories/category-selection";
 import { t } from "@/lib/i18n";
 import {
   buildItemLocationSelectorOptions,
@@ -58,12 +59,12 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       .order("created_at", { ascending: false }),
     supabase
       .from("category")
-      .select("id, nazwa")
+      .select("id, household_id, nazwa, czy_systemowa")
       .order("czy_systemowa", { ascending: false })
       .order("created_at", { ascending: true }),
     supabase
       .from("room")
-      .select("*")
+      .select("id, nazwa")
       .order(orderColumn, { ascending: true })
       .order("created_at", { ascending: true }),
   ]);
@@ -73,7 +74,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const storageResponse = roomIds.length
     ? await supabase
         .from("storage_location_l2")
-        .select("*")
+        .select("id, nazwa, room_id")
         .in("room_id", roomIds)
         .order(orderColumn, { ascending: true })
         .order("created_at", { ascending: true })
@@ -83,7 +84,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const positionsResponse = storageIds.length
     ? await supabase
         .from("storage_location_l3")
-        .select("*")
+        .select("id, nazwa, kod_lokalizacji, storage_location_l2_id")
         .in("storage_location_l2_id", storageIds)
         .order(orderColumn, { ascending: true })
         .order("created_at", { ascending: true })
@@ -112,10 +113,10 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       location.storage_location_l3_id,
     ]),
   );
-  const categoryOptions: ItemCategoryOption[] = categories.map((category) => ({
-    id: category.id,
-    label: category.nazwa,
-  }));
+  const categoryOptions: ItemCategoryOption[] = getItemCategoryOptions(
+    categories,
+    profile?.household_id,
+  );
   const categoryNameById = new Map(
     categories.map((category) => [category.id, category.nazwa]),
   );

@@ -3,10 +3,11 @@ import {
   updateItem,
 } from "@/app/(app)/items/actions";
 import { activeLocale, t } from "@/lib/i18n";
-import type {
-  ItemCategoryOption,
-  ItemLocationOption,
-  ItemLocationSelectorOptions,
+import {
+  getItemEditFormLocationProps,
+  type ItemCategoryOption,
+  type ItemLocationOption,
+  type ItemLocationSelectorOptions,
 } from "@/lib/items/item-options";
 import type { Database } from "@/types/database";
 import { ItemForm } from "./item-form";
@@ -61,6 +62,10 @@ export function ItemCard({
       )
     : null;
   const showQuantity = item.typ !== "unikalny";
+  const editLocationProps = getItemEditFormLocationProps(
+    locationOptions,
+    location,
+  );
 
   return (
     <article className="rounded-md border border-line bg-surface p-4">
@@ -128,8 +133,8 @@ export function ItemCard({
                 action={updateItem}
                 categories={categories}
                 item={item}
-                locationOptions={locationOptions}
-                selectedPositionId={location?.id}
+                locationOptions={editLocationProps.locationOptions}
+                selectedPositionId={editLocationProps.selectedPositionId}
                 submitLabel={t.modules.items.saveChanges}
               />
             </div>

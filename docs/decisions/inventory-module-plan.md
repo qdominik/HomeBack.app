@@ -73,7 +73,9 @@ M4A.
 4. Administrator archiwizuje przedmiot przez ustawienie `status = 'archiwalne'`.
    W UI nie ma trwalego usuwania.
 5. Formularz kategorii pokazuje tylko systemowe oraz wlasne kategorie widoczne
-   dla aktualnego gospodarstwa przez RLS.
+   dla aktualnego gospodarstwa przez RLS. Umozliwia tez szybkie utworzenie
+   wlasnej kategorii bez opuszczania formularza; istniejaca kategoria jest
+   wybierana zamiast tworzenia duplikatu.
 6. Formularz lokalizacji prowadzi hierarchicznie: Pomieszczenie -> Schowek
    (`storage_location_l2`) -> Pozycja L3. Tylko L3 jest zapisywana w
    `item_location`; widok pokazuje `Pomieszczenie / Schowek / Pozycja`.

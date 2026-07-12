@@ -261,6 +261,7 @@ export async function createRoom(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("room_created");
 }
 
@@ -308,6 +309,7 @@ export async function updateRoom(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("room_updated");
 }
 
@@ -347,6 +349,7 @@ export async function deleteRoom(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("room_deleted");
 }
 
@@ -382,6 +385,7 @@ export async function createStorageLocationL2(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("location_created");
 }
 
@@ -446,6 +450,7 @@ export async function updateStorageLocationL2(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("location_updated");
 }
 
@@ -485,6 +490,7 @@ export async function deleteStorageLocationL2(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("location_deleted");
 }
 
@@ -558,6 +564,7 @@ export async function createStorageLocationL3(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("position_created");
 }
 
@@ -628,6 +635,7 @@ export async function updateStorageLocationL3(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("position_updated");
 }
 
@@ -667,5 +675,6 @@ export async function deleteStorageLocationL3(formData: FormData) {
   }
 
   revalidatePath(routes.home);
+  revalidatePath(routes.items);
   redirectWithStatus("position_deleted");
 }

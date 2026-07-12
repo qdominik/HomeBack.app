@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
 import { CUSTOM_TEMPLATE_VALUE } from "@/lib/home/home-template-options";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -108,37 +109,38 @@ function redirectOnDuplicate(categories: Pick<CategoryRow, "czy_systemowa">[]) {
 }
 
 export async function createCustomCategory(formData: FormData) {
-  const nazwa = parseCategoryName(formData);
+  const result = await createCustomCategoryForActiveAdmin(
+    parseCategoryName(formData),
+  );
 
-  if (!nazwa) {
+  if (result.status === "created") {
+    revalidatePath(routes.categories);
+    redirectWithStatus("category_created");
+  }
+
+  if (result.status === "existing") {
+    redirectWithStatus(
+      result.category.isSystem ? "category_available" : "category_exists",
+    );
+  }
+
+  if (result.status === "missing_fields") {
     redirectWithError("missing_fields");
   }
 
-  const supabase = await createClient();
-  const profile = await getActiveProfile(supabase);
-  requireAdmin(profile.rola);
-
-  const duplicates = await visibleCategoriesByName(supabase, nazwa);
-  redirectOnDuplicate(duplicates);
-
-  const { error } = await supabase.from("category").insert({
-    czy_systemowa: false,
-    household_id: profile.household_id,
-    key: null,
-    nazwa,
-    widoczna_dla_dzieci: true,
-  });
-
-  if (error) {
-    if (isUniqueViolation(error)) {
-      redirectWithStatus("category_exists");
-    }
-
-    redirectWithError("action_failed");
+  if (result.status === "admin_required") {
+    redirectWithError("admin_required");
   }
 
-  revalidatePath(routes.categories);
-  redirectWithStatus("category_created");
+  if (result.status === "session_expired") {
+    redirect(`${routes.login}?error=session_expired`);
+  }
+
+  if (result.status === "household_required") {
+    redirect(`${routes.register}?step=household`);
+  }
+
+  redirectWithError("action_failed");
 }
 
 export async function updateCustomCategory(formData: FormData) {
