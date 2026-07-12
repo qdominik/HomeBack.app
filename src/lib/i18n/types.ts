@@ -95,6 +95,12 @@ export type Dictionary = {
       categoryCreatedAndSelected: string;
       categoryAlreadyExists: string;
       quickCategoryMissing: string;
+      viewSelector: string;
+      views: {
+        all: string;
+        unlocated: string;
+        archived: string;
+      };
       itemTypes: {
         unique: string;
         stock: string;
@@ -132,6 +138,8 @@ export type Dictionary = {
       allPositions: string;
       allStatuses: string;
       empty: string;
+      emptyUnlocated: string;
+      emptyArchived: string;
       noResults: string;
       location: string;
       noLocation: string;

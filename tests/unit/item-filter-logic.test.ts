@@ -5,6 +5,10 @@ import {
   parseItemSearchParams,
   searchPattern,
 } from "../../src/lib/items/item-search-params";
+import {
+  filterItemsForView,
+  parseItemView,
+} from "../../src/lib/items/item-view-filter";
 
 const validUuid = "11111111-2222-3333-4444-555555555555";
 
@@ -69,4 +73,46 @@ test("item filters keep supported status and sort values", () => {
   assert.equal(filters.status, "pożyczone");
   assert.equal(hasItemFilters(filters), true);
   assert.equal(hasItemFilters(parseItemSearchParams({ sort: "name" })), false);
+});
+
+test("item view parser defaults to all and accepts supported views", () => {
+  assert.equal(parseItemView({}), "all");
+  assert.equal(parseItemView({ view: "unknown" }), "all");
+  assert.equal(parseItemView({ view: ["unlocated", "archived"] }), "unlocated");
+  assert.equal(parseItemView({ view: " archived " }), "archived");
+});
+
+test("item views separate active, unlocated, and archived items", () => {
+  const items = [
+    { id: "active-with-location", status: "w domu" as const },
+    { id: "active-without-location", status: "w domu" as const },
+    { id: "borrowed-without-location", status: "pożyczone" as const },
+    { id: "archived-with-location", status: "archiwalne" as const },
+    { id: "archived-without-location", status: "archiwalne" as const },
+  ];
+  const primaryLocations = new Map([
+    ["active-with-location", "position-a"],
+    ["archived-with-location", "position-b"],
+  ]);
+
+  assert.deepEqual(
+    filterItemsForView(items, primaryLocations, "all").map((item) => item.id),
+    [
+      "active-with-location",
+      "active-without-location",
+      "borrowed-without-location",
+    ],
+  );
+  assert.deepEqual(
+    filterItemsForView(items, primaryLocations, "unlocated").map(
+      (item) => item.id,
+    ),
+    ["active-without-location", "borrowed-without-location"],
+  );
+  assert.deepEqual(
+    filterItemsForView(items, primaryLocations, "archived").map(
+      (item) => item.id,
+    ),
+    ["archived-with-location", "archived-without-location"],
+  );
 });

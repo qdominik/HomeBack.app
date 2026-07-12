@@ -100,6 +100,12 @@ export const pl: Dictionary = {
       categoryCreatedAndSelected: "Kategoria została utworzona i wybrana.",
       categoryAlreadyExists: "Taka kategoria już istnieje.",
       quickCategoryMissing: "Podaj nazwę nowej kategorii.",
+      viewSelector: "Widok Rzeczy",
+      views: {
+        all: "Wszystkie",
+        unlocated: "Bez lokalizacji",
+        archived: "Archiwalne",
+      },
       itemTypes: {
         unique: "Pojedyncza rzecz",
         stock: "Zapas",
@@ -137,6 +143,8 @@ export const pl: Dictionary = {
       allPositions: "Wszystkie pozycje",
       allStatuses: "Wszystkie statusy",
       empty: "Nie dodano jeszcze żadnych przedmiotów.",
+      emptyUnlocated: "Brak Rzeczy bez lokalizacji.",
+      emptyArchived: "Brak zarchiwizowanych Rzeczy.",
       noResults: "Brak przedmiotów pasujących do wybranych filtrów.",
       location: "Lokalizacja",
       noLocation: "Brak przypisanej lokalizacji",

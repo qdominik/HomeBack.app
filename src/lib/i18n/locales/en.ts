@@ -100,6 +100,12 @@ export const en: Dictionary = {
       categoryCreatedAndSelected: "The category was created and selected.",
       categoryAlreadyExists: "This category already exists.",
       quickCategoryMissing: "Enter a new category name.",
+      viewSelector: "Items view",
+      views: {
+        all: "All",
+        unlocated: "Without location",
+        archived: "Archived",
+      },
       itemTypes: {
         unique: "Single item",
         stock: "Stock",
@@ -137,6 +143,8 @@ export const en: Dictionary = {
       allPositions: "All positions",
       allStatuses: "All statuses",
       empty: "No items have been added yet.",
+      emptyUnlocated: "No items without a location.",
+      emptyArchived: "No archived items.",
       noResults: "No items match the selected filters.",
       location: "Location",
       noLocation: "No location assigned",

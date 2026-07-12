@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createItem } from "@/app/(app)/items/actions";
 import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
@@ -9,12 +10,18 @@ import {
   buildItemLocationSelectorOptions,
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
+import {
+  filterItemsForView,
+  parseItemView,
+  type ItemView,
+} from "@/lib/items/item-view-filter";
 import { createClient } from "@/lib/supabase/server";
 
 type ItemsPageProps = {
   searchParams: Promise<{
     error?: string;
     status?: string;
+    view?: string | string[];
   }>;
 };
 
@@ -51,12 +58,18 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         .maybeSingle()
     : { data: null };
 
+  const currentView = parseItemView(params);
+  const itemsQueryBase = supabase
+    .from("item")
+    .select("*")
+    .order("created_at", { ascending: false });
+  const itemsQuery =
+    currentView === "archived"
+      ? itemsQueryBase.eq("status", "archiwalne")
+      : itemsQueryBase.neq("status", "archiwalne");
+
   const [itemsResponse, categoriesResponse, roomsResponse] = await Promise.all([
-    supabase
-      .from("item")
-      .select("*")
-      .neq("status", "archiwalne")
-      .order("created_at", { ascending: false }),
+    itemsQuery,
     supabase
       .from("category")
       .select("id, household_id, nazwa, czy_systemowa")
@@ -120,6 +133,34 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const categoryNameById = new Map(
     categories.map((category) => [category.id, category.nazwa]),
   );
+  const visibleItems = filterItemsForView(
+    items,
+    primaryPositionByItemId,
+    currentView,
+  );
+  const emptyText =
+    currentView === "unlocated"
+      ? t.modules.items.emptyUnlocated
+      : currentView === "archived"
+        ? t.modules.items.emptyArchived
+        : t.modules.items.empty;
+  const viewLinks: { href: string; label: string; view: ItemView }[] = [
+    {
+      href: "/items",
+      label: t.modules.items.views.all,
+      view: "all",
+    },
+    {
+      href: "/items?view=unlocated",
+      label: t.modules.items.views.unlocated,
+      view: "unlocated",
+    },
+    {
+      href: "/items?view=archived",
+      label: t.modules.items.views.archived,
+      view: "archived",
+    },
+  ];
   const isAdmin = profile?.rola === "admin";
   const hasReadError = Boolean(
     itemsResponse.error ||
@@ -176,10 +217,28 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             {t.modules.items.errors.actionFailed}
           </p>
         ) : null}
+        <nav
+          aria-label={t.modules.items.viewSelector}
+          className="mt-4 flex flex-wrap gap-2"
+        >
+          {viewLinks.map((link) => (
+            <Link
+              className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                currentView === link.view
+                  ? "border-primary bg-primary text-white"
+                  : "border-line bg-surface text-primary-strong hover:border-primary/60"
+              }`}
+              href={link.href}
+              key={link.view}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </section>
-      {items.length ? (
+      {visibleItems.length ? (
         <section className="grid gap-3 lg:grid-cols-2">
-          {items.map((item) => {
+          {visibleItems.map((item) => {
             const positionId = primaryPositionByItemId.get(item.id) ?? null;
             const location =
               locationSelectorOptions.positions.find(
@@ -203,7 +262,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           })}
         </section>
       ) : (
-        <EmptyState text={t.modules.items.empty} />
+        <EmptyState text={emptyText} />
       )}
     </ModulePage>
   );

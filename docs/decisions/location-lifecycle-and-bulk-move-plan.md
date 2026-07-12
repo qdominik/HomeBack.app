@@ -1,7 +1,7 @@
 # Plan: M4D - cykl zycia lokalizacji, Rzeczy bez lokalizacji i masowe przenoszenie
 
 Data: 2026-07-12
-Status: zatwierdzone przez wlasciciela - implementacja nierozpoczeta
+Status: zatwierdzone przez wlasciciela - M4D.1 zaimplementowane lokalnie, oczekuje na reczna akceptacje; M4D.2+ nierozpoczete
 
 ## 1. Stan obecny
 
@@ -132,12 +132,7 @@ query.
 
 ### Licznik
 
-Pokazac licznik aktywnych Rzeczy bez lokalizacji przy filtrze:
-
-- `Bez lokalizacji (N)`.
-
-Licznik powinien uwzgledniac tylko rekordy widoczne dla aktualnego uzytkownika
-zgodnie z RLS. Dla M4D rekomendacja: tylko aktywne Rzeczy.
+Zatwierdzona decyzja wlasciciela: M4D.1 nie dodaje licznikow przy widokach listy. Liczniki Schowkow, Pozycji i Rzeczy sa przewidziane tylko w dialogu usuwania w pozniejszych krokach M4D.
 
 ## 6. Usuwanie Pozycji L3
 
@@ -527,7 +522,7 @@ M4D nie projektuje i nie implementuje:
 
 ## 19. Proponowany podzial implementacji
 
-1. M4D.1 - filtr "Bez lokalizacji" w `/items` i licznik aktywnych Rzeczy bez`r`n   glownej lokalizacji; implementacja ma byc przygotowana pod pozniejsze filtry M4B.
+1. M4D.1 - widok systemowy "Bez lokalizacji" w `/items` - Zaimplementowane lokalnie, oczekuje na reczna akceptacje. Implementacja jest przygotowana pod pozniejsze filtry M4B i nie dodaje licznikow przy widokach listy.
 2. M4D.2 - RPC podsumowania zaleznosci albo server action odczytujaca
    podsumowanie zgodnie z RLS.
 3. M4D.3 - RPC masowego odpiecia glownych lokalizacji i testy pgTAP.
