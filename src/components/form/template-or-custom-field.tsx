@@ -85,11 +85,11 @@ export function TemplateOrCustomField({
   return (
     <div className="space-y-2">
       <input name={name} type="hidden" value={submittedValue} />
-      <label className="block text-sm font-medium" htmlFor={selectId}>
+      <label className="ui-label" htmlFor={selectId}>
         {label}
       </label>
       <select
-        className="h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+        className="ui-control"
         id={selectId}
         name={templateFieldName}
         onChange={(event) => {
@@ -109,10 +109,10 @@ export function TemplateOrCustomField({
         ))}
       </select>
       {selectedValue === CUSTOM_TEMPLATE_VALUE ? (
-        <label className="block text-sm font-medium" htmlFor={customInputId}>
+        <label className="ui-label" htmlFor={customInputId}>
           {customLabel}
           <input
-            className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+            className="ui-control mt-2"
             id={customInputId}
             name={customFieldName}
             onChange={(event) => {
@@ -123,9 +123,7 @@ export function TemplateOrCustomField({
           />
         </label>
       ) : null}
-      {helpText ? (
-        <p className="text-xs font-normal text-muted">{helpText}</p>
-      ) : null}
+      {helpText ? <p className="ui-field-help">{helpText}</p> : null}
     </div>
   );
 }

@@ -1,7 +1,6 @@
-import {
-  archiveItem,
-  updateItem,
-} from "@/app/(app)/items/actions";
+import { archiveItem, updateItem } from "@/app/(app)/items/actions";
+import { Badge } from "@/components/ui/badge";
+import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   getItemEditFormLocationProps,
@@ -29,8 +28,8 @@ const statusLabels: Record<
   string
 > = {
   "w domu": t.modules.items.statuses.atHome,
-  zużyte: t.modules.items.statuses.consumed,
-  pożyczone: t.modules.items.statuses.borrowed,
+  "zu\u017cyte": t.modules.items.statuses.consumed,
+  "po\u017cyczone": t.modules.items.statuses.borrowed,
   archiwalne: t.modules.items.statuses.archived,
 };
 
@@ -39,6 +38,22 @@ const typeLabels: Record<Database["public"]["Enums"]["item_type"], string> = {
   zapas: t.modules.items.itemTypes.stock,
   zestaw: t.modules.items.itemTypes.set,
 };
+
+function getStatusTone(status: Database["public"]["Enums"]["item_status"]) {
+  if (status === "w domu") {
+    return "success";
+  }
+
+  if (status === "archiwalne") {
+    return "neutral";
+  }
+
+  if (status === "po\u017cyczone") {
+    return "warning";
+  }
+
+  return "info";
+}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat(activeLocale === "pl" ? "pl-PL" : "en-US", {
@@ -62,93 +77,93 @@ export function ItemCard({
       )
     : null;
   const showQuantity = item.typ !== "unikalny";
+  const metaItems = [categoryName, typeLabels[item.typ]];
+
+  if (showQuantity) {
+    metaItems.push(`${t.modules.items.quantity}: ${item.ilosc ?? 1}`);
+  }
+
   const editLocationProps = getItemEditFormLocationProps(
     locationOptions,
     location,
   );
 
   return (
-    <article className="rounded-md border border-line bg-surface p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <article className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-foreground">
+          <h2 className="break-words text-lg font-semibold leading-snug text-foreground">
             {item.nazwa}
           </h2>
-          <p className="mt-1 text-sm text-muted">{categoryName}</p>
+          <p className="mt-1 text-sm leading-5 text-muted">
+            {metaItems.join(" \u00b7 ")}
+          </p>
         </div>
-        <span className="w-fit rounded-md bg-surface-muted px-2 py-1 text-xs font-semibold text-muted">
+        <Badge tone={getStatusTone(item.status)}>
           {statusLabels[item.status]}
-        </span>
+        </Badge>
       </div>
-      <dl className="mt-4 grid gap-3 border-t border-line pt-3 text-sm">
-        <div>
-          <dt className="text-xs font-semibold uppercase text-muted">
-            {t.modules.items.itemType}
-          </dt>
-          <dd className="mt-1 text-foreground">{typeLabels[item.typ]}</dd>
-        </div>
-        {showQuantity ? (
-          <div>
-            <dt className="text-xs font-semibold uppercase text-muted">
-              {t.modules.items.quantity}
-            </dt>
-            <dd className="mt-1 text-foreground">{item.ilosc ?? 1}</dd>
-          </div>
-        ) : null}
-        <div>
-          <dt className="text-xs font-semibold uppercase text-muted">
-            {t.modules.items.location}
-          </dt>
-          <dd className="mt-1 text-foreground">
-            {locationPath ?? t.modules.items.noLocation}
-          </dd>
-        </div>
+
+      <div className="mt-3 border-t border-line pt-3">
+        <p className="break-words text-sm leading-6 text-foreground">
+          {locationPath ?? t.modules.items.noLocation}
+        </p>
         {location?.locationCode ? (
-          <div>
-            <dt className="text-xs font-semibold uppercase text-muted">
-              {t.modules.items.locationCode}
-            </dt>
-            <dd className="mt-1 font-mono text-xs text-foreground">
-              {location.locationCode}
-            </dd>
-          </div>
+          <p className="mt-1 font-mono text-xs leading-5 text-muted">
+            {location.locationCode}
+          </p>
         ) : null}
-      </dl>
+      </div>
+
       {item.opis ? (
-        <p className="mt-4 border-t border-line pt-3 text-sm leading-6 text-muted">
+        <p className="mt-3 break-words text-sm leading-6 text-muted">
           {item.opis}
         </p>
       ) : null}
-      <p className="mt-4 text-xs text-muted">
-        {t.modules.items.addedOn}: {formatDate(item.created_at)}
-      </p>
-      {isAdmin ? (
-        <div className="mt-4 grid gap-3 border-t border-line pt-4 lg:grid-cols-2">
-          <details>
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
-              {t.modules.items.editItem}
-            </summary>
-            <div className="mt-3">
-              <ItemForm
-                action={updateItem}
-                categories={categories}
-                item={item}
-                locationOptions={editLocationProps.locationOptions}
-                selectedPositionId={editLocationProps.selectedPositionId}
-                submitLabel={t.modules.items.saveChanges}
+
+      <div className="mt-4 border-t border-line pt-3">
+        <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+          <p className="text-xs leading-5 text-muted">
+            {t.modules.items.addedOn}: {formatDate(item.created_at)}
+          </p>
+          {isAdmin ? (
+            <details className="sm:contents">
+              <summary
+                className={buttonClassName({
+                  className:
+                    "w-full cursor-pointer list-none sm:w-auto [&::-webkit-details-marker]:hidden",
+                  variant: "secondary",
+                })}
+              >
+                {t.modules.items.editItem}
+              </summary>
+              <div className="mt-3 sm:col-span-3 sm:row-start-2">
+                <ItemForm
+                  action={updateItem}
+                  categories={categories}
+                  item={item}
+                  locationOptions={editLocationProps.locationOptions}
+                  selectedPositionId={editLocationProps.selectedPositionId}
+                  submitLabel={t.modules.items.saveChanges}
+                />
+              </div>
+            </details>
+          ) : null}
+          {isAdmin ? (
+            <form action={archiveItem} className="sm:col-start-3 sm:row-start-1">
+              <input name="item_id" type="hidden" value={item.id} />
+              <ItemSubmitButton
+                className={buttonClassName({
+                  className: "w-full sm:w-auto",
+                  variant: "secondary",
+                })}
+                label={t.modules.items.archiveItem}
+                pendingLabel={t.modules.items.archiving}
               />
-            </div>
-          </details>
-          <form action={archiveItem}>
-            <input name="item_id" type="hidden" value={item.id} />
-            <ItemSubmitButton
-              className="h-9 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-70"
-              label={t.modules.items.archiveItem}
-              pendingLabel={t.modules.items.archiving}
-            />
-          </form>
+            </form>
+          ) : null}
         </div>
-      ) : null}
+      </div>
     </article>
   );
 }

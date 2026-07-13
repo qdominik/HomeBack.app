@@ -4,6 +4,7 @@ export type Dictionary = {
     tagline: string;
   };
   navigation: {
+    main: string;
     dashboard: string;
     items: string;
     home: string;

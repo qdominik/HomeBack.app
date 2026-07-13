@@ -4,6 +4,9 @@ import {
   updateStorageLocationL2,
 } from "@/app/(app)/home/actions";
 import { EmptyState } from "@/components/empty-state";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonClassName } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
@@ -50,83 +53,93 @@ export function StorageLocationL2Card({
   const canDelete = location.positions.length === 0;
 
   return (
-    <div className="border-t border-line py-4 first:border-t-0 first:pt-0 last:pb-0">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+    <section className="rounded-control border border-line bg-surface-muted p-4 sm:p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-semibold text-foreground">{location.nazwa}</h3>
-            <span className="rounded-md bg-surface-muted px-2 py-1 text-xs font-semibold text-muted">
-              {location.typ}
-            </span>
+            <h3 className="text-lg font-semibold leading-7 text-foreground">
+              {location.nazwa}
+            </h3>
+            <Badge>{location.typ}</Badge>
           </div>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-2 text-sm text-muted">
             {entityLabels.position.plural}: {location.positions.length}
           </p>
           {location.opis ? (
-            <p className="mt-2 text-sm leading-6 text-muted">{location.opis}</p>
+            <p className="mt-3 text-sm leading-6 text-muted">{location.opis}</p>
           ) : null}
         </div>
-        <p className="shrink-0 text-xs text-muted">
+        <Badge>
           {t.modules.home.fields.order}: {location.kolejność}
-        </p>
+        </Badge>
       </div>
+
       {isAdmin ? (
-        <div className="mt-3 grid gap-3 border-t border-line pt-3 lg:grid-cols-2">
-          <details>
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
-              {editStorageLabel}
-            </summary>
-            <div className="mt-3">
-              <StorageLocationL2Form
-                action={updateStorageLocationL2}
-                location={location}
-                roomId={roomId}
-                submitLabel={t.modules.home.saveChanges}
-              />
-            </div>
-          </details>
-          <div className="flex flex-col gap-3">
+        <div className="mt-5 grid gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <details>
-              <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+              <summary
+                className={buttonClassName({
+                  className:
+                    "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+                  variant: "ghost",
+                })}
+              >
+                {editStorageLabel}
+              </summary>
+              <Card className="mt-3 p-5">
+                <StorageLocationL2Form
+                  action={updateStorageLocationL2}
+                  location={location}
+                  roomId={roomId}
+                  submitLabel={t.modules.home.saveChanges}
+                />
+              </Card>
+            </details>
+            <details>
+              <summary
+                className={buttonClassName({
+                  className:
+                    "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+                  variant: "secondary",
+                })}
+              >
                 {addPositionLabel}
               </summary>
-              <div className="mt-3">
+              <Card className="mt-3 p-5">
                 <StorageLocationL3Form
                   action={createStorageLocationL3}
                   locationId={location.id}
                   submitLabel={createPositionLabel}
                 />
-              </div>
+              </Card>
             </details>
-            <form action={deleteStorageLocationL2}>
-              <input name="location_l2_id" type="hidden" value={location.id} />
-              <button
-                className="h-9 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={!canDelete}
-                type="submit"
-              >
-                {deleteStorageLabel}
-              </button>
-            </form>
           </div>
+          <form action={deleteStorageLocationL2}>
+            <input name="location_l2_id" type="hidden" value={location.id} />
+            <Button disabled={!canDelete} type="submit" variant="danger">
+              {deleteStorageLabel}
+            </Button>
+          </form>
         </div>
       ) : null}
-      <div className="mt-4">
-        {location.positions.length ? (
-          <ul>
-            {location.positions.map((position) => (
-              <StorageLocationL3Card
-                isAdmin={isAdmin}
-                key={position.id}
-                locationId={location.id}
-                position={position}
-              />
-            ))}
-          </ul>
-        ) : (
+
+      {location.positions.length ? (
+        <ul className="mt-5 space-y-2 border-t border-line pt-4">
+          {location.positions.map((position) => (
+            <StorageLocationL3Card
+              isAdmin={isAdmin}
+              key={position.id}
+              locationId={location.id}
+              position={position}
+            />
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-5">
           <EmptyState text={t.modules.home.noPositions} />
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </section>
   );
 }

@@ -19,26 +19,26 @@ const variants: Record<
 > = {
   horizontal: {
     alt: "HomeBack.app",
-    aspectClass: "aspect-[3/1]",
-    sizes: "(max-width: 640px) 240px, 320px",
-    src: "/brand/logo-horizontal.png",
+    aspectClass: "aspect-[1418/489]",
+    sizes: "(max-width: 640px) 208px, 256px",
+    src: "/brand/homeback-logo-horizontal.png",
   },
   vertical: {
     alt: "HomeBack.app",
-    aspectClass: "aspect-[0.8/1]",
+    aspectClass: "aspect-[4/5]",
     sizes: "(max-width: 640px) 180px, 220px",
-    src: "/brand/logo-vertical.png",
+    src: "/brand/homeback-logo-vertical.png",
   },
   icon: {
     alt: "HomeBack.app",
     aspectClass: "aspect-square",
     sizes: "64px",
-    src: "/brand/logo-icon.png",
+    src: "/brand/homeback-icon.png",
   },
   monochrome: {
     alt: "HomeBack.app",
-    aspectClass: "aspect-[3/1]",
-    sizes: "(max-width: 640px) 240px, 320px",
+    aspectClass: "aspect-[3/2]",
+    sizes: "(max-width: 640px) 180px, 240px",
     src: "/brand/logo-monochrome.png",
   },
 };
@@ -52,8 +52,8 @@ export function BrandLogo({
 
   return (
     <span
-      className={`relative block w-full overflow-hidden ${config.aspectClass} ${
-        className ?? ""
+      className={`relative block overflow-hidden ${config.aspectClass} ${
+        className ?? "w-full"
       }`}
     >
       <Image

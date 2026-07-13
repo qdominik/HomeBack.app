@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
+import { Button } from "@/components/ui/button";
 import { ROOM_TEMPLATE_OPTIONS } from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
 import { t } from "@/lib/i18n";
@@ -27,12 +28,12 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
   }
 
   return (
-    <form action={action} className="space-y-3">
+    <form action={action} className="space-y-4">
       {room ? <input name="room_id" type="hidden" value={room.id} /> : null}
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.name}
         <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="ui-control mt-2"
           defaultValue={room?.nazwa}
           name="nazwa"
           onChange={(event) => handleNameChange(event.currentTarget.value)}
@@ -48,19 +49,19 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
         name="typ"
         templateOptions={ROOM_TEMPLATE_OPTIONS}
       />
-      <div className="grid gap-3 sm:grid-cols-[1fr_7rem]">
-        <label className="block text-sm font-medium">
+      <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
+        <label className="ui-label">
           {t.modules.home.fields.icon}
           <input
-            className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+            className="ui-control mt-2"
             defaultValue={room?.ikona ?? ""}
             name="ikona"
           />
         </label>
-        <label className="block text-sm font-medium">
+        <label className="ui-label">
           {t.modules.home.fields.order}
           <input
-            className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+            className="ui-control mt-2"
             defaultValue={room?.[orderColumn]}
             min="0"
             name="kolejnosc"
@@ -68,20 +69,15 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
           />
         </label>
       </div>
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.description}
         <textarea
-          className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
+          className="ui-control ui-textarea mt-2"
           defaultValue={room?.opis ?? ""}
           name="opis"
         />
       </label>
-      <button
-        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong"
-        type="submit"
-      >
-        {submitLabel}
-      </button>
+      <Button type="submit">{submitLabel}</Button>
     </form>
   );
 }

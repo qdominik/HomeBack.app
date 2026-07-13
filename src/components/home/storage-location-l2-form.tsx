@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
+import { Button } from "@/components/ui/button";
 import { STORAGE_LOCATION_TEMPLATE_OPTIONS } from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
 import { t } from "@/lib/i18n";
@@ -33,15 +34,15 @@ export function StorageLocationL2Form({
   }
 
   return (
-    <form action={action} className="space-y-3">
+    <form action={action} className="space-y-4">
       <input name="room_id" type="hidden" value={roomId} />
       {location ? (
         <input name="location_l2_id" type="hidden" value={location.id} />
       ) : null}
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.name}
         <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="ui-control mt-2"
           defaultValue={location?.nazwa}
           name="nazwa"
           onChange={(event) => handleNameChange(event.currentTarget.value)}
@@ -57,30 +58,25 @@ export function StorageLocationL2Form({
         name="typ"
         templateOptions={STORAGE_LOCATION_TEMPLATE_OPTIONS}
       />
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.order}
         <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="ui-control mt-2"
           defaultValue={location?.[orderColumn]}
           min="0"
           name="kolejnosc"
           type="number"
         />
       </label>
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.description}
         <textarea
-          className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
+          className="ui-control ui-textarea mt-2"
           defaultValue={location?.opis ?? ""}
           name="opis"
         />
       </label>
-      <button
-        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong"
-        type="submit"
-      >
-        {submitLabel}
-      </button>
+      <Button type="submit">{submitLabel}</Button>
     </form>
   );
 }

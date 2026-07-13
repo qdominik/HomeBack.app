@@ -2,6 +2,9 @@ import {
   deleteStorageLocationL3,
   updateStorageLocationL3,
 } from "@/app/(app)/home/actions";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonClassName } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveEntityActionLabel } from "@/lib/i18n/entity-labels";
 import type { StorageLocationL3 } from "./home-types";
@@ -30,44 +33,47 @@ export function StorageLocationL3Card({
   position,
 }: StorageLocationL3CardProps) {
   return (
-    <li className="border-t border-line py-3 first:border-t-0 first:pt-0 last:pb-0">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+    <li className="rounded-control border border-line bg-surface p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="font-medium text-foreground">{position.nazwa}</p>
-          <p className="mt-1 inline-flex rounded-md bg-surface-muted px-2 py-1 text-xs font-semibold text-primary-strong">
-            {position.kod_lokalizacji}
-          </p>
+          <p className="font-semibold text-foreground">{position.nazwa}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Badge tone="primary">{position.kod_lokalizacji}</Badge>
+            <Badge>
+              {t.modules.home.fields.order}: {position.kolejność}
+            </Badge>
+          </div>
           {position.opis ? (
-            <p className="mt-2 text-sm leading-6 text-muted">{position.opis}</p>
+            <p className="mt-3 text-sm leading-6 text-muted">{position.opis}</p>
           ) : null}
         </div>
-        <p className="shrink-0 text-xs text-muted">
-          {t.modules.home.fields.order}: {position.kolejność}
-        </p>
       </div>
       {isAdmin ? (
-        <div className="mt-3 flex flex-col gap-3 border-t border-line pt-3">
+        <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
           <details>
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+            <summary
+              className={buttonClassName({
+                className:
+                  "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+                variant: "ghost",
+              })}
+            >
               {editPositionLabel}
             </summary>
-            <div className="mt-3">
+            <Card className="mt-3 p-5">
               <StorageLocationL3Form
                 action={updateStorageLocationL3}
                 locationId={locationId}
                 position={position}
                 submitLabel={t.modules.home.saveChanges}
               />
-            </div>
+            </Card>
           </details>
           <form action={deleteStorageLocationL3}>
             <input name="location_l3_id" type="hidden" value={position.id} />
-            <button
-              className="h-9 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted"
-              type="submit"
-            >
+            <Button type="submit" variant="danger">
               {deletePositionLabel}
-            </button>
+            </Button>
           </form>
         </div>
       ) : null}

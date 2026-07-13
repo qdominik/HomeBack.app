@@ -1,7 +1,7 @@
 # Plan: M4D - cykl zycia lokalizacji, Rzeczy bez lokalizacji i masowe przenoszenie
 
 Data: 2026-07-12
-Status: zatwierdzone przez wlasciciela - M4D.1 zaimplementowane lokalnie, oczekuje na reczna akceptacje; M4D.2+ nierozpoczete
+Status: zatwierdzone przez wlasciciela - M4D.1 zaimplementowane i zaakceptowane recznie; M4D.2+ nierozpoczete
 
 ## 1. Stan obecny
 
@@ -522,7 +522,7 @@ M4D nie projektuje i nie implementuje:
 
 ## 19. Proponowany podzial implementacji
 
-1. M4D.1 - widok systemowy "Bez lokalizacji" w `/items` - Zaimplementowane lokalnie, oczekuje na reczna akceptacje. Implementacja jest przygotowana pod pozniejsze filtry M4B i nie dodaje licznikow przy widokach listy.
+1. M4D.1 - widok systemowy "Bez lokalizacji" w `/items` - Zaimplementowane i zaakceptowane recznie. Implementacja jest przygotowana pod pozniejsze filtry M4B i nie dodaje licznikow przy widokach listy.
 2. M4D.2 - RPC podsumowania zaleznosci albo server action odczytujaca
    podsumowanie zgodnie z RLS.
 3. M4D.3 - RPC masowego odpiecia glownych lokalizacji i testy pgTAP.

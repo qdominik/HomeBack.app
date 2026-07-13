@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 import type { StorageLocationL3 } from "./home-types";
 
@@ -17,34 +18,34 @@ export function StorageLocationL3Form({
   submitLabel,
 }: StorageLocationL3FormProps) {
   return (
-    <form action={action} className="space-y-3">
+    <form action={action} className="space-y-4">
       <input name="location_l2_id" type="hidden" value={locationId} />
       {position ? (
         <input name="location_l3_id" type="hidden" value={position.id} />
       ) : null}
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.name}
         <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="ui-control mt-2"
           defaultValue={position?.nazwa}
           name="nazwa"
           required
         />
       </label>
-      <div className="grid gap-3 sm:grid-cols-[1fr_7rem]">
-        <label className="block text-sm font-medium">
+      <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
+        <label className="ui-label">
           {t.modules.home.fields.locationCode}
           <input
-            className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+            className="ui-control mt-2"
             defaultValue={position?.kod_lokalizacji ?? ""}
             name="kod_lokalizacji"
             placeholder={t.modules.home.generatedCode}
           />
         </label>
-        <label className="block text-sm font-medium">
+        <label className="ui-label">
           {t.modules.home.fields.order}
           <input
-            className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+            className="ui-control mt-2"
             defaultValue={position?.[orderColumn]}
             min="0"
             name="kolejnosc"
@@ -52,20 +53,15 @@ export function StorageLocationL3Form({
           />
         </label>
       </div>
-      <label className="block text-sm font-medium">
+      <label className="ui-label">
         {t.modules.home.fields.description}
         <textarea
-          className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
+          className="ui-control ui-textarea mt-2"
           defaultValue={position?.opis ?? ""}
           name="opis"
         />
       </label>
-      <button
-        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong"
-        type="submit"
-      >
-        {submitLabel}
-      </button>
+      <Button type="submit">{submitLabel}</Button>
     </form>
   );
 }

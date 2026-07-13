@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
-import { ModulePage } from "@/components/module-page";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeader } from "@/components/ui/section-header";
+import { buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -23,35 +26,32 @@ export default async function DashboardPage() {
         .eq("id", userId)
         .maybeSingle()
     : { data: null };
+  const greeting = profile?.imie
+    ? `${t.dashboard.greeting}, ${profile.imie}`
+    : t.app.tagline;
 
   return (
-    <ModulePage
-      action={
-        <Link
-          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong"
-          href={routes.items}
-        >
-          {t.dashboard.addItem}
-        </Link>
-      }
-      title={t.dashboard.title}
-    >
-      <div className="mb-6 border-b border-line pb-5">
-        <p className="text-sm text-muted">{t.dashboard.greeting}</p>
-        <p className="mt-1 text-xl font-semibold text-foreground">
-          {profile?.imie ?? ""}
-        </p>
-      </div>
-      <section className="grid gap-4 md:grid-cols-2">
+    <div className="space-y-8">
+      <PageHeader
+        action={
+          <Link className={buttonClassName()} href={routes.items}>
+            {t.dashboard.addItem}
+          </Link>
+        }
+        description={greeting}
+        title={t.dashboard.title}
+      />
+
+      <section aria-label={t.dashboard.title} className="grid gap-5 md:grid-cols-2">
         {dashboardSections.map((section) => (
-          <div className="rounded-md border border-line bg-surface p-4" key={section}>
-            <h2 className="text-base font-semibold text-foreground">{section}</h2>
-            <div className="mt-4">
+          <Card as="section" className="p-5 sm:p-6" key={section}>
+            <SectionHeader>{section}</SectionHeader>
+            <div className="mt-5">
               <EmptyState text={t.dashboard.empty} />
             </div>
-          </div>
+          </Card>
         ))}
       </section>
-    </ModulePage>
+    </div>
   );
 }

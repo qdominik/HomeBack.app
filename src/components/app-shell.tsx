@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/brand-logo";
+import { buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
@@ -25,7 +26,7 @@ const roleLabels: Record<
   admin: t.auth.roles.admin,
   domownik: t.auth.roles.member,
   dziecko: t.auth.roles.child,
-  gość: t.auth.roles.guest,
+  "go\u015b\u0107": t.auth.roles.guest,
 };
 
 type AppShellProps = {
@@ -45,31 +46,32 @@ export function AppShell({
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
-      <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4">
+      <header className="border-b border-line bg-surface shadow-card">
+        <div className="mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 py-2 sm:gap-5">
             <Link
               aria-label={t.app.name}
-              className="block w-[150px] shrink-0 sm:w-[220px]"
+              className="block shrink-0 p-1"
               href={routes.dashboard}
             >
-              <span className="sm:hidden">
-                <BrandLogo className="w-11" variant="icon" />
-              </span>
-              <span className="hidden sm:block">
-                <BrandLogo className="w-full" variant="horizontal" />
-              </span>
+              <BrandLogo
+                className="w-52 sm:w-64"
+                priority
+                variant="horizontal"
+              />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="hidden text-right sm:block">
-                <p className="text-sm font-medium text-foreground">{userName}</p>
-                <p className="text-xs text-muted">
-                  {householdName} · {roleLabels[role]}
+              <div className="hidden min-w-0 text-right md:block">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {userName}
+                </p>
+                <p className="truncate text-sm text-muted">
+                  {householdName} {"\u00b7"} {roleLabels[role]}
                 </p>
               </div>
               <form action="/auth/signout" method="post">
                 <button
-                  className="h-9 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted"
+                  className={buttonClassName({ variant: "secondary" })}
                   type="submit"
                 >
                   {t.auth.signOut}
@@ -77,29 +79,34 @@ export function AppShell({
               </form>
             </div>
           </div>
-          <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Glowne">
+          <nav
+            aria-label={t.navigation.main}
+            className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-3"
+          >
             {navigation.map((item) => {
               const isActive = pathname === item.href;
 
               return (
                 <Link
                   aria-current={isActive ? "page" : undefined}
-                  className={`whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition ${
+                  className={`relative inline-flex min-h-11 shrink-0 items-center rounded-control border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none ${
                     isActive
-                      ? "bg-primary text-white"
-                      : "text-muted hover:bg-surface-muted hover:text-foreground"
+                      ? "border-primary-hover bg-primary text-white shadow-card after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-white"
+                      : "border-transparent text-muted hover:border-line hover:bg-surface-muted hover:text-foreground"
                   }`}
                   href={item.href}
                   key={item.href}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+      <main className="mx-auto w-full max-w-content px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        {children}
+      </main>
     </div>
   );
 }

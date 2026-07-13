@@ -6,9 +6,10 @@ export const en: Dictionary = {
     tagline: "Everything about your home in one place",
   },
   navigation: {
+    main: "Main navigation",
     dashboard: "Dashboard",
     items: "Items",
-    home: "Home",
+    home: "Rooms",
     family: "Family",
     documents: "Documents",
     categories: "Categories",
@@ -164,8 +165,8 @@ export const en: Dictionary = {
       },
     },
     home: {
-      title: "Home",
-      subtitle: "Manage rooms and storage locations",
+      title: "Rooms",
+      subtitle: "Manage rooms, storage and positions",
       household: "Household",
       saveChanges: "Save changes",
       generatedCode: "Generated automatically",

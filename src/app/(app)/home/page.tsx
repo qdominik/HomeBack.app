@@ -4,10 +4,12 @@ import type {
   RoomWithLocations,
   StorageLocationL2WithPositions,
 } from "@/components/home/home-types";
+import { HomeSearch } from "@/components/home/home-search";
 import { RoomCard } from "@/components/home/room-card";
 import { RoomForm } from "@/components/home/room-form";
-import { HomeSearch } from "@/components/home/home-search";
-import { ModulePage } from "@/components/module-page";
+import { Alert } from "@/components/ui/alert";
+import { Card } from "@/components/ui/card";
+import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
@@ -28,9 +30,14 @@ type HomeStructurePageProps = {
   }>;
 };
 
-const orderColumn = "kolejność" as const;
+type CompactHomeStatProps = {
+  icon: "room" | "storage" | "position";
+  label: string;
+  value: number;
+};
+
+const orderColumn = "kolejno\u015b\u0107" as const;
 const entityLabels = resolveEntityLabels(activeLocale);
-const addRoomLabel = resolveEntityActionLabel(activeLocale, "add", "room");
 const createRoomLabel = resolveEntityActionLabel(
   activeLocale,
   "create",
@@ -61,6 +68,101 @@ const statusMessages: Record<string, string> = {
   room_deleted: t.modules.home.statuses.roomDeleted,
   room_updated: t.modules.home.statuses.roomUpdated,
 };
+
+function CompactHomeStat({ icon, label, value }: CompactHomeStatProps) {
+  return (
+    <div
+      aria-label={`${value} ${label}`}
+      className="flex aspect-square min-h-24 min-w-0 flex-col items-center justify-center gap-1 rounded-control border border-line bg-surface p-3 text-center shadow-card sm:h-24 sm:w-24 sm:min-h-0"
+    >
+      <HomeStatIcon icon={icon} />
+      <strong className="text-2xl font-bold leading-none text-foreground">
+        {value}
+      </strong>
+      <span className="max-w-full truncate text-sm font-semibold leading-5 text-muted">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function HomeStatIcon({ icon }: { icon: CompactHomeStatProps["icon"] }) {
+  if (icon === "room") {
+    return (
+      <svg
+        aria-hidden="true"
+        className="h-5 w-5 text-primary"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <path
+          d="M9 20v-6h6v6"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </svg>
+    );
+  }
+
+  if (icon === "storage") {
+    return (
+      <svg
+        aria-hidden="true"
+        className="h-5 w-5 text-primary"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M5 5h14v14H5V5Z"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <path
+          d="M5 12h14M10 8h4M10 16h4"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5 text-primary"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M6 6h12v12H6V6Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M9 9h6v6H9V9Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
 
 export default async function HomeStructurePage({
   searchParams,
@@ -166,75 +268,81 @@ export default async function HomeStructurePage({
       ),
     0,
   );
+  const roomStatValue = search.query ? filteredRooms.length : rooms.length;
+  const locationStatValue = search.query ? filteredLocationCount : locationCount;
+  const positionStatValue = search.query ? filteredPositionCount : positionCount;
   const errorMessage = params.error
     ? (errorMessages[params.error] ?? t.modules.home.errors.unknown)
     : null;
   const statusMessage = params.status ? statusMessages[params.status] : null;
+  const isPositionInUse = params.error === "position_in_use";
 
   return (
-    <ModulePage
-      action={
-        isAdmin ? (
-          <details className="w-full rounded-md border border-line bg-surface p-3 sm:w-auto sm:min-w-80">
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
-              {addRoomLabel}
-            </summary>
-            <div className="mt-4">
-              <RoomForm
-                action={createRoom}
-                submitLabel={createRoomLabel}
+    <div className="space-y-6 sm:space-y-8">
+      <header className="border-b border-line pb-6">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end xl:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-[2rem] font-bold leading-tight text-foreground sm:text-[2.5rem]">
+              {t.modules.home.title}
+            </h1>
+            <p className="mt-2 max-w-2xl text-base leading-7 text-muted">
+              {t.modules.home.subtitle}
+            </p>
+            <p className="mt-3 text-sm text-muted">
+              {t.modules.home.household}: {household?.nazwa ?? ""}
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start xl:items-center">
+            <section
+              aria-label={t.modules.home.title}
+              className="grid grid-cols-3 gap-2 sm:gap-3"
+            >
+              <CompactHomeStat
+                icon="room"
+                label={entityLabels.room.plural}
+                value={roomStatValue}
               />
-            </div>
-          </details>
-        ) : null
-      }
-      title={t.modules.home.title}
-    >
-      <section className="border-b border-line pb-5">
-        <p className="text-sm text-muted">{t.modules.home.subtitle}</p>
-        <p className="mt-2 text-sm font-medium text-foreground">
-          {t.modules.home.household}: {household?.nazwa ?? ""}
-        </p>
-        <HomeSearch search={search} />
-        {!isAdmin ? (
-          <p className="mt-3 rounded-md border border-line bg-surface px-3 py-2 text-sm text-muted">
-            {t.modules.home.readOnly}
-          </p>
-        ) : null}
-        {errorMessage ? (
-          <p className="mt-3 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
-            {errorMessage}
-          </p>
-        ) : null}
-        {statusMessage ? (
-          <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-primary-strong">
-            {statusMessage}
-          </p>
-        ) : null}
-      </section>
+              <CompactHomeStat
+                icon="storage"
+                label={entityLabels.storage.plural}
+                value={locationStatValue}
+              />
+              <CompactHomeStat
+                icon="position"
+                label={entityLabels.position.plural}
+                value={positionStatValue}
+              />
+            </section>
+            {isAdmin ? (
+              <details className="w-full sm:w-auto">
+                <summary
+                  className={buttonClassName({
+                    className:
+                      "w-full cursor-pointer list-none whitespace-normal text-center leading-tight [&::-webkit-details-marker]:hidden sm:flex sm:h-24 sm:min-w-32 sm:w-auto sm:flex-col sm:justify-center sm:px-5",
+                  })}
+                >
+                  <span className="inline-flex flex-col items-center justify-center gap-1 sm:gap-0.5"><span>Dodaj</span><span>pomieszczenie</span></span>
+                </summary>
+                <Card className="mt-3 w-full p-5 sm:min-w-80">
+                  <RoomForm action={createRoom} submitLabel={createRoomLabel} />
+                </Card>
+              </details>
+            ) : null}
+          </div>
+        </div>
+      </header>
 
-      <section className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-md border border-line bg-surface p-4">
-          <p className="text-sm text-muted">{entityLabels.room.plural}</p>
-          <p className="mt-1 text-2xl font-semibold text-foreground">
-            {search.query ? filteredRooms.length : rooms.length}
-          </p>
-        </div>
-        <div className="rounded-md border border-line bg-surface p-4">
-          <p className="text-sm text-muted">{entityLabels.storage.plural}</p>
-          <p className="mt-1 text-2xl font-semibold text-foreground">
-            {search.query ? filteredLocationCount : locationCount}
-          </p>
-        </div>
-        <div className="rounded-md border border-line bg-surface p-4">
-          <p className="text-sm text-muted">{entityLabels.position.plural}</p>
-          <p className="mt-1 text-2xl font-semibold text-foreground">
-            {search.query ? filteredPositionCount : positionCount}
-          </p>
-        </div>
-      </section>
+      <HomeSearch search={search} />
 
-      <section className="space-y-4">
+      {!isAdmin ? <Alert variant="info">{t.modules.home.readOnly}</Alert> : null}
+      {errorMessage ? (
+        <Alert variant={isPositionInUse ? "warning" : "danger"}>
+          {errorMessage}
+        </Alert>
+      ) : null}
+      {statusMessage ? <Alert variant="success">{statusMessage}</Alert> : null}
+
+      <section className="space-y-5">
         {filteredRooms.length ? (
           filteredRooms.map((room) => (
             <RoomCard isAdmin={isAdmin} key={room.id} room={room} />
@@ -245,6 +353,6 @@ export default async function HomeStructurePage({
           <EmptyState text={t.modules.home.empty} />
         )}
       </section>
-    </ModulePage>
+    </div>
   );
 }

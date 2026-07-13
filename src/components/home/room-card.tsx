@@ -4,6 +4,9 @@ import {
   updateRoom,
 } from "@/app/(app)/home/actions";
 import { EmptyState } from "@/components/empty-state";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonClassName } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
@@ -45,8 +48,8 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
   const canDelete = room.locations.length === 0;
 
   return (
-    <article className="rounded-md border border-line bg-surface p-4">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <Card as="article" className="p-5 sm:p-6">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {room.ikona ? (
@@ -54,73 +57,89 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
                 {room.ikona}
               </span>
             ) : null}
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-xl font-semibold leading-7 text-foreground">
               {room.nazwa}
             </h2>
-            <span className="rounded-md bg-surface-muted px-2 py-1 text-xs font-semibold text-muted">
-              {room.typ}
-            </span>
+            <Badge tone="primary">{room.typ}</Badge>
           </div>
-          <p className="mt-1 text-sm text-muted">
-            {entityLabels.storage.plural}: {room.locations.length} ·{" "}
-            {entityLabels.position.plural}: {positionCount}
-          </p>
+          <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
+            <div>
+              <dt className="sr-only">{entityLabels.storage.plural}</dt>
+              <dd>
+                {entityLabels.storage.plural}: {room.locations.length}
+              </dd>
+            </div>
+            <div>
+              <dt className="sr-only">{entityLabels.position.plural}</dt>
+              <dd>
+                {entityLabels.position.plural}: {positionCount}
+              </dd>
+            </div>
+          </dl>
           {room.opis ? (
-            <p className="mt-2 text-sm leading-6 text-muted">{room.opis}</p>
+            <p className="mt-3 text-sm leading-6 text-muted">{room.opis}</p>
           ) : null}
         </div>
-        <p className="shrink-0 text-xs text-muted">
+        <Badge>
           {t.modules.home.fields.order}: {room.kolejność}
-        </p>
+        </Badge>
       </header>
+
       {isAdmin ? (
-        <div className="mt-4 grid gap-3 border-t border-line pt-4 lg:grid-cols-2">
-          <details>
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
-              {editRoomLabel}
-            </summary>
-            <div className="mt-3">
-              <RoomForm
-                action={updateRoom}
-                room={room}
-                submitLabel={t.modules.home.saveChanges}
-              />
-            </div>
-          </details>
-          <div className="flex flex-col gap-3">
+        <div className="mt-5 grid gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <details>
-              <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+              <summary
+                className={buttonClassName({
+                  className:
+                    "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+                  variant: "ghost",
+                })}
+              >
+                {editRoomLabel}
+              </summary>
+              <Card className="mt-3 p-5">
+                <RoomForm
+                  action={updateRoom}
+                  room={room}
+                  submitLabel={t.modules.home.saveChanges}
+                />
+              </Card>
+            </details>
+            <details>
+              <summary
+                className={buttonClassName({
+                  className:
+                    "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+                  variant: "secondary",
+                })}
+              >
                 {addStorageLabel}
               </summary>
-              <div className="mt-3">
+              <Card className="mt-3 p-5">
                 <StorageLocationL2Form
                   action={createStorageLocationL2}
                   roomId={room.id}
                   submitLabel={createStorageLabel}
                 />
-              </div>
+              </Card>
             </details>
-            <form action={deleteRoom}>
-              <input name="room_id" type="hidden" value={room.id} />
-              <button
-                className="h-9 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={!canDelete}
-                type="submit"
-              >
-                {deleteRoomLabel}
-              </button>
-            </form>
           </div>
+          <form action={deleteRoom}>
+            <input name="room_id" type="hidden" value={room.id} />
+            <Button disabled={!canDelete} type="submit" variant="danger">
+              {deleteRoomLabel}
+            </Button>
+          </form>
         </div>
       ) : null}
-      <section className="mt-5 border-t border-line pt-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold uppercase text-muted">
-            {entityLabels.storage.plural}
-          </h3>
-        </div>
+
+      <section className="mt-6 border-t border-line pt-5">
+        <h3 className="text-lg font-semibold leading-7 text-foreground">
+          {entityLabels.storage.plural}
+        </h3>
         {room.locations.length ? (
-          <div>
+          <div className="mt-4 space-y-3">
             {room.locations.map((location) => (
               <StorageLocationL2Card
                 isAdmin={isAdmin}
@@ -131,9 +150,11 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
             ))}
           </div>
         ) : (
-          <EmptyState text={t.modules.home.noLocations} />
+          <div className="mt-4">
+            <EmptyState text={t.modules.home.noLocations} />
+          </div>
         )}
       </section>
-    </article>
+    </Card>
   );
 }

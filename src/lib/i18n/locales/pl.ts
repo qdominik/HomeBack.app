@@ -6,9 +6,10 @@ export const pl: Dictionary = {
     tagline: "Wszystko o Twoim domu w jednym miejscu",
   },
   navigation: {
+    main: "Główna nawigacja",
     dashboard: "Dashboard",
     items: "Rzeczy",
-    home: "Dom",
+    home: "Pomieszczenia",
     family: "Rodzina",
     documents: "Dokumenty",
     categories: "Kategorie",
@@ -164,8 +165,8 @@ export const pl: Dictionary = {
       },
     },
     home: {
-      title: "Dom",
-      subtitle: "Zarządzaj pomieszczeniami i schowkami",
+      title: "Pomieszczenia",
+      subtitle: "Zarządzaj pomieszczeniami, schowkami i pozycjami",
       household: "Gospodarstwo",
       saveChanges: "Zapisz zmiany",
       generatedCode: "Wygeneruje się automatycznie",
