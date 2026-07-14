@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { createQuickCustomCategory } from "@/app/(app)/items/actions";
+import { resolveInitialItemCategoryId } from "@/lib/categories/category-selection";
 import { t } from "@/lib/i18n";
 import {
   ITEM_TYPES,
@@ -25,6 +26,7 @@ type Item = Database["public"]["Tables"]["item"]["Row"];
 type ItemFormProps = {
   action: (formData: FormData) => Promise<void>;
   categories: ItemCategoryOption[];
+  defaultCategoryId?: string | null;
   item?: Item;
   locationOptions: ItemLocationSelectorOptions;
   selectedPositionId?: string | null;
@@ -42,6 +44,7 @@ const typeLabels: Record<ItemType, string> = {
 export function ItemForm({
   action,
   categories,
+  defaultCategoryId,
   item,
   locationOptions,
   selectedPositionId,
@@ -50,7 +53,7 @@ export function ItemForm({
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
   const [availableCategories, setAvailableCategories] = useState(categories);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
-    item?.category_id ?? "",
+    resolveInitialItemCategoryId(item?.category_id, defaultCategoryId),
   );
   const [newCategoryName, setNewCategoryName] = useState("");
   const [quickCategoryFeedback, setQuickCategoryFeedback] = useState<

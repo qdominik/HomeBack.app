@@ -159,3 +159,16 @@ test("M3.2A preserves a supplied label without translating other entities", () =
   assert.equal(labels.room.plural, "Pomieszczenia");
   assert.equal(labels.position.plural, "Pozycje");
 });
+
+test("M4 small stage exposes Shelf once and preserves Other as the final storage template", () => {
+  const shelf = "P\u00f3\u0142ka";
+  const shelfIndex = STORAGE_LOCATION_TEMPLATE_OPTIONS.indexOf(shelf);
+  const shelfUnitIndex = STORAGE_LOCATION_TEMPLATE_OPTIONS.indexOf("Rega\u0142 wisz\u0105cy");
+
+  assert.equal(
+    STORAGE_LOCATION_TEMPLATE_OPTIONS.filter((option) => option === shelf).length,
+    1,
+  );
+  assert.ok(shelfIndex > shelfUnitIndex);
+  assert.equal(STORAGE_LOCATION_TEMPLATE_OPTIONS.at(-1), CUSTOM_TEMPLATE_VALUE);
+});

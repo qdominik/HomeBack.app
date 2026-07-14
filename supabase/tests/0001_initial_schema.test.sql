@@ -57,6 +57,7 @@ select results_eq(
       ('electronics'::text),
       ('food'::text),
       ('medicines'::text),
+      ('other'::text),
       ('spare_parts'::text),
       ('tools'::text),
       ('winter_clothes'::text)
@@ -72,7 +73,7 @@ select is(
       and household_id is null
       and key is not null
   ),
-  8,
+  9,
   'all system categories have a key and no household'
 );
 

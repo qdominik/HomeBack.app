@@ -226,7 +226,7 @@ select is(
     from public.category
     where czy_systemowa
   ),
-  8,
+  9,
   'admin sees every system category'
 );
 

@@ -21,6 +21,7 @@ export const STORAGE_LOCATION_TEMPLATE_OPTIONS = [
   "Szafka wisząca",
   "Regał",
   "Regał wiszący",
+  "Półka",
   "Łóżko rozkładane",
   "Szafa",
   "Szafa narożna",

@@ -4,7 +4,10 @@ import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
 import { EmptyState } from "@/components/empty-state";
 import { ModulePage } from "@/components/module-page";
-import { getItemCategoryOptions } from "@/lib/categories/category-selection";
+import {
+  getDefaultItemCategoryId,
+  getItemCategoryOptions,
+} from "@/lib/categories/category-selection";
 import { t } from "@/lib/i18n";
 import {
   buildItemLocationSelectorOptions,
@@ -72,7 +75,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     itemsQuery,
     supabase
       .from("category")
-      .select("id, household_id, nazwa, czy_systemowa")
+      .select("id, household_id, key, nazwa, czy_systemowa")
       .order("czy_systemowa", { ascending: false })
       .order("created_at", { ascending: true }),
     supabase
@@ -130,6 +133,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     categories,
     profile?.household_id,
   );
+  const defaultCategoryId = getDefaultItemCategoryId(categories);
   const categoryNameById = new Map(
     categories.map((category) => [category.id, category.nazwa]),
   );
@@ -187,6 +191,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
               <ItemForm
                 action={createItem}
                 categories={categoryOptions}
+                defaultCategoryId={defaultCategoryId}
                 locationOptions={locationSelectorOptions}
                 submitLabel={t.modules.items.createItem}
               />
