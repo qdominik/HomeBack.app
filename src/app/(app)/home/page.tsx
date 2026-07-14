@@ -4,12 +4,10 @@ import type {
   RoomWithLocations,
   StorageLocationL2WithPositions,
 } from "@/components/home/home-types";
+import { CreateRoomPanel } from "@/components/home/create-room-panel";
 import { HomeSearch } from "@/components/home/home-search";
 import { RoomCard } from "@/components/home/room-card";
-import { RoomForm } from "@/components/home/room-form";
 import { Alert } from "@/components/ui/alert";
-import { Card } from "@/components/ui/card";
-import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
@@ -292,43 +290,56 @@ export default async function HomeStructurePage({
               {t.modules.home.household}: {household?.nazwa ?? ""}
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start xl:items-center">
-            <section
-              aria-label={t.modules.home.title}
-              className="grid grid-cols-3 gap-2 sm:gap-3"
+          {isAdmin ? (
+            <CreateRoomPanel
+              action={createRoom}
+              submitLabel={createRoomLabel}
             >
-              <CompactHomeStat
-                icon="room"
-                label={entityLabels.room.plural}
-                value={roomStatValue}
-              />
-              <CompactHomeStat
-                icon="storage"
-                label={entityLabels.storage.plural}
-                value={locationStatValue}
-              />
-              <CompactHomeStat
-                icon="position"
-                label={entityLabels.position.plural}
-                value={positionStatValue}
-              />
-            </section>
-            {isAdmin ? (
-              <details className="w-full sm:w-auto">
-                <summary
-                  className={buttonClassName({
-                    className:
-                      "w-full cursor-pointer list-none whitespace-normal text-center leading-tight [&::-webkit-details-marker]:hidden sm:flex sm:h-24 sm:min-w-32 sm:w-auto sm:flex-col sm:justify-center sm:px-5",
-                  })}
-                >
-                  <span className="inline-flex flex-col items-center justify-center gap-1 sm:gap-0.5"><span>Dodaj</span><span>pomieszczenie</span></span>
-                </summary>
-                <Card className="mt-3 w-full p-5 sm:min-w-80">
-                  <RoomForm action={createRoom} submitLabel={createRoomLabel} />
-                </Card>
-              </details>
-            ) : null}
-          </div>
+              <section
+                aria-label={t.modules.home.title}
+                className="grid grid-cols-3 gap-2 sm:gap-3"
+              >
+                <CompactHomeStat
+                  icon="room"
+                  label={entityLabels.room.plural}
+                  value={roomStatValue}
+                />
+                <CompactHomeStat
+                  icon="storage"
+                  label={entityLabels.storage.plural}
+                  value={locationStatValue}
+                />
+                <CompactHomeStat
+                  icon="position"
+                  label={entityLabels.position.plural}
+                  value={positionStatValue}
+                />
+              </section>
+            </CreateRoomPanel>
+          ) : (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start xl:items-center xl:justify-end">
+              <section
+                aria-label={t.modules.home.title}
+                className="grid grid-cols-3 gap-2 sm:gap-3"
+              >
+                <CompactHomeStat
+                  icon="room"
+                  label={entityLabels.room.plural}
+                  value={roomStatValue}
+                />
+                <CompactHomeStat
+                  icon="storage"
+                  label={entityLabels.storage.plural}
+                  value={locationStatValue}
+                />
+                <CompactHomeStat
+                  icon="position"
+                  label={entityLabels.position.plural}
+                  value={positionStatValue}
+                />
+              </section>
+            </div>
+          )}
         </div>
       </header>
 
