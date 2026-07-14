@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { HOME_KIND_OTHER } from "@/lib/home/home-kind-suggestions";
+import { normalizeEntityIconKey } from "@/lib/icons/entity-icon-validation";
 import { generateLocationCode } from "@/lib/home/location-code";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -12,7 +13,7 @@ import type { Database } from "@/types/database";
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 type ProfileRole = Database["public"]["Enums"]["profile_role"];
 
-const orderColumn = "kolejność" as const;
+const orderColumn = "kolejno\u015b\u0107" as const;
 
 function field(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -22,6 +23,9 @@ function field(formData: FormData, key: string) {
 function nullableField(formData: FormData, key: string) {
   const value = field(formData, key);
   return value ? value : null;
+}
+function roomIconField(formData: FormData) {
+  return normalizeEntityIconKey(field(formData, "ikona"), "room");
 }
 
 function redirectWithError(error: string): never {
@@ -193,7 +197,7 @@ async function nextRoomOrder(supabase: SupabaseClient, householdId: string) {
     redirectWithError("action_failed");
   }
 
-  return (data?.kolejność ?? 0) + 1;
+  return (data?.[orderColumn] ?? 0) + 1;
 }
 
 async function nextL2Order(supabase: SupabaseClient, roomId: string) {
@@ -209,7 +213,7 @@ async function nextL2Order(supabase: SupabaseClient, roomId: string) {
     redirectWithError("action_failed");
   }
 
-  return (data?.kolejność ?? 0) + 1;
+  return (data?.[orderColumn] ?? 0) + 1;
 }
 
 async function nextL3Order(supabase: SupabaseClient, locationId: string) {
@@ -225,7 +229,7 @@ async function nextL3Order(supabase: SupabaseClient, locationId: string) {
     redirectWithError("action_failed");
   }
 
-  return (data?.kolejność ?? 0) + 1;
+  return (data?.[orderColumn] ?? 0) + 1;
 }
 
 export async function createRoom(formData: FormData) {
@@ -247,7 +251,7 @@ export async function createRoom(formData: FormData) {
 
   const { error } = await supabase.from("room").insert({
     household_id: profile.household_id,
-    ikona: nullableField(formData, "ikona"),
+    ikona: roomIconField(formData),
     [orderColumn]: order,
     nazwa,
     opis: nullableField(formData, "opis"),
@@ -280,7 +284,7 @@ export async function updateRoom(formData: FormData) {
   await ensureUniqueRoomName(supabase, profile.household_id, nazwa, roomId);
 
   const payload: Database["public"]["Tables"]["room"]["Update"] = {
-    ikona: nullableField(formData, "ikona"),
+    ikona: roomIconField(formData),
     nazwa,
     opis: nullableField(formData, "opis"),
     typ,

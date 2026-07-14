@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { PlusIcon } from "@phosphor-icons/react/Plus";
 import { useId, useState } from "react";
 import { RoomForm } from "@/components/home/room-form";
 import { buttonClassName } from "@/components/ui/button";
@@ -35,6 +36,7 @@ export function CreateRoomPanel({
           type="button"
         >
           <span className="inline-flex flex-col items-center justify-center gap-1 sm:gap-0.5">
+            <PlusIcon aria-hidden="true" size={20} weight="bold" />
             <span>Dodaj</span>
             <span>pomieszczenie</span>
           </span>

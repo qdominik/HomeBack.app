@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:logic": "tsc -p tsconfig.test.json && node --test .test-build/tests/unit/m3-template-logic.test.js .test-build/tests/unit/item-filter-logic.test.js .test-build/tests/unit/home-search-logic.test.js .test-build/tests/unit/item-form-values.test.js .test-build/tests/unit/item-location-options.test.js .test-build/tests/unit/item-category-options.test.js",
+    "test:logic": "tsc -p tsconfig.test.json && node --test .test-build/tests/unit/m3-template-logic.test.js .test-build/tests/unit/item-filter-logic.test.js .test-build/tests/unit/home-search-logic.test.js .test-build/tests/unit/item-form-values.test.js .test-build/tests/unit/item-location-options.test.js .test-build/tests/unit/item-category-options.test.js .test-build/tests/unit/entity-icon-registry.test.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.1",
     "next": "16.2.10",

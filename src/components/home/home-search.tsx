@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { Card } from "@/components/ui/card";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
@@ -50,6 +51,7 @@ export function HomeSearch({ search }: HomeSearchProps) {
         </label>
         <div className="flex flex-col gap-2 sm:flex-row lg:shrink-0">
           <Button className="w-full sm:w-auto" type="submit">
+            <MagnifyingGlassIcon aria-hidden="true" size={18} />
             {t.modules.home.search.submit}
           </Button>
           <Link

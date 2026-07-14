@@ -220,6 +220,12 @@ export const en: Dictionary = {
         typeHelp: "Choose a template or choose Other and enter your own value.",
         typePlaceholder: "Choose or enter a kind",
       },
+      iconPicker: {
+        noResults: "No matching icons.",
+        placeholder: "Search by name, e.g. Living room or Kitchen",
+        search: "Search icon",
+        selected: "Currently selected icon",
+      },
       roomTypeSuggestions: [
         "Living room",
         "Bedroom",

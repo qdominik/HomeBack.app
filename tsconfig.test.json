@@ -16,6 +16,7 @@
     "src/lib/home/home-template-options.ts",
     "src/lib/home/infer-home-kind.ts",
     "src/lib/home/home-search.ts",
+    "src/lib/icons/**/*.ts",
     "src/lib/items/**/*.ts",
     "src/lib/templates/**/*.ts",
     "tests/unit/**/*.ts"

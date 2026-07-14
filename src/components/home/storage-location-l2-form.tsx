@@ -15,7 +15,7 @@ type StorageLocationL2FormProps = {
   submitLabel: string;
 };
 
-const orderColumn = "kolejność" as const;
+const orderColumn = "kolejno\u015b\u0107" as const;
 
 export function StorageLocationL2Form({
   action,

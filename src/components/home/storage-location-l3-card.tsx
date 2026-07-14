@@ -2,11 +2,15 @@ import {
   deleteStorageLocationL3,
   updateStorageLocationL3,
 } from "@/app/(app)/home/actions";
+import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
+import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveEntityActionLabel } from "@/lib/i18n/entity-labels";
+import { resolvePositionIconKey } from "@/lib/icons/home-structure-icons";
 import type { StorageLocationL3 } from "./home-types";
 import { StorageLocationL3Form } from "./storage-location-l3-form";
 
@@ -27,6 +31,8 @@ const deletePositionLabel = resolveEntityActionLabel(
   "position",
 );
 
+const orderColumn = "kolejno\u015b\u0107" as const;
+
 export function StorageLocationL3Card({
   isAdmin,
   locationId,
@@ -36,11 +42,20 @@ export function StorageLocationL3Card({
     <li className="rounded-control border border-line bg-surface p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="font-semibold text-foreground">{position.nazwa}</p>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/10 text-primary">
+              <EntityIcon
+                group="position"
+                iconKey={resolvePositionIconKey()}
+                size={20}
+              />
+            </span>
+            <p className="font-semibold text-foreground">{position.nazwa}</p>
+          </div>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Badge tone="primary">{position.kod_lokalizacji}</Badge>
             <Badge>
-              {t.modules.home.fields.order}: {position.kolejność}
+              {t.modules.home.fields.order}: {position[orderColumn]}
             </Badge>
           </div>
           {position.opis ? (
@@ -58,6 +73,7 @@ export function StorageLocationL3Card({
                 variant: "ghost",
               })}
             >
+              <PencilSimpleLineIcon aria-hidden="true" size={18} />
               {editPositionLabel}
             </summary>
             <Card className="mt-3 p-5">
@@ -72,6 +88,7 @@ export function StorageLocationL3Card({
           <form action={deleteStorageLocationL3}>
             <input name="location_l3_id" type="hidden" value={position.id} />
             <Button type="submit" variant="danger">
+              <TrashIcon aria-hidden="true" size={18} />
               {deletePositionLabel}
             </Button>
           </form>

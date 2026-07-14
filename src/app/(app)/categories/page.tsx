@@ -1,3 +1,5 @@
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { TagIcon } from "@phosphor-icons/react/dist/ssr/Tag";
 import { createCustomCategory } from "@/app/(app)/categories/actions";
 import { CategoryCard } from "@/components/categories/category-card";
 import { CategoryForm } from "@/components/categories/category-form";
@@ -66,7 +68,8 @@ export default async function CategoriesPage({
       action={
         isAdmin ? (
           <details className="w-full rounded-md border border-line bg-surface p-3 sm:w-auto sm:min-w-80">
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+            <summary className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-primary-strong">
+              <PlusIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.categories.addCategory}
             </summary>
             <div className="mt-4">
@@ -113,7 +116,7 @@ export default async function CategoriesPage({
             ))}
           </div>
         ) : (
-          <EmptyState text={t.modules.categories.empty} />
+          <EmptyState icon={<TagIcon aria-hidden="true" size={28} />} text={t.modules.categories.empty} />
         )}
       </section>
 
@@ -132,7 +135,7 @@ export default async function CategoriesPage({
             ))}
           </div>
         ) : (
-          <EmptyState text={t.modules.categories.empty} />
+          <EmptyState icon={<TagIcon aria-hidden="true" size={28} />} text={t.modules.categories.empty} />
         )}
       </section>
     </ModulePage>

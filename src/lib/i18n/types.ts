@@ -215,6 +215,12 @@ export type Dictionary = {
         typeHelp: string;
         typePlaceholder: string;
       };
+      iconPicker: {
+        noResults: string;
+        placeholder: string;
+        search: string;
+        selected: string;
+      };
       roomTypeSuggestions: string[];
       storageTypeSuggestions: string[];
       errors: {

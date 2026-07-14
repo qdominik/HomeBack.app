@@ -1,7 +1,10 @@
 import { archiveItem, updateItem } from "@/app/(app)/items/actions";
+import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
+import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
 import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
+import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
 import {
   getItemEditFormLocationProps,
   type ItemCategoryOption,
@@ -16,6 +19,7 @@ type Item = Database["public"]["Tables"]["item"]["Row"];
 
 type ItemCardProps = {
   categories: ItemCategoryOption[];
+  categoryKey: string | null;
   categoryName: string;
   isAdmin: boolean;
   item: Item;
@@ -65,6 +69,7 @@ function formatDate(value: string) {
 
 export function ItemCard({
   categories,
+  categoryKey,
   categoryName,
   isAdmin,
   item,
@@ -77,6 +82,7 @@ export function ItemCard({
       )
     : null;
   const showQuantity = item.typ !== "unikalny";
+  const itemIconKey = resolveItemIconKey({ categoryKey });
   const metaItems = [categoryName, typeLabels[item.typ]];
 
   if (showQuantity) {
@@ -91,13 +97,23 @@ export function ItemCard({
   return (
     <article className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h2 className="break-words text-lg font-semibold leading-snug text-foreground">
-            {item.nazwa}
-          </h2>
-          <p className="mt-1 text-sm leading-5 text-muted">
-            {metaItems.join(" \u00b7 ")}
-          </p>
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+            <EntityIcon
+              group="item"
+              iconKey={itemIconKey}
+              size={22}
+              weight="duotone"
+            />
+          </span>
+          <div className="min-w-0">
+            <h2 className="break-words text-lg font-semibold leading-snug text-foreground">
+              {item.nazwa}
+            </h2>
+            <p className="mt-1 text-sm leading-5 text-muted">
+              {metaItems.join(" \u00b7 ")}
+            </p>
+          </div>
         </div>
         <Badge tone={getStatusTone(item.status)}>
           {statusLabels[item.status]}
@@ -135,6 +151,12 @@ export function ItemCard({
                   variant: "secondary",
                 })}
               >
+                <PencilSimpleLineIcon
+                  aria-hidden="true"
+                  className="mr-2"
+                  size={18}
+                  weight="bold"
+                />
                 {t.modules.items.editItem}
               </summary>
               <div className="mt-3 sm:col-span-3 sm:row-start-2">
@@ -157,6 +179,7 @@ export function ItemCard({
                   className: "w-full sm:w-auto",
                   variant: "secondary",
                 })}
+                icon="archive"
                 label={t.modules.items.archiveItem}
                 pendingLabel={t.modules.items.archiving}
               />

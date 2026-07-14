@@ -4,6 +4,10 @@ import {
   updateRoom,
 } from "@/app/(app)/home/actions";
 import { EmptyState } from "@/components/empty-state";
+import { EntityIcon } from "@/components/icons/entity-icon";
+import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -40,6 +44,8 @@ const deleteRoomLabel = resolveEntityActionLabel(
   "room",
 );
 
+const orderColumn = "kolejno\u015b\u0107" as const;
+
 export function RoomCard({ isAdmin, room }: RoomCardProps) {
   const positionCount = room.locations.reduce(
     (total, location) => total + location.positions.length,
@@ -52,11 +58,14 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            {room.ikona ? (
-              <span aria-hidden="true" className="text-xl">
-                {room.ikona}
-              </span>
-            ) : null}
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-control bg-primary/10 text-primary">
+              <EntityIcon
+                group="room"
+                iconKey={room.ikona}
+                size={22}
+                weight="duotone"
+              />
+            </span>
             <h2 className="text-xl font-semibold leading-7 text-foreground">
               {room.nazwa}
             </h2>
@@ -81,7 +90,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
           ) : null}
         </div>
         <Badge>
-          {t.modules.home.fields.order}: {room.kolejność}
+          {t.modules.home.fields.order}: {room[orderColumn]}
         </Badge>
       </header>
 
@@ -96,6 +105,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
                   variant: "ghost",
                 })}
               >
+                <PencilSimpleLineIcon aria-hidden="true" size={18} />
                 {editRoomLabel}
               </summary>
               <Card className="mt-3 p-5">
@@ -114,6 +124,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
                   variant: "secondary",
                 })}
               >
+                <PlusIcon aria-hidden="true" size={18} weight="bold" />
                 {addStorageLabel}
               </summary>
               <Card className="mt-3 p-5">
@@ -128,6 +139,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
           <form action={deleteRoom}>
             <input name="room_id" type="hidden" value={room.id} />
             <Button disabled={!canDelete} type="submit" variant="danger">
+              <TrashIcon aria-hidden="true" size={18} />
               {deleteRoomLabel}
             </Button>
           </form>

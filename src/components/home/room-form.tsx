@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
+import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
 import { Button } from "@/components/ui/button";
 import { ROOM_TEMPLATE_OPTIONS } from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
@@ -14,7 +15,7 @@ type RoomFormProps = {
   submitLabel: string;
 };
 
-const orderColumn = "kolejność" as const;
+const orderColumn = "kolejno\u015b\u0107" as const;
 
 export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
   const [inferredKind, setInferredKind] = useState<string | null>(null);
@@ -49,26 +50,22 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
         name="typ"
         templateOptions={ROOM_TEMPLATE_OPTIONS}
       />
-      <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
-        <label className="ui-label">
-          {t.modules.home.fields.icon}
-          <input
-            className="ui-control mt-2"
-            defaultValue={room?.ikona ?? ""}
-            name="ikona"
-          />
-        </label>
-        <label className="ui-label">
-          {t.modules.home.fields.order}
-          <input
-            className="ui-control mt-2"
-            defaultValue={room?.[orderColumn]}
-            min="0"
-            name="kolejnosc"
-            type="number"
-          />
-        </label>
-      </div>
+      <EntityIconPicker
+        defaultValue={room?.ikona}
+        group="room"
+        label={t.modules.home.fields.icon}
+        name="ikona"
+      />
+      <label className="ui-label sm:max-w-32">
+        {t.modules.home.fields.order}
+        <input
+          className="ui-control mt-2"
+          defaultValue={room?.[orderColumn]}
+          min="0"
+          name="kolejnosc"
+          type="number"
+        />
+      </label>
       <label className="ui-label">
         {t.modules.home.fields.description}
         <textarea

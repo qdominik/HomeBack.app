@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { ArchiveIcon } from "@phosphor-icons/react/dist/ssr/Archive";
+import { ListBulletsIcon } from "@phosphor-icons/react/dist/ssr/ListBullets";
+import { MapPinLineIcon } from "@phosphor-icons/react/dist/ssr/MapPinLine";
+import { PackageIcon } from "@phosphor-icons/react/dist/ssr/Package";
 import { createItem } from "@/app/(app)/items/actions";
 import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
@@ -28,7 +32,7 @@ type ItemsPageProps = {
   }>;
 };
 
-const orderColumn = "kolejność" as const;
+const orderColumn = "kolejno\u015b\u0107" as const;
 
 const errorMessages: Record<string, string> = {
   action_failed: t.modules.items.errors.actionFailed,
@@ -137,6 +141,9 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const categoryNameById = new Map(
     categories.map((category) => [category.id, category.nazwa]),
   );
+  const categoryKeyById = new Map(
+    categories.map((category) => [category.id, category.key]),
+  );
   const visibleItems = filterItemsForView(
     items,
     primaryPositionByItemId,
@@ -148,19 +155,30 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       : currentView === "archived"
         ? t.modules.items.emptyArchived
         : t.modules.items.empty;
-  const viewLinks: { href: string; label: string; view: ItemView }[] = [
+  const emptyIcon =
+    currentView === "unlocated" ? (
+      <MapPinLineIcon aria-hidden="true" size={28} />
+    ) : currentView === "archived" ? (
+      <ArchiveIcon aria-hidden="true" size={28} />
+    ) : (
+      <PackageIcon aria-hidden="true" size={28} />
+    );
+  const viewLinks: { href: string; icon: "all" | "unlocated" | "archived"; label: string; view: ItemView }[] = [
     {
       href: "/items",
+      icon: "all",
       label: t.modules.items.views.all,
       view: "all",
     },
     {
       href: "/items?view=unlocated",
+      icon: "unlocated",
       label: t.modules.items.views.unlocated,
       view: "unlocated",
     },
     {
       href: "/items?view=archived",
+      icon: "archived",
       label: t.modules.items.views.archived,
       view: "archived",
     },
@@ -228,7 +246,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         >
           {viewLinks.map((link) => (
             <Link
-              className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+              className={`inline-flex items-center rounded-md border px-3 py-2 text-sm font-semibold ${
                 currentView === link.view
                   ? "border-primary bg-primary text-white"
                   : "border-line bg-surface text-primary-strong hover:border-primary/60"
@@ -236,6 +254,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
               href={link.href}
               key={link.view}
             >
+              {link.icon === "all" ? (
+                <ListBulletsIcon aria-hidden="true" className="mr-2" size={18} />
+              ) : link.icon === "unlocated" ? (
+                <MapPinLineIcon aria-hidden="true" className="mr-2" size={18} />
+              ) : (
+                <ArchiveIcon aria-hidden="true" className="mr-2" size={18} />
+              )}
               {link.label}
             </Link>
           ))}
@@ -253,6 +278,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             return (
               <ItemCard
                 categories={categoryOptions}
+                categoryKey={categoryKeyById.get(item.category_id) ?? null}
                 categoryName={
                   categoryNameById.get(item.category_id) ??
                   t.modules.items.categoryUnavailable
@@ -267,7 +293,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           })}
         </section>
       ) : (
-        <EmptyState text={emptyText} />
+        <EmptyState icon={emptyIcon} text={emptyText} />
       )}
     </ModulePage>
   );

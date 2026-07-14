@@ -2,8 +2,13 @@ import {
   deleteCustomCategory,
   updateCustomCategory,
 } from "@/app/(app)/categories/actions";
+import { EntityIcon } from "@/components/icons/entity-icon";
+import { getCategoryIconKey } from "@/lib/icons/category-icon-map";
+import { isEntityIconKey } from "@/lib/icons/entity-icon-validation";
 import { t } from "@/lib/i18n";
 import type { Database } from "@/types/database";
+import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { CategoryForm } from "./category-form";
 
 type Category = Database["public"]["Tables"]["category"]["Row"];
@@ -14,16 +19,23 @@ type CategoryCardProps = {
 };
 
 export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
+  const iconKey = isEntityIconKey(category.ikona)
+    ? category.ikona
+    : getCategoryIconKey(category.key);
+
   return (
     <article className="rounded-md border border-line bg-surface p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            {category.ikona ? (
-              <span aria-hidden="true" className="text-xl">
-                {category.ikona}
-              </span>
-            ) : null}
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/10 text-primary">
+              <EntityIcon
+                group="category"
+                iconKey={iconKey}
+                size={20}
+                weight="regular"
+              />
+            </span>
             <h2 className="text-base font-semibold text-foreground">
               {category.nazwa}
             </h2>
@@ -45,7 +57,8 @@ export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
       {isAdmin && !category.czy_systemowa ? (
         <div className="mt-4 grid gap-3 border-t border-line pt-4 lg:grid-cols-2">
           <details>
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+            <summary className="inline-flex list-none cursor-pointer items-center gap-2 text-sm font-semibold text-primary-strong [&::-webkit-details-marker]:hidden">
+              <PencilSimpleLineIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.categories.editCategory}
             </summary>
             <div className="mt-3">
@@ -59,9 +72,10 @@ export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
           <form action={deleteCustomCategory}>
             <input name="category_id" type="hidden" value={category.id} />
             <button
-              className="h-9 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted"
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted"
               type="submit"
             >
+              <TrashIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.categories.deleteCategory}
             </button>
           </form>

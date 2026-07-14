@@ -4,6 +4,7 @@ import type {
   RoomWithLocations,
   StorageLocationL2WithPositions,
 } from "@/components/home/home-types";
+import { EntityIcon } from "@/components/icons/entity-icon";
 import { CreateRoomPanel } from "@/components/home/create-room-panel";
 import { HomeSearch } from "@/components/home/home-search";
 import { RoomCard } from "@/components/home/room-card";
@@ -85,80 +86,17 @@ function CompactHomeStat({ icon, label, value }: CompactHomeStatProps) {
 }
 
 function HomeStatIcon({ icon }: { icon: CompactHomeStatProps["icon"] }) {
-  if (icon === "room") {
-    return (
-      <svg
-        aria-hidden="true"
-        className="h-5 w-5 text-primary"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-        />
-        <path
-          d="M9 20v-6h6v6"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-        />
-      </svg>
-    );
-  }
-
-  if (icon === "storage") {
-    return (
-      <svg
-        aria-hidden="true"
-        className="h-5 w-5 text-primary"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          d="M5 5h14v14H5V5Z"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-        />
-        <path
-          d="M5 12h14M10 8h4M10 16h4"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-        />
-      </svg>
-    );
-  }
+  const iconKey =
+    icon === "room" ? "room" : icon === "storage" ? "storage" : "position";
 
   return (
-    <svg
-      aria-hidden="true"
-      className="h-5 w-5 text-primary"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <path
-        d="M6 6h12v12H6V6Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-      <path
-        d="M9 9h6v6H9V9Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
+    <EntityIcon
+      className="text-primary"
+      group={icon}
+      iconKey={iconKey}
+      size={22}
+      weight="regular"
+    />
   );
 }
 
@@ -359,9 +297,9 @@ export default async function HomeStructurePage({
             <RoomCard isAdmin={isAdmin} key={room.id} room={room} />
           ))
         ) : search.query ? (
-          <EmptyState text={t.modules.home.search.noResults} />
+          <EmptyState icon={<EntityIcon group="generic" iconKey="generic" size={28} />} text={t.modules.home.search.noResults} />
         ) : (
-          <EmptyState text={t.modules.home.empty} />
+          <EmptyState icon={<EntityIcon group="room" iconKey="room" size={28} />} text={t.modules.home.empty} />
         )}
       </section>
     </div>

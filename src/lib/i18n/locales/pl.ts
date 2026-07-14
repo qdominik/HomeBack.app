@@ -189,6 +189,12 @@ export const pl: Dictionary = {
           positions: "Pozycje",
         },
       },
+      iconPicker: {
+        noResults: "Brak pasuj\u0105cych ikon.",
+        placeholder: "Szukaj w ikonach",
+        search: "Szukaj ikony",
+        selected: "Wybrana ikona",
+      },
       entityActions: {
         add: "Dodaj",
         create: "Utwórz",
