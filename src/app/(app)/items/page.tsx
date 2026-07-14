@@ -3,11 +3,11 @@ import { ArchiveIcon } from "@phosphor-icons/react/dist/ssr/Archive";
 import { ListBulletsIcon } from "@phosphor-icons/react/dist/ssr/ListBullets";
 import { MapPinLineIcon } from "@phosphor-icons/react/dist/ssr/MapPinLine";
 import { PackageIcon } from "@phosphor-icons/react/dist/ssr/Package";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { createItem } from "@/app/(app)/items/actions";
 import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
 import { EmptyState } from "@/components/empty-state";
-import { ModulePage } from "@/components/module-page";
 import {
   getDefaultItemCategoryId,
   getItemCategoryOptions,
@@ -198,27 +198,35 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const statusMessage = params.status ? statusMessages[params.status] : null;
 
   return (
-    <ModulePage
-      action={
-        isAdmin ? (
-          <details className="w-full rounded-md border border-line bg-surface p-3 sm:w-auto sm:min-w-80">
-            <summary className="cursor-pointer text-sm font-semibold text-primary-strong">
+    <div className="space-y-6">
+      {isAdmin ? (
+        <details className="space-y-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-line pb-6 [&::-webkit-details-marker]:hidden">
+            <h1 className="text-2xl font-semibold tracking-normal text-foreground">
+              {t.modules.items.title}
+            </h1>
+            <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-strong">
+              <PlusIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.items.addItem}
-            </summary>
-            <div className="mt-4">
-              <ItemForm
-                action={createItem}
-                categories={categoryOptions}
-                defaultCategoryId={defaultCategoryId}
-                locationOptions={locationSelectorOptions}
-                submitLabel={t.modules.items.createItem}
-              />
-            </div>
-          </details>
-        ) : null
-      }
-      title={t.modules.items.title}
-    >
+            </span>
+          </summary>
+          <div className="w-full rounded-md border border-line bg-surface p-5">
+            <ItemForm
+              action={createItem}
+              categories={categoryOptions}
+              defaultCategoryId={defaultCategoryId}
+              locationOptions={locationSelectorOptions}
+              submitLabel={t.modules.items.createItem}
+            />
+          </div>
+        </details>
+      ) : (
+        <header className="border-b border-line pb-6">
+          <h1 className="text-2xl font-semibold tracking-normal text-foreground">
+            {t.modules.items.title}
+          </h1>
+        </header>
+      )}
       <section className="border-b border-line pb-5">
         {!isAdmin ? (
           <p className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-muted">
@@ -295,6 +303,6 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       ) : (
         <EmptyState icon={emptyIcon} text={emptyText} />
       )}
-    </ModulePage>
+    </div>
   );
 }
