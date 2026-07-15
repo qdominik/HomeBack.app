@@ -1,7 +1,7 @@
 # M4D.2 - location dependency summary before deletion
 
 Date: 2026-07-14
-Status: approved plan; implementation has not started.
+Status: Zaimplementowano, utwardzono testami i zaakceptowano technicznie.
 
 ## 1. Current state
 
@@ -434,3 +434,67 @@ database tests, logic tests, lint, build, and audit. Report every changed file,
 security decision, test result, and any remaining owner decision about archived
 Items. Do not commit or tag unless explicitly asked.
 ```
+
+## 16. Implementation result
+
+Status: Zaimplementowano, utwardzono testami i zaakceptowano technicznie.
+
+Implemented RPCs:
+
+- `get_room_location_dependency_summary(p_room_id uuid)`;
+- `get_storage_location_l2_dependency_summary(p_storage_location_l2_id uuid)`;
+- `get_storage_location_l3_dependency_summary(p_storage_location_l3_id uuid)`.
+
+All three functions are `stable security invoker`, accept no household ID,
+use the active profile household, require an active administrator, and map a
+missing or foreign target to the same `LOCATION_NOT_AVAILABLE` database
+error. Execute permission is revoked from `public` and granted only to
+`authenticated`.
+
+The application contract is `LocationDependencySummary` from
+`src/lib/home/location-dependency-summary.ts`. It preserves the exact fields
+approved in section 7 and separates distinct active/archived Items from primary
+and non-primary `item_location` row counts. The read-only server dispatcher
+validates the closed entity type and UUID, selects one explicit RPC, and maps
+database errors to the approved safe result codes. It is not connected to any
+visible UI or deletion action.
+
+Created or updated files:
+
+- `supabase/migrations/0007_location_dependency_summary.sql`;
+- `supabase/tests/0009_location_dependency_summary.test.sql`;
+- `src/lib/home/location-dependency-summary.ts`;
+- `src/app/(app)/home/actions.ts`;
+- `src/types/database.ts`;
+- `tests/unit/location-dependency-summary.test.ts`;
+- `tsconfig.test.json`;
+- `package.json`;
+- `docs/decisions/m4d-2-location-dependency-summary-plan.md`;
+- `docs/decisions/decision-log.md`.
+
+Implementation decisions:
+
+- existing RLS policies are sufficient and remain unchanged;
+- existing indexes cover every parent and location-link join, so no index was
+  added;
+- active Items are every status other than `archiwalne`;
+- Item counts use `COUNT(DISTINCT item_id)`, while blocker counts use all
+  matching `item_location` rows;
+- L1 and L2 direct Item counts stay zero because the schema supports assignment
+  only to L3;
+- no i18n entry was added because M4D.2 has no visible UI.
+
+Verification:
+
+- local Supabase stop/start: passed;
+- `supabase db reset`: passed with migration 0007;
+- supabase test db: 207 tests passed across 9 files, including explicit PUBLIC/anon/authenticated execute grants, safe missing-versus-foreign L2/L3 errors, and an inactive administrator;
+- npm run test:logic: 53/53 passed, including cross-field aggregate and entity-level invariant rejection for the RPC response mapper;
+- `npm run lint`: passed;
+- `npm run build`: passed after narrowing the error-mapper return type;
+- no deletion, detach, move, archive, dialog, route, HTTP method, or UI change
+  was implemented.
+
+Difference from the approved plan: the pgTAP file is numbered `0009`, because
+`0008_system_other_category.test.sql` already existed. The approved public
+contract and security architecture did not change.

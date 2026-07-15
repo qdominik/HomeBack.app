@@ -6,6 +6,25 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export type LocationDependencySummaryDatabaseRow = {
+  entity_id: string;
+  storage_count: number;
+  position_count: number;
+  active_direct_items_count: number;
+  active_nested_items_count: number;
+  active_items_count: number;
+  archived_direct_items_count: number;
+  archived_nested_items_count: number;
+  archived_items_count: number;
+  total_distinct_items_count: number;
+  primary_location_links_count: number;
+  non_primary_location_links_count: number;
+  total_location_links_count: number;
+  requires_item_resolution: boolean;
+  requires_subtree_deletion: boolean;
+  can_delete_immediately: boolean;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -405,6 +424,19 @@ export type Database = {
       current_profile_role: {
         Args: Record<PropertyKey, never>;
         Returns: Database["public"]["Enums"]["profile_role"] | null;
+      };
+
+      get_room_location_dependency_summary: {
+        Args: { p_room_id: string };
+        Returns: LocationDependencySummaryDatabaseRow[];
+      };
+      get_storage_location_l2_dependency_summary: {
+        Args: { p_storage_location_l2_id: string };
+        Returns: LocationDependencySummaryDatabaseRow[];
+      };
+      get_storage_location_l3_dependency_summary: {
+        Args: { p_storage_location_l3_id: string };
+        Returns: LocationDependencySummaryDatabaseRow[];
       };
       is_household_admin: {
         Args: { target_household_id: string };

@@ -4,6 +4,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { HOME_KIND_OTHER } from "@/lib/home/home-kind-suggestions";
 import { normalizeEntityIconKey } from "@/lib/icons/entity-icon-validation";
+import {
+  getLocationDependencySummaryRpcName,
+  mapLocationDependencySummaryError,
+  mapLocationDependencySummaryRow,
+  parseLocationDependencySummaryInput,
+  type LocationDependencySummaryInput,
+  type LocationDependencySummaryResult,
+  type LocationDependencySummaryRpcRow,
+} from "@/lib/home/location-dependency-summary";
 import { generateLocationCode } from "@/lib/home/location-code";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -106,6 +115,73 @@ function requireAdmin(role: ProfileRole) {
   }
 }
 
+
+async function executeLocationDependencySummaryRpc(
+  supabase: SupabaseClient,
+  input: LocationDependencySummaryInput,
+) {
+  const rpcName = getLocationDependencySummaryRpcName(input.entityType);
+
+  switch (rpcName) {
+    case "get_room_location_dependency_summary":
+      return supabase.rpc(rpcName, { p_room_id: input.entityId });
+    case "get_storage_location_l2_dependency_summary":
+      return supabase.rpc(rpcName, {
+        p_storage_location_l2_id: input.entityId,
+      });
+    case "get_storage_location_l3_dependency_summary":
+      return supabase.rpc(rpcName, {
+        p_storage_location_l3_id: input.entityId,
+      });
+  }
+}
+
+export async function getLocationDependencySummary(
+  value: unknown,
+): Promise<LocationDependencySummaryResult> {
+  const parsed = parseLocationDependencySummaryInput(value);
+
+  if (!parsed.ok) {
+    return parsed;
+  }
+
+  const supabase = await createClient();
+  const response = await executeLocationDependencySummaryRpc(
+    supabase,
+    parsed.input,
+  );
+
+  if (response.error) {
+    const result = mapLocationDependencySummaryError(response.error);
+
+    if (result.code === "summary_unavailable") {
+      console.error("Location dependency summary RPC failed", {
+        code: response.error.code,
+      });
+    }
+
+    return result;
+  }
+
+  const row = response.data?.[0] as
+    | LocationDependencySummaryRpcRow
+    | undefined;
+
+  if (!row) {
+    console.error("Location dependency summary RPC returned no row");
+    return { ok: false, code: "summary_unavailable" };
+  }
+
+  try {
+    return {
+      ok: true,
+      summary: mapLocationDependencySummaryRow(parsed.input.entityType, row),
+    };
+  } catch {
+    console.error("Location dependency summary RPC returned invalid data");
+    return { ok: false, code: "summary_unavailable" };
+  }
+}
 async function ensureUniqueRoomName(
   supabase: SupabaseClient,
   householdId: string,
