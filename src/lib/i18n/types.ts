@@ -216,6 +216,10 @@ export type Dictionary = {
         typePlaceholder: string;
       };
       iconPicker: {
+        change: string;
+        close: string;
+        dialogTitle: string;
+        help: string;
         noResults: string;
         placeholder: string;
         search: string;

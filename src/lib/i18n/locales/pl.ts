@@ -190,6 +190,10 @@ export const pl: Dictionary = {
         },
       },
       iconPicker: {
+        change: "Zmień ikonę",
+        close: "Zamknij",
+        dialogTitle: "Wybierz ikonę",
+        help: "Kliknij, aby zmienić ikonę.",
         noResults: "Brak pasuj\u0105cych ikon.",
         placeholder: "Szukaj w ikonach",
         search: "Szukaj ikony",

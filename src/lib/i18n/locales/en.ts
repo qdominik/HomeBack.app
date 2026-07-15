@@ -221,6 +221,10 @@ export const en: Dictionary = {
         typePlaceholder: "Choose or enter a kind",
       },
       iconPicker: {
+        change: "Change icon",
+        close: "Close",
+        dialogTitle: "Choose an icon",
+        help: "Click to change the icon.",
         noResults: "No matching icons.",
         placeholder: "Search by name, e.g. Living room or Kitchen",
         search: "Search icon",

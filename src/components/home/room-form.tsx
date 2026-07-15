@@ -6,6 +6,11 @@ import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
 import { Button } from "@/components/ui/button";
 import { ROOM_TEMPLATE_OPTIONS } from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
+import {
+  getDefaultRoomIconKey,
+  normalizeEntityIconKey,
+} from "@/lib/icons/entity-icon-validation";
+import { resolveRoomIconKey } from "@/lib/icons/room-icon-suggestion";
 import { t } from "@/lib/i18n";
 import type { Room } from "./home-types";
 
@@ -19,13 +24,45 @@ const orderColumn = "kolejno\u015b\u0107" as const;
 
 export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
   const [inferredKind, setInferredKind] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState(room?.nazwa ?? "");
+  const [iconKey, setIconKey] = useState(() =>
+    room
+      ? normalizeEntityIconKey(room.ikona, "room")
+      : getDefaultRoomIconKey(),
+  );
+  const [iconSelectionMode, setIconSelectionMode] = useState<
+    "automatic" | "manual"
+  >(room ? "manual" : "automatic");
+
+  function updateAutomaticIcon(name: string, kind?: string | null) {
+    if (room || iconSelectionMode === "manual") {
+      return;
+    }
+
+    setIconKey(
+      resolveRoomIconKey({
+        currentIconKey: iconKey,
+        kind,
+        name,
+        selectionMode: iconSelectionMode,
+      }),
+    );
+  }
 
   function handleNameChange(value: string) {
+    setRoomName(value);
+
     if (room) {
       return;
     }
 
-    setInferredKind(inferHomeKind(value, "room"));
+    const nextKind = inferHomeKind(value, "room");
+    setInferredKind(nextKind);
+    updateAutomaticIcon(value, nextKind);
+  }
+
+  function handleKindChange(value: string) {
+    updateAutomaticIcon(roomName, value);
   }
 
   return (
@@ -48,13 +85,18 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
         inferredValue={inferredKind}
         label={t.modules.home.fields.type}
         name="typ"
+        onChange={handleKindChange}
         templateOptions={ROOM_TEMPLATE_OPTIONS}
       />
       <EntityIconPicker
-        defaultValue={room?.ikona}
         group="room"
         label={t.modules.home.fields.icon}
         name="ikona"
+        onValueChange={(value) => {
+          setIconKey(value);
+          setIconSelectionMode("manual");
+        }}
+        value={iconKey}
       />
       <label className="ui-label sm:max-w-32">
         {t.modules.home.fields.order}

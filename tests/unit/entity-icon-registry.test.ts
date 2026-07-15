@@ -8,6 +8,11 @@ import {
 import { getCategoryIconKey } from "../../src/lib/icons/category-icon-map";
 import { resolveItemIconKey } from "../../src/lib/icons/item-icon-resolution";
 import {
+  getRoomIconKeyForKind,
+  inferRoomIconKey,
+  resolveRoomIconKey,
+} from "../../src/lib/icons/room-icon-suggestion";
+import {
   getDefaultRoomIconKey,
   getEntityIconDefinition,
   getEntityIconFallback,
@@ -96,4 +101,57 @@ test("entity icon component uses explicit Phosphor imports instead of a namespac
   assert.equal(source.includes("import * as"), false);
   assert.equal(source.includes("@phosphor-icons/react/dist/ssr/House"), true);
   assert.equal(source.includes("@phosphor-icons/react/ssr\""), false);
+});
+test("room kind suggestions use stable semantic icon keys", () => {
+  assert.equal(getRoomIconKeyForKind("Salon"), "living-room");
+  assert.equal(getRoomIconKeyForKind("  POKÓJ DZIECKA "), "child-room");
+  assert.equal(getRoomIconKeyForKind("Łazienka"), "bathroom");
+  assert.equal(getRoomIconKeyForKind("Pokój gościnny"), "bedroom");
+  assert.equal(getRoomIconKeyForKind("Nieznany rodzaj"), "room");
+});
+
+test("room icon suggestion reuses kind inference for normalized room names", () => {
+  assert.equal(inferRoomIconKey("  SALON  "), "living-room");
+  assert.equal(inferRoomIconKey("Pokój chłopaka"), "child-room");
+  assert.equal(inferRoomIconKey("Kuchnia"), "kitchen");
+  assert.equal(inferRoomIconKey("Pokój gościnny"), "bedroom");
+  assert.equal(inferRoomIconKey("Pomieszczenie techniczne"), "room");
+});
+
+test("automatic room icon suggestions update until a manual choice is made", () => {
+  assert.equal(
+    resolveRoomIconKey({
+      currentIconKey: "room",
+      name: "Salon",
+      selectionMode: "automatic",
+    }),
+    "living-room",
+  );
+  assert.equal(
+    resolveRoomIconKey({
+      currentIconKey: "kitchen",
+      name: "Sypialnia",
+      selectionMode: "manual",
+    }),
+    "kitchen",
+  );
+});
+
+test("existing and legacy room icons are preserved safely during editing", () => {
+  assert.equal(
+    resolveRoomIconKey({
+      currentIconKey: "garage",
+      name: "Salon",
+      selectionMode: "manual",
+    }),
+    "garage",
+  );
+  assert.equal(
+    resolveRoomIconKey({
+      currentIconKey: "legacy-room-icon",
+      name: "Salon",
+      selectionMode: "manual",
+    }),
+    "room",
+  );
 });
