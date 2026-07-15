@@ -331,11 +331,15 @@ fields: {
       deleteCategory: "Delete category",
       saveChanges: "Save changes",
       readOnly: "Only an administrator can edit categories.",
+      iconPicker: {
+        dialogTitle: "Choose category icon",
+      },
       confirmations: {
         deleteCategory:
           "Are you sure you want to delete the category \u201C{name}\u201D? This action cannot be undone.",
       },
       fields: {
+        icon: "Category icon",
         name: "Category name",
         customName: "Custom category name",
         nameHelp:

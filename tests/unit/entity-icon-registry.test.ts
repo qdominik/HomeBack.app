@@ -6,6 +6,7 @@ import {
   ENTITY_ICON_FALLBACKS,
 } from "../../src/lib/icons/entity-icon-definitions";
 import { getCategoryIconKey } from "../../src/lib/icons/category-icon-map";
+import { normalizeCustomCategoryIconKey } from "../../src/lib/categories/custom-category-icon";
 import { resolveItemIconKey } from "../../src/lib/icons/item-icon-resolution";
 import {
   getRoomIconKeyForKind,
@@ -154,4 +155,72 @@ test("existing and legacy room icons are preserved safely during editing", () =>
     }),
     "room",
   );
+});
+test("custom category icons use other as their default and invalid fallback", () => {
+  assert.equal(normalizeCustomCategoryIconKey(undefined), "other");
+  assert.equal(normalizeCustomCategoryIconKey(""), "other");
+  assert.equal(normalizeCustomCategoryIconKey("legacy-category-icon"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("TagIcon"), "other");
+});
+
+test("custom category icons keep valid category keys and reject other groups", () => {
+  assert.equal(normalizeCustomCategoryIconKey("tools"), "tools");
+  assert.equal(normalizeCustomCategoryIconKey("documents"), "documents");
+  assert.equal(normalizeCustomCategoryIconKey("living-room"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("generic"), "generic");
+});
+
+test("category icon form preserves a saved key and permits a replacement", () => {
+  const source = readFileSync("src/components/categories/category-form.tsx", "utf8");
+
+  assert.equal(
+    source.includes('defaultValue={normalizeCustomCategoryIconKey(category?.ikona)}'),
+    true,
+  );
+  assert.equal(source.includes('group="category"'), true);
+  assert.equal(source.includes('name="ikona"'), true);
+});
+
+test("custom category icon selection does not alter system category mapping", () => {
+  assert.equal(getCategoryIconKey("food"), "food");
+  assert.equal(getCategoryIconKey("other"), "other");
+});
+
+test("extended custom category icons are searchable by labels and aliases", () => {
+  assert.equal(normalizeCustomCategoryIconKey("heart"), "heart");
+  assert.equal(normalizeCustomCategoryIconKey("game-controller"), "game-controller");
+  assert.equal(searchEntityIconOptions("motoryzacja", "category")[0]?.key, "car");
+  assert.equal(searchEntityIconOptions("ogrod", "category")[0]?.key, "leaf");
+  assert.equal(searchEntityIconOptions("ulubione", "category")[0]?.key, "star");
+});
+
+test("custom category icon validation accepts only explicit registry keys", () => {
+  assert.equal(normalizeCustomCategoryIconKey("HeartIcon"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("UnknownPhosphorIcon"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("living-room"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("other"), "other");
+});
+
+test("custom category create and update preserve validated icon keys", () => {
+  const createSource = readFileSync(
+    "src/lib/categories/create-custom-category.ts",
+    "utf8",
+  );
+  const actionSource = readFileSync(
+    "src/app/(app)/categories/actions.ts",
+    "utf8",
+  );
+
+  assert.equal(
+    createSource.includes("const ikona = normalizeCustomCategoryIconKey(submittedIconKey);"),
+    true,
+  );
+  assert.equal(createSource.includes("      ikona,"), true);
+  assert.equal(
+    actionSource.includes(
+      'const ikona = normalizeCustomCategoryIconKey(field(formData, "ikona"));',
+    ),
+    true,
+  );
+  assert.equal(actionSource.includes(".update({ ikona, nazwa })"), true);
 });

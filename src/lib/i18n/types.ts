@@ -279,10 +279,14 @@ export type Dictionary = {
       deleteCategory: string;
       saveChanges: string;
       readOnly: string;
+      iconPicker: {
+        dialogTitle: string;
+      };
       confirmations: {
         deleteCategory: string;
       };
       fields: {
+        icon: string;
         name: string;
         customName: string;
         nameHelp: string;

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
+import { normalizeCustomCategoryIconKey } from "@/lib/categories/custom-category-icon";
 import { CUSTOM_TEMPLATE_VALUE } from "@/lib/home/home-template-options";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -111,6 +112,7 @@ function redirectOnDuplicate(categories: Pick<CategoryRow, "czy_systemowa">[]) {
 export async function createCustomCategory(formData: FormData) {
   const result = await createCustomCategoryForActiveAdmin(
     parseCategoryName(formData),
+    field(formData, "ikona"),
   );
 
   if (result.status === "created") {
@@ -146,6 +148,7 @@ export async function createCustomCategory(formData: FormData) {
 export async function updateCustomCategory(formData: FormData) {
   const categoryId = field(formData, "category_id");
   const nazwa = parseCategoryName(formData);
+  const ikona = normalizeCustomCategoryIconKey(field(formData, "ikona"));
 
   if (!categoryId || !nazwa) {
     redirectWithError("missing_fields");
@@ -160,7 +163,7 @@ export async function updateCustomCategory(formData: FormData) {
 
   const { data, error } = await supabase
     .from("category")
-    .update({ nazwa })
+    .update({ ikona, nazwa })
     .eq("id", categoryId)
     .eq("household_id", profile.household_id)
     .eq("czy_systemowa", false)

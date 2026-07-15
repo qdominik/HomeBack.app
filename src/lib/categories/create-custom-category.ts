@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
+import { normalizeCustomCategoryIconKey } from "./custom-category-icon";
 import { findMatchingCategory } from "./category-selection";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
@@ -72,8 +73,10 @@ async function visibleCategories(supabase: SupabaseClient) {
 
 export async function createCustomCategoryForActiveAdmin(
   submittedName: string,
+  submittedIconKey?: unknown,
 ): Promise<CreateCustomCategoryResult> {
   const nazwa = submittedName.trim();
+  const ikona = normalizeCustomCategoryIconKey(submittedIconKey);
 
   if (!nazwa) {
     return { status: "missing_fields" };
@@ -113,6 +116,7 @@ export async function createCustomCategoryForActiveAdmin(
     .insert({
       czy_systemowa: false,
       household_id: profileResult.profile.household_id,
+      ikona,
       key: null,
       nazwa,
       widoczna_dla_dzieci: true,

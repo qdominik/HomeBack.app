@@ -14,19 +14,25 @@ import { activeLocale, t } from "@/lib/i18n";
 
 type EntityIconPickerProps = {
   defaultValue?: string | null;
+  dialogTitle?: string;
   group: EntityIconGroup;
+  helpText?: string;
   label: string;
   name: string;
   onValueChange?: (value: EntityIconKey) => void;
+  triggerLabel?: string;
   value?: string | null;
 };
 
 export function EntityIconPicker({
   defaultValue,
+  dialogTitle,
   group,
+  helpText,
   label,
   name,
   onValueChange,
+  triggerLabel,
   value,
 }: EntityIconPickerProps) {
   const initialIconKey = normalizeEntityIconKey(defaultValue, group);
@@ -84,7 +90,7 @@ export function EntityIconPicker({
         <button
           aria-controls={dialogId}
           aria-expanded={isOpen}
-          aria-label={t.modules.home.iconPicker.change}
+          aria-label={triggerLabel ?? t.modules.home.iconPicker.change}
           className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-control border border-line bg-surface text-primary transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           onClick={openPicker}
           type="button"
@@ -101,7 +107,7 @@ export function EntityIconPicker({
             {selectedDefinition?.label[locale] ?? selectedIconKey}
           </p>
           <p className="text-xs leading-5 text-muted">
-            {t.modules.home.iconPicker.help}
+            {helpText ?? t.modules.home.iconPicker.help}
           </p>
         </div>
       </div>
@@ -116,7 +122,7 @@ export function EntityIconPicker({
         <div className="flex max-h-[min(36rem,calc(100vh-2rem))] flex-col p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-lg font-semibold" id={dialogTitleId}>
-              {t.modules.home.iconPicker.dialogTitle}
+              {dialogTitle ?? t.modules.home.iconPicker.dialogTitle}
             </h2>
             <button
               className="inline-flex min-h-11 items-center justify-center rounded-control px-3 text-sm font-semibold text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

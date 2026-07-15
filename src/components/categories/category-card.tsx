@@ -5,8 +5,8 @@ import {
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { formatDeleteConfirmation } from "@/lib/confirm-delete";
+import { normalizeCustomCategoryIconKey } from "@/lib/categories/custom-category-icon";
 import { getCategoryIconKey } from "@/lib/icons/category-icon-map";
-import { isEntityIconKey } from "@/lib/icons/entity-icon-validation";
 import { t } from "@/lib/i18n";
 import type { Database } from "@/types/database";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
@@ -21,9 +21,9 @@ type CategoryCardProps = {
 };
 
 export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
-  const iconKey = isEntityIconKey(category.ikona)
-    ? category.ikona
-    : getCategoryIconKey(category.key);
+  const iconKey = category.czy_systemowa
+    ? getCategoryIconKey(category.key)
+    : normalizeCustomCategoryIconKey(category.ikona);
 
   return (
     <article className="rounded-md border border-line bg-surface p-4">

@@ -2,6 +2,21 @@ import { createElement, type ComponentType } from "react";
 import { ArchiveIcon } from "@phosphor-icons/react/dist/ssr/Archive";
 import { ArmchairIcon } from "@phosphor-icons/react/dist/ssr/Armchair";
 import { BabyIcon } from "@phosphor-icons/react/dist/ssr/Baby";
+import { BabyCarriageIcon } from "@phosphor-icons/react/dist/ssr/BabyCarriage";
+import { BicycleIcon } from "@phosphor-icons/react/dist/ssr/Bicycle";
+import { CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
+import { CarIcon } from "@phosphor-icons/react/dist/ssr/Car";
+import { FireExtinguisherIcon } from "@phosphor-icons/react/dist/ssr/FireExtinguisher";
+import { GameControllerIcon } from "@phosphor-icons/react/dist/ssr/GameController";
+import { GiftIcon } from "@phosphor-icons/react/dist/ssr/Gift";
+import { GraduationCapIcon } from "@phosphor-icons/react/dist/ssr/GraduationCap";
+import { HeartIcon } from "@phosphor-icons/react/dist/ssr/Heart";
+import { LeafIcon } from "@phosphor-icons/react/dist/ssr/Leaf";
+import { LightbulbIcon } from "@phosphor-icons/react/dist/ssr/Lightbulb";
+import { MusicNoteIcon } from "@phosphor-icons/react/dist/ssr/MusicNote";
+import { PawPrintIcon } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { StarIcon } from "@phosphor-icons/react/dist/ssr/Star";
 import { BasketIcon } from "@phosphor-icons/react/dist/ssr/Basket";
 import { BathtubIcon } from "@phosphor-icons/react/dist/ssr/Bathtub";
 import { BedIcon } from "@phosphor-icons/react/dist/ssr/Bed";
@@ -71,6 +86,21 @@ const iconComponents: Record<EntityIconKey, PhosphorIcon> = {
   "living-room": ArmchairIcon,
   medicine: PillIcon,
   office: DeskIcon,
+  "baby-carriage": BabyCarriageIcon,
+  bicycle: BicycleIcon,
+  camera: CameraIcon,
+  car: CarIcon,
+  "fire-extinguisher": FireExtinguisherIcon,
+  "game-controller": GameControllerIcon,
+  gift: GiftIcon,
+  "graduation-cap": GraduationCapIcon,
+  heart: HeartIcon,
+  leaf: LeafIcon,
+  lightbulb: LightbulbIcon,
+  "music-note": MusicNoteIcon,
+  "paw-print": PawPrintIcon,
+  "shield-check": ShieldCheckIcon,
+  star: StarIcon,
   other: QuestionIcon,
   package: PackageIcon,
   position: TrayIcon,

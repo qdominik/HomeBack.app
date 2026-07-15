@@ -1,7 +1,9 @@
 "use client";
 
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
+import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
 import { CATEGORY_TEMPLATE_OPTIONS } from "@/lib/categories/category-template-options";
+import { normalizeCustomCategoryIconKey } from "@/lib/categories/custom-category-icon";
 import { t } from "@/lib/i18n";
 import type { Database } from "@/types/database";
 
@@ -30,6 +32,13 @@ export function CategoryForm({
         label={t.modules.categories.fields.name}
         name="nazwa"
         templateOptions={CATEGORY_TEMPLATE_OPTIONS}
+      />
+      <EntityIconPicker
+        defaultValue={normalizeCustomCategoryIconKey(category?.ikona)}
+        dialogTitle={t.modules.categories.iconPicker.dialogTitle}
+        group="category"
+        label={t.modules.categories.fields.icon}
+        name="ikona"
       />
       <button
         className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong"

@@ -331,11 +331,15 @@ fields: {
       deleteCategory: "Usuń kategorię",
       saveChanges: "Zapisz zmiany",
       readOnly: "Tylko administrator może edytować kategorie.",
+      iconPicker: {
+        dialogTitle: "Wybierz ikonę kategorii",
+      },
       confirmations: {
         deleteCategory:
           "Czy na pewno chcesz usunąć kategorię \u201E{name}\u201D? Tej operacji nie można cofnąć.",
       },
       fields: {
+        icon: "Ikona kategorii",
         name: "Nazwa kategorii",
         customName: "Własna nazwa kategorii",
         nameHelp:
