@@ -225,6 +225,11 @@ export type Dictionary = {
         search: string;
         selected: string;
       };
+      confirmations: {
+        deletePosition: string;
+        deleteRoom: string;
+        deleteStorageLocation: string;
+      };
       roomTypeSuggestions: string[];
       storageTypeSuggestions: string[];
       errors: {
@@ -274,6 +279,9 @@ export type Dictionary = {
       deleteCategory: string;
       saveChanges: string;
       readOnly: string;
+      confirmations: {
+        deleteCategory: string;
+      };
       fields: {
         name: string;
         customName: string;

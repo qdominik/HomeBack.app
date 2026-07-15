@@ -9,8 +9,10 @@ import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpl
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
+import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveStorageLocationIconKey } from "@/lib/icons/home-structure-icons";
 import {
@@ -135,10 +137,17 @@ export function StorageLocationL2Card({
           </div>
           <form action={deleteStorageLocationL2}>
             <input name="location_l2_id" type="hidden" value={location.id} />
-            <Button disabled={!canDelete} type="submit" variant="danger">
+            <ConfirmDeleteButton
+              className={buttonClassName({ variant: "danger" })}
+              confirmationMessage={formatDeleteConfirmation(
+                t.modules.home.confirmations.deleteStorageLocation,
+                location.nazwa,
+              )}
+              disabled={!canDelete}
+            >
               <TrashIcon aria-hidden="true" size={18} />
               {deleteStorageLabel}
-            </Button>
+            </ConfirmDeleteButton>
           </form>
         </div>
       ) : null}

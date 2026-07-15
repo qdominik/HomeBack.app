@@ -208,7 +208,7 @@ export const en: Dictionary = {
           plural: "Positions",
         },
       },
-      fields: {
+fields: {
         description: "Description",
         icon: "Icon",
         locationCode: "Location code",
@@ -229,6 +229,14 @@ export const en: Dictionary = {
         placeholder: "Search by name, e.g. Living room or Kitchen",
         search: "Search icon",
         selected: "Currently selected icon",
+      },
+      confirmations: {
+        deletePosition:
+          "Are you sure you want to delete the position “{name}”? This action cannot be undone.",
+        deleteRoom:
+          "Are you sure you want to delete the room “{name}”? This action cannot be undone.",
+        deleteStorageLocation:
+          "Are you sure you want to delete the storage location “{name}”? This action cannot be undone.",
       },
       roomTypeSuggestions: [
         "Living room",
@@ -323,6 +331,10 @@ export const en: Dictionary = {
       deleteCategory: "Delete category",
       saveChanges: "Save changes",
       readOnly: "Only an administrator can edit categories.",
+      confirmations: {
+        deleteCategory:
+          "Are you sure you want to delete the category \u201C{name}\u201D? This action cannot be undone.",
+      },
       fields: {
         name: "Category name",
         customName: "Custom category name",

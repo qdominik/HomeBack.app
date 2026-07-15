@@ -4,10 +4,12 @@ import {
 } from "@/app/(app)/home/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
+import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveEntityActionLabel } from "@/lib/i18n/entity-labels";
 import { resolvePositionIconKey } from "@/lib/icons/home-structure-icons";
@@ -87,10 +89,16 @@ export function StorageLocationL3Card({
           </details>
           <form action={deleteStorageLocationL3}>
             <input name="location_l3_id" type="hidden" value={position.id} />
-            <Button type="submit" variant="danger">
+            <ConfirmDeleteButton
+              className={buttonClassName({ variant: "danger" })}
+              confirmationMessage={formatDeleteConfirmation(
+                t.modules.home.confirmations.deletePosition,
+                position.nazwa,
+              )}
+            >
               <TrashIcon aria-hidden="true" size={18} />
               {deletePositionLabel}
-            </Button>
+            </ConfirmDeleteButton>
           </form>
         </div>
       ) : null}

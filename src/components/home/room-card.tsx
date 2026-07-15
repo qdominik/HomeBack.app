@@ -9,8 +9,10 @@ import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpl
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
+import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
@@ -138,10 +140,17 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
           </div>
           <form action={deleteRoom}>
             <input name="room_id" type="hidden" value={room.id} />
-            <Button disabled={!canDelete} type="submit" variant="danger">
+            <ConfirmDeleteButton
+              className={buttonClassName({ variant: "danger" })}
+              confirmationMessage={formatDeleteConfirmation(
+                t.modules.home.confirmations.deleteRoom,
+                room.nazwa,
+              )}
+              disabled={!canDelete}
+            >
               <TrashIcon aria-hidden="true" size={18} />
               {deleteRoomLabel}
-            </Button>
+            </ConfirmDeleteButton>
           </form>
         </div>
       ) : null}

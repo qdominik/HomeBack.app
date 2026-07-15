@@ -3,6 +3,8 @@ import {
   updateCustomCategory,
 } from "@/app/(app)/categories/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
+import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
+import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { getCategoryIconKey } from "@/lib/icons/category-icon-map";
 import { isEntityIconKey } from "@/lib/icons/entity-icon-validation";
 import { t } from "@/lib/i18n";
@@ -71,13 +73,16 @@ export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
           </details>
           <form action={deleteCustomCategory}>
             <input name="category_id" type="hidden" value={category.id} />
-            <button
+            <ConfirmDeleteButton
               className="inline-flex h-9 items-center gap-2 rounded-md border border-line px-3 text-sm font-semibold text-foreground hover:bg-surface-muted"
-              type="submit"
+              confirmationMessage={formatDeleteConfirmation(
+                t.modules.categories.confirmations.deleteCategory,
+                category.nazwa,
+              )}
             >
               <TrashIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.categories.deleteCategory}
-            </button>
+            </ConfirmDeleteButton>
           </form>
         </div>
       ) : null}

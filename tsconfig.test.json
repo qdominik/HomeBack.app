@@ -17,6 +17,7 @@
     "src/lib/home/infer-home-kind.ts",
     "src/lib/home/home-search.ts",
     "src/lib/home/location-dependency-summary.ts",
+    "src/lib/confirm-delete.ts",
     "src/lib/icons/**/*.ts",
     "src/lib/items/**/*.ts",
     "src/lib/templates/**/*.ts",

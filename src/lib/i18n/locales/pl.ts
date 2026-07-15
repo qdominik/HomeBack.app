@@ -219,7 +219,7 @@ export const pl: Dictionary = {
           plural: "Pozycje",
         },
       },
-      fields: {
+fields: {
         description: "Opis",
         icon: "Ikona",
         locationCode: "Kod lokalizacji",
@@ -230,6 +230,14 @@ export const pl: Dictionary = {
         customStorageType: "Własny rodzaj schowka",
         typeHelp: "Wybierz z szablonu albo wybierz Inne i wpisz własną wartość.",
         typePlaceholder: "Wybierz lub wpisz rodzaj",
+      },
+      confirmations: {
+        deletePosition:
+          "Czy na pewno chcesz usunąć pozycję „{name}”? Tej operacji nie można cofnąć.",
+        deleteRoom:
+          "Czy na pewno chcesz usunąć pomieszczenie „{name}”? Tej operacji nie można cofnąć.",
+        deleteStorageLocation:
+          "Czy na pewno chcesz usunąć schowek „{name}”? Tej operacji nie można cofnąć.",
       },
       roomTypeSuggestions: [
         "Salon",
@@ -323,6 +331,10 @@ export const pl: Dictionary = {
       deleteCategory: "Usuń kategorię",
       saveChanges: "Zapisz zmiany",
       readOnly: "Tylko administrator może edytować kategorie.",
+      confirmations: {
+        deleteCategory:
+          "Czy na pewno chcesz usunąć kategorię \u201E{name}\u201D? Tej operacji nie można cofnąć.",
+      },
       fields: {
         name: "Nazwa kategorii",
         customName: "Własna nazwa kategorii",
