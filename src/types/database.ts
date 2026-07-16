@@ -425,6 +425,10 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Database["public"]["Enums"]["profile_role"] | null;
       };
+      delete_item_permanently: {
+        Args: { p_item_id: string };
+        Returns: string;
+      };
 
       get_room_location_dependency_summary: {
         Args: { p_room_id: string };

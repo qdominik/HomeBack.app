@@ -4,10 +4,15 @@ import { test } from "node:test";
 import {
   formatDeleteConfirmation,
   shouldSubmitDelete,
-} from "../../src/lib/confirm-delete";
+} from "../../src/lib/confirm-delete";import {
+  isValidItemId,
+  normalizePermanentItemDeletionResult,
+  resolvePermanentItemDeletionResult,
+} from "../../src/lib/items/permanent-item-deletion";
 
 const templates = {
   category: "Delete category \"{name}\"?",
+  item: "Permanently delete item \"{name}\"? This cannot be undone.",
   position: "Delete position \"{name}\"?",
   room: "Delete room \"{name}\"?",
   storage: "Delete storage location \"{name}\"?",
@@ -74,4 +79,65 @@ test("the shared client button remains a submit control", () => {
   );
 
   assert.equal(source.includes('type = "submit"'), true);
+});
+test("permanent item confirmation includes the item name and irreversible warning", () => {
+  assert.equal(
+    formatDeleteConfirmation(templates.item, "Laptop"),
+    'Permanently delete item "Laptop"? This cannot be undone.',
+  );
+});
+
+test("permanent item deletion accepts only textual UUID values", () => {
+  assert.equal(
+    isValidItemId("78000000-0000-0000-0000-000000000001"),
+    true,
+  );
+  assert.equal(isValidItemId("not-an-item-id"), false);
+  assert.equal(isValidItemId("78000000-0000-0000-0000"), false);
+});
+
+test("permanent deletion result mapping exposes only the closed contract", () => {
+  assert.equal(normalizePermanentItemDeletionResult("success"), "success");
+  assert.equal(
+    normalizePermanentItemDeletionResult("item_has_files"),
+    "item_has_files",
+  );
+  assert.equal(
+    normalizePermanentItemDeletionResult("postgres_internal_error"),
+    "deletion_failed",
+  );
+  assert.equal(
+    resolvePermanentItemDeletionResult("success", { message: "raw error" }),
+    "deletion_failed",
+  );
+});
+
+test("item cards use the shared confirmation and keep archive separate", () => {
+  const source = readFileSync("src/components/items/item-card.tsx", "utf8");
+
+  assert.equal(source.includes("<ConfirmDeleteButton"), true);
+  assert.equal(source.includes("action={deleteItemPermanently}"), true);
+  assert.equal(source.includes("action={archiveItem}"), true);
+  assert.equal(source.includes("isAdmin && !isArchived"), true);
+  assert.equal(source.includes("restoreItem"), false);
+});
+
+test("permanent deletion action sends only a validated item id to the RPC", () => {
+  const source = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+  const actionStart = source.indexOf(
+    "export async function deleteItemPermanently",
+  );
+  const actionEnd = source.indexOf(
+    "export async function createQuickCustomCategory",
+    actionStart,
+  );
+  const actionSource = source.slice(actionStart, actionEnd);
+
+  assert.equal(actionSource.includes("isValidItemId(itemId)"), true);
+  assert.equal(
+    actionSource.includes('supabase.rpc("delete_item_permanently"'),
+    true,
+  );
+  assert.equal(actionSource.includes("household_id"), false);
+  assert.equal(actionSource.includes("status"), false);
 });

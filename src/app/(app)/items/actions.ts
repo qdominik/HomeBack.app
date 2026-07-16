@@ -7,6 +7,10 @@ import {
   parseItemType,
   resolveItemQuantity,
 } from "@/lib/items/item-form-values";
+import {
+  isValidItemId,
+  resolvePermanentItemDeletionResult,
+} from "@/lib/items/permanent-item-deletion";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
@@ -317,6 +321,48 @@ export async function archiveItem(formData: FormData) {
 
   revalidatePath(routes.items);
   redirectWithStatus("item_archived");
+}
+
+export async function deleteItemPermanently(formData: FormData) {
+  const itemId = field(formData, "item_id");
+
+  if (!isValidItemId(itemId)) {
+    redirectWithError("invalid_item_id");
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("delete_item_permanently", {
+    p_item_id: itemId,
+  });
+  const result = resolvePermanentItemDeletionResult(data, error);
+
+  if (result === "success") {
+    revalidatePath(routes.items);
+    revalidatePath(routes.dashboard);
+    redirectWithStatus("item_deleted");
+  }
+
+  if (result === "auth_required") {
+    redirect(`${routes.login}?error=session_expired`);
+  }
+
+  if (result === "active_profile_required") {
+    redirectWithError("active_profile_required");
+  }
+
+  if (result === "admin_required") {
+    redirectWithError("admin_required");
+  }
+
+  if (result === "item_not_available") {
+    redirectWithError("item_not_available");
+  }
+
+  if (result === "item_has_files") {
+    redirectWithError("item_has_files");
+  }
+
+  redirectWithError("deletion_failed");
 }
 
 export async function createQuickCustomCategory(submittedName: string) {

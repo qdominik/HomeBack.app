@@ -1,9 +1,16 @@
-import { archiveItem, updateItem } from "@/app/(app)/items/actions";
+import {
+  archiveItem,
+  deleteItemPermanently,
+  updateItem,
+} from "@/app/(app)/items/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
+import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
+import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
 import {
   getItemEditFormLocationProps,
@@ -82,6 +89,7 @@ export function ItemCard({
       )
     : null;
   const showQuantity = item.typ !== "unikalny";
+  const isArchived = item.status === "archiwalne";
   const itemIconKey = resolveItemIconKey({ categoryKey });
   const metaItems = [categoryName, typeLabels[item.typ]];
 
@@ -138,11 +146,17 @@ export function ItemCard({
       ) : null}
 
       <div className="mt-4 border-t border-line pt-3">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+        <div
+          className={`grid gap-3 sm:items-center ${
+            isArchived
+              ? "sm:grid-cols-[1fr_auto]"
+              : "sm:grid-cols-[1fr_auto_auto_auto]"
+          }`}
+        >
           <p className="text-xs leading-5 text-muted">
             {t.modules.items.addedOn}: {formatDate(item.created_at)}
           </p>
-          {isAdmin ? (
+          {isAdmin && !isArchived ? (
             <details className="sm:contents">
               <summary
                 className={buttonClassName({
@@ -159,7 +173,7 @@ export function ItemCard({
                 />
                 {t.modules.items.editItem}
               </summary>
-              <div className="mt-3 sm:col-span-3 sm:row-start-2">
+              <div className="mt-3 sm:col-span-4 sm:row-start-2">
                 <ItemForm
                   action={updateItem}
                   categories={categories}
@@ -171,7 +185,7 @@ export function ItemCard({
               </div>
             </details>
           ) : null}
-          {isAdmin ? (
+          {isAdmin && !isArchived ? (
             <form action={archiveItem} className="sm:col-start-3 sm:row-start-1">
               <input name="item_id" type="hidden" value={item.id} />
               <ItemSubmitButton
@@ -183,6 +197,27 @@ export function ItemCard({
                 label={t.modules.items.archiveItem}
                 pendingLabel={t.modules.items.archiving}
               />
+            </form>
+          ) : null}
+          {isAdmin ? (
+            <form
+              action={deleteItemPermanently}
+              className={isArchived ? "sm:col-start-2" : "sm:col-start-4"}
+            >
+              <input name="item_id" type="hidden" value={item.id} />
+              <ConfirmDeleteButton
+                className={buttonClassName({
+                  className: "w-full gap-2 sm:w-auto",
+                  variant: "danger",
+                })}
+                confirmationMessage={formatDeleteConfirmation(
+                  t.modules.items.confirmations.deleteItem,
+                  item.nazwa,
+                )}
+              >
+                <TrashIcon aria-hidden="true" size={18} weight="bold" />
+                {t.modules.items.deleteItem}
+              </ConfirmDeleteButton>
             </form>
           ) : null}
         </div>

@@ -36,17 +36,23 @@ const orderColumn = "kolejno\u015b\u0107" as const;
 
 const errorMessages: Record<string, string> = {
   action_failed: t.modules.items.errors.actionFailed,
+  active_profile_required: t.modules.items.errors.activeProfileRequired,
   admin_required: t.modules.items.errors.adminRequired,
+  deletion_failed: t.modules.items.errors.deletionFailed,
   invalid_category: t.modules.items.errors.invalidCategory,
+  invalid_item_id: t.modules.items.errors.invalidItemId,
   invalid_item_type: t.modules.items.errors.invalidItemType,
   invalid_location: t.modules.items.errors.invalidLocation,
   invalid_quantity: t.modules.items.errors.invalidQuantity,
+  item_has_files: t.modules.items.errors.itemHasFiles,
+  item_not_available: t.modules.items.errors.itemNotAvailable,
   item_not_found: t.modules.items.errors.itemNotFound,
   missing_fields: t.modules.items.errors.missingFields,
 };
 
 const statusMessages: Record<string, string> = {
   item_archived: t.modules.items.feedback.itemArchived,
+  item_deleted: t.modules.items.feedback.itemDeleted,
   item_created: t.modules.items.feedback.itemCreated,
   item_updated: t.modules.items.feedback.itemUpdated,
 };

@@ -72,6 +72,7 @@ export type Dictionary = {
       createItem: string;
       editItem: string;
       archiveItem: string;
+      deleteItem: string;
       saveChanges: string;
       saving: string;
       archiving: string;
@@ -107,13 +108,21 @@ export type Dictionary = {
         stock: string;
         set: string;
       };
+      confirmations: {
+        deleteItem: string;
+      };
       errors: {
         actionFailed: string;
+        activeProfileRequired: string;
         adminRequired: string;
+        deletionFailed: string;
         invalidCategory: string;
+        invalidItemId: string;
         invalidItemType: string;
         invalidLocation: string;
         invalidQuantity: string;
+        itemHasFiles: string;
+        itemNotAvailable: string;
         itemNotFound: string;
         missingFields: string;
         unknown: string;
@@ -122,6 +131,7 @@ export type Dictionary = {
         itemCreated: string;
         itemUpdated: string;
         itemArchived: string;
+        itemDeleted: string;
       };
       search: string;
       searchPlaceholder: string;
