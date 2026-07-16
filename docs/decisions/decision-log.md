@@ -4,6 +4,7 @@ Kazda decyzja, ktora rozszerza, doprecyzowuje albo zamyka zakres produktowy lub 
 
 | Data | Decyzja | Powod | Wplyw na MVP | Status | Zatwierdzil |
 |---|---|---|---|---|---|
+| 2026-07-16 | Mikropoprawka UX formularza edycji Rzeczy | Formularz edycji Rzeczy zostal oddzielony od siatki akcji karty i otrzymal zwarty wariant responsywnego ukladu. | Wylacznie frontend; bez zmian FormData, server actions, bazy, migracji, RLS i RPC. | Wykonane | Wlasciciel projektu |
 | 2026-07-08 | Uzyc struktury repozytorium z dokumentu produktu: `docs/product`, `docs/ai`, `docs/decisions`, `src`, `supabase/migrations`, `supabase/policies`, `tests`. | Uzytkownik zatwierdzil wykonanie krokow 1 i 2. | Bez rozszerzania MVP. Porzadkuje dokumenty zrodlowe i przyszle foldery implementacyjne. | Zatwierdzone | Wlasciciel projektu |
 | 2026-07-08 | Stack MVP: Next.js / React, Tailwind CSS, Supabase, Vercel. | Wlasciciel projektu potwierdzil rekomendowany stack z dokumentu produktu. | Zgodne z MVP. Pozwala przygotowac scaffold aplikacji. | Zatwierdzone | Wlasciciel projektu |
 | 2026-07-08 | Workflow migracji Supabase: migracje schematu w `supabase/migrations`, polityki RLS w `supabase/policies`, numerowane pliki SQL, zmiany bazy tylko po planie i akceptacji. | Wlasciciel projektu potwierdzil workflow migracji Supabase. | Zgodne z MVP. Pozwala przygotowac migracje i polityki RLS w sposob sledzalny. | Zatwierdzone | Wlasciciel projektu |

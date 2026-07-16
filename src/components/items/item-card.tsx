@@ -150,43 +150,14 @@ export function ItemCard({
           className={`grid gap-3 sm:items-center ${
             isArchived
               ? "sm:grid-cols-[1fr_auto]"
-              : "sm:grid-cols-[1fr_auto_auto_auto]"
+              : "sm:grid-cols-[1fr_auto_auto]"
           }`}
         >
           <p className="text-xs leading-5 text-muted">
             {t.modules.items.addedOn}: {formatDate(item.created_at)}
           </p>
           {isAdmin && !isArchived ? (
-            <details className="sm:contents">
-              <summary
-                className={buttonClassName({
-                  className:
-                    "w-full cursor-pointer list-none sm:w-auto [&::-webkit-details-marker]:hidden",
-                  variant: "secondary",
-                })}
-              >
-                <PencilSimpleLineIcon
-                  aria-hidden="true"
-                  className="mr-2"
-                  size={18}
-                  weight="bold"
-                />
-                {t.modules.items.editItem}
-              </summary>
-              <div className="mt-3 sm:col-span-4 sm:row-start-2">
-                <ItemForm
-                  action={updateItem}
-                  categories={categories}
-                  item={item}
-                  locationOptions={editLocationProps.locationOptions}
-                  selectedPositionId={editLocationProps.selectedPositionId}
-                  submitLabel={t.modules.items.saveChanges}
-                />
-              </div>
-            </details>
-          ) : null}
-          {isAdmin && !isArchived ? (
-            <form action={archiveItem} className="sm:col-start-3 sm:row-start-1">
+            <form action={archiveItem}>
               <input name="item_id" type="hidden" value={item.id} />
               <ItemSubmitButton
                 className={buttonClassName({
@@ -200,10 +171,7 @@ export function ItemCard({
             </form>
           ) : null}
           {isAdmin ? (
-            <form
-              action={deleteItemPermanently}
-              className={isArchived ? "sm:col-start-2" : "sm:col-start-4"}
-            >
+            <form action={deleteItemPermanently}>
               <input name="item_id" type="hidden" value={item.id} />
               <ConfirmDeleteButton
                 className={buttonClassName({
@@ -221,6 +189,36 @@ export function ItemCard({
             </form>
           ) : null}
         </div>
+        {isAdmin && !isArchived ? (
+          <details className="mt-3">
+            <summary
+              className={buttonClassName({
+                className:
+                  "w-full cursor-pointer list-none sm:w-auto [&::-webkit-details-marker]:hidden",
+                variant: "secondary",
+              })}
+            >
+              <PencilSimpleLineIcon
+                aria-hidden="true"
+                className="mr-2"
+                size={18}
+                weight="bold"
+              />
+              {t.modules.items.editItem}
+            </summary>
+            <div className="mt-3 rounded-md border border-line bg-surface-muted p-3 sm:p-4">
+              <ItemForm
+                action={updateItem}
+                categories={categories}
+                item={item}
+                layout="compact"
+                locationOptions={editLocationProps.locationOptions}
+                selectedPositionId={editLocationProps.selectedPositionId}
+                submitLabel={t.modules.items.saveChanges}
+              />
+            </div>
+          </details>
+        ) : null}
       </div>
     </article>
   );

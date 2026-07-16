@@ -28,6 +28,7 @@ type ItemFormProps = {
   categories: ItemCategoryOption[];
   defaultCategoryId?: string | null;
   item?: Item;
+  layout?: "default" | "compact";
   locationOptions: ItemLocationSelectorOptions;
   selectedPositionId?: string | null;
   submitLabel: string;
@@ -46,10 +47,14 @@ export function ItemForm({
   categories,
   defaultCategoryId,
   item,
+  layout = "default",
   locationOptions,
   selectedPositionId,
   submitLabel,
 }: ItemFormProps) {
+  const isCompact = layout === "compact";
+  const fullWidthClass = isCompact ? "sm:col-span-2" : "";
+  const halfWidthClass = isCompact ? "sm:col-span-1" : "";
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
   const [availableCategories, setAvailableCategories] = useState(categories);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
@@ -139,9 +144,12 @@ export function ItemForm({
   }
 
   return (
-    <form action={action} className="space-y-3">
+    <form
+      action={action}
+      className={isCompact ? "grid gap-3 sm:grid-cols-2" : "space-y-3"}
+    >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
-      <label className="block text-sm font-medium">
+      <label className={`block text-sm font-medium ${fullWidthClass}`}>
         {t.modules.items.name}
         <input
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -150,7 +158,7 @@ export function ItemForm({
           required
         />
       </label>
-      <label className="block text-sm font-medium">
+      <label className={`block text-sm font-medium ${fullWidthClass}`}>
         {t.modules.items.description}
         <textarea
           className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
@@ -158,7 +166,7 @@ export function ItemForm({
           name="opis"
         />
       </label>
-      <label className="block text-sm font-medium">
+      <label className={`block text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.itemType}
         <select
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -176,7 +184,7 @@ export function ItemForm({
         </select>
       </label>
       {showsItemQuantity(itemType) ? (
-        <label className="block text-sm font-medium">
+        <label className={`block text-sm font-medium ${halfWidthClass}`}>
           {t.modules.items.quantity}
           <input
             className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -192,7 +200,7 @@ export function ItemForm({
       ) : (
         <input name="ilosc" type="hidden" value="1" />
       )}
-      <label className="block text-sm font-medium">
+      <label className={`block text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.category}
         <select
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -224,7 +232,9 @@ export function ItemForm({
         </select>
       </label>
       {isAnotherCategorySelected ? (
-        <div className="space-y-2 rounded-md border border-line bg-surface-muted p-3">
+        <div
+          className={`space-y-2 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
+        >
           <label className="block text-sm font-medium">
             {t.modules.items.newCategoryName}
             <input
@@ -256,9 +266,11 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
-      <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
+      <div className={fullWidthClass}>
+        <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
+      </div>
       <ItemSubmitButton
-        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+        className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
         disabled={isAnotherCategorySelected || isQuickCategoryPending}
         label={submitLabel}
         pendingLabel={t.modules.items.saving}
