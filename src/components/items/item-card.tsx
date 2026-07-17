@@ -1,6 +1,7 @@
 import {
   archiveItem,
   deleteItemPermanently,
+  restoreItem,
   updateItem,
 } from "@/app/(app)/items/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
@@ -12,6 +13,7 @@ import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
 import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
+import { getArchivedItemRestoreMode } from "@/lib/items/item-archive-restore";
 import {
   getItemEditFormLocationProps,
   type ItemCategoryOption,
@@ -21,6 +23,7 @@ import {
 import type { Database } from "@/types/database";
 import { ItemForm } from "./item-form";
 import { ItemSubmitButton } from "./item-submit-button";
+import { LegacyItemRestoreForm } from "./legacy-item-restore-form";
 
 type Item = Database["public"]["Tables"]["item"]["Row"];
 
@@ -90,6 +93,7 @@ export function ItemCard({
     : null;
   const showQuantity = item.typ !== "unikalny";
   const isArchived = item.status === "archiwalne";
+  const restoreMode = getArchivedItemRestoreMode(item.status_before_archive);
   const itemIconKey = resolveItemIconKey({ categoryKey });
   const metaItems = [categoryName, typeLabels[item.typ]];
 
@@ -147,11 +151,8 @@ export function ItemCard({
 
       <div className="mt-4 border-t border-line pt-3">
         <div
-          className={`grid gap-3 sm:items-center ${
-            isArchived
-              ? "sm:grid-cols-[1fr_auto]"
-              : "sm:grid-cols-[1fr_auto_auto]"
-          }`}
+          className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center"
+
         >
           <p className="text-xs leading-5 text-muted">
             {t.modules.items.addedOn}: {formatDate(item.created_at)}
@@ -169,6 +170,24 @@ export function ItemCard({
                 pendingLabel={t.modules.items.archiving}
               />
             </form>
+          ) : null}
+          {isAdmin && isArchived ? (
+            restoreMode === "legacy" ? (
+              <LegacyItemRestoreForm itemId={item.id} />
+            ) : (
+              <form action={restoreItem}>
+                <input name="item_id" type="hidden" value={item.id} />
+                <ItemSubmitButton
+                  className={buttonClassName({
+                    className: "w-full sm:w-auto",
+                    variant: "secondary",
+                  })}
+                  icon="restore"
+                  label={t.modules.items.restoreItem}
+                  pendingLabel={t.modules.items.restoring}
+                />
+              </form>
+            )
           ) : null}
           {isAdmin ? (
             <form action={deleteItemPermanently}>

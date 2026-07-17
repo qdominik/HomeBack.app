@@ -146,6 +146,8 @@ export type Database = {
           termin_waznosci: string | null;
           opiekun_id: string | null;
           status: Database["public"]["Enums"]["item_status"];
+          archived_at: string | null;
+          status_before_archive: Database["public"]["Enums"]["item_status"] | null;
           przechowywany_w_sejfie: boolean;
           miniatura_url: string | null;
           notatki: string | null;
@@ -165,6 +167,8 @@ export type Database = {
           termin_waznosci?: string | null;
           opiekun_id?: string | null;
           status: Database["public"]["Enums"]["item_status"];
+          archived_at?: string | null;
+          status_before_archive?: Database["public"]["Enums"]["item_status"] | null;
           przechowywany_w_sejfie?: boolean;
           miniatura_url?: string | null;
           notatki?: string | null;
@@ -184,6 +188,8 @@ export type Database = {
           termin_waznosci?: string | null;
           opiekun_id?: string | null;
           status?: Database["public"]["Enums"]["item_status"];
+          archived_at?: string | null;
+          status_before_archive?: Database["public"]["Enums"]["item_status"] | null;
           przechowywany_w_sejfie?: boolean;
           miniatura_url?: string | null;
           notatki?: string | null;
@@ -409,6 +415,10 @@ export type Database = {
     };
     Views: Record<never, never>;
     Functions: {
+      archive_item: {
+        Args: { p_item_id: string };
+        Returns: string;
+      };
       create_household_with_admin: {
         Args: {
           p_imie: string;
@@ -445,6 +455,13 @@ export type Database = {
       is_household_admin: {
         Args: { target_household_id: string };
         Returns: boolean;
+      };
+      restore_item: {
+        Args: {
+          p_item_id: string;
+          p_legacy_target_status?: Database["public"]["Enums"]["item_status"] | null;
+        };
+        Returns: string;
       };
       set_item_primary_location: {
         Args: {

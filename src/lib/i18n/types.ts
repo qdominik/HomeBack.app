@@ -73,6 +73,11 @@ export type Dictionary = {
       editItem: string;
       archiveItem: string;
       deleteItem: string;
+      restoreItem: string;
+      restoring: string;
+      restoreAs: string;
+      selectRestoreStatus: string;
+      previousStatusUnavailable: string;
       saveChanges: string;
       saving: string;
       archiving: string;
@@ -121,9 +126,13 @@ export type Dictionary = {
         invalidItemType: string;
         invalidLocation: string;
         invalidQuantity: string;
+        invalidRestoreStatus: string;
+        itemAlreadyArchived: string;
         itemHasFiles: string;
         itemNotAvailable: string;
         itemNotFound: string;
+        itemNotArchived: string;
+        restoreStatusRequired: string;
         missingFields: string;
         unknown: string;
       };
@@ -132,6 +141,7 @@ export type Dictionary = {
         itemUpdated: string;
         itemArchived: string;
         itemDeleted: string;
+        itemRestored: string;
       };
       search: string;
       searchPlaceholder: string;

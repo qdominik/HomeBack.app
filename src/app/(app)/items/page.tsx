@@ -44,15 +44,20 @@ const errorMessages: Record<string, string> = {
   invalid_item_type: t.modules.items.errors.invalidItemType,
   invalid_location: t.modules.items.errors.invalidLocation,
   invalid_quantity: t.modules.items.errors.invalidQuantity,
+  invalid_restore_status: t.modules.items.errors.invalidRestoreStatus,
   item_has_files: t.modules.items.errors.itemHasFiles,
   item_not_available: t.modules.items.errors.itemNotAvailable,
+  item_already_archived: t.modules.items.errors.itemAlreadyArchived,
+  item_not_archived: t.modules.items.errors.itemNotArchived,
   item_not_found: t.modules.items.errors.itemNotFound,
   missing_fields: t.modules.items.errors.missingFields,
+  restore_status_required: t.modules.items.errors.restoreStatusRequired,
 };
 
 const statusMessages: Record<string, string> = {
   item_archived: t.modules.items.feedback.itemArchived,
   item_deleted: t.modules.items.feedback.itemDeleted,
+  item_restored: t.modules.items.feedback.itemRestored,
   item_created: t.modules.items.feedback.itemCreated,
   item_updated: t.modules.items.feedback.itemUpdated,
 };

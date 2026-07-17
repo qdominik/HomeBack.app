@@ -8,6 +8,11 @@ import {
   resolveItemQuantity,
 } from "@/lib/items/item-form-values";
 import {
+  parseLegacyRestoreStatus,
+  resolveItemArchiveResult,
+  resolveItemRestoreResult,
+} from "@/lib/items/item-archive-restore";
+import {
   isValidItemId,
   resolvePermanentItemDeletionResult,
 } from "@/lib/items/permanent-item-deletion";
@@ -37,6 +42,12 @@ function redirectWithError(error: string): never {
 
 function redirectWithStatus(status: string): never {
   redirect(`${routes.items}?status=${encodeURIComponent(status)}`);
+}
+
+function redirectArchivedWithError(error: string): never {
+  redirect(
+    `${routes.items}?view=archived&error=${encodeURIComponent(error)}`,
+  );
 }
 
 async function getActiveProfile(supabase: SupabaseClient) {
@@ -296,33 +307,62 @@ export async function updateItem(formData: FormData) {
 export async function archiveItem(formData: FormData) {
   const itemId = field(formData, "item_id");
 
-  if (!itemId) {
-    redirectWithError("missing_fields");
+  if (!isValidItemId(itemId)) {
+    redirectWithError("invalid_item_id");
   }
 
   const supabase = await createClient();
-  const { profile } = await getActiveProfile(supabase);
-  requireAdmin(profile.rola);
+  const { data, error } = await supabase.rpc("archive_item", {
+    p_item_id: itemId,
+  });
+  const result = resolveItemArchiveResult(data, error);
 
-  await getActiveItem(supabase, profile.household_id, itemId);
+  if (result === "auth_required") {
+    redirect(`${routes.login}?error=session_expired`);
+  }
 
-  const { data, error } = await supabase
-    .from("item")
-    .update({ status: ARCHIVED_STATUS })
-    .eq("id", itemId)
-    .eq("household_id", profile.household_id)
-    .neq("status", ARCHIVED_STATUS)
-    .select("id")
-    .maybeSingle();
-
-  if (error || !data) {
-    redirectWithError("action_failed");
+  if (result !== "success") {
+    redirectWithError(result);
   }
 
   revalidatePath(routes.items);
+  revalidatePath(routes.dashboard);
   redirectWithStatus("item_archived");
 }
 
+export async function restoreItem(formData: FormData) {
+  const itemId = field(formData, "item_id");
+  const submittedStatus = field(formData, "legacy_target_status");
+
+  if (!isValidItemId(itemId)) {
+    redirectArchivedWithError("invalid_item_id");
+  }
+
+  const legacyTargetStatus = parseLegacyRestoreStatus(submittedStatus);
+
+  if (submittedStatus && !legacyTargetStatus) {
+    redirectArchivedWithError("invalid_restore_status");
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("restore_item", {
+    p_item_id: itemId,
+    p_legacy_target_status: legacyTargetStatus,
+  });
+  const result = resolveItemRestoreResult(data, error);
+
+  if (result === "auth_required") {
+    redirect(`${routes.login}?error=session_expired`);
+  }
+
+  if (result !== "success") {
+    redirectArchivedWithError(result);
+  }
+
+  revalidatePath(routes.items);
+  revalidatePath(routes.dashboard);
+  redirectWithStatus("item_restored");
+}
 export async function deleteItemPermanently(formData: FormData) {
   const itemId = field(formData, "item_id");
 

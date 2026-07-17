@@ -112,14 +112,14 @@ test("permanent deletion result mapping exposes only the closed contract", () =>
   );
 });
 
-test("item cards use the shared confirmation and keep archive separate", () => {
+test("item cards keep archive, restore, and permanent deletion separate", () => {
   const source = readFileSync("src/components/items/item-card.tsx", "utf8");
 
   assert.equal(source.includes("<ConfirmDeleteButton"), true);
   assert.equal(source.includes("action={deleteItemPermanently}"), true);
   assert.equal(source.includes("action={archiveItem}"), true);
   assert.equal(source.includes("isAdmin && !isArchived"), true);
-  assert.equal(source.includes("restoreItem"), false);
+  assert.equal(source.includes("restoreItem"), true);
 });
 
 test("permanent deletion action sends only a validated item id to the RPC", () => {

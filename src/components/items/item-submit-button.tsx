@@ -1,12 +1,13 @@
 "use client";
 
 import { ArchiveIcon } from "@phosphor-icons/react/Archive";
+import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/ArrowCounterClockwise";
 import { useFormStatus } from "react-dom";
 
 type ItemSubmitButtonProps = {
   className: string;
   disabled?: boolean;
-  icon?: "archive";
+  icon?: "archive" | "restore";
   label: string;
   pendingLabel: string;
 };
@@ -28,6 +29,13 @@ export function ItemSubmitButton({
     >
       {icon === "archive" ? (
         <ArchiveIcon aria-hidden="true" className="mr-2" size={18} />
+      ) : null}
+      {icon === "restore" ? (
+        <ArrowCounterClockwiseIcon
+          aria-hidden="true"
+          className="mr-2"
+          size={18}
+        />
       ) : null}
       {pending ? pendingLabel : label}
     </button>
