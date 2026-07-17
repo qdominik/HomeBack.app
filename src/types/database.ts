@@ -25,6 +25,14 @@ export type LocationDependencySummaryDatabaseRow = {
   can_delete_immediately: boolean;
 };
 
+export type LocationDetachDatabaseRow = {
+  status: string;
+  detached_item_count: number;
+  detached_link_count: number;
+  active_item_count: number;
+  archived_item_count: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -418,6 +426,18 @@ export type Database = {
       archive_item: {
         Args: { p_item_id: string };
         Returns: string;
+      };
+      detach_items_from_room_location: {
+        Args: { p_room_id: string };
+        Returns: LocationDetachDatabaseRow[];
+      };
+      detach_items_from_storage_location_l2: {
+        Args: { p_storage_location_l2_id: string };
+        Returns: LocationDetachDatabaseRow[];
+      };
+      detach_items_from_storage_location_l3: {
+        Args: { p_storage_location_l3_id: string };
+        Returns: LocationDetachDatabaseRow[];
       };
       create_household_with_admin: {
         Args: {

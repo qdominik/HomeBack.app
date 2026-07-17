@@ -533,3 +533,24 @@ M4D nie projektuje i nie implementuje:
 8. M4D.8 - testy UI/logiki, dokumentacja milestone i finalna weryfikacja.
 
 Kazdy krok powinien zachowac dzialajace M4A i nie uruchamiac M4B/M4C.
+
+## Aneks M4D.3 — decyzja zastępująca z 2026-07-17
+
+Na mocy decyzji właściciela projektu poniższe ustalenia zastępują wcześniejsze
+założenia wyłącznie dla etapu M4D.3. Historyczne zapisy powyżej pozostają w
+dokumencie jako ślad procesu decyzyjnego.
+
+1. Zakres odpinania zmienia się z usuwania wyłącznie głównych wpisów
+   `item_location` na usuwanie wszystkich głównych i dodatkowych linków, których
+   `storage_location_l3_id` znajduje się we wskazanej lokalizacji albo jej
+   poddrzewie. Linki tej samej Rzeczy poza poddrzewem pozostają bez zmian, a
+   rekord `item` nie jest usuwany.
+2. Zakres Rzeczy zmienia się z wyłącznie niearchiwalnych na aktywne i
+   archiwalne. Operacja nie zmienia `item.status`, `item.archived_at`,
+   `item.status_before_archive`, `category_id` ani innych danych Rzeczy.
+3. Architektura zmienia się z jednej ogólnej RPC przyjmującej typ źródła na trzy
+   jawne RPC: dla Pomieszczenia, Schowka L2 i Pozycji L3. Warstwa TypeScript może
+   używać zamkniętego dispatchera, ale klient nie przekazuje dowolnej nazwy RPC.
+
+Aneks nie rozstrzyga semantyki M4D.4 dotyczącej przenoszenia linków głównych i
+dodatkowych. M4D.4 nie jest częścią implementacji M4D.3.
