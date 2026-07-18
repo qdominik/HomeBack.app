@@ -1,19 +1,14 @@
-import {
-  deleteStorageLocationL3,
-  updateStorageLocationL3,
-} from "@/app/(app)/home/actions";
+import { updateStorageLocationL3 } from "@/app/(app)/home/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
-import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveEntityActionLabel } from "@/lib/i18n/entity-labels";
 import { resolvePositionIconKey } from "@/lib/icons/home-structure-icons";
 import type { StorageLocationL3 } from "./home-types";
+import { StorageLocationL3DeleteDialog } from "./storage-location-l3-delete-dialog";
 import { StorageLocationL3Form } from "./storage-location-l3-form";
 
 type StorageLocationL3CardProps = {
@@ -25,11 +20,6 @@ type StorageLocationL3CardProps = {
 const editPositionLabel = resolveEntityActionLabel(
   activeLocale,
   "edit",
-  "position",
-);
-const deletePositionLabel = resolveEntityActionLabel(
-  activeLocale,
-  "delete",
   "position",
 );
 
@@ -87,19 +77,10 @@ export function StorageLocationL3Card({
               />
             </Card>
           </details>
-          <form action={deleteStorageLocationL3}>
-            <input name="location_l3_id" type="hidden" value={position.id} />
-            <ConfirmDeleteButton
-              className={buttonClassName({ variant: "danger" })}
-              confirmationMessage={formatDeleteConfirmation(
-                t.modules.home.confirmations.deletePosition,
-                position.nazwa,
-              )}
-            >
-              <TrashIcon aria-hidden="true" size={18} />
-              {deletePositionLabel}
-            </ConfirmDeleteButton>
-          </form>
+          <StorageLocationL3DeleteDialog
+            positionId={position.id}
+            positionName={position.nazwa}
+          />
         </div>
       ) : null}
     </li>

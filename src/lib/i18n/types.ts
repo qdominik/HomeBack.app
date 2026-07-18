@@ -245,6 +245,36 @@ export type Dictionary = {
         search: string;
         selected: string;
       };
+      positionDelete: {
+        title: string;
+        containsItems: string;
+        activeItems: string;
+        archivedItems: string;
+        totalItems: string;
+        primaryLinks: string;
+        additionalLinks: string;
+        totalLinks: string;
+        moveItems: string;
+        detachItems: string;
+        chooseTarget: string;
+        noTarget: string;
+        continue: string;
+        back: string;
+        cancel: string;
+        loading: string;
+        permanentInfo: string;
+        finalSummary: string;
+        operation: string;
+        moveOperation: string;
+        detachOperation: string;
+        deleteOperation: string;
+        finalMove: string;
+        finalDetach: string;
+        finalDelete: string;
+        changed: string;
+        error: string;
+        retry: string;
+      };
       confirmations: {
         deletePosition: string;
         deleteRoom: string;

@@ -14,6 +14,16 @@ import {
   type LocationDependencySummaryRpcRow,
 } from "@/lib/home/location-dependency-summary";
 import { generateLocationCode } from "@/lib/home/location-code";
+import {
+  buildLocationDeleteTargetOptions,
+  locationDeleteResolutionRpcName,
+  mapLocationDeleteResolutionError,
+  mapLocationDeleteResolutionRow,
+  parseLocationDeleteResolutionInput,
+  type LocationDeleteResolutionResult,
+  type LocationDeleteResolutionRpcRow,
+  type LocationDeleteTargetOption,
+} from "@/lib/home/location-delete-resolution";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTemplateOrCustomValue } from "@/lib/templates/normalize-template-value";
@@ -21,6 +31,25 @@ import type { Database } from "@/types/database";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 type ProfileRole = Database["public"]["Enums"]["profile_role"];
+
+type LocationDeleteContextResult =
+  | {
+      ok: true;
+      context: {
+        summary: ReturnType<typeof mapLocationDependencySummaryRow>;
+        targets: LocationDeleteTargetOption[];
+      };
+    }
+  | {
+      ok: false;
+      code:
+        | "invalid_delete_resolution"
+        | "auth_required"
+        | "active_profile_required"
+        | "admin_required"
+        | "location_not_available"
+        | "context_unavailable";
+    };
 
 const orderColumn = "kolejno\u015b\u0107" as const;
 
@@ -757,4 +786,158 @@ export async function deleteStorageLocationL3(formData: FormData) {
   revalidatePath(routes.home);
   revalidatePath(routes.items);
   redirectWithStatus("position_deleted");
+}
+
+export async function getStorageLocationL3DeletionContext(
+  value: unknown,
+): Promise<LocationDeleteContextResult> {
+  const parsed = parseLocationDependencySummaryInput({
+    entityType: "position",
+    entityId: value,
+  });
+
+  if (!parsed.ok) {
+    return { ok: false, code: "invalid_delete_resolution" };
+  }
+
+  const supabase = await createClient();
+  const summaryResponse = await executeLocationDependencySummaryRpc(
+    supabase,
+    parsed.input,
+  );
+
+  if (summaryResponse.error) {
+    const result = mapLocationDependencySummaryError(summaryResponse.error);
+
+    if (result.code === "summary_unavailable") {
+      console.error("L3 deletion context summary failed", {
+        code: summaryResponse.error.code,
+      });
+      return { ok: false, code: "context_unavailable" };
+    }
+
+    if (
+      result.code === "auth_required" ||
+      result.code === "active_profile_required" ||
+      result.code === "admin_required" ||
+      result.code === "location_not_available"
+    ) {
+      return { ok: false, code: result.code };
+    }
+
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  const summaryRow = summaryResponse.data?.[0] as
+    | LocationDependencySummaryRpcRow
+    | undefined;
+
+  if (!summaryRow) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  let summary;
+
+  try {
+    summary = mapLocationDependencySummaryRow("position", summaryRow);
+  } catch {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  const profile = await getActiveProfile(supabase);
+  requireAdmin(profile.rola);
+
+  const { data: rooms, error: roomsError } = await supabase
+    .from("room")
+    .select("id, nazwa")
+    .eq("household_id", profile.household_id);
+
+  if (roomsError) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  const roomIds = (rooms ?? []).map((room) => room.id);
+  const storageResponse = roomIds.length
+    ? await supabase
+        .from("storage_location_l2")
+        .select("id, nazwa, room_id")
+        .in("room_id", roomIds)
+    : { data: [], error: null };
+
+  if (storageResponse.error) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  const storageIds = (storageResponse.data ?? []).map(
+    (storage) => storage.id,
+  );
+  const positionsResponse = storageIds.length
+    ? await supabase
+        .from("storage_location_l3")
+        .select("id, nazwa, storage_location_l2_id")
+        .in("storage_location_l2_id", storageIds)
+    : { data: [], error: null };
+
+  if (positionsResponse.error) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  return {
+    ok: true,
+    context: {
+      summary,
+      targets: buildLocationDeleteTargetOptions(
+        rooms ?? [],
+        storageResponse.data ?? [],
+        positionsResponse.data ?? [],
+        parsed.input.entityId,
+      ),
+    },
+  };
+}
+
+export async function deleteStorageLocationL3WithResolution(
+  value: unknown,
+): Promise<LocationDeleteResolutionResult> {
+  const parsed = parseLocationDeleteResolutionInput(value);
+
+  if (!parsed.ok) {
+    return parsed;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc(locationDeleteResolutionRpcName, {
+    p_storage_location_l3_id: parsed.input.positionId,
+    p_resolution: parsed.input.resolution,
+    p_target_storage_location_l3_id: parsed.input.targetPositionId,
+    p_expected_distinct_item_count: parsed.input.expectedDistinctItemCount,
+    p_expected_location_link_count: parsed.input.expectedLocationLinkCount,
+  });
+
+  if (error) {
+    const result = mapLocationDeleteResolutionError(error);
+
+    if (result.code === "delete_unavailable") {
+      console.error("L3 deletion resolution RPC failed", { code: error.code });
+    }
+
+    return result;
+  }
+
+  const row = data?.[0] as LocationDeleteResolutionRpcRow | undefined;
+
+  if (!row) {
+    return { ok: false, code: "delete_unavailable" };
+  }
+
+  try {
+    const summary = mapLocationDeleteResolutionRow(parsed.input, row);
+
+    revalidatePath(routes.home);
+    revalidatePath(routes.items);
+
+    return { ok: true, summary };
+  } catch {
+    return { ok: false, code: "delete_unavailable" };
+  }
 }

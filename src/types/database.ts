@@ -42,6 +42,19 @@ export type LocationMoveDatabaseRow = {
   created_target_link_count: number;
   removed_source_link_count: number;
 };
+
+export type LocationDeleteResolutionDatabaseRow = {
+  status: string;
+  resolution: string;
+  deleted_storage_location_l3_id: string;
+  affected_item_count: number;
+  active_item_count: number;
+  archived_item_count: number;
+  moved_item_count: number;
+  detached_link_count: number;
+  reused_target_link_count: number;
+  created_target_link_count: number;
+};
 export type Database = {
   public: {
     Tables: {
@@ -447,6 +460,16 @@ export type Database = {
       detach_items_from_storage_location_l3: {
         Args: { p_storage_location_l3_id: string };
         Returns: LocationDetachDatabaseRow[];
+      };
+      delete_storage_location_l3_with_resolution: {
+        Args: {
+          p_storage_location_l3_id: string;
+          p_resolution: string;
+          p_target_storage_location_l3_id: string | null;
+          p_expected_distinct_item_count: number;
+          p_expected_location_link_count: number;
+        };
+        Returns: LocationDeleteResolutionDatabaseRow[];
       };
       move_primary_items_from_location: {
         Args: {
