@@ -9,17 +9,20 @@ import { Card } from "@/components/ui/card";
 
 type CreateRoomPanelProps = {
   action: (formData: FormData) => Promise<void>;
+  addLabel: string;
   children: ReactNode;
   submitLabel: string;
 };
 
 export function CreateRoomPanel({
   action,
+  addLabel,
   children,
   submitLabel,
 }: CreateRoomPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const formId = useId();
+  const [actionLabel, entityLabel] = addLabel.split(/\s+/, 2);
 
   return (
     <>
@@ -37,8 +40,8 @@ export function CreateRoomPanel({
         >
           <span className="inline-flex flex-col items-center justify-center gap-1 sm:gap-0.5">
             <PlusIcon aria-hidden="true" size={20} weight="bold" />
-            <span>Dodaj</span>
-            <span>pomieszczenie</span>
+            <span>{actionLabel}</span>
+            <span>{entityLabel}</span>
           </span>
         </button>
       </div>

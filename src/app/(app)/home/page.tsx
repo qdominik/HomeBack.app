@@ -37,6 +37,11 @@ type CompactHomeStatProps = {
 
 const orderColumn = "kolejno\u015b\u0107" as const;
 const entityLabels = resolveEntityLabels(activeLocale);
+const addRoomLabel = resolveEntityActionLabel(
+  activeLocale,
+  "add",
+  "room",
+);
 const createRoomLabel = resolveEntityActionLabel(
   activeLocale,
   "create",
@@ -212,6 +217,7 @@ export default async function HomeStructurePage({
     : null;
   const statusMessage = params.status ? statusMessages[params.status] : null;
   const isPositionInUse = params.error === "position_in_use";
+  const structureRootName = household?.nazwa.trim() || t.modules.home.structureFallback;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -219,22 +225,20 @@ export default async function HomeStructurePage({
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end xl:justify-between">
           <div className="min-w-0">
             <h1 className="text-[2rem] font-bold leading-tight text-foreground sm:text-[2.5rem]">
-              {t.modules.home.title}
+              {structureRootName}
             </h1>
             <p className="mt-2 max-w-2xl text-base leading-7 text-muted">
               {t.modules.home.subtitle}
-            </p>
-            <p className="mt-3 text-sm text-muted">
-              {t.modules.home.household}: {household?.nazwa ?? ""}
             </p>
           </div>
           {isAdmin ? (
             <CreateRoomPanel
               action={createRoom}
+              addLabel={addRoomLabel}
               submitLabel={createRoomLabel}
             >
               <section
-                aria-label={t.modules.home.title}
+                aria-label={structureRootName}
                 className="grid grid-cols-3 gap-2 sm:gap-3"
               >
                 <CompactHomeStat
@@ -257,7 +261,7 @@ export default async function HomeStructurePage({
           ) : (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start xl:items-center xl:justify-end">
               <section
-                aria-label={t.modules.home.title}
+                aria-label={structureRootName}
                 className="grid grid-cols-3 gap-2 sm:gap-3"
               >
                 <CompactHomeStat

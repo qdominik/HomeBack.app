@@ -24,7 +24,7 @@ export function StorageLocationL3Form({
         <input name="location_l3_id" type="hidden" value={position.id} />
       ) : null}
       <label className="ui-label">
-        {t.modules.home.fields.name}
+        {t.modules.home.fields.positionName}
         <input
           className="ui-control mt-2"
           defaultValue={position?.nazwa}

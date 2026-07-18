@@ -102,7 +102,7 @@ HomeBack służy do czterech głównych zadań:
 #### 1. Inwentaryzacja rzeczy
 
 - katalogowanie przedmiotów w domu,
-- przypisanie lokalizacji: dom → pomieszczenie → mebel/miejsce → dokładna pozycja,
+- przypisanie lokalizacji: nazwa gospodarstwa (fallback: Dom/Home) → Pomieszczenie/Room → Mebel/Furniture item → Schowek/Storage space,
 - zdjęcia i opisy,
 - wyszukiwanie odpowiedzi na pytanie: „gdzie jest X?”.
 
@@ -419,6 +419,8 @@ room
 
 ### Encja: Storage Location L2
 
+Widoczna nazwa poziomu L2: **Mebel** (EN: **Furniture item**). To mebel lub większy element wyposażenia, w którym przechowujesz Rzeczy.
+
 ```text
 storage_location_l2
 ├── id (UUID, PK)
@@ -433,6 +435,8 @@ storage_location_l2
 
 ### Encja: Storage Location L3
 
+Widoczna nazwa poziomu L3: **Schowek** (EN: **Storage space**). To konkretna przestrzeń przechowywania w Meblu.
+
 ```text
 storage_location_l3
 ├── id (UUID, PK)
@@ -446,6 +450,8 @@ storage_location_l3
 ├── created_at (timestamp)
 ├── updated_at (timestamp)
 ```
+
+Techniczne nazwy `room`, `storage_location_l2` i `storage_location_l3` oraz format kodów `ROOM-L2-L3` pozostają bez zmian. W interfejsie ich semantyka to odpowiednio Pomieszczenie, Mebel i Schowek (EN: Room, Furniture item, Storage space).
 
 ### Encja: Category
 
@@ -1066,8 +1072,8 @@ Realnie pierwsze 6–12 miesięcy to okres testowania, kosztów i niskich przych
 |---|---|
 | Gospodarstwo domowe | Główny pojemnik danych: dom, mieszkanie, garaż lub biuro |
 | Pomieszczenie | Poziom 1 lokalizacji: salon, kuchnia, garaż |
-| Miejsce przechowywania | Poziom 2 lokalizacji: komoda, regał, szafka |
-| Pozycja szczegółowa | Poziom 3 lokalizacji: szuflada, półka, pudełko |
+| Mebel | Poziom 2 lokalizacji: komoda, regał, szafka; większy element wyposażenia, w którym przechowujesz Rzeczy |
+| Schowek | Poziom 3 lokalizacji: szuflada, górna półka, pudełko; konkretna przestrzeń w Meblu |
 | Przedmiot | Konkretna rzecz: bateria AA, paszport, kurtka zimowa |
 | Kategoria | Typ rzeczy: leki, żywność, dokumenty |
 | Rola | Poziom dostępu: admin, domownik, dziecko, gość |

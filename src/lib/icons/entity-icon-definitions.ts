@@ -99,7 +99,7 @@ export const ENTITY_ICON_DEFINITIONS = [
     allowFallback: true,
     group: "storage",
     key: "storage",
-    label: { en: "Storage", pl: "Schowek" },
+    label: { en: "Furniture item", pl: "Mebel" },
     searchTerms: ["storage", "schowek", "miejsce", "przechowywanie"],
   },
   {
@@ -141,7 +141,7 @@ export const ENTITY_ICON_DEFINITIONS = [
     allowFallback: true,
     group: "position",
     key: "position",
-    label: { en: "Position", pl: "Pozycja" },
+    label: { en: "Storage space", pl: "Schowek" },
     searchTerms: ["position", "pozycja", "miejsce"],
   },
   {

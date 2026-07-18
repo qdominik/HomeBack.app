@@ -69,7 +69,7 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
     <form action={action} className="space-y-4">
       {room ? <input name="room_id" type="hidden" value={room.id} /> : null}
       <label className="ui-label">
-        {t.modules.home.fields.name}
+        {t.modules.home.fields.roomName}
         <input
           className="ui-control mt-2"
           defaultValue={room?.nazwa}
@@ -83,7 +83,7 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
         defaultValue={room?.typ}
         helpText={t.modules.home.fields.typeHelp}
         inferredValue={inferredKind}
-        label={t.modules.home.fields.type}
+        label={t.modules.home.fields.roomType}
         name="typ"
         onChange={handleKindChange}
         templateOptions={ROOM_TEMPLATE_OPTIONS}

@@ -183,6 +183,7 @@ export type Dictionary = {
       title: string;
       subtitle: string;
       household: string;
+      structureFallback: string;
       saveChanges: string;
       generatedCode: string;
       readOnly: string;
@@ -230,8 +231,14 @@ export type Dictionary = {
         name: string;
         order: string;
         type: string;
+        roomName: string;
+        roomType: string;
         customRoomType: string;
+        storageName: string;
+        storageType: string;
         customStorageType: string;
+        storageHelp: string;
+        positionName: string;
         typeHelp: string;
         typePlaceholder: string;
       };

@@ -40,7 +40,7 @@ export function StorageLocationL2Form({
         <input name="location_l2_id" type="hidden" value={location.id} />
       ) : null}
       <label className="ui-label">
-        {t.modules.home.fields.name}
+        {t.modules.home.fields.storageName}
         <input
           className="ui-control mt-2"
           defaultValue={location?.nazwa}
@@ -54,10 +54,11 @@ export function StorageLocationL2Form({
         defaultValue={location?.typ}
         helpText={t.modules.home.fields.typeHelp}
         inferredValue={inferredKind}
-        label={t.modules.home.fields.type}
+        label={t.modules.home.fields.storageType}
         name="typ"
         templateOptions={STORAGE_LOCATION_TEMPLATE_OPTIONS}
       />
+      <p className="text-sm text-muted">{t.modules.home.fields.storageHelp}</p>
       <label className="ui-label">
         {t.modules.home.fields.order}
         <input
