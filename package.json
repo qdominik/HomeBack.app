@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:logic": "tsc -p tsconfig.test.json && node --test .test-build/tests/unit/m3-template-logic.test.js .test-build/tests/unit/item-filter-logic.test.js .test-build/tests/unit/home-search-logic.test.js .test-build/tests/unit/item-form-values.test.js .test-build/tests/unit/item-location-options.test.js .test-build/tests/unit/item-category-options.test.js .test-build/tests/unit/entity-icon-registry.test.js .test-build/tests/unit/location-dependency-summary.test.js .test-build/tests/unit/location-detach.test.js .test-build/tests/unit/confirm-delete.test.js .test-build/tests/unit/item-archive-restore.test.js",
+    "test:logic": "tsc -p tsconfig.test.json && node --test .test-build/tests/unit/m3-template-logic.test.js .test-build/tests/unit/item-filter-logic.test.js .test-build/tests/unit/home-search-logic.test.js .test-build/tests/unit/item-form-values.test.js .test-build/tests/unit/item-location-options.test.js .test-build/tests/unit/item-category-options.test.js .test-build/tests/unit/entity-icon-registry.test.js .test-build/tests/unit/location-dependency-summary.test.js .test-build/tests/unit/location-detach.test.js .test-build/tests/unit/location-move.test.js .test-build/tests/unit/confirm-delete.test.js .test-build/tests/unit/item-archive-restore.test.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {

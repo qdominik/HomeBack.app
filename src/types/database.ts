@@ -33,6 +33,15 @@ export type LocationDetachDatabaseRow = {
   archived_item_count: number;
 };
 
+export type LocationMoveDatabaseRow = {
+  status: string;
+  moved_item_count: number;
+  active_item_count: number;
+  archived_item_count: number;
+  reused_target_link_count: number;
+  created_target_link_count: number;
+  removed_source_link_count: number;
+};
 export type Database = {
   public: {
     Tables: {
@@ -438,6 +447,14 @@ export type Database = {
       detach_items_from_storage_location_l3: {
         Args: { p_storage_location_l3_id: string };
         Returns: LocationDetachDatabaseRow[];
+      };
+      move_primary_items_from_location: {
+        Args: {
+          p_source_type: string;
+          p_source_id: string;
+          p_target_storage_location_l3_id: string;
+        };
+        Returns: LocationMoveDatabaseRow[];
       };
       create_household_with_admin: {
         Args: {
