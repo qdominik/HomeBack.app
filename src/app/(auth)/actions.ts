@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
+import { classifySignupResult } from "@/lib/auth/classify-signup-result";
 
 const householdTypes: Database["public"]["Enums"]["household_type"][] = [
   "dom",
@@ -19,20 +20,6 @@ function value(formData: FormData, key: string) {
 
 function redirectWithError(path: string, error: string): never {
   redirect(`${path}?error=${encodeURIComponent(error)}`);
-}
-
-function isEmailAlreadyRegisteredError(error: {
-  code?: string;
-  message?: string;
-}) {
-  const errorCode = error.code?.toLowerCase();
-  const errorMessage = error.message?.toLowerCase() ?? "";
-
-  return (
-    errorCode === "user_already_exists" ||
-    errorCode === "email_exists" ||
-    errorMessage.includes("user already registered")
-  );
 }
 
 export async function login(formData: FormData) {
@@ -73,7 +60,7 @@ export async function register(formData: FormData) {
     "http://127.0.0.1:3000";
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -82,11 +69,12 @@ export async function register(formData: FormData) {
     },
   });
 
-  if (error) {
-    if (isEmailAlreadyRegisteredError(error)) {
-      redirectWithError(routes.register, "email_already_registered");
-    }
+  const signupResult = classifySignupResult({ data, error });
+  if (signupResult === "existing_user") {
+    redirectWithError(routes.register, "email_already_registered");
+  }
 
+  if (signupResult === "signup_error") {
     redirectWithError(routes.register, "signup_failed");
   }
 
