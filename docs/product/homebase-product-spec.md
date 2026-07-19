@@ -453,6 +453,17 @@ storage_location_l3
 
 Techniczne nazwy `room`, `storage_location_l2` i `storage_location_l3` oraz format kodów `ROOM-L2-L3` pozostają bez zmian. W interfejsie ich semantyka to odpowiednio Pomieszczenie, Mebel i Schowek (EN: Room, Furniture item, Storage space).
 
+### Szablony struktury M4N.2
+
+Szablony są sugestiami interfejsu, a nie zamkniętymi enumami. Użytkownik może zachować lub wpisać dowolną własną wartość.
+
+Podstawowe Meble (L2): Komoda, Szafa, Szafka, Szafka nocna, Regał, Półka wisząca, Moduł półkowy, Łóżko, Biurko, Stół, Ława, Witryna, Kredens, RTV, Lodówka, Zamrażarka, Sejf, Walizka, Skrzynia oraz Inny mebel lub element wyposażenia.
+
+Podstawowe Schowki (L3): Szuflada, Górna szuflada, Dolna szuflada, Górna półka, Dolna półka, Półka 1, Półka 2, Lewa półka, Prawa półka, Komora, Wnęka, Schowek pod łóżkiem, Pojemnik, Pudełko, Kosz, Organizer, Drzwiczki lewe, Drzwiczki prawe, Górna część, Dolna część oraz Inny Schowek.
+
+Nie promujemy nieopisanego szablonu `Półka` jednocześnie na obu poziomach. Na poziomie Mebla stosujemy Półkę wiszącą, Regał lub Moduł półkowy; na poziomie Schowka stosujemy opisane warianty półki. Stara wartość `Półka` pozostaje poprawną wartością własną i nie jest automatycznie zmieniana.
+
+Nie wykonujemy automatycznej migracji L2 do L3 ani reklasyfikacji istniejących danych. Wartości własne zachowują dokładną treść, a istniejące kody lokalizacji i format `ROOM-L2-L3` pozostają bez zmian. Nowe aliasy są używane wyłącznie podczas generowania nowych kodów.
 ### Encja: Category
 
 ```text

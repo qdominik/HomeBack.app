@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
 import { Button } from "@/components/ui/button";
-import { STORAGE_LOCATION_TEMPLATE_OPTIONS } from "@/lib/home/home-template-options";
+import {
+  FURNITURE_CUSTOM_TEMPLATE_VALUES,
+  getFurnitureTemplateOptions,
+} from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
-import { t } from "@/lib/i18n";
+import { activeLocale, t } from "@/lib/i18n";
 import type { StorageLocationL2 } from "./home-types";
 
 type StorageLocationL2FormProps = {
@@ -16,6 +19,8 @@ type StorageLocationL2FormProps = {
 };
 
 const orderColumn = "kolejno\u015b\u0107" as const;
+const furnitureTemplateOptions = getFurnitureTemplateOptions(activeLocale);
+const furnitureCustomOption = FURNITURE_CUSTOM_TEMPLATE_VALUES[activeLocale];
 
 export function StorageLocationL2Form({
   action,
@@ -30,7 +35,7 @@ export function StorageLocationL2Form({
       return;
     }
 
-    setInferredKind(inferHomeKind(value, "storage"));
+    setInferredKind(inferHomeKind(value, "storage", activeLocale));
   }
 
   return (
@@ -51,12 +56,13 @@ export function StorageLocationL2Form({
       </label>
       <TemplateOrCustomField
         customLabel={t.modules.home.fields.customStorageType}
+        customOption={furnitureCustomOption}
         defaultValue={location?.typ}
         helpText={t.modules.home.fields.typeHelp}
         inferredValue={inferredKind}
         label={t.modules.home.fields.storageType}
         name="typ"
-        templateOptions={STORAGE_LOCATION_TEMPLATE_OPTIONS}
+        templateOptions={furnitureTemplateOptions}
       />
       <p className="text-sm text-muted">{t.modules.home.fields.storageHelp}</p>
       <label className="ui-label">

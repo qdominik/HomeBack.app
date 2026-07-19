@@ -239,6 +239,8 @@ export type Dictionary = {
         customStorageType: string;
         storageHelp: string;
         positionName: string;
+        customPositionName: string;
+        positionNameHelp: string;
         typeHelp: string;
         typePlaceholder: string;
       };
@@ -289,6 +291,7 @@ export type Dictionary = {
       };
       roomTypeSuggestions: string[];
       storageTypeSuggestions: string[];
+      positionNameSuggestions: string[];
       errors: {
         actionFailed: string;
         adminRequired: string;

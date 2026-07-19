@@ -2,10 +2,14 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { CUSTOM_TEMPLATE_VALUE } from "@/lib/home/home-template-options";
-import { normalizeTemplateValue } from "@/lib/templates/normalize-template-value";
+import {
+  findTemplateOption,
+  shouldApplyInferredTemplate,
+} from "@/lib/templates/normalize-template-value";
 
 type TemplateOrCustomFieldProps = {
   customLabel: string;
+  customOption?: string;
   defaultValue?: string | null;
   helpText?: string;
   inferredValue?: string | null;
@@ -15,22 +19,9 @@ type TemplateOrCustomFieldProps = {
   templateOptions: readonly string[];
 };
 
-function findTemplateOption(value: string, options: readonly string[]) {
-  const normalizedValue = normalizeTemplateValue(value);
-
-  if (!normalizedValue) {
-    return null;
-  }
-
-  return (
-    options.find(
-      (option) => normalizeTemplateValue(option) === normalizedValue,
-    ) ?? null
-  );
-}
-
 export function TemplateOrCustomField({
   customLabel,
+  customOption = CUSTOM_TEMPLATE_VALUE,
   defaultValue,
   helpText,
   inferredValue,
@@ -45,28 +36,33 @@ export function TemplateOrCustomField({
   const customFieldName = `${name}_custom`;
   const options = useMemo(
     () =>
-      templateOptions.includes(CUSTOM_TEMPLATE_VALUE)
+      templateOptions.includes(customOption)
         ? templateOptions
-        : [...templateOptions, CUSTOM_TEMPLATE_VALUE],
-    [templateOptions],
+        : [...templateOptions, customOption],
+    [customOption, templateOptions],
   );
   const trimmedDefaultValue = defaultValue?.trim() ?? "";
   const initialTemplateValue = findTemplateOption(trimmedDefaultValue, options);
   const initialHasDefaultValue = useRef(Boolean(trimmedDefaultValue));
   const [selectedValue, setSelectedValue] = useState(
-    initialTemplateValue ?? CUSTOM_TEMPLATE_VALUE,
+    initialTemplateValue ?? customOption,
   );
   const [customValue, setCustomValue] = useState(
     trimmedDefaultValue && !initialTemplateValue ? trimmedDefaultValue : "",
   );
   const [userTouched, setUserTouched] = useState(Boolean(trimmedDefaultValue));
   const submittedValue =
-    selectedValue === CUSTOM_TEMPLATE_VALUE
-      ? customValue.trim() || CUSTOM_TEMPLATE_VALUE
+    selectedValue === customOption
+      ? customValue.trim() || customOption
       : selectedValue;
 
   useEffect(() => {
-    if (userTouched || initialHasDefaultValue.current) {
+    if (
+      !shouldApplyInferredTemplate(
+        userTouched,
+        initialHasDefaultValue.current,
+      )
+    ) {
       return;
     }
 
@@ -74,9 +70,9 @@ export function TemplateOrCustomField({
       ? findTemplateOption(inferredValue, options)
       : null;
 
-    setSelectedValue(inferredTemplateValue ?? CUSTOM_TEMPLATE_VALUE);
+    setSelectedValue(inferredTemplateValue ?? customOption);
     setCustomValue("");
-  }, [inferredValue, options, userTouched]);
+  }, [customOption, inferredValue, options, userTouched]);
 
   useEffect(() => {
     onChange?.(submittedValue);
@@ -93,10 +89,11 @@ export function TemplateOrCustomField({
         id={selectId}
         name={templateFieldName}
         onChange={(event) => {
+          const nextValue = event.currentTarget.value;
           setUserTouched(true);
-          setSelectedValue(event.currentTarget.value);
+          setSelectedValue(nextValue);
 
-          if (event.currentTarget.value !== CUSTOM_TEMPLATE_VALUE) {
+          if (nextValue !== customOption) {
             setCustomValue("");
           }
         }}
@@ -108,7 +105,7 @@ export function TemplateOrCustomField({
           </option>
         ))}
       </select>
-      {selectedValue === CUSTOM_TEMPLATE_VALUE ? (
+      {selectedValue === customOption ? (
         <label className="ui-label" htmlFor={customInputId}>
           {customLabel}
           <input

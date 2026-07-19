@@ -30,3 +30,27 @@ export function resolveTemplateOrCustomValue(
 
   return selectedValue;
 }
+
+export function findTemplateOption(
+  value: string,
+  options: readonly string[],
+) {
+  const normalizedValue = normalizeTemplateValue(value);
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return (
+    options.find(
+      (option) => normalizeTemplateValue(option) === normalizedValue,
+    ) ?? null
+  );
+}
+
+export function shouldApplyInferredTemplate(
+  userTouched: boolean,
+  hasInitialValue: boolean,
+) {
+  return !userTouched && !hasInitialValue;
+}
