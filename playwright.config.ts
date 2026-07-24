@@ -1,20 +1,30 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const baseURL = "http://127.0.0.1:3001";
+
 export default defineConfig({
   testDir: "./tests/e2e",
+  testMatch: "auth-regression.spec.ts",
+  fullyParallel: false,
+  forbidOnly: Boolean(process.env.CI),
+  retries: process.env.CI ? 1 : 0,
+  workers: 1,
+  reporter: process.env.CI ? "github" : "list",
   timeout: 60_000,
   expect: {
     timeout: 10_000,
   },
   use: {
-    baseURL: "http://127.0.0.1:3000",
-    trace: "on-first-retry",
+    baseURL,
+    screenshot: "only-on-failure",
+    trace: "retain-on-failure",
+    video: "retain-on-failure",
   },
   webServer: {
-    command: "npm.cmd run dev -- --hostname 127.0.0.1",
-    reuseExistingServer: true,
+    command: "npm.cmd run dev -- --hostname 127.0.0.1 --port 3001",
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    url: "http://127.0.0.1:3000/login",
   },
   projects: [
     {
