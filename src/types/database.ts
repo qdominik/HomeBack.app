@@ -55,6 +55,21 @@ export type LocationDeleteResolutionDatabaseRow = {
   reused_target_link_count: number;
   created_target_link_count: number;
 };
+export type StorageLocationL2DeleteResolutionDatabaseRow = {
+  status: string;
+  resolution: string;
+  deleted_storage_location_l2_id: string;
+  deleted_storage_location_l3_count: number;
+  affected_item_count: number;
+  active_item_count: number;
+  archived_item_count: number;
+  moved_item_count: number;
+  detached_link_count: number;
+  reused_target_link_count: number;
+  created_target_link_count: number;
+  removed_source_link_count: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -470,6 +485,17 @@ export type Database = {
           p_expected_location_link_count: number;
         };
         Returns: LocationDeleteResolutionDatabaseRow[];
+      };
+      delete_storage_location_l2_with_resolution: {
+        Args: {
+          p_storage_location_l2_id: string;
+          p_resolution: string;
+          p_target_storage_location_l3_id: string | null;
+          p_expected_storage_location_l3_count: number;
+          p_expected_distinct_item_count: number;
+          p_expected_location_link_count: number;
+        };
+        Returns: StorageLocationL2DeleteResolutionDatabaseRow[];
       };
       move_primary_items_from_location: {
         Args: {

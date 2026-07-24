@@ -464,6 +464,17 @@ Podstawowe Schowki (L3): Szuflada, Górna szuflada, Dolna szuflada, Górna pół
 Nie promujemy nieopisanego szablonu `Półka` jednocześnie na obu poziomach. Na poziomie Mebla stosujemy Półkę wiszącą, Regał lub Moduł półkowy; na poziomie Schowka stosujemy opisane warianty półki. Stara wartość `Półka` pozostaje poprawną wartością własną i nie jest automatycznie zmieniana.
 
 Nie wykonujemy automatycznej migracji L2 do L3 ani reklasyfikacji istniejących danych. Wartości własne zachowują dokładną treść, a istniejące kody lokalizacji i format `ROOM-L2-L3` pozostają bez zmian. Nowe aliasy są używane wyłącznie podczas generowania nowych kodów.
+### Bezpieczne usuwanie Mebla M4D.6
+
+Mebel może zostać atomowo usunięty razem ze wszystkimi należącymi do niego
+Schowkami. Przed usunięciem wszystkie przypisania Rzeczy w poddrzewie muszą
+zostać przeniesione do jednego zewnętrznego Schowka albo odpięte. Rekordy
+Rzeczy nigdy nie są usuwane razem z Meblem. Operacja obejmuje aktywne i
+archiwalne Rzeczy, a cel przenoszenia musi być Schowkiem poza usuwanym Meblem
+w tym samym gospodarstwie. Ponowna weryfikacja liczby Schowków, unikalnych
+Rzeczy i linków przed mutacją zwraca `DEPENDENCIES_CHANGED`, gdy podsumowanie
+dialogu jest nieaktualne, bez wykonania częściowej operacji.
+
 ### Encja: Category
 
 ```text

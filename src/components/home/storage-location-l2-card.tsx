@@ -1,18 +1,14 @@
 import {
   createStorageLocationL3,
-  deleteStorageLocationL2,
   updateStorageLocationL2,
 } from "@/app/(app)/home/actions";
 import { EmptyState } from "@/components/empty-state";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
-import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveStorageLocationIconKey } from "@/lib/icons/home-structure-icons";
 import {
@@ -20,6 +16,7 @@ import {
   resolveEntityLabels,
 } from "@/lib/i18n/entity-labels";
 import type { StorageLocationL2WithPositions } from "./home-types";
+import { StorageLocationL2DeleteDialog } from "./storage-location-l2-delete-dialog";
 import { StorageLocationL2Form } from "./storage-location-l2-form";
 import { StorageLocationL3Card } from "./storage-location-l3-card";
 import { StorageLocationL3Form } from "./storage-location-l3-form";
@@ -46,12 +43,6 @@ const createPositionLabel = resolveEntityActionLabel(
   "create",
   "position",
 );
-const deleteStorageLabel = resolveEntityActionLabel(
-  activeLocale,
-  "delete",
-  "storage",
-);
-
 const orderColumn = "kolejno\u015b\u0107" as const;
 
 export function StorageLocationL2Card({
@@ -59,7 +50,6 @@ export function StorageLocationL2Card({
   location,
   roomId,
 }: StorageLocationL2CardProps) {
-  const canDelete = location.positions.length === 0;
   const iconKey = resolveStorageLocationIconKey(location.typ);
 
   return (
@@ -135,20 +125,10 @@ export function StorageLocationL2Card({
               </Card>
             </details>
           </div>
-          <form action={deleteStorageLocationL2}>
-            <input name="location_l2_id" type="hidden" value={location.id} />
-            <ConfirmDeleteButton
-              className={buttonClassName({ variant: "danger" })}
-              confirmationMessage={formatDeleteConfirmation(
-                t.modules.home.confirmations.deleteStorageLocation,
-                location.nazwa,
-              )}
-              disabled={!canDelete}
-            >
-              <TrashIcon aria-hidden="true" size={18} />
-              {deleteStorageLabel}
-            </ConfirmDeleteButton>
-          </form>
+          <StorageLocationL2DeleteDialog
+            storageLocationL2Id={location.id}
+            storageLocationL2Name={location.nazwa}
+          />
         </div>
       ) : null}
 
