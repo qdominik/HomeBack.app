@@ -305,12 +305,16 @@ test("M4D.6 loads context lazily and uses one final server-side RPC", () => {
     "utf8",
   );
   const actions = readFileSync("src/app/(app)/home/actions.ts", "utf8");
-  const actionStart = actions.indexOf(
+  const normalizedActions = actions.replace(/\r\n/g, "\n");
+  const actionStart = normalizedActions.indexOf(
     "export async function deleteStorageLocationL2WithResolution",
   );
   const actionEnd =
-    actions.indexOf("\n}\n\nasync function parentLocationContext", actionStart) + 2;
-  const finalAction = actions.slice(actionStart, actionEnd);
+    normalizedActions.indexOf(
+      "\n}\n\nasync function parentLocationContext",
+      actionStart,
+    ) + 2;
+  const finalAction = normalizedActions.slice(actionStart, actionEnd);
 
   assert.match(dialog, /getStorageLocationL2DeletionContext/);
   assert.match(dialog, /deleteStorageLocationL2WithResolution/);
