@@ -1,95 +1,163 @@
-# Audyt dostępności i responsywności — HomeBack.app
+﻿# Audyt dostępności i responsywności — HomeBack.app
 
-Data audytu: 2026-07-25  
-Zakres kodu: `a04203b066acf7c63f12f7f60e4e78a8497cfd8a` (`audit/accessibility-responsive`)  
-Uruchomienie: lokalnie, `http://127.0.0.1:3002`  
+Data: 2026-07-25
+Branch: `audit/accessibility-responsive`
+Środowisko: `http://127.0.0.1:3002`
 Zmiany produkcyjne: brak
 
-## Metoda i ograniczenia
+## Zakres i ograniczenia
 
-- Sprawdzono odpowiedzi działającej aplikacji dla: `/login`, `/register`, `/dashboard`, `/home`, `/items`, `/categories`, `/documents`, `/family`, `/settings`.
-- `/login` i `/register` zwracają `200`; trasy chronione zwracają `307` do `/login` dla niezalogowanej osoby. To potwierdza działanie ochrony tras, ale nie pozwala obejrzeć danych gospodarstwa bez konta testowego.
-- Serwer uruchomiono na porcie 3002 bez resetowania Supabase. Kod audytowany w worktree i katalog z zależnościami lokalnymi mają ten sam commit `a04203b`.
-- Inspekcja interakcji w przeglądarce została zablokowana przez sandbox środowiska (proces kontroli przeglądarki nie uruchamia się). Wnioski oznaczone jako **fakt** pochodzą z uruchomionej aplikacji lub jednoznacznej inspekcji kodu/arkuszy stylów; **hipotezy** wymagają krótkiej weryfikacji ręcznej po zalogowaniu. Nie są to wyniki automatycznego testu czytnikiem ekranu ani zrzuty z fizycznych viewportów.
+Sprawdzono odpowiedzi aplikacji dla `/login`, `/register`, `/dashboard`, `/home`, `/items`, `/categories`, `/documents`, `/family` i `/settings`. `/login` oraz `/register` zwracały 200; trasy chronione kierowały niezalogowanego użytkownika do `/login`.
 
-## Podsumowanie
+Nie wykonano manualnego testu wizualnego ani obsługi klawiaturą z powodu ograniczenia środowiska kontroli przeglądarki i braku sesji testowej. Nie resetowano Supabase i nie wykonywano operacji zapisu. Analiza kodu nie jest równoważna ręcznemu testowi aplikacji.
 
-| Priorytet | Liczba | Znaczenie |
-| --- | ---: | --- |
-| P0 | 0 | Blokada krytycznej czynności |
-| P1 | 3 | Istotna bariera dostępności lub podstawowej użyteczności |
-| P2 | 3 | Poważna niedogodność / niespełnione dobre praktyki |
-| P3 | 2 | Usprawnienie lub kwestia estetyczna |
+## Klasyfikacja
 
-## Ustalenia
+### A. Potwierdzone problemy dostępności
 
-### P1 — focus klawiaturowy jest celowo usunięty dla współdzielonych przycisków i nawigacji
+A11, A12, A13, A14, A15 — szczegóły poniżej.
 
-**Fakt.** Globalny selektor `:focus-visible` definiuje obrys, lecz `buttonClassName()` i linki głównej nawigacji dodają klasę `focus-visible:outline-none`. Ta klasa ma większą swoistość i usuwa jedyny wskaźnik focusu. Dotyczy to m.in. przycisków dialogów usuwania, akcji w strukturze domu, przycisków kart Rzeczy i odnośników w menu. Osoba poruszająca się klawiaturą może nie widzieć aktualnej pozycji focusu.
+### B. Potwierdzone problemy responsywności
 
-**Rekomendacja:** zachować obrys albo dodać równoważny wskaźnik (`focus-visible:ring-2`, kontrastujący pierścień i `ring-offset`). Sprawdzić pełną sekwencję Tab/Shift+Tab w `/home`, `/items` i menu.
+R01 — ustalenie z breakpointów w kodzie; nie jest wynikiem ręcznego testu viewportu.
 
-### P1 — komunikaty błędów po przekierowaniu nie są ogłaszane technologiom asystującym
+### C. Luka funkcjonalna (poza zakresem accessibility fix)
 
-**Fakt.** Ekrany logowania i rejestracji renderują błąd jako zwykły element `p`; analogicznie błędy, sukcesy i błędy odczytu w `/items` są zwykłymi `p`. Nie mają `role="alert"`, `role="status"` ani `aria-live`. Po błędzie akcji serwerowej focus także nie jest kierowany na komunikat lub nagłówek błędu.
+F01 — filtry kategorii i pomieszczenia są wymaganiem MVP, ale formularz filtrów nie jest renderowany ani obsługiwany przez `/items`.
 
-**Wpływ:** użytkownik czytnika ekranowego może nie dowiedzieć się, że operacja się nie udała, zwłaszcza po przekierowaniu.
+### D. Hipotezy wymagające ręcznego sprawdzenia
 
-**Rekomendacja:** użyć wspólnego komponentu alertu z właściwą żywą strefą (`alert` dla błędów, `status` dla sukcesów) i po powrocie z akcji ustawić focus na komunikacie albo na `h1` z informacją o błędzie.
+H01 — niespójna wartość statusu w nieużywanym komponencie filtrów może uniemożliwić filtrowanie po „zużyte”.
 
-### P1 — komponent filtrów Rzeczy nie jest renderowany na stronie `/items`
+### E. Kwestie estetyczne
 
-**Fakt.** `src/components/items/item-filters.tsx` udostępnia wyszukiwanie i filtry kategorii, statusu oraz lokalizacji, lecz `src/app/(app)/items/page.tsx` go nie importuje ani nie renderuje. Widoczne są tylko trzy przełączniki widoku (wszystkie / bez lokalizacji / archiwalne). Nie ma też obsługi parametrów tych filtrów w typie `searchParams` strony.
+R01 ma głównie charakter ergonomiczno-estetyczny.
 
-**Wpływ:** podstawowe odnajdywanie rzeczy przez filtry nie jest dostępne w module Rzeczy; przy większym zbiorze danych istotnie pogarsza to obsługę klawiaturą, dotykiem i ogólną użyteczność.
+## Weryfikacja viewportów
 
-**Rekomendacja:** zdecydować, czy filtry są funkcją MVP. Jeśli tak, wyrenderować formularz, obsłużyć jego parametry po stronie serwera i zachować etykiety formularza oraz przycisk czyszczenia.
+| Szerokość | Sprawdzone w działającej aplikacji | Tylko analiza kodu | Nieweryfikowane |
+| ---: | --- | --- | --- |
+| 320 px | brak manualnego testu | `px-4`, płynne szerokości, dialog `calc(100%-2rem)` | rzeczywisty overflow i czytelność |
+| 375 px | brak manualnego testu | jak wyżej, zawijanie nagłówka | overflow i kolejność focusu |
+| 768 px | brak manualnego testu | karty Rzeczy pozostają w 1 kolumnie do `lg` | wykorzystanie przestrzeni i dotyk |
+| 1024 px | brak manualnego testu | `lg` przełącza karty na 2 kolumny | rzeczywiste formularze/dialogi |
 
-### P2 — kontrast tekstu zastępczego nie spełnia poziomu AA
+## Tabela wszystkich 8 ustaleń
 
-**Fakt.** Zmienna `--placeholder: #999999` jest stosowana na białym tle kontrolek. Jej kontrast względem `#ffffff` wynosi około **2.85:1**, poniżej wymaganego dla zwykłego tekstu **4.5:1**. Placeholder nie zastępuje etykiety, ale gdy jest widoczny, powinien pozostać czytelny.
+| ID | Priorytet | Obszar | Problem | Wpływ | Właściciel | Niezależnie? | Nakład |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| A11 | P1 | Focus, `/home`, `/items`, `AppShell`, `Button` | `focus-visible:outline-none` usuwa widoczny focus. | Utrata orientacji klawiatury. | Zespół A | TAK | lekki |
+| A12 | P1 | Komunikaty, `/login`, `/register`, `/items` | Błędy/sukcesy są zwykłymi `p`, bez live regionu i focusu. | Czytnik może nie ogłosić wyniku. | Zespół A | TAK | średni |
+| F01 | P1 | Funkcjonalność, `/items`, `ItemFilters` | Wymagane MVP filtry nie są renderowane/obsługiwane. | Trudne odnajdywanie rzeczy. | Zespół A + właściciel produktu | NIE | średni |
+| A13 | P2 | Kontrast, formularze, `globals.css` | `#999999` na białym tle daje ok. 2.85:1. | Słaba czytelność placeholderów. | Zespół A | TAK | lekki |
+| A14 | P2 | Klawiatura, `AppShell` | Brak skip linku przed 7 pozycjami menu. | Dłuższa nawigacja do treści. | Zespół A | TAK | lekki |
+| A15 | P2 | Formularz Rzeczy, `ItemForm` | `quickCategoryFeedback` to zwykły `p`. | Wynik asynchroniczny tylko wizualny. | Zespół A | TAK | lekki |
+| R01 | P3 | Responsywność, `/items` | Dwie kolumny kart dopiero od 1024 px. | Niewykorzystana przestrzeń na 768 px. | Zespół A | TAK | lekki |
+| H01 | P3 | Hipoteza, `item-filters.tsx` | Status „zużyte” ma niespójne kodowanie. | Filtr może nie zwrócić wyników po F01. | Zespół A | NIE | lekki |
 
-**Rekomendacja:** zastosować ciemniejszy kolor, co najmniej odpowiadający kontrastowi 4.5:1, i zweryfikować w stanach focus oraz disabled.
+## Szczegóły problemów
 
-### P2 — brak skrótu „przejdź do treści” przed długą nawigacją
+### A11 — niewidoczny focus wspólnych przycisków i menu
 
-**Fakt.** `AppShell` renderuje siedem linków nawigacyjnych przed `main`; nie ma odnośnika pomijającego nagłówek. Na każdej trasie aplikacyjnej osoba korzystająca z klawiatury musi przejść przez logo, wylogowanie i wszystkie pozycje menu, aby dotrzeć do treści.
+- **Trasa/komponent:** `/home`, `/items`, `AppShell`, `src/components/ui/button.tsx`.
+- **Metoda:** analiza kodu; nie test manualny. **Viewport:** wszystkie, bez manualnego pomiaru.
+- **Kroki:** wejść na chronioną trasę i naciskać Tab do przycisku z `buttonClassName()` lub linku menu.
+- **Aktualne:** `focus-visible:outline-none` usuwa globalny obrys bez gwarantowanego zamiennika.
+- **Oczekiwane:** każdy element interaktywny ma widoczny, kontrastowy focus.
+- **Wpływ:** ryzyko aktywacji niewłaściwej akcji.
+- **Rekomendacja:** usunąć nadpisanie lub dodać jednolity `focus-visible:ring`.
+- **Ryzyko regresji:** zmiana geometrii; sprawdzić 320/375 px. **Zespół:** A. **Niezależne:** TAK. **Nakład:** lekki.
 
-**Rekomendacja:** dodać pierwszy, widoczny po focusie link do unikalnego `id` na `main`.
+### A12 — nieogłaszane komunikaty operacji
 
-### P2 — „Zapisz kategorię” raportuje wynik tylko wizualnie
+- **Trasa/komponent:** `/login`, `/register`, `/items`, strony auth i `ItemsPage`.
+- **Metoda:** analiza kodu; bez manualnego testu czytnikiem. **Viewport:** wszystkie, bez manualnego pomiaru.
+- **Kroki:** wysłać błędny formularz lub wejść na URL z `?error=...` i obserwować komunikat/focus.
+- **Aktualne:** zwykły `p`, brak `role="alert"`, `role="status"`, `aria-live` i zarządzania focusem.
+- **Oczekiwane:** alert/status jest ogłoszony, focus trafia do komunikatu lub nagłówka.
+- **Wpływ:** wynik może być niewidoczny dla czytnika.
+- **Rekomendacja:** wspólny komponent live regionów i przewidywalny focus.
+- **Ryzyko regresji:** podwójne ogłaszanie; sprawdzić wszystkie statusy. **Zespół:** A. **Niezależne:** TAK. **Nakład:** średni.
 
-**Fakt.** `ItemForm` wyświetla `quickCategoryFeedback` jako zwykły `p` bez `role` lub `aria-live`; po dodaniu kategorii nie przenosi focusu do nowo wybranej opcji ani nie ogłasza sukcesu/błędu. Dotyczy zarówno komunikatu o brakującej nazwie, jak i wyniku operacji asynchronicznej.
+### F01 — brak wymaganych filtrów Rzeczy
 
-**Rekomendacja:** zastosować `role="status"` dla sukcesu i `role="alert"` dla błędu; po sukcesie pozostawić focus w przewidywalnym miejscu i potwierdzić nowy wybór.
+- **Trasa/komponent:** `/items`, `src/components/items/item-filters.tsx`, `ItemsPage`.
+- **Metoda:** analiza kodu oraz decyzja właściciela o wymaganiu MVP. **Viewport:** wszystkie, bez manualnego pomiaru.
+- **Kroki:** wejść na `/items`, szukać filtrów kategorii/pomieszczenia i sprawdzić `searchParams` strony.
+- **Aktualne:** komponent nie jest importowany/renderowany; parametry nie są parsowane.
+- **Oczekiwane:** filtrowanie po kategorii i pomieszczeniu, czyszczenie i utrzymanie parametrów URL.
+- **Wpływ:** luka MVP, trudne odnajdywanie danych.
+- **Rekomendacja:** osobne zadanie funkcjonalne: formularz, parser i filtrowanie serwerowe.
+- **Ryzyko regresji:** konflikt z widokami archiwalnych/bez lokalizacji; potrzebne testy. **Zespół:** A + właściciel produktu. **Niezależne:** NIE. **Nakład:** średni.
 
-### P3 — pojedyncza kolumna kart Rzeczy na tablecie wykorzystuje przestrzeń słabo
+### A13 — kontrast placeholdera
 
-**Fakt.** Siatka kart na `/items` przełącza się na dwie kolumny dopiero od `lg` (1024 px); przy 768 px pozostaje jedną kolumną w kontenerze o szerokości około 720 px. Karty mają mało treści i w tym zakresie pozostaje dużo niewykorzystanej przestrzeni.
+- **Trasa/komponent:** formularze auth/Rzeczy/Domu/Kategorii, `globals.css`.
+- **Metoda:** analiza kodu i obliczenie kontrastu; bez pomiaru DOM. **Viewport:** wszystkie, bez manualnego pomiaru.
+- **Kroki:** wyświetlić pustą kontrolkę z placeholderem i zmierzyć `#999999` względem `#ffffff`.
+- **Aktualne:** ok. 2.85:1.
+- **Oczekiwane:** co najmniej 4.5:1 dla zwykłego tekstu.
+- **Wpływ:** gorsza czytelność podpowiedzi.
+- **Rekomendacja:** przyciemnić placeholder i sprawdzić disabled/focus.
+- **Ryzyko regresji:** zatarcie hierarchii tekstu. **Zespół:** A. **Niezależne:** TAK. **Nakład:** lekki.
 
-**Kwestia estetyczna / użyteczność, nie błąd dostępności.** Rozważyć dwie kolumny od `md` po ręcznej kontroli długości nazw i formularza edycji.
+### A14 — brak skip linku
 
-### P3 — filtr w nieużywanym komponencie ma niespójny zapis wartości statusu
+- **Trasa/komponent:** wszystkie chronione trasy, `AppShell`.
+- **Metoda:** analiza kodu; nie test manualny. **Viewport:** wszystkie, bez manualnego pomiaru.
+- **Kroki:** wejść na trasę i naciskać Tab od początku dokumentu.
+- **Aktualne:** focus przechodzi przez logo, wylogowanie i 7 pozycji menu przed `main`.
+- **Oczekiwane:** pierwszy focusowalny element przechodzi bezpośrednio do `main`.
+- **Wpływ:** powtarzalny koszt nawigacji.
+- **Rekomendacja:** skip link oraz unikalne `id` na `main`.
+- **Ryzyko regresji:** zasłonięcie nagłówka lub zmiana kolejności focusu. **Zespół:** A. **Niezależne:** TAK. **Nakład:** lekki.
 
-**Fakt.** W `item-filters.tsx` wartość opcji „zużyte” jest zapisana jako `"zuĹĽyte"`, podczas gdy statusy w modelu i pozostałych komponentach używają `"zużyte"`. Ponieważ filtr nie jest dziś renderowany, użytkownik nie odczuwa tego bezpośrednio.
+### A15 — nieogłaszany wynik szybkiej kategorii
 
-**Hipoteza do potwierdzenia po włączeniu filtrów:** parametr tej opcji nie dopasuje rekordów o statusie „zużyte”. Należy poprawić kodowanie/wartość i dodać test filtrowania.
+- **Trasa/komponent:** `/items`, `ItemForm`.
+- **Metoda:** analiza kodu; nie test manualny. **Viewport:** wszystkie, bez manualnego pomiaru.
+- **Kroki:** wybrać „inna kategoria”, wpisać nazwę i aktywować „dodaj szybką kategorię”.
+- **Aktualne:** `quickCategoryFeedback` pojawia się jako `p`, focus nie trafia do potwierdzenia.
+- **Oczekiwane:** sukces to `status`, błąd to `alert`, focus jest przewidywalny.
+- **Wpływ:** wynik asynchroniczny jest tylko wizualny.
+- **Rekomendacja:** live region i jawny stan komunikatu.
+- **Ryzyko regresji:** wielokrotne ogłoszenia. **Zespół:** A. **Niezależne:** TAK. **Nakład:** lekki.
 
-## Ocena obszarów objętych audytem
+### R01 — jedna kolumna kart na 768 px
 
-| Obszar | Fakty potwierdzone | Hipotezy / dalsza walidacja |
-| --- | --- | --- |
-| Klawiatura i focus | Semantyczne `button`, `a`, `summary`, `select` i natywny `dialog` są szeroko używane. Focus jest jednak ukryty w części wspólnych akcji (P1). Dialogi zwracają focus do przycisku wyzwalającego po zamknięciu. | Ręcznie przetestować kolejność focusu, Escape i pułapkę focusu we wszystkich wariantach usuwania po zalogowaniu. |
-| Formularze i błędy | Etykiety są prawidłowo powiązane przez zagnieżdżenie pól w `label`; pola wymagane używają natywnego `required`/`minLength`. Błędy przekierowań i szybkie tworzenie kategorii nie są ogłaszane (P1/P2). | Sprawdzić teksty błędów walidacji przeglądarki w języku użytkownika i focus po błędzie serwera. |
-| Dialogi | Dialogi L2/L3 mają `showModal`, `aria-labelledby`, `aria-describedby`, blokują Escape w trakcie wysyłania i przywracają focus do triggera. | Na realnych danych sprawdzić, czy focus po otwarciu trafia na oczekiwany element i czy długi dialog nie ukrywa akcji przy 320 px. |
-| Semantyka / czytniki | Ustawiono `lang="pl"`, landmarki `header`/`nav`/`main`, nazwy nawigacji i `aria-current`. Brakuje skip linku (P2) i żywych regionów w częściach formularzy (P1/P2). | Przejść NVDA + Firefox przez stronę logowania, strukturę domu i kartę Rzeczy po utworzeniu danych testowych. |
-| Kontrast i stany | Widoczny placeholder ma zbyt niski kontrast (P2); disabled jest oznaczony przez `disabled`, zmianę kursora i opacity. Globalny focus ma prawidłową intencję, ale jest nadpisany w części komponentów (P1). | Zmierzyć kontrast tekstu na kolorach statusów i disabled w renderowanych komponentach. |
-| 320/375/768/1024 px | Kod stosuje płynne szerokości, `px-4`, zawijanie nagłówka, przewijaną poziomo nawigację oraz pełnoekranowo bezpieczne dialogi (`w-[calc(100%-2rem)]`, przewijanie pionowe). Karty Rzeczy są 1 kolumną do 1024 px (P3). | Zweryfikować wizualnie bez poziomego overflow na 320 i 375 oraz komfort gęstości treści na 768 i 1024. |
+- **Trasa/komponent:** `/items`, sekcja `grid gap-3 lg:grid-cols-2`.
+- **Metoda:** analiza kodu; nie test manualny. **Viewport:** dotyczy 768 px; pozostałe szerokości tylko z CSS.
+- **Kroki:** otworzyć `/items` przy 768 px z co najmniej dwiema kartami.
+- **Aktualne:** jedna kolumna do breakpointu `lg` (1024 px).
+- **Oczekiwane:** proporcjonalne wykorzystanie tabletu bez ściskania treści.
+- **Wpływ:** dłuższy skan listy i pusta przestrzeń.
+- **Rekomendacja:** rozważyć dwie kolumny od `md` po manualnym sprawdzeniu długich nazw i edycji.
+- **Ryzyko regresji:** ściskanie przycisków/formularzy. **Zespół:** A. **Niezależne:** TAK. **Nakład:** lekki.
 
-## Priorytety napraw
+### H01 — niespójny status w filtrze (hipoteza)
 
-1. Przywrócić wyraźny wskaźnik `:focus-visible` we wspólnym przycisku i menu.
-2. Ujednolicić błędy oraz sukcesy jako dostępne komunikaty dynamiczne z zarządzaniem focusem po akcji.
-3. Podjąć decyzję i przywrócić kompletny, dostępny interfejs filtrów Rzeczy.
-4. Dodać skip link i podnieść kontrast placeholderów.
-5. Po uzyskaniu konta testowego wykonać ręczny przebieg z klawiaturą, NVDA i czterema viewportami; nie klasyfikować hipotez jako potwierdzonych bez tego kroku.
+- **Trasa/komponent:** przyszły formularz `/items`, `item-filters.tsx`.
+- **Metoda:** hipoteza z analizy kodu; ręczne potwierdzenie po F01. **Viewport:** nie dotyczy.
+- **Kroki:** po włączeniu filtrów wybrać „zużyte”, wysłać formularz i porównać parametr z enumem.
+- **Aktualne:** komponent zawiera niespójnie zakodowaną wartość i nie jest używany.
+- **Oczekiwane:** parametr dokładnie odpowiada statusowi i zwraca rekordy.
+- **Wpływ:** potencjalnie pusty wynik.
+- **Rekomendacja:** potwierdzić po F01 i dodać test parsera.
+- **Ryzyko regresji:** ujawnienie innych niespójności domenowych. **Zespół:** A. **Niezależne:** NIE. **Nakład:** lekki.
+
+## Plan mikrozadań
+
+| Zadanie | Właściciel | Nakład | Zależności | Ryzyko konfliktu z A |
+| --- | --- | --- | --- | --- |
+| 1. Dynamiczne komunikaty formularzy i operacji — `aria-live`/`alert` | A | średni | wspólna konwencja komunikatów | wysokie — wiele komponentów |
+| 2. `focus-visible` wspólnych przycisków i kontrolek | A | lekki | brak | średnie — wspólne klasy |
+| 3. `focus-visible` głównej nawigacji | A | lekki | 2 zalecane | średnie — `AppShell` |
+| 4. Skip link i landmarki | A | lekki | brak | średnie — layout |
+| 5. Kontrast placeholderów i disabled | A | lekki | brak | średnie — `globals.css` |
+| 6. Ręczna walidacja dialogów i focus trap | C | średni | sesja i dane testowe | niskie — bez kodu |
+| 7. Ręczna walidacja zalogowanych tras 320/375/768/1024 px | C | średni | sesja testowa | niskie — bez kodu |
+| 8. Filtry Rzeczy — zadanie funkcjonalne poza accessibility fix | A + właściciel produktu | średni | decyzja zakresowa; H01 po implementacji | wysokie — `/items` |
+
+## Rekomendacja odbiorowa
+
+Raport zawiera 8 rzeczywistych ustaleń, rozdziela potwierdzone problemy, lukę funkcjonalną, hipotezę i estetykę oraz jawnie opisuje ograniczenia testu manualnego. Rekomendacja: **READY FOR PR**.
