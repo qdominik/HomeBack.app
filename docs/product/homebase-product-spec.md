@@ -475,6 +475,16 @@ w tym samym gospodarstwie. Ponowna weryfikacja liczby Schowków, unikalnych
 Rzeczy i linków przed mutacją zwraca `DEPENDENCIES_CHANGED`, gdy podsumowanie
 dialogu jest nieaktualne, bez wykonania częściowej operacji.
 
+### Bezpieczne usuwanie Pomieszczenia M4D.7
+
+Pomieszczenie może zostać atomowo usunięte razem ze wszystkimi należącymi do
+niego Meblami i Schowkami. Przed usunięciem wszystkie przypisania Rzeczy w
+poddrzewie muszą zostać przeniesione do jednego Schowka w innym Pomieszczeniu
+albo odpięte. Rekordy Rzeczy nigdy nie są usuwane razem ze strukturą. Operacja
+obejmuje aktywne i archiwalne Rzeczy, respektuje aktywne gospodarstwo i RLS,
+a ponowna weryfikacja liczby Mebli, Schowków, unikalnych Rzeczy i linków chroni
+przed wykonaniem operacji na nieaktualnym podsumowaniu dialogu.
+
 ### Encja: Category
 
 ```text

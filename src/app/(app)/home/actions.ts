@@ -34,6 +34,16 @@ import {
   type StorageLocationL2DeleteResolutionResult,
   type StorageLocationL2DeleteResolutionRpcRow,
 } from "@/lib/home/storage-location-l2-delete-resolution";
+import {
+  buildRoomDeleteTargetOptions,
+  mapRoomDeleteResolutionError,
+  mapRoomDeleteResolutionRow,
+  parseRoomDeleteResolutionInput,
+  roomDeleteResolutionRpcName,
+  type RoomDeleteContextResult,
+  type RoomDeleteResolutionResult,
+  type RoomDeleteResolutionRpcRow,
+} from "@/lib/home/room-delete-resolution";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTemplateOrCustomValue } from "@/lib/templates/normalize-template-value";
@@ -432,44 +442,175 @@ export async function updateRoom(formData: FormData) {
   redirectWithStatus("room_updated");
 }
 
-export async function deleteRoom(formData: FormData) {
-  const roomId = field(formData, "room_id");
+export async function getRoomDeletionContext(
+  value: unknown,
+): Promise<RoomDeleteContextResult> {
+  const parsed = parseLocationDependencySummaryInput({
+    entityType: "room",
+    entityId: value,
+  });
 
-  if (!roomId) {
-    redirectWithError("missing_fields");
+  if (!parsed.ok) {
+    return { ok: false, code: "invalid_delete_resolution" };
   }
 
   const supabase = await createClient();
+  const summaryResponse = await executeLocationDependencySummaryRpc(
+    supabase,
+    parsed.input,
+  );
+
+  if (summaryResponse.error) {
+    const result = mapLocationDependencySummaryError(summaryResponse.error);
+
+    if (result.code === "summary_unavailable") {
+      console.error("Room deletion context summary failed", {
+        code: summaryResponse.error.code,
+      });
+      return { ok: false, code: "context_unavailable" };
+    }
+
+    if (
+      result.code === "auth_required" ||
+      result.code === "active_profile_required" ||
+      result.code === "admin_required" ||
+      result.code === "location_not_available"
+    ) {
+      return { ok: false, code: result.code };
+    }
+
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  const summaryRow = summaryResponse.data?.[0] as
+    | LocationDependencySummaryRpcRow
+    | undefined;
+
+  if (!summaryRow) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  let summary;
+
+  try {
+    summary = mapLocationDependencySummaryRow("room", summaryRow);
+  } catch {
+    return { ok: false, code: "context_unavailable" };
+  }
+
   const profile = await getActiveProfile(supabase);
   requireAdmin(profile.rola);
 
-  const { count, error: countError } = await supabase
-    .from("storage_location_l2")
-    .select("id", { count: "exact", head: true })
-    .eq("room_id", roomId);
-
-  if (countError) {
-    redirectWithError("action_failed");
-  }
-
-  if ((count ?? 0) > 0) {
-    redirectWithError("room_not_empty");
-  }
-
-  const { data, error } = await supabase
+  const { data: rooms, error: roomsError } = await supabase
     .from("room")
-    .delete()
-    .eq("id", roomId)
-    .select("id")
-    .maybeSingle();
+    .select("id, nazwa")
+    .eq("household_id", profile.household_id);
 
-  if (error || !data) {
-    redirectWithError("action_failed");
+  if (roomsError) {
+    return { ok: false, code: "context_unavailable" };
   }
 
-  revalidatePath(routes.home);
-  revalidatePath(routes.items);
-  redirectWithStatus("room_deleted");
+  const sourceRoom = (rooms ?? []).find(
+    (room) => room.id === parsed.input.entityId,
+  );
+
+  if (!sourceRoom) {
+    return { ok: false, code: "location_not_available" };
+  }
+
+  const roomIds = (rooms ?? []).map((room) => room.id);
+  const storageResponse = roomIds.length
+    ? await supabase
+        .from("storage_location_l2")
+        .select("id, nazwa, room_id")
+        .in("room_id", roomIds)
+    : { data: [], error: null };
+
+  if (storageResponse.error) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  const storageIds = (storageResponse.data ?? []).map(
+    (storage) => storage.id,
+  );
+  const positionsResponse = storageIds.length
+    ? await supabase
+        .from("storage_location_l3")
+        .select("id, nazwa, storage_location_l2_id")
+        .in("storage_location_l2_id", storageIds)
+    : { data: [], error: null };
+
+  if (positionsResponse.error) {
+    return { ok: false, code: "context_unavailable" };
+  }
+
+  return {
+    ok: true,
+    context: {
+      summary,
+      sourcePath: sourceRoom.nazwa,
+      targets: buildRoomDeleteTargetOptions(
+        rooms ?? [],
+        storageResponse.data ?? [],
+        positionsResponse.data ?? [],
+        parsed.input.entityId,
+      ),
+    },
+  };
+}
+
+export async function deleteRoomWithResolution(
+  value: unknown,
+): Promise<RoomDeleteResolutionResult> {
+  const parsed = parseRoomDeleteResolutionInput(value);
+
+  if (!parsed.ok) {
+    return parsed;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc(roomDeleteResolutionRpcName, {
+    p_room_id: parsed.input.roomId,
+    p_resolution: parsed.input.resolution,
+    p_target_storage_location_l3_id: parsed.input.targetPositionId,
+    p_expected_storage_location_l2_count:
+      parsed.input.expectedStorageLocationL2Count,
+    p_expected_storage_location_l3_count:
+      parsed.input.expectedStorageLocationL3Count,
+    p_expected_distinct_item_count:
+      parsed.input.expectedDistinctItemCount,
+    p_expected_location_link_count:
+      parsed.input.expectedLocationLinkCount,
+  });
+
+  if (error) {
+    const result = mapRoomDeleteResolutionError(error);
+
+    if (result.code === "delete_unavailable") {
+      console.error("Room deletion resolution RPC failed", {
+        code: error.code,
+      });
+    }
+
+    return result;
+  }
+
+  const row = data?.[0] as RoomDeleteResolutionRpcRow | undefined;
+
+  if (!row) {
+    return { ok: false, code: "delete_unavailable" };
+  }
+
+  try {
+    const summary = mapRoomDeleteResolutionRow(parsed.input, row);
+
+    revalidatePath(routes.home);
+    revalidatePath(routes.items);
+
+    return { ok: true, summary };
+  } catch {
+    return { ok: false, code: "delete_unavailable" };
+  }
 }
 
 export async function createStorageLocationL2(formData: FormData) {
