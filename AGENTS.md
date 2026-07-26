@@ -24,3 +24,27 @@ This project uses a recent Next.js scaffold. Check installed package docs before
 - Before a commit, every agent shows git status --short, git diff --stat, git diff --name-only, git diff --cached --stat, and git diff --cached --name-only.
 - git add ., git add -A, force push, and direct merges to main are prohibited.
 - Commit, branch push, pull request, merge, and tag are separate operations. A stable tag is created only after tests and owner manual acceptance.
+
+## Terminal and environment operations
+
+Terminal usage is allowed for normal project work, including:
+
+- Git inspection and standard branch operations,
+- reading files,
+- running logic tests,
+- running lint and build,
+- checking Supabase status,
+- running database tests when Supabase is already available.
+
+Agents must not independently:
+
+- restart Docker Desktop or Docker Engine,
+- start or stop Docker services,
+- run `supabase start`,
+- run `supabase stop`,
+- run `supabase db reset`,
+- perform system administration or ACL changes.
+
+When one of these restricted operations is required, the agent must stop and ask the owner to execute it manually.
+
+These restrictions do not prohibit normal terminal usage.
