@@ -485,6 +485,19 @@ obejmuje aktywne i archiwalne Rzeczy, respektuje aktywne gospodarstwo i RLS,
 a ponowna weryfikacja liczby Mebli, Schowków, unikalnych Rzeczy i linków chroni
 przed wykonaniem operacji na nieaktualnym podsumowaniu dialogu.
 
+### Finalna weryfikacja cyklu lokalizacji M4D.8
+
+Cykl M4D obejmuje widok „Bez lokalizacji”, podsumowanie zależności oraz atomowe
+`delete`, `detach` i `move` dla Schowka, Mebla i Pomieszczenia. Wszystkie
+poziomy używają aktywnego gospodarstwa, wymagają administratora, chronią
+Rzeczy przed usunięciem i odrzucają cel wewnątrz usuwanego poddrzewa.
+
+M4D.8 nie dodaje nowej funkcji produktowej. Domyka wspólną regresję dialogów,
+integralność `item_location`, izolację gospodarstw, dokumentację oraz końcową
+checklistę ręczną. Szczegółowa macierz znajduje się w
+`docs/decisions/m4d-8-lifecycle-final-verification.md`. Cały M4D można oznaczyć
+jako zamknięty dopiero po pełnym PASS automatycznym i finalnym ręcznym odbiorze.
+
 ### Encja: Category
 
 ```text

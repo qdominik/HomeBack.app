@@ -602,15 +602,14 @@ export async function deleteRoomWithResolution(
   }
 
   try {
-    const summary = mapRoomDeleteResolutionRow(parsed.input, row);
-
-    revalidatePath(routes.home);
-    revalidatePath(routes.items);
-
-    return { ok: true, summary };
+    mapRoomDeleteResolutionRow(parsed.input, row);
   } catch {
     return { ok: false, code: "delete_unavailable" };
   }
+
+  revalidatePath(routes.home);
+  revalidatePath(routes.items);
+  redirectWithStatus("room_deleted");
 }
 
 export async function createStorageLocationL2(formData: FormData) {
@@ -880,18 +879,17 @@ export async function deleteStorageLocationL2WithResolution(
   }
 
   try {
-    const summary = mapStorageLocationL2DeleteResolutionRow(
+    mapStorageLocationL2DeleteResolutionRow(
       parsed.input,
       row,
     );
-
-    revalidatePath(routes.home);
-    revalidatePath(routes.items);
-
-    return { ok: true, summary };
   } catch {
     return { ok: false, code: "delete_unavailable" };
   }
+
+  revalidatePath(routes.home);
+  revalidatePath(routes.items);
+  redirectWithStatus("location_deleted");
 }
 
 async function parentLocationContext(
@@ -1222,13 +1220,12 @@ export async function deleteStorageLocationL3WithResolution(
   }
 
   try {
-    const summary = mapLocationDeleteResolutionRow(parsed.input, row);
-
-    revalidatePath(routes.home);
-    revalidatePath(routes.items);
-
-    return { ok: true, summary };
+    mapLocationDeleteResolutionRow(parsed.input, row);
   } catch {
     return { ok: false, code: "delete_unavailable" };
   }
+
+  revalidatePath(routes.home);
+  revalidatePath(routes.items);
+  redirectWithStatus("position_deleted");
 }
