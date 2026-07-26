@@ -525,6 +525,31 @@ export type Dictionary = {
       household: string;
       account: string;
       export: string;
+      testData: string;
+      testDataTabs: {
+        small: string;
+        medium: string;
+        deletion: string;
+      };
+      testDataDescriptions: {
+        small: string;
+        medium: string;
+        deletion: string;
+      };
+      generate: string;
+      generating: string;
+      envGuard: string;
+      adminGuard: string;
+      feedback: {
+        generated: string;
+        failed: string;
+      };
+      errors: {
+        actionFailed: string;
+        adminRequired: string;
+        productionOnly: string;
+        invalidDataset: string;
+      };
     };
   };
 };

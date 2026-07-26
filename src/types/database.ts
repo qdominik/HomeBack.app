@@ -566,6 +566,10 @@ export type Database = {
         Args: { p_storage_location_l3_id: string };
         Returns: LocationDependencySummaryDatabaseRow[];
       };
+      generate_test_data: {
+        Args: { p_dataset_type: string };
+        Returns: Record<string, unknown>;
+      };
       is_household_admin: {
         Args: { target_household_id: string };
         Returns: boolean;
