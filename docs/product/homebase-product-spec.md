@@ -495,8 +495,10 @@ Rzeczy przed usunięciem i odrzucają cel wewnątrz usuwanego poddrzewa.
 M4D.8 nie dodaje nowej funkcji produktowej. Domyka wspólną regresję dialogów,
 integralność `item_location`, izolację gospodarstw, dokumentację oraz końcową
 checklistę ręczną. Szczegółowa macierz znajduje się w
-`docs/decisions/m4d-8-lifecycle-final-verification.md`. Cały M4D można oznaczyć
-jako zamknięty dopiero po pełnym PASS automatycznym i finalnym ręcznym odbiorze.
+`docs/decisions/m4d-8-lifecycle-final-verification.md`. M4D.8 jest technicznie
+gotowe po PASS automatycznym i E2E, ale cały M4D oczekuje na finalny ręczny odbiór
+właściciela. Dopiero po nim można nadać status formalnego zamknięcia i utworzyć
+stabilny checkpoint.
 
 ### Encja: Category
 

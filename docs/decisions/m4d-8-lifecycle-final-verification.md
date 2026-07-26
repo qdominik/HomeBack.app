@@ -1,6 +1,6 @@
 # M4D.8 — finalna weryfikacja cyklu życia lokalizacji
 
-Status: M4D READY TO CLOSE — finalna weryfikacja zakończona.
+Status: M4D.8 AUTOMATED AND E2E VERIFICATION PASS — READY FOR FINAL MANUAL ACCEPTANCE.
 
 Data: 2026-07-26
 
@@ -137,9 +137,11 @@ E2E nie może zmieniać zachowania aplikacji ani produkcyjnych RPC.
 
 ## 9. Kryteria zamknięcia M4D
 
-Kryteria zostały spełnione dla checkpointu M4D.8; 2 jawne SKIP dotyczą wyłącznie
-braku legalnego fixture przeglądarkowego dla domownika i dziecka i nie są
-nieudanymi testami.
+Automatyczna i E2E weryfikacja M4D.8 zakończyła się PASS; 2 jawne SKIP dotyczą
+wyłącznie braku legalnego fixture przeglądarkowego dla domownika i dziecka i nie
+są nieudanymi testami. Formalne zamknięcie całego M4D wymaga jeszcze finalnego
+ręcznego odbioru właściciela. Ręczny odbiór nie został jeszcze wykonany, a tag
+zamykający M4D nie został utworzony.
 
 - `test:logic`, lint, build, pgTAP i `git diff --check` przechodzą;
 - finalny runner E2E zakończył się wynikiem 13 PASS / 2 SKIP / 0 FAIL;
@@ -148,4 +150,4 @@ nieudanymi testami.
 - wynik test:logic to 158/158 PASS, lint i build są PASS, a pgTAP pozostaje 757/757 PASS;
 - właściciel zaakceptuje checkpoint przed stabilnym tagiem.
 
-Werdykt checkpointu: **M4D READY TO CLOSE**.
+Werdykt checkpointu: **M4D.8 AUTOMATED AND E2E VERIFICATION PASS — READY FOR FINAL MANUAL ACCEPTANCE**.
