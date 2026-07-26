@@ -1,24 +1,21 @@
 import {
   createStorageLocationL2,
-  deleteRoom,
   updateRoom,
 } from "@/app/(app)/home/actions";
 import { EmptyState } from "@/components/empty-state";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
-import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
   resolveEntityLabels,
 } from "@/lib/i18n/entity-labels";
 import type { RoomWithLocations } from "./home-types";
+import { RoomDeleteDialog } from "./room-delete-dialog";
 import { RoomForm } from "./room-form";
 import { StorageLocationL2Card } from "./storage-location-l2-card";
 import { StorageLocationL2Form } from "./storage-location-l2-form";
@@ -40,11 +37,6 @@ const createStorageLabel = resolveEntityActionLabel(
   "create",
   "storage",
 );
-const deleteRoomLabel = resolveEntityActionLabel(
-  activeLocale,
-  "delete",
-  "room",
-);
 
 const orderColumn = "kolejno\u015b\u0107" as const;
 
@@ -53,7 +45,6 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
     (total, location) => total + location.positions.length,
     0,
   );
-  const canDelete = room.locations.length === 0;
 
   return (
     <Card as="article" className="p-5 sm:p-6">
@@ -138,20 +129,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
               </Card>
             </details>
           </div>
-          <form action={deleteRoom}>
-            <input name="room_id" type="hidden" value={room.id} />
-            <ConfirmDeleteButton
-              className={buttonClassName({ variant: "danger" })}
-              confirmationMessage={formatDeleteConfirmation(
-                t.modules.home.confirmations.deleteRoom,
-                room.nazwa,
-              )}
-              disabled={!canDelete}
-            >
-              <TrashIcon aria-hidden="true" size={18} />
-              {deleteRoomLabel}
-            </ConfirmDeleteButton>
-          </form>
+          <RoomDeleteDialog roomId={room.id} roomName={room.nazwa} />
         </div>
       ) : null}
 
