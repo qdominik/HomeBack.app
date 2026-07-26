@@ -3,6 +3,20 @@ export type Dictionary = {
     name: string;
     tagline: string;
   };
+  copy: {
+    action: string;
+    title: string;
+    description: string;
+    name: string;
+    copyStructure: string;
+    copyStorage: string;
+    target: string;
+    unlocated: string;
+    cancel: string;
+    submit: string;
+    pending: string;
+    error: string;
+  };
   navigation: {
     main: string;
     dashboard: string;

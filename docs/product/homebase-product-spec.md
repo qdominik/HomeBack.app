@@ -485,6 +485,10 @@ obejmuje aktywne i archiwalne Rzeczy, respektuje aktywne gospodarstwo i RLS,
 a ponowna weryfikacja liczby Mebli, Schowków, unikalnych Rzeczy i linków chroni
 przed wykonaniem operacji na nieaktualnym podsumowaniu dialogu.
 
+### Kopiowanie encji M4C.1
+
+Administrator może kopiować Pomieszczenia, Meble i Schowki w aktywnym gospodarstwie; domownik może kopiować Rzeczy, a dziecko nie ma tej akcji. Kopia Pomieszczenia może obejmować Meble i Schowki, lecz nigdy Rzeczy ani ich lokalizacji. Kopia Rzeczy ma nowy identyfikator, aktywny status, aktualnego twórcę i najwyżej jedną wybraną główną lokalizację. Historia, logi, pliki i zdjęcia nie są kopiowane.
+
 ### Encja: Category
 
 ```text

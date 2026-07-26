@@ -1,10 +1,12 @@
 import {
+  copyItem,
   archiveItem,
   deleteItemPermanently,
   restoreItem,
   updateItem,
 } from "@/app/(app)/items/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
+import { CopyEntityDialog } from "@/components/copy-entity-dialog";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
@@ -31,6 +33,7 @@ type ItemCardProps = {
   categories: ItemCategoryOption[];
   categoryKey: string | null;
   categoryName: string;
+  canCopy: boolean;
   isAdmin: boolean;
   item: Item;
   location: ItemLocationOption | null;
@@ -81,6 +84,7 @@ export function ItemCard({
   categories,
   categoryKey,
   categoryName,
+  canCopy,
   isAdmin,
   item,
   location,
@@ -206,6 +210,17 @@ export function ItemCard({
                 {t.modules.items.deleteItem}
               </ConfirmDeleteButton>
             </form>
+          ) : null}
+          {canCopy ? (
+            <CopyEntityDialog
+              action={copyItem}
+              kind="item"
+              sourceId={item.id}
+              sourceName={item.nazwa}
+              targetId={location?.id ?? null}
+              targetOptions={location ? [{ id: location.id, label: locationPath ?? "Aktualny Schowek" }] : []}
+              targetLabel="Schowek"
+            />
           ) : null}
         </div>
         {isAdmin && !isArchived ? (

@@ -1,4 +1,5 @@
 import {
+  copyRoom,
   createStorageLocationL2,
   updateRoom,
 } from "@/app/(app)/home/actions";
@@ -9,6 +10,7 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CopyEntityDialog } from "@/components/copy-entity-dialog";
 import { activeLocale, t } from "@/lib/i18n";
 import {
   resolveEntityActionLabel,
@@ -23,6 +25,8 @@ import { StorageLocationL2Form } from "./storage-location-l2-form";
 type RoomCardProps = {
   isAdmin: boolean;
   room: RoomWithLocations;
+  roomOptions?: { id: string; label: string }[];
+  storageOptions?: { id: string; label: string }[];
 };
 
 const entityLabels = resolveEntityLabels(activeLocale);
@@ -40,7 +44,7 @@ const createStorageLabel = resolveEntityActionLabel(
 
 const orderColumn = "kolejno\u015b\u0107" as const;
 
-export function RoomCard({ isAdmin, room }: RoomCardProps) {
+export function RoomCard({ isAdmin, room, roomOptions = [], storageOptions = [] }: RoomCardProps) {
   const positionCount = room.locations.reduce(
     (total, location) => total + location.positions.length,
     0,
@@ -130,6 +134,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
             </details>
           </div>
           <RoomDeleteDialog roomId={room.id} roomName={room.nazwa} />
+          <CopyEntityDialog action={copyRoom} kind="room" sourceId={room.id} sourceName={room.nazwa} structureCount={positionCount + room.locations.length} />
         </div>
       ) : null}
 
@@ -145,6 +150,8 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
                 key={location.id}
                 location={location}
                 roomId={room.id}
+                roomOptions={roomOptions}
+                storageOptions={storageOptions}
               />
             ))}
           </div>

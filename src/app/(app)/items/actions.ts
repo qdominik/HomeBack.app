@@ -414,3 +414,26 @@ export async function createQuickCustomCategory(submittedName: string) {
 
   return result;
 }
+
+export async function copyItem(input: {
+  itemId: string;
+  name: string;
+  targetStorageLocationL3Id: string | null;
+}) {
+  if (!input.itemId || !input.name.trim()) {
+    return { ok: false as const, code: "invalid_input" };
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("copy_item", {
+    p_item_id: input.itemId,
+    p_name: input.name.trim(),
+    p_target_storage_location_l3_id: input.targetStorageLocationL3Id,
+  });
+  if (error || !data) {
+    return { ok: false as const, code: error?.message ?? "copy_failed" };
+  }
+  const row = (Array.isArray(data) ? data[0] : data) as { item_id?: string };
+  return row.item_id
+    ? { ok: true as const, id: row.item_id }
+    : { ok: false as const, code: "copy_failed" };
+}

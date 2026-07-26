@@ -179,6 +179,8 @@ export default async function HomeStructurePage({
     ...room,
     locations: locationsByRoom.get(room.id) ?? [],
   }));
+  const roomOptions = rooms.map((room) => ({ id: room.id, label: room.nazwa }));
+  const storageOptions = (locationsData ?? []).map((location) => ({ id: location.id, label: location.nazwa }));
   const locationCount = rooms.reduce(
     (total, room) => total + room.locations.length,
     0,
@@ -298,7 +300,7 @@ export default async function HomeStructurePage({
       <section className="space-y-5">
         {filteredRooms.length ? (
           filteredRooms.map((room) => (
-            <RoomCard isAdmin={isAdmin} key={room.id} room={room} />
+            <RoomCard isAdmin={isAdmin} key={room.id} room={room} roomOptions={roomOptions} storageOptions={storageOptions} />
           ))
         ) : search.query ? (
           <EmptyState icon={<EntityIcon group="generic" iconKey="generic" size={28} />} text={t.modules.home.search.noResults} />

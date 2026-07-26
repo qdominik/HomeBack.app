@@ -1,4 +1,5 @@
 import {
+  copyFurniture,
   createStorageLocationL3,
   updateStorageLocationL2,
 } from "@/app/(app)/home/actions";
@@ -9,6 +10,7 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CopyEntityDialog } from "@/components/copy-entity-dialog";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveStorageLocationIconKey } from "@/lib/icons/home-structure-icons";
 import {
@@ -25,6 +27,8 @@ type StorageLocationL2CardProps = {
   isAdmin: boolean;
   location: StorageLocationL2WithPositions;
   roomId: string;
+  roomOptions?: { id: string; label: string }[];
+  storageOptions?: { id: string; label: string }[];
 };
 
 const entityLabels = resolveEntityLabels(activeLocale);
@@ -49,6 +53,8 @@ export function StorageLocationL2Card({
   isAdmin,
   location,
   roomId,
+  roomOptions = [],
+  storageOptions = [],
 }: StorageLocationL2CardProps) {
   const iconKey = resolveStorageLocationIconKey(location.typ);
 
@@ -129,6 +135,7 @@ export function StorageLocationL2Card({
             storageLocationL2Id={location.id}
             storageLocationL2Name={location.nazwa}
           />
+          <CopyEntityDialog action={copyFurniture} kind="furniture" sourceId={location.id} sourceName={location.nazwa} targetId={roomId} targetOptions={roomOptions} targetLabel="Pomieszczenie" structureCount={location.positions.length} />
         </div>
       ) : null}
 
@@ -140,6 +147,7 @@ export function StorageLocationL2Card({
               key={position.id}
               locationId={location.id}
               position={position}
+              storageOptions={storageOptions}
             />
           ))}
         </ul>

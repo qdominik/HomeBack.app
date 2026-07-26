@@ -394,6 +394,45 @@ export async function createRoom(formData: FormData) {
   redirectWithStatus("room_created");
 }
 
+type CopyResult = { ok: true; id: string } | { ok: false; code: string };
+
+async function copyRpc(name: string, args: Record<string, unknown>): Promise<CopyResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc(name as never, args as never);
+  if (error || !data) return { ok: false, code: error?.message ?? "copy_failed" };
+  const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown>;
+  const id = Object.values(row).find((value) => typeof value === "string");
+  return typeof id === "string" ? { ok: true, id } : { ok: false, code: "copy_failed" };
+}
+
+export async function copyRoom(input: { roomId: string; name: string; copyStructure: boolean }) {
+  if (!input.roomId || !input.name.trim()) return { ok: false as const, code: "invalid_input" };
+  return copyRpc("copy_room_with_structure", {
+    p_room_id: input.roomId,
+    p_name: input.name.trim(),
+    p_copy_structure: input.copyStructure,
+  });
+}
+
+export async function copyFurniture(input: { storageId: string; targetRoomId: string; name: string; copyStorage: boolean }) {
+  if (!input.storageId || !input.targetRoomId || !input.name.trim()) return { ok: false as const, code: "invalid_input" };
+  return copyRpc("copy_furniture_with_storage", {
+    p_storage_location_l2_id: input.storageId,
+    p_target_room_id: input.targetRoomId,
+    p_name: input.name.trim(),
+    p_copy_storage: input.copyStorage,
+  });
+}
+
+export async function copyStorage(input: { storageId: string; targetFurnitureId: string; name: string }) {
+  if (!input.storageId || !input.targetFurnitureId || !input.name.trim()) return { ok: false as const, code: "invalid_input" };
+  return copyRpc("copy_storage_space", {
+    p_storage_location_l3_id: input.storageId,
+    p_target_storage_location_l2_id: input.targetFurnitureId,
+    p_name: input.name.trim(),
+  });
+}
+
 export async function updateRoom(formData: FormData) {
   const roomId = field(formData, "room_id");
   const nazwa = field(formData, "nazwa");

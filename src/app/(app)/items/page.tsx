@@ -195,6 +195,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     },
   ];
   const isAdmin = profile?.rola === "admin";
+  const canCopy = profile?.rola === "admin" || profile?.rola === "domownik";
   const hasReadError = Boolean(
     itemsResponse.error ||
       categoriesResponse.error ||
@@ -295,7 +296,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
               ) ?? null;
 
             return (
-              <ItemCard
+            <ItemCard
+              canCopy={canCopy}
                 categories={categoryOptions}
                 categoryKey={categoryKeyById.get(item.category_id) ?? null}
                 categoryName={

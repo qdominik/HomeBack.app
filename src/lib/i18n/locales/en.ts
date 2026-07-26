@@ -1,6 +1,20 @@
 import type { Dictionary } from "../types";
 
 export const en: Dictionary = {
+  copy: {
+    action: "Copy",
+    title: "Copy: {name}",
+    description: "Create an independent copy without history or files.",
+    name: "Copy name",
+    copyStructure: "Copy Furniture and Storage spaces",
+    copyStorage: "Copy Storage spaces",
+    target: "Target location",
+    unlocated: "Without location",
+    cancel: "Cancel",
+    submit: "Create copy",
+    pending: "Creating…",
+    error: "Could not create the copy.",
+  },
   app: {
     name: "HomeBack.app",
     tagline: "Everything about your home in one place",

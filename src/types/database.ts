@@ -570,6 +570,22 @@ export type Database = {
         Args: { p_dataset_type: string };
         Returns: Record<string, unknown>;
       };
+      copy_room_with_structure: {
+        Args: { p_room_id: string; p_name: string; p_copy_structure?: boolean };
+        Returns: Record<string, unknown>;
+      };
+      copy_furniture_with_storage: {
+        Args: { p_storage_location_l2_id: string; p_target_room_id: string; p_name: string; p_copy_storage?: boolean };
+        Returns: Record<string, unknown>;
+      };
+      copy_storage_space: {
+        Args: { p_storage_location_l3_id: string; p_target_storage_location_l2_id: string; p_name: string };
+        Returns: Record<string, unknown>;
+      };
+      copy_item: {
+        Args: { p_item_id: string; p_name: string; p_target_storage_location_l3_id?: string | null };
+        Returns: Record<string, unknown>;
+      };
       is_household_admin: {
         Args: { target_household_id: string };
         Returns: boolean;

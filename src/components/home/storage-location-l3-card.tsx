@@ -1,9 +1,10 @@
-import { updateStorageLocationL3 } from "@/app/(app)/home/actions";
+import { copyStorage, updateStorageLocationL3 } from "@/app/(app)/home/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
 import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CopyEntityDialog } from "@/components/copy-entity-dialog";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveEntityActionLabel } from "@/lib/i18n/entity-labels";
 import { resolvePositionIconKey } from "@/lib/icons/home-structure-icons";
@@ -15,6 +16,7 @@ type StorageLocationL3CardProps = {
   isAdmin: boolean;
   locationId: string;
   position: StorageLocationL3;
+  storageOptions?: { id: string; label: string }[];
 };
 
 const editPositionLabel = resolveEntityActionLabel(
@@ -29,6 +31,7 @@ export function StorageLocationL3Card({
   isAdmin,
   locationId,
   position,
+  storageOptions = [],
 }: StorageLocationL3CardProps) {
   return (
     <li className="rounded-control border border-line bg-surface p-4">
@@ -81,6 +84,7 @@ export function StorageLocationL3Card({
             positionId={position.id}
             positionName={position.nazwa}
           />
+          <CopyEntityDialog action={copyStorage} kind="storage" sourceId={position.id} sourceName={position.nazwa} targetId={locationId} targetOptions={storageOptions} targetLabel="Mebel" />
         </div>
       ) : null}
     </li>
