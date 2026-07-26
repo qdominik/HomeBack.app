@@ -602,6 +602,31 @@ fields: {
       household: "Gospodarstwo",
       account: "Konto",
       export: "Eksport",
+      testData: "Dane testowe",
+      testDataTabs: {
+        small: "Mały zestaw",
+        medium: "Średni zestaw",
+        deletion: "Dane do testów usuwania",
+      },
+      testDataDescriptions: {
+        small: "Szybki test pojedynczej struktury: salon z komodą i regałem, kilka przykładowych rzeczy.",
+        medium: "Kilka pomieszczeń z różnymi meblami, schowkami i rzeczami do testowania wyszukiwania i filtrów.",
+        deletion: "Specjalne przypadki do testowania dialogów usuwania: rzeczy z wieloma lokalizacjami, puste schowki.",
+      },
+      generate: "Wygeneruj",
+      generating: "Generowanie...",
+      envGuard: "Generator danych testowych jest dostępny tylko w środowisku deweloperskim.",
+      adminGuard: "Tylko administrator gospodarstwa może generować dane testowe.",
+      feedback: {
+        generated: "Dane testowe zostały wygenerowane.",
+        failed: "Nie udało się wygenerować danych testowych.",
+      },
+      errors: {
+        actionFailed: "Nie udało się wygenerować danych testowych.",
+        adminRequired: "Tylko administrator może generować dane testowe.",
+        productionOnly: "Generator danych testowych jest wyłączony w środowisku produkcyjnym.",
+        invalidDataset: "Nieprawidłowy typ zestawu danych.",
+      },
     },
   },
 };

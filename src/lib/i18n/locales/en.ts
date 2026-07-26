@@ -602,6 +602,31 @@ fields: {
       household: "Household",
       account: "Account",
       export: "Export",
+      testData: "Test data",
+      testDataTabs: {
+        small: "Small set",
+        medium: "Medium set",
+        deletion: "Deletion test data",
+      },
+      testDataDescriptions: {
+        small: "Quick test of a single structure: living room with a chest of drawers and a shelf, a few sample items.",
+        medium: "Several rooms with different furniture, storage spaces and items for testing search and filters.",
+        deletion: "Special cases for testing delete dialogs: items with multiple locations, empty storage spaces.",
+      },
+      generate: "Generate",
+      generating: "Generating...",
+      envGuard: "The test data generator is only available in the development environment.",
+      adminGuard: "Only the household administrator can generate test data.",
+      feedback: {
+        generated: "Test data has been generated.",
+        failed: "Failed to generate test data.",
+      },
+      errors: {
+        actionFailed: "Failed to generate test data.",
+        adminRequired: "Only an administrator can generate test data.",
+        productionOnly: "The test data generator is disabled in the production environment.",
+        invalidDataset: "Invalid dataset type.",
+      },
     },
   },
 };
