@@ -6,6 +6,8 @@ Werdykt: **E2E PASS WITH 2 EXPLICIT SKIPS**
 
 ## Stan finalny po poprawce Team A
 
+Retest wykonano po synchronizacji z `origin/main` po merge PR #9 (`ff6d21791a153bf5a9a5825c1865042b1f3bbeba`).
+
 Regresja `M4D8-E2E-01` zostaĹ‚a naprawiona przez Team A i zweryfikowana peĹ‚nym retestem Team B.
 
 ### Wynik koĹ„cowy
@@ -13,6 +15,7 @@ Regresja `M4D8-E2E-01` zostaĹ‚a naprawiona przez Team A i zweryfikowana peĹ�
 ```text
 E2E M4D.8:       13 PASS / 2 SKIP / 0 FAIL
 PeĹ‚ny E2E z auth: 13 PASS / 2 SKIP / 0 FAIL
+Czas pelnego E2E: 50,4 s
 Flaky:            0
 ```
 
@@ -27,11 +30,11 @@ Powodem jest brak zatwierdzonego legalnego fixture browserowego, ktĂłre tworzy
 
 ## 1. Zakres i baza
 
-- Zdalna baza po `git fetch origin`: `origin/main` = `6d037bf36b0505aeeb46ac48882e6653bc72ec20`.
+- Zdalna baza po `git fetch origin`: `origin/main` = `ff6d21791a153bf5a9a5825c1865042b1f3bbeba`.
 - Worktree: `C:\Users\qdomi\Desktop\HomeBack.worktrees\team-b-e2e`.
 - GaĹ‚Ä…Ĺş wejĹ›ciowa worktree: `test/e2e-regression-foundation` (`fb2323...`); nie miaĹ‚a unikalnej rĂłĹĽnicy wzglÄ™dem aktualnego `origin/main`.
 - GaĹ‚Ä…Ĺş robocza: `test/m4d8-e2e-regression`, utworzona bezpoĹ›rednio z aktualnego `origin/main`.
-- Zmiany sÄ… przeznaczone do osobnego commita Team B; nie wykonano push, PR, merge ani tag.
+- Zmiany sÄ… przeznaczone do osobnego commita Team B; nie wykonano push, PR, merge ani tag przez Team B.
 - Team B nie zmieniĹ‚ kodu domenowego, server actions, RPC, migracji, RLS, typĂłw bazy ani dialogĂłw aplikacji.
 
 Przeczytane ĹşrĂłdĹ‚a kontraktu obejmowaĹ‚y specyfikacjÄ™ produktu, plan cyklu lokalizacji, decyzje M4D.2â€“M4D.7, istniejÄ…cÄ… dokumentacjÄ™ runnera E2E, testy pgTAP i testy logiczne cyklu usuwania oraz aktualne implementacje formularzy, kart i dialogĂłw.
@@ -42,8 +45,8 @@ Przeczytane ĹşrĂłdĹ‚a kontraktu obejmowaĹ‚y specyfikacjÄ™ produktu,
 - Konfiguracja uruchamia prawdziwÄ… aplikacjÄ™ Next.js i uĹĽywa prawdziwego przepĹ‚ywu rejestracji, potwierdzenia wiadomoĹ›ci w Mailpit, logowania i tworzenia gospodarstwa.
 - Bazowy adres testĂłw: `http://127.0.0.1:3108`.
 - RÄ™czny preflight aplikacji:
-  - launcher PID: `31984`;
-  - listener Next.js PID: `35124`;
+  - launcher PID: `30032`;
+  - listener Next.js PID: `31576`;
   - listener zweryfikowany na porcie `3108`;
   - procesy zatrzymano po zakoĹ„czeniu prac, port zostaĹ‚ zwolniony.
 - PeĹ‚ne przebiegi uĹĽywaĹ‚y serwera `webServer` zarzÄ…dzanego przez Playwright.
