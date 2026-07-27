@@ -494,11 +494,17 @@ Rzeczy przed usunięciem i odrzucają cel wewnątrz usuwanego poddrzewa.
 
 M4D.8 nie dodaje nowej funkcji produktowej. Domyka wspólną regresję dialogów,
 integralność `item_location`, izolację gospodarstw, dokumentację oraz końcową
-checklistę ręczną. Szczegółowa macierz znajduje się w
-`docs/decisions/m4d-8-lifecycle-final-verification.md`. M4D.8 jest technicznie
-gotowe po PASS automatycznym i E2E, ale cały M4D oczekuje na finalny ręczny odbiór
-właściciela. Dopiero po nim można nadać status formalnego zamknięcia i utworzyć
-stabilny checkpoint.
+walidację M4D. Szczegółowa macierz znajduje się w
+`docs/decisions/m4d-8-lifecycle-final-verification.md`. Właściciel zatwierdził
+M4D decyzją FINAL MANUAL ACCEPTANCE PASS na podstawie pełnej walidacji
+automatycznej, E2E i przeglądów integracyjnych: `test:logic` 158/158 PASS, lint
+PASS, build PASS, pgTAP 757/757 PASS, M4D automated verification PASS, M4D E2E
+verification 13 PASS / 2 SKIP / 0 FAIL, flaky 0, review PR #9 PASS, review PR
+#10 PASS, poprawki M4D8-E2E-01 PASS oraz brak otwartych problemów P0/P1/P2.
+M4D ma status **M4D READY TO CLOSE**. Dwa jawne browser fixture SKIP dla ról
+Domownik i Dziecko pozostają długiem P3 z powodu braku zatwierdzonego fixture
+bez service role lub obejścia RLS. Stabilny tag nie został jeszcze utworzony, a
+deploy nie został wykonany.
 
 ### Encja: Category
 
