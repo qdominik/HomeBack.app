@@ -56,6 +56,7 @@ const errorMessages: Record<string, string> = {
 
 const statusMessages: Record<string, string> = {
   item_archived: t.modules.items.feedback.itemArchived,
+  item_copied: t.modules.items.feedback.itemCopied,
   item_deleted: t.modules.items.feedback.itemDeleted,
   item_restored: t.modules.items.feedback.itemRestored,
   item_created: t.modules.items.feedback.itemCreated,
@@ -71,7 +72,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const { data: profile } = userId
     ? await supabase
         .from("profile")
-        .select("household_id, rola")
+        .select("household_id, rola, status")
         .eq("id", userId)
         .maybeSingle()
     : { data: null };
@@ -194,7 +195,9 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       view: "archived",
     },
   ];
-  const isAdmin = profile?.rola === "admin";
+  const isAdmin = profile?.rola === "admin" && profile.status === "aktywny";
+  const canCopy = profile?.status === "aktywny" &&
+    (profile.rola === "admin" || profile.rola === "domownik");
   const hasReadError = Boolean(
     itemsResponse.error ||
       categoriesResponse.error ||
@@ -296,6 +299,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
 
             return (
               <ItemCard
+                canCopy={canCopy}
                 categories={categoryOptions}
                 categoryKey={categoryKeyById.get(item.category_id) ?? null}
                 categoryName={

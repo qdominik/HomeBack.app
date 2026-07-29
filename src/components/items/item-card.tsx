@@ -1,17 +1,13 @@
 import {
   archiveItem,
-  deleteItemPermanently,
   restoreItem,
   updateItem,
 } from "@/app/(app)/items/actions";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
-import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
-import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
 import { getArchivedItemRestoreMode } from "@/lib/items/item-archive-restore";
 import {
@@ -24,10 +20,13 @@ import type { Database } from "@/types/database";
 import { ItemForm } from "./item-form";
 import { ItemSubmitButton } from "./item-submit-button";
 import { LegacyItemRestoreForm } from "./legacy-item-restore-form";
+import { CopyItemDialog } from "./copy-item-dialog";
+import { ItemPermanentDeleteDialog } from "./item-permanent-delete-dialog";
 
 type Item = Database["public"]["Tables"]["item"]["Row"];
 
 type ItemCardProps = {
+  canCopy: boolean;
   categories: ItemCategoryOption[];
   categoryKey: string | null;
   categoryName: string;
@@ -78,6 +77,7 @@ function formatDate(value: string) {
 }
 
 export function ItemCard({
+  canCopy,
   categories,
   categoryKey,
   categoryName,
@@ -151,12 +151,20 @@ export function ItemCard({
 
       <div className="mt-4 border-t border-line pt-3">
         <div
-          className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center"
+          className="grid gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-center"
 
         >
           <p className="text-xs leading-5 text-muted">
             {t.modules.items.addedOn}: {formatDate(item.created_at)}
           </p>
+          {canCopy ? (
+            <CopyItemDialog
+              itemId={item.id}
+              itemName={item.nazwa}
+              location={location}
+              locationOptions={locationOptions}
+            />
+          ) : null}
           {isAdmin && !isArchived ? (
             <form action={archiveItem}>
               <input name="item_id" type="hidden" value={item.id} />
@@ -190,22 +198,7 @@ export function ItemCard({
             )
           ) : null}
           {isAdmin ? (
-            <form action={deleteItemPermanently}>
-              <input name="item_id" type="hidden" value={item.id} />
-              <ConfirmDeleteButton
-                className={buttonClassName({
-                  className: "w-full gap-2 sm:w-auto",
-                  variant: "danger",
-                })}
-                confirmationMessage={formatDeleteConfirmation(
-                  t.modules.items.confirmations.deleteItem,
-                  item.nazwa,
-                )}
-              >
-                <TrashIcon aria-hidden="true" size={18} weight="bold" />
-                {t.modules.items.deleteItem}
-              </ConfirmDeleteButton>
-            </form>
+            <ItemPermanentDeleteDialog itemId={item.id} itemName={item.nazwa} />
           ) : null}
         </div>
         {isAdmin && !isArchived ? (

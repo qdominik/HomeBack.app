@@ -2,6 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  canCopyEntity,
+  mapCopyRpcError,
+  parseCopyFurnitureInput,
+  parseCopyRoomInput,
+  parseCopyStorageInput,
+  type CopyActionResult,
+} from "@/lib/copy-entities/copy-contract";
 import { HOME_KIND_OTHER } from "@/lib/home/home-kind-suggestions";
 import { normalizeEntityIconKey } from "@/lib/icons/entity-icon-validation";
 import {
@@ -162,6 +170,106 @@ function requireAdmin(role: ProfileRole) {
   if (role !== "admin") {
     redirectWithError("admin_required");
   }
+}
+
+async function getCopyProfile(supabase: SupabaseClient) {
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+
+  if (!userId) {
+    return { ok: false as const, code: "auth_required" as const };
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profile")
+    .select("rola, status")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error || !profile || profile.status !== "aktywny") {
+    return { ok: false as const, code: "active_profile_required" as const };
+  }
+
+  return { ok: true as const, profile };
+}
+
+export async function copyRoom(value: unknown): Promise<CopyActionResult> {
+  const parsed = parseCopyRoomInput(value);
+  if (!parsed.ok) return { ok: false, code: "invalid_copy_input" };
+
+  const supabase = await createClient();
+  const profile = await getCopyProfile(supabase);
+  if (!profile.ok) return profile;
+  if (!canCopyEntity("room", profile.profile.rola)) {
+    return { ok: false, code: "admin_required" };
+  }
+
+  const { data, error } = await supabase.rpc("copy_room_with_structure", {
+    p_room_id: parsed.input.roomId,
+    p_name: parsed.input.name,
+    p_copy_structure: parsed.input.copyStructure,
+  });
+  const row = data?.[0];
+  if (error || !row?.new_room_id) {
+    return { ok: false, code: mapCopyRpcError(error?.message) };
+  }
+
+  revalidatePath(routes.home);
+  revalidatePath(routes.items);
+  return { ok: true, id: row.new_room_id };
+}
+
+export async function copyFurniture(value: unknown): Promise<CopyActionResult> {
+  const parsed = parseCopyFurnitureInput(value);
+  if (!parsed.ok) return { ok: false, code: "invalid_copy_input" };
+
+  const supabase = await createClient();
+  const profile = await getCopyProfile(supabase);
+  if (!profile.ok) return profile;
+  if (!canCopyEntity("furniture", profile.profile.rola)) {
+    return { ok: false, code: "admin_required" };
+  }
+
+  const { data, error } = await supabase.rpc("copy_furniture_with_storage", {
+    p_storage_location_l2_id: parsed.input.furnitureId,
+    p_target_room_id: parsed.input.targetRoomId,
+    p_name: parsed.input.name,
+    p_copy_storage: parsed.input.copyStorage,
+  });
+  const row = data?.[0];
+  if (error || !row?.new_furniture_id) {
+    return { ok: false, code: mapCopyRpcError(error?.message) };
+  }
+
+  revalidatePath(routes.home);
+  revalidatePath(routes.items);
+  return { ok: true, id: row.new_furniture_id };
+}
+
+export async function copyStorageSpace(value: unknown): Promise<CopyActionResult> {
+  const parsed = parseCopyStorageInput(value);
+  if (!parsed.ok) return { ok: false, code: "invalid_copy_input" };
+
+  const supabase = await createClient();
+  const profile = await getCopyProfile(supabase);
+  if (!profile.ok) return profile;
+  if (!canCopyEntity("storage", profile.profile.rola)) {
+    return { ok: false, code: "admin_required" };
+  }
+
+  const { data, error } = await supabase.rpc("copy_storage_space", {
+    p_storage_location_l3_id: parsed.input.storageId,
+    p_target_storage_location_l2_id: parsed.input.targetFurnitureId,
+    p_name: parsed.input.name,
+  });
+  const row = data?.[0];
+  if (error || !row?.new_storage_id) {
+    return { ok: false, code: mapCopyRpcError(error?.message) };
+  }
+
+  revalidatePath(routes.home);
+  revalidatePath(routes.items);
+  return { ok: true, id: row.new_storage_id };
 }
 
 

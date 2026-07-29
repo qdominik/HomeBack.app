@@ -4,6 +4,12 @@ import { revalidatePath } from "next/cache";
 import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
 import { redirect } from "next/navigation";
 import {
+  canCopyEntity,
+  mapCopyRpcError,
+  parseCopyItemInput,
+  type CopyActionResult,
+} from "@/lib/copy-entities/copy-contract";
+import {
   parseItemType,
   resolveItemQuantity,
 } from "@/lib/items/item-form-values";
@@ -14,6 +20,8 @@ import {
 } from "@/lib/items/item-archive-restore";
 import {
   isValidItemId,
+  toPermanentItemDeletionActionResult,
+  type PermanentItemDeletionActionResult,
   resolvePermanentItemDeletionResult,
 } from "@/lib/items/permanent-item-deletion";
 import { routes } from "@/lib/routes";
@@ -405,6 +413,35 @@ export async function deleteItemPermanently(formData: FormData) {
   redirectWithError("deletion_failed");
 }
 
+export async function deleteItemPermanentlyFromDialog(
+  value: unknown,
+): Promise<PermanentItemDeletionActionResult> {
+  const itemId =
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as { itemId?: unknown }).itemId === "string"
+      ? (value as { itemId: string }).itemId.trim()
+      : "";
+
+  if (!isValidItemId(itemId)) {
+    return { ok: false, code: "invalid_item_id" };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("delete_item_permanently", {
+    p_item_id: itemId,
+  });
+  const result = resolvePermanentItemDeletionResult(data, error);
+
+  if (result === "success") {
+    revalidatePath(routes.items);
+    revalidatePath(routes.dashboard);
+  }
+
+  return toPermanentItemDeletionActionResult(result);
+}
+
 export async function createQuickCustomCategory(submittedName: string) {
   const result = await createCustomCategoryForActiveAdmin(submittedName);
 
@@ -413,4 +450,51 @@ export async function createQuickCustomCategory(submittedName: string) {
   }
 
   return result;
+}
+
+export async function copyItem(value: unknown): Promise<CopyActionResult> {
+  const parsed = parseCopyItemInput(value);
+  if (!parsed.ok) return { ok: false, code: "invalid_copy_input" };
+
+  const supabase = await createClient();
+  const profile = await getCopyProfile(supabase);
+  if (!profile.ok) return profile;
+  if (!canCopyEntity("item", profile.profile.rola)) {
+    return { ok: false, code: "copy_not_allowed" };
+  }
+
+  const { data, error } = await supabase.rpc("copy_item", {
+    p_item_id: parsed.input.itemId,
+    p_name: parsed.input.name,
+    p_target_storage_location_l3_id: parsed.input.targetStorageId,
+  });
+  const row = data?.[0];
+  if (error || !row?.new_item_id) {
+    return { ok: false, code: mapCopyRpcError(error?.message) };
+  }
+
+  revalidatePath(routes.items);
+  revalidatePath(routes.dashboard);
+  return { ok: true, id: row.new_item_id };
+}
+
+async function getCopyProfile(supabase: SupabaseClient) {
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+
+  if (!userId) {
+    return { ok: false as const, code: "auth_required" as const };
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profile")
+    .select("rola, status")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error || !profile || profile.status !== "aktywny") {
+    return { ok: false as const, code: "active_profile_required" as const };
+  }
+
+  return { ok: true as const, profile };
 }
