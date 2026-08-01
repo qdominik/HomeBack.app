@@ -61,6 +61,39 @@ Domyslny adres lokalny:
 
 - `http://127.0.0.1:3000`
 
+## Landing v201
+
+Landing v201 znajduje sie w katalogu `landing-v201`.
+
+Uruchomienie lokalne:
+
+```powershell
+cd C:\Users\qdomi\Desktop\HomeBack.app\landing-v201
+npm.cmd run dev
+```
+
+Nastepnie otworz adres pokazany przez Next.js, zwykle:
+
+- `http://localhost:3000`
+
+Jezeli port `3000` jest zajety, Next.js pokaze kolejny wolny port, np. `http://localhost:3001`.
+
+### Polska wersja landingu
+
+Landing v201 domyslnie renderuje wersje angielska. Polska wersja wlacza sie automatycznie, gdy przegladarka raportuje strefe czasowa:
+
+- `Europe/Warsaw`
+
+Sposob podgladu w Chrome:
+
+1. Otworz landing lokalnie.
+2. Nacisnij `F12`.
+3. W DevTools wybierz `More tools` -> `Sensors`.
+4. W sekcji lokalizacji/strefy czasowej ustaw Polske albo timezone `Europe/Warsaw`, jezeli opcja jest dostepna.
+5. Odswiez strone.
+
+Alternatywnie mozna tymczasowo ustawic systemowa strefe czasowa Windows na Warszawe i odswiezyc strone.
+
 ## Lokalna Baza Dev
 
 Lokalne Supabase przez Supabase CLI + Docker jest obowiazkowym srodowiskiem developerskim dla migracji, RLS i testow bazy.
