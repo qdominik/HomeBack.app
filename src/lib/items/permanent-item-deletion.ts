@@ -1,5 +1,6 @@
 export const permanentItemDeletionResults = [
   "success",
+  "invalid_item_id",
   "auth_required",
   "active_profile_required",
   "admin_required",
@@ -10,6 +11,10 @@ export const permanentItemDeletionResults = [
 
 export type PermanentItemDeletionResult =
   (typeof permanentItemDeletionResults)[number];
+
+export type PermanentItemDeletionActionResult =
+  | { ok: true }
+  | { ok: false; code: Exclude<PermanentItemDeletionResult, "success"> };
 
 const permanentItemDeletionResultSet = new Set<string>(
   permanentItemDeletionResults,
@@ -35,4 +40,10 @@ export function resolvePermanentItemDeletionResult(
   error: unknown,
 ): PermanentItemDeletionResult {
   return error ? "deletion_failed" : normalizePermanentItemDeletionResult(data);
+}
+
+export function toPermanentItemDeletionActionResult(
+  result: PermanentItemDeletionResult,
+): PermanentItemDeletionActionResult {
+  return result === "success" ? { ok: true } : { ok: false, code: result };
 }

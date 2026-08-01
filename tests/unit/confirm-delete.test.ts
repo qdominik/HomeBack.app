@@ -4,10 +4,12 @@ import { test } from "node:test";
 import {
   formatDeleteConfirmation,
   shouldSubmitDelete,
-} from "../../src/lib/confirm-delete";import {
+} from "../../src/lib/confirm-delete";
+import {
   isValidItemId,
   normalizePermanentItemDeletionResult,
   resolvePermanentItemDeletionResult,
+  toPermanentItemDeletionActionResult,
 } from "../../src/lib/items/permanent-item-deletion";
 
 const templates = {
@@ -115,11 +117,73 @@ test("permanent deletion result mapping exposes only the closed contract", () =>
 test("item cards keep archive, restore, and permanent deletion separate", () => {
   const source = readFileSync("src/components/items/item-card.tsx", "utf8");
 
-  assert.equal(source.includes("<ConfirmDeleteButton"), true);
-  assert.equal(source.includes("action={deleteItemPermanently}"), true);
+  assert.equal(source.includes("<ItemPermanentDeleteDialog"), true);
+  assert.equal(source.includes("<ConfirmDeleteButton"), false);
+  assert.equal(source.includes("window.confirm"), false);
+  assert.equal(source.includes("action={deleteItemPermanently}"), false);
   assert.equal(source.includes("action={archiveItem}"), true);
   assert.equal(source.includes("isAdmin && !isArchived"), true);
   assert.equal(source.includes("restoreItem"), true);
+});
+
+test("permanent item delete dialog uses the native app dialog contract", () => {
+  const source = readFileSync(
+    "src/components/items/item-permanent-delete-dialog.tsx",
+    "utf8",
+  );
+
+  assert.equal(source.includes("<dialog"), true);
+  assert.equal(source.includes("window.confirm"), false);
+  assert.equal(source.includes("alert("), false);
+  assert.equal(source.includes("prompt("), false);
+  assert.equal(source.includes("deleteItemPermanentlyFromDialog"), true);
+  assert.equal(source.includes("dialogRef.current?.showModal()"), true);
+  assert.equal(source.includes("onCancel={(event) => {"), true);
+  assert.equal(source.includes("event.preventDefault()"), true);
+  assert.equal(source.includes("onClose={resetAfterClose}"), true);
+  assert.equal(source.includes("triggerRef.current?.focus()"), true);
+  assert.equal(source.includes("isSubmittingRef.current"), true);
+  assert.equal(source.includes("disabled={isSubmitting}"), true);
+  assert.equal(source.includes("router.refresh()"), true);
+  assert.equal(source.includes('params.set("status", "item_deleted")'), true);
+});
+
+test("permanent item delete dialog translations expose the approved labels", () => {
+  const types = readFileSync("src/lib/i18n/types.ts", "utf8");
+  const pl = readFileSync("src/lib/i18n/locales/pl.ts", "utf8");
+  const en = readFileSync("src/lib/i18n/locales/en.ts", "utf8");
+
+  assert.equal(types.includes("itemDelete: {"), true);
+  assert.equal(pl.includes('title: "Usuń rzecz trwale"'), true);
+  assert.equal(pl.includes('confirm: "Usuń trwale"'), true);
+  assert.equal(pl.includes('pending: "Usuwanie..."'), true);
+  assert.equal(en.includes('title: "Permanently delete item"'), true);
+  assert.equal(en.includes('confirm: "Permanently delete"'), true);
+  assert.equal(en.includes('pending: "Deleting..."'), true);
+});
+
+test("permanent item deletion action result keeps success and errors explicit", () => {
+  assert.deepEqual(toPermanentItemDeletionActionResult("success"), { ok: true });
+  assert.deepEqual(toPermanentItemDeletionActionResult("item_has_files"), {
+    ok: false,
+    code: "item_has_files",
+  });
+
+  const source = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+  const actionStart = source.indexOf(
+    "export async function deleteItemPermanentlyFromDialog",
+  );
+  const actionEnd = source.indexOf(
+    "export async function createQuickCustomCategory",
+    actionStart,
+  );
+  const actionSource = source.slice(actionStart, actionEnd);
+
+  assert.equal(actionSource.includes('supabase.rpc("delete_item_permanently"'), true);
+  assert.equal(actionSource.includes("redirectWithStatus"), false);
+  assert.equal(actionSource.includes("redirectWithError"), false);
+  assert.equal(actionSource.includes("revalidatePath(routes.items)"), true);
+  assert.equal(actionSource.includes("revalidatePath(routes.dashboard)"), true);
 });
 
 test("permanent deletion action sends only a validated item id to the RPC", () => {

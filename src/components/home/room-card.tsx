@@ -15,13 +15,16 @@ import {
   resolveEntityLabels,
 } from "@/lib/i18n/entity-labels";
 import type { RoomWithLocations } from "./home-types";
+import { CopyRoomDialog } from "./copy-room-dialog";
 import { RoomDeleteDialog } from "./room-delete-dialog";
 import { RoomForm } from "./room-form";
 import { StorageLocationL2Card } from "./storage-location-l2-card";
 import { StorageLocationL2Form } from "./storage-location-l2-form";
 
 type RoomCardProps = {
+  furnitureOptions: { id: string; label: string; roomId: string }[];
   isAdmin: boolean;
+  roomOptions: { id: string; label: string }[];
   room: RoomWithLocations;
 };
 
@@ -40,7 +43,12 @@ const createStorageLabel = resolveEntityActionLabel(
 
 const orderColumn = "kolejno\u015b\u0107" as const;
 
-export function RoomCard({ isAdmin, room }: RoomCardProps) {
+export function RoomCard({
+  furnitureOptions,
+  isAdmin,
+  roomOptions,
+  room,
+}: RoomCardProps) {
   const positionCount = room.locations.reduce(
     (total, location) => total + location.positions.length,
     0,
@@ -88,7 +96,7 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
       </header>
 
       {isAdmin ? (
-        <div className="mt-5 grid gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
+        <div className="mt-5 grid items-start gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <details>
               <summary
@@ -128,8 +136,16 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
                 />
               </Card>
             </details>
+            <CopyRoomDialog
+              furnitureCount={room.locations.length}
+              roomId={room.id}
+              roomName={room.nazwa}
+              storageCount={positionCount}
+            />
           </div>
-          <RoomDeleteDialog roomId={room.id} roomName={room.nazwa} />
+          <div className="self-start">
+            <RoomDeleteDialog roomId={room.id} roomName={room.nazwa} />
+          </div>
         </div>
       ) : null}
 
@@ -141,10 +157,12 @@ export function RoomCard({ isAdmin, room }: RoomCardProps) {
           <div className="mt-4 space-y-3">
             {room.locations.map((location) => (
               <StorageLocationL2Card
+                furnitureOptions={furnitureOptions}
                 isAdmin={isAdmin}
                 key={location.id}
                 location={location}
                 roomId={room.id}
+                roomOptions={roomOptions}
               />
             ))}
           </div>
