@@ -62,15 +62,18 @@ const errorMessages: Record<string, string> = {
 };
 
 const statusMessages: Record<string, string> = {
+  furniture_copied: t.modules.home.statuses.locationCopied,
   location_created: t.modules.home.statuses.locationCreated,
   location_deleted: t.modules.home.statuses.locationDeleted,
   location_updated: t.modules.home.statuses.locationUpdated,
   position_created: t.modules.home.statuses.positionCreated,
   position_deleted: t.modules.home.statuses.positionDeleted,
   position_updated: t.modules.home.statuses.positionUpdated,
+  room_copied: t.modules.home.statuses.roomCopied,
   room_created: t.modules.home.statuses.roomCreated,
   room_deleted: t.modules.home.statuses.roomDeleted,
   room_updated: t.modules.home.statuses.roomUpdated,
+  storage_copied: t.modules.home.statuses.positionCopied,
 };
 
 function CompactHomeStat({ icon, label, value }: CompactHomeStatProps) {
@@ -117,7 +120,7 @@ export default async function HomeStructurePage({
   const { data: profile } = userId
     ? await supabase
         .from("profile")
-        .select("household_id, rola")
+        .select("household_id, rola, status")
         .eq("id", userId)
         .maybeSingle()
     : { data: null };
@@ -193,7 +196,16 @@ export default async function HomeStructurePage({
       ),
     0,
   );
-  const isAdmin = profile?.rola === "admin";
+  const isAdmin = profile?.rola === "admin" && profile.status === "aktywny";
+  const copyRoomOptions = rooms.map((room) => ({
+    id: room.id,
+    label: room.nazwa,
+  }));
+  const copyFurnitureOptions = (locationsData ?? []).map((location) => ({
+    id: location.id,
+    label: location.nazwa,
+    roomId: location.room_id,
+  }));
   const filteredRooms = filterHomeStructure(rooms, search) as RoomWithLocations[];
   const filteredLocationCount = filteredRooms.reduce(
     (total, room) => total + room.locations.length,
@@ -298,7 +310,13 @@ export default async function HomeStructurePage({
       <section className="space-y-5">
         {filteredRooms.length ? (
           filteredRooms.map((room) => (
-            <RoomCard isAdmin={isAdmin} key={room.id} room={room} />
+            <RoomCard
+              furnitureOptions={copyFurnitureOptions}
+              isAdmin={isAdmin}
+              key={room.id}
+              room={room}
+              roomOptions={copyRoomOptions}
+            />
           ))
         ) : search.query ? (
           <EmptyState icon={<EntityIcon group="generic" iconKey="generic" size={28} />} text={t.modules.home.search.noResults} />

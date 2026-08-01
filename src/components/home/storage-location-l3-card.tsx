@@ -8,13 +8,17 @@ import { activeLocale, t } from "@/lib/i18n";
 import { resolveEntityActionLabel } from "@/lib/i18n/entity-labels";
 import { resolvePositionIconKey } from "@/lib/icons/home-structure-icons";
 import type { StorageLocationL3 } from "./home-types";
+import { CopyStorageDialog } from "./copy-storage-dialog";
 import { StorageLocationL3DeleteDialog } from "./storage-location-l3-delete-dialog";
 import { StorageLocationL3Form } from "./storage-location-l3-form";
 
 type StorageLocationL3CardProps = {
+  furnitureOptions: { id: string; label: string; roomId: string }[];
   isAdmin: boolean;
   locationId: string;
   position: StorageLocationL3;
+  roomId: string;
+  roomOptions: { id: string; label: string }[];
 };
 
 const editPositionLabel = resolveEntityActionLabel(
@@ -26,9 +30,12 @@ const editPositionLabel = resolveEntityActionLabel(
 const orderColumn = "kolejno\u015b\u0107" as const;
 
 export function StorageLocationL3Card({
+  furnitureOptions,
   isAdmin,
   locationId,
   position,
+  roomId,
+  roomOptions,
 }: StorageLocationL3CardProps) {
   return (
     <li className="rounded-control border border-line bg-surface p-4">
@@ -77,6 +84,14 @@ export function StorageLocationL3Card({
               />
             </Card>
           </details>
+          <CopyStorageDialog
+            furniture={furnitureOptions}
+            initialFurnitureId={locationId}
+            initialRoomId={roomId}
+            rooms={roomOptions}
+            storageId={position.id}
+            storageName={position.nazwa}
+          />
           <StorageLocationL3DeleteDialog
             positionId={position.id}
             positionName={position.nazwa}

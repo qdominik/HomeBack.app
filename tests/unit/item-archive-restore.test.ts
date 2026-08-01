@@ -94,7 +94,8 @@ test("archived item UI keeps permanent deletion and separates legacy restore", (
     "utf8",
   );
 
-  assert.equal(cardSource.includes("action={deleteItemPermanently}"), true);
+  assert.equal(cardSource.includes("<ItemPermanentDeleteDialog"), true);
+  assert.equal(cardSource.includes("action={deleteItemPermanently}"), false);
   assert.equal(cardSource.includes("action={restoreItem}"), true);
   assert.equal(cardSource.includes("<LegacyItemRestoreForm"), true);
   assert.equal(legacySource.includes('value=""'), true);

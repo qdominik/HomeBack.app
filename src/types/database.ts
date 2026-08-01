@@ -480,6 +480,52 @@ export type Database = {
         Args: { p_item_id: string };
         Returns: string;
       };
+      copy_furniture_with_storage: {
+        Args: {
+          p_copy_storage?: boolean;
+          p_name: string;
+          p_storage_location_l2_id: string;
+          p_target_room_id: string;
+        };
+        Returns: {
+          copied_name: string;
+          copied_storage_count: number;
+          new_furniture_id: string;
+        }[];
+      };
+      copy_item: {
+        Args: {
+          p_item_id: string;
+          p_name: string;
+          p_target_storage_location_l3_id?: string | null;
+        };
+        Returns: {
+          copied_name: string;
+          new_item_id: string;
+          target_storage_id: string | null;
+        }[];
+      };
+      copy_room_with_structure: {
+        Args: {
+          p_copy_structure?: boolean;
+          p_name: string;
+          p_room_id: string;
+        };
+        Returns: {
+          copied_furniture_count: number;
+          copied_name: string;
+          copied_storage_count: number;
+          new_room_id: string;
+        }[];
+      };
+      copy_storage_space: {
+        Args: {
+          p_name: string;
+          p_storage_location_l3_id: string;
+          p_target_storage_location_l2_id: string;
+        };
+        Returns: { copied_name: string; new_storage_id: string }[];
+      };
       detach_items_from_room_location: {
         Args: { p_room_id: string };
         Returns: LocationDetachDatabaseRow[];

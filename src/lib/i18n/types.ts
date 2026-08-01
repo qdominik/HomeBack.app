@@ -66,6 +66,45 @@ export type Dictionary = {
     empty: string;
   };
   modules: {
+    copy: {
+      action: string;
+      cancel: string;
+      create: string;
+      copyName: string;
+      error: string;
+      loading: string;
+      noLocation: string;
+      room: {
+        action: string;
+        copyStructure: string;
+        furnitureCount: string;
+        itemsExcluded: string;
+        storageCount: string;
+        title: string;
+      };
+      furniture: {
+        action: string;
+        copyStorage: string;
+        itemsExcluded: string;
+        storageCount: string;
+        targetRoom: string;
+        title: string;
+      };
+      storage: {
+        action: string;
+        itemsExcluded: string;
+        targetFurniture: string;
+        targetRoom: string;
+        title: string;
+      };
+      item: {
+        action: string;
+        targetFurniture: string;
+        targetRoom: string;
+        targetStorage: string;
+        title: string;
+      };
+    };
     items: {
       title: string;
       addItem: string;
@@ -112,6 +151,14 @@ export type Dictionary = {
         unique: string;
         stock: string;
         set: string;
+      };
+      itemDelete: {
+        title: string;
+        description: string;
+        cancel: string;
+        confirm: string;
+        pending: string;
+        error: string;
       };
       furnitureDelete: {
         title: string;
@@ -180,6 +227,7 @@ export type Dictionary = {
         itemArchived: string;
         itemDeleted: string;
         itemRestored: string;
+        itemCopied: string;
       };
       search: string;
       searchPlaceholder: string;
@@ -425,12 +473,15 @@ export type Dictionary = {
         locationCreated: string;
         locationDeleted: string;
         locationUpdated: string;
+        locationCopied: string;
         positionCreated: string;
         positionDeleted: string;
         positionUpdated: string;
+        positionCopied: string;
         roomCreated: string;
         roomDeleted: string;
         roomUpdated: string;
+        roomCopied: string;
       };
     };
     family: {

@@ -16,15 +16,18 @@ import {
   resolveEntityLabels,
 } from "@/lib/i18n/entity-labels";
 import type { StorageLocationL2WithPositions } from "./home-types";
+import { CopyFurnitureDialog } from "./copy-furniture-dialog";
 import { StorageLocationL2DeleteDialog } from "./storage-location-l2-delete-dialog";
 import { StorageLocationL2Form } from "./storage-location-l2-form";
 import { StorageLocationL3Card } from "./storage-location-l3-card";
 import { StorageLocationL3Form } from "./storage-location-l3-form";
 
 type StorageLocationL2CardProps = {
+  furnitureOptions: { id: string; label: string; roomId: string }[];
   isAdmin: boolean;
   location: StorageLocationL2WithPositions;
   roomId: string;
+  roomOptions: { id: string; label: string }[];
 };
 
 const entityLabels = resolveEntityLabels(activeLocale);
@@ -46,9 +49,11 @@ const createPositionLabel = resolveEntityActionLabel(
 const orderColumn = "kolejno\u015b\u0107" as const;
 
 export function StorageLocationL2Card({
+  furnitureOptions,
   isAdmin,
   location,
   roomId,
+  roomOptions,
 }: StorageLocationL2CardProps) {
   const iconKey = resolveStorageLocationIconKey(location.typ);
 
@@ -83,7 +88,7 @@ export function StorageLocationL2Card({
       </div>
 
       {isAdmin ? (
-        <div className="mt-5 grid gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
+        <div className="mt-5 grid items-start gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <details>
               <summary
@@ -124,11 +129,20 @@ export function StorageLocationL2Card({
                 />
               </Card>
             </details>
+            <CopyFurnitureDialog
+              furnitureId={location.id}
+              furnitureName={location.nazwa}
+              initialRoomId={roomId}
+              rooms={roomOptions}
+              storageCount={location.positions.length}
+            />
           </div>
-          <StorageLocationL2DeleteDialog
-            storageLocationL2Id={location.id}
-            storageLocationL2Name={location.nazwa}
-          />
+          <div className="self-start">
+            <StorageLocationL2DeleteDialog
+              storageLocationL2Id={location.id}
+              storageLocationL2Name={location.nazwa}
+            />
+          </div>
         </div>
       ) : null}
 
@@ -136,10 +150,13 @@ export function StorageLocationL2Card({
         <ul className="mt-5 space-y-2 border-t border-line pt-4">
           {location.positions.map((position) => (
             <StorageLocationL3Card
+              furnitureOptions={furnitureOptions}
               isAdmin={isAdmin}
               key={position.id}
               locationId={location.id}
               position={position}
+              roomId={roomId}
+              roomOptions={roomOptions}
             />
           ))}
         </ul>
