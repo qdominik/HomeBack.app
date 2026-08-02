@@ -256,11 +256,28 @@ Preview copy recovery (2026-08-02):
 | `copy_storage_space` | Present; `authenticated` has `EXECUTE`; `SECURITY INVOKER`; empty `search_path` |
 | `copy_item` | Present; `authenticated` has `EXECUTE`; `SECURITY DEFINER`; empty `search_path` |
 | PostgREST schema cache | Safe refresh sent with `NOTIFY pgrst, 'reload schema'` |
-| Room/Furniture/Storage-space/Item copy after recovery | `PENDING` owner/Codex assisted authenticated smoke |
+| Room/Furniture/Storage-space/Item copy after recovery | PASS by owner manual smoke on Preview |
 | Storage | Storage upload is out of scope for this recovery. |
 | Production | Untouched; no production data used. |
 
-The copy failure was caused by Preview schema drift: Vercel deployed application code but did not apply the required Supabase migration. The missing migration has now been applied to Preview. A final authenticated smoke is still required before marking the four copy operations PASS.
+The copy failure was caused by Preview schema drift: Vercel deployed application code but did not apply the required Supabase migration. The missing migration has now been applied to Preview and owner manual smoke confirmed that copy operations work.
+
+Owner smoke after Preview copy recovery (2026-08-02):
+
+| Field | Value |
+| --- | --- |
+| Tester | owner manual |
+| Branch / HEAD | `preview/supabase-hosted-preview` / `59fe8bf docs: record preview copy smoke recovery` |
+| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Modal/layout | PASS |
+| Auth/session | PASS |
+| Room copy | PASS |
+| Furniture copy | PASS |
+| Storage-space copy | PASS |
+| Item copy | PASS |
+| Storage | Storage upload is out of scope. |
+| Production data used | No |
+
 Future smoke evidence should include date, preview URL, commit SHA/tag, Supabase project/ref, tester, scope, and result.
 
 ## Pending confirmations
@@ -272,7 +289,7 @@ Future smoke evidence should include date, preview URL, commit SHA/tag, Supabase
 - Vercel Preview env vars match expected public URL/ref without secrets in repo: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
 - cookies over HTTPS: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
 - CORS/origin policy: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
-- full smoke for `/home`, `/items`, `/categories`: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- full smoke for `/home`, `/items`, `/categories`: owner manual PASS for the current Preview recovery scope,
 - branch protection requiring green `CI / App` before `main` merge: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
 - owner-side GitHub Secret Scanning / push protection: `PENDING` / `[WYMAGA POTWIERDZENIA]`.
 
@@ -310,4 +327,4 @@ For this checkpoint, the following are explicitly out of scope:
 - [ ] CI checks green for the deployed commit under review.
 - [ ] Dependency audit triage accepted for the review window.
 - [ ] Secret scanning owner-side controls planned or enabled.
-- [ ] Full `/home`, `/items`, and `/categories` smoke passed with evidence.
+- [x] Full `/home`, `/items`, and `/categories` smoke passed with evidence.
