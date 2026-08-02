@@ -222,6 +222,45 @@ Preview full-smoke attempt (2026-08-02):
 | Storage | Storage upload is out of scope for this smoke test. |
 
 No application error was confirmed because the Preview UI was not reached. The route smoke remains pending and must be rerun with an interactive browser session or a Preview-specific test configuration and owner-approved synthetic credentials.
+Owner smoke after `ab4249d fix: render copy dialogs as modals` (2026-08-02):
+
+| Field | Value |
+| --- | --- |
+| Tester | owner manual |
+| Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
+| Branch / commit | `preview/supabase-hosted-preview` / `ab4249d` |
+| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Auth/session | PASS |
+| `/home` | PARTIAL |
+| `/items` | PARTIAL |
+| `/categories` | PASS (copying is not in this route's scope) |
+| Copy modal/layout | PASS |
+| Room copy | FAIL |
+| Furniture copy | FAIL |
+| Storage-space copy | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| Item copy | FAIL |
+| Observed error | `Nie udało się utworzyć kopii. Spróbuj ponownie.` |
+| Production data used | No |
+| Storage | Storage upload is out of scope for this smoke test. |
+
+Preview copy recovery (2026-08-02):
+
+| Field | Value |
+| --- | --- |
+| Branch / HEAD | `preview/supabase-hosted-preview` / `ab4249d` |
+| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Migration `0016_m4c1_copy_entities_v2.sql` before recovery | Missing from Preview migration history |
+| Migration action | Applied only `0016_m4c1_copy_entities_v2.sql` to Preview with `supabase db push --linked`; no reset |
+| `copy_room_with_structure` | Present; `authenticated` has `EXECUTE`; `SECURITY INVOKER`; empty `search_path` |
+| `copy_furniture_with_storage` | Present; `authenticated` has `EXECUTE`; `SECURITY INVOKER`; empty `search_path` |
+| `copy_storage_space` | Present; `authenticated` has `EXECUTE`; `SECURITY INVOKER`; empty `search_path` |
+| `copy_item` | Present; `authenticated` has `EXECUTE`; `SECURITY DEFINER`; empty `search_path` |
+| PostgREST schema cache | Safe refresh sent with `NOTIFY pgrst, 'reload schema'` |
+| Room/Furniture/Storage-space/Item copy after recovery | `PENDING` owner/Codex assisted authenticated smoke |
+| Storage | Storage upload is out of scope for this recovery. |
+| Production | Untouched; no production data used. |
+
+The copy failure was caused by Preview schema drift: Vercel deployed application code but did not apply the required Supabase migration. The missing migration has now been applied to Preview. A final authenticated smoke is still required before marking the four copy operations PASS.
 Future smoke evidence should include date, preview URL, commit SHA/tag, Supabase project/ref, tester, scope, and result.
 
 ## Pending confirmations
