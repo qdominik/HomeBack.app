@@ -22,7 +22,7 @@ import {
   parseItemView,
   type ItemView,
 } from "@/lib/items/item-view-filter";
-import { createClient } from "@/lib/supabase/server";
+import { getAppContext } from "@/lib/app-context";
 
 type ItemsPageProps = {
   searchParams: Promise<{
@@ -65,17 +65,7 @@ const statusMessages: Record<string, string> = {
 
 export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
-
-  const { data: profile } = userId
-    ? await supabase
-        .from("profile")
-        .select("household_id, rola, status")
-        .eq("id", userId)
-        .maybeSingle()
-    : { data: null };
+  const { profile, supabase } = await getAppContext();
 
   const currentView = parseItemView(params);
   const itemsQueryBase = supabase

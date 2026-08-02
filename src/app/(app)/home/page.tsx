@@ -18,7 +18,7 @@ import {
   filterHomeStructure,
   parseHomeSearchParams,
 } from "@/lib/home/home-search";
-import { createClient } from "@/lib/supabase/server";
+import { getAppContext } from "@/lib/app-context";
 
 type HomeStructurePageProps = {
   searchParams: Promise<{
@@ -113,25 +113,7 @@ export default async function HomeStructurePage({
 }: HomeStructurePageProps) {
   const params = await searchParams;
   const search = parseHomeSearchParams(params);
-  const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
-
-  const { data: profile } = userId
-    ? await supabase
-        .from("profile")
-        .select("household_id, rola, status")
-        .eq("id", userId)
-        .maybeSingle()
-    : { data: null };
-
-  const { data: household } = profile
-    ? await supabase
-        .from("household")
-        .select("nazwa")
-        .eq("id", profile.household_id)
-        .maybeSingle()
-    : { data: null };
+  const { household, profile, supabase } = await getAppContext();
 
   const { data: roomsData } = await supabase
     .from("room")

@@ -6,7 +6,7 @@ import { CategoryForm } from "@/components/categories/category-form";
 import { EmptyState } from "@/components/empty-state";
 import { ModulePage } from "@/components/module-page";
 import { t } from "@/lib/i18n";
-import { createClient } from "@/lib/supabase/server";
+import { getAppContext } from "@/lib/app-context";
 
 type CategoriesPageProps = {
   searchParams: Promise<{
@@ -34,17 +34,7 @@ export default async function CategoriesPage({
   searchParams,
 }: CategoriesPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
-
-  const { data: profile } = userId
-    ? await supabase
-        .from("profile")
-        .select("household_id, rola")
-        .eq("id", userId)
-        .maybeSingle()
-    : { data: null };
+  const { profile, supabase } = await getAppContext();
 
   const { data: categoriesData } = await supabase
     .from("category")
