@@ -202,6 +202,26 @@ Pending smoke:
 | broader write-path smoke beyond Auth | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
 | no-production-data visibility check | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
 
+Preview full-smoke attempt (2026-08-02):
+
+| Field | Value |
+| --- | --- |
+| Result | `PARTIAL` / `[WYMAGA POTWIERDZENIA]` |
+| Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
+| Branch | `preview/supabase-hosted-preview` |
+| HEAD at test start | `c11b30d docs: document preview deployment contract` |
+| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Tester | `Codex assisted` |
+| Scope | `/home`, `/items`, `/categories` |
+| `/home` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| `/items` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| `/categories` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| Auth/session in this attempt | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| Known blocker | Browser connection failed in the sandbox before the Preview page could be opened. Repository Playwright configuration targets local `127.0.0.1` with local Mailpit and is not configured for this hosted Preview URL. |
+| Production data used | No |
+| Storage | Storage upload is out of scope for this smoke test. |
+
+No application error was confirmed because the Preview UI was not reached. The route smoke remains pending and must be rerun with an interactive browser session or a Preview-specific test configuration and owner-approved synthetic credentials.
 Future smoke evidence should include date, preview URL, commit SHA/tag, Supabase project/ref, tester, scope, and result.
 
 ## Pending confirmations
