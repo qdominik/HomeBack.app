@@ -93,14 +93,25 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
 
   const rooms = roomsResponse.data ?? [];
   const roomIds = rooms.map((room) => room.id);
-  const storageResponse = roomIds.length
-    ? await supabase
-        .from("storage_location_l2")
-        .select("id, nazwa, room_id")
-        .in("room_id", roomIds)
-        .order(orderColumn, { ascending: true })
-        .order("created_at", { ascending: true })
-    : { data: [], error: null };
+  const items = itemsResponse.data ?? [];
+  const itemIds = items.map((item) => item.id);
+  const [storageResponse, primaryLocationsResponse] = await Promise.all([
+    roomIds.length
+      ? supabase
+          .from("storage_location_l2")
+          .select("id, nazwa, room_id")
+          .in("room_id", roomIds)
+          .order(orderColumn, { ascending: true })
+          .order("created_at", { ascending: true })
+      : Promise.resolve({ data: [], error: null }),
+    itemIds.length
+      ? supabase
+          .from("item_location")
+          .select("item_id, storage_location_l3_id")
+          .eq("czy_glowna", true)
+          .in("item_id", itemIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
   const storageLocations = storageResponse.data ?? [];
   const storageIds = storageLocations.map((storage) => storage.id);
   const positionsResponse = storageIds.length
@@ -112,15 +123,6 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         .order("created_at", { ascending: true })
     : { data: [], error: null };
   const positions = positionsResponse.data ?? [];
-  const items = itemsResponse.data ?? [];
-  const itemIds = items.map((item) => item.id);
-  const primaryLocationsResponse = itemIds.length
-    ? await supabase
-        .from("item_location")
-        .select("item_id, storage_location_l3_id")
-        .eq("czy_glowna", true)
-        .in("item_id", itemIds)
-    : { data: [], error: null };
   const primaryLocations = primaryLocationsResponse.data ?? [];
   const categories = categoriesResponse.data ?? [];
   const locationSelectorOptions = buildItemLocationSelectorOptions({

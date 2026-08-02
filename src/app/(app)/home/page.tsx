@@ -115,22 +115,20 @@ export default async function HomeStructurePage({
   const search = parseHomeSearchParams(params);
   const { household, profile, supabase } = await getAppContext();
 
-  const { data: roomsData } = await supabase
-    .from("room")
-    .select("*")
-    .order(orderColumn, { ascending: true })
-    .order("created_at", { ascending: true });
-
-  const roomIds = roomsData?.map((room) => room.id) ?? [];
-  const { data: locationsData } = roomIds.length
-    ? await supabase
-        .from("storage_location_l2")
-        .select("*")
-        .in("room_id", roomIds)
-        .order(orderColumn, { ascending: true })
-        .order("created_at", { ascending: true })
-    : { data: [] };
-
+  const [roomsResponse, locationsResponse] = await Promise.all([
+    supabase
+      .from("room")
+      .select("*")
+      .order(orderColumn, { ascending: true })
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("storage_location_l2")
+      .select("*")
+      .order(orderColumn, { ascending: true })
+      .order("created_at", { ascending: true }),
+  ]);
+  const roomsData = roomsResponse.data;
+  const locationsData = locationsResponse.data;
   const locationIds = locationsData?.map((location) => location.id) ?? [];
   const { data: positionsData } = locationIds.length
     ? await supabase

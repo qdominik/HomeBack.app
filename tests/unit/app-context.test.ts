@@ -39,3 +39,19 @@ test("protected routes reuse the SSR app context without changing access redirec
   assert.match(layout, /if \(!profile\) \{\n    redirect\(`\$\{routes\.register\}\?step=household`\);/);
   assert.match(layout, /if \(!household\) \{\n    redirect\(`\$\{routes\.register\}\?error=household_failed`\);/);
 });
+
+test("SSR page loading keeps dependent location levels ordered and parallelizes independent reads", () => {
+  const home = source("src/app/(app)/home/page.tsx");
+  assert.match(home, /const \[roomsResponse, locationsResponse\] = await Promise\.all\(/);
+  assert.match(home, /\.from\("room"\)/);
+  assert.match(home, /\.from\("storage_location_l2"\)/);
+  assert.match(home, /const locationIds = locationsData\?\.map/);
+  assert.match(home, /\.in\("storage_location_l2_id", locationIds\)/);
+
+  const items = source("src/app/(app)/items/page.tsx");
+  assert.match(items, /const \[itemsResponse, categoriesResponse, roomsResponse\] = await Promise\.all\(/);
+  assert.match(items, /const \[storageResponse, primaryLocationsResponse\] = await Promise\.all\(/);
+  assert.match(items, /\.in\("item_id", itemIds\)/);
+  assert.match(items, /const positionsResponse = storageIds\.length/);
+  assert.match(items, /const primaryLocations = primaryLocationsResponse\.data \?\? \[\]/);
+});
