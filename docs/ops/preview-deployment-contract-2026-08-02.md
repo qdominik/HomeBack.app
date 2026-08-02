@@ -12,12 +12,24 @@ Status: PARTIAL.
 
 This document records the required contract. It does not prove that Vercel, hosted Supabase, DNS, Auth, Storage, cookies, CORS, or GitHub repository settings already match it.
 
+## Known preview deployment
+
+Owner-provided current preview deployment:
+
+- Vercel URL: `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`
+- Supabase: connected to preview deployment
+- Supabase project/ref: `[TO DECIDE]`
+- Supabase region: `[TO DECIDE]`
+- Data retention policy: `[TO DECIDE]`
+
+The URL is now documented. Supabase connection is owner-confirmed, but project identity, region, migration state, Auth settings, Storage settings, and data retention still require explicit verification before preview acceptance.
+
 ## Environment matrix
 
 | Environment | App URL | Supabase project | Data policy | Owner |
 | --- | --- | --- | --- | --- |
 | Local | `http://127.0.0.1:3000` | local Supabase only | local test data only | developer + Team A |
-| Preview | `[TO DECIDE]` explicit HTTPS URL | dedicated preview Supabase project or documented isolated equivalent | no production user data | Platform + Product + Team A |
+| Preview | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` | hosted Supabase connected; project ref and region `[TO DECIDE]` | no production user data | Platform + Product + Team A |
 | Production | `https://my.homeback.app` | production hosted Supabase | real user data | Platform + DBA + Auth owner |
 
 Preview must not share writable production data. If a shared hosted project is proposed, that proposal requires a separate decision record that proves strict isolation and retention boundaries.
@@ -26,7 +38,7 @@ Preview must not share writable production data. If a shared hosted project is p
 
 Preview runtime variables must be set in the hosting provider, not committed to the repo:
 
-- `NEXT_PUBLIC_SITE_URL` = the exact preview HTTPS origin
+- `NEXT_PUBLIC_SITE_URL` = `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`
 - `NEXT_PUBLIC_SUPABASE_URL` = preview Supabase API URL
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` = preview publishable/anon key
 
@@ -120,16 +132,16 @@ Smoke test evidence must include date, preview URL, commit SHA, Supabase project
 
 ## Open decisions
 
-- `[TO DECIDE]` exact preview URL.
-- `[TO DECIDE]` dedicated preview Supabase project/ref and region.
+- Preview URL documented: `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`.
+- `[TO DECIDE]` dedicated preview Supabase project/ref and region; Supabase connection is owner-confirmed.
 - `[TO DECIDE]` preview data retention policy.
 - `[TO DECIDE]` whether preview permits file uploads before the Storage contract is implemented.
 - `[TO DECIDE]` owner of smoke test execution and evidence.
 
 ## Acceptance checklist
 
-- [ ] Preview URL selected and documented.
-- [ ] Preview hosted Supabase project/ref selected and documented.
+- [x] Preview URL selected and documented.
+- [ ] Preview hosted Supabase project/ref and region selected and documented; connection is owner-confirmed.
 - [ ] Preview env vars set in hosting provider with no secrets in repo.
 - [ ] Auth Site URL and redirect allow-list configured.
 - [ ] Cookie behavior verified over HTTPS.
