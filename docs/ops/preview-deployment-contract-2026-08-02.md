@@ -280,6 +280,28 @@ Owner smoke after Preview copy recovery (2026-08-02):
 
 Future smoke evidence should include date, preview URL, commit SHA/tag, Supabase project/ref, tester, scope, and result.
 
+
+Performance measurement checkpoint (2026-08-02):
+
+| Field | Value |
+| --- | --- |
+| Branch / local and deployed HEAD | `preview/supabase-hosted-preview` / `3a5dd237` |
+| Vercel deployment | `READY`; SSR region `iad1`; build region `sfo1` |
+| Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app/` |
+| Supabase ref / region | `yzewupqxkefyvljnfolk` / `eu-west-3 (Paris)` |
+| Patch 2 deployed | Yes; `perf: parallelize SSR page data loading` |
+| Unauthenticated HTTP timing | First request approximately `265–317 ms`; repeated requests approximately `121–142 ms` |
+| Routes measured | `/dashboard`, `/home`, `/items`, `/categories`; all returned `302` without a session |
+| Authenticated SSR timing | Completed with 20 full logged-in navigations; median `load`: `/dashboard` 1087 ms, `/categories` 1377 ms, `/items` 1528 ms, `/home` 1542 ms |
+| Vercel runtime logs | `GET /items` returned `200`; the observed `204` was a helper `HEAD /items` with `source=serverless-middleware` |
+| Main observation | Current SSR optimization is sufficient for this checkpoint; the `204` did not affect the rendered `/items` page |
+| Confidence | `very likely` that `204` was helper `HEAD /items`, not the main HTML render |
+| Next step | Observe only; no Performance Patch 3 and no `preferredRegion` change at this stage |
+| Code/data changes | None; no production data used |
+
+This checkpoint records technical measurements only. The unauthenticated `302` timings must not be treated as measurements of the protected page SSR or Supabase query waterfall. Authenticated measurements are recorded separately in `docs/ops/preview-performance-measurement-2026-08-02.md`.
+
+
 ## Pending confirmations
 
 - production Supabase ref to formally confirm separation: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
