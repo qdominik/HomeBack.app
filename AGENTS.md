@@ -12,6 +12,15 @@ Binding project constraints:
 - User-entered data must never be translated automatically.
 
 This project uses a recent Next.js scaffold. Check installed package docs before relying on older framework conventions.
+## Landing Page Separation
+
+- The sales landing page is a separate project, not part of the HomeBack.app application.
+- The landing page target is `https://homeback.app`; the product application target is `https://my.homeback.app`.
+- Do not commit `landing-v201/` or future landing-page project folders into this app repository.
+- Preferred structure: keep the landing page in its own repository, for example `HomeBack.landing`, with its own `package.json`, deployment, environment variables, and versioning.
+- The HomeBack.app repository remains for the product application: auth, dashboard, Supabase, RLS, and MVP modules.
+- If a temporary landing folder exists inside this workspace, treat it as a workbench only and add/keep it ignored before app commits.
+- Commit landing-page changes in the landing repository, not in this application repository.
 
 ## Parallel Team Work
 

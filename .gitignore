@@ -54,6 +54,10 @@ next-env.d.ts
 /.docker-config
 /homebase-next-scaffold
 
+# landing page workbenches live outside this app repository
+/landing-v*/
+/HomeBack.landing/
+
 .next-dev*.log
 
 # Local owner-controlled project notes
