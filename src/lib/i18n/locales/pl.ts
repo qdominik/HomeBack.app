@@ -656,18 +656,21 @@ fields: {
       export: "Eksport",
       testData: "Dane testowe",
       testDataTabs: {
+        qaSmoke: "QA smoke",
         small: "Mały zestaw",
         medium: "Średni zestaw",
         deletion: "Dane do testów usuwania",
       },
       testDataDescriptions: {
+        qaSmoke: "Idempotentny zestaw QA: pomieszczenia, meble, schowki oraz rzeczy z lokalizacją, bez lokalizacji i archiwalne.",
         small: "Szybki test pojedynczej struktury: salon z komodą i regałem, kilka przykładowych rzeczy.",
         medium: "Kilka pomieszczeń z różnymi meblami, schowkami i rzeczami do testowania wyszukiwania i filtrów.",
         deletion: "Specjalne przypadki do testowania dialogów usuwania: rzeczy z wieloma lokalizacjami, puste schowki.",
       },
       generate: "Wygeneruj",
+      generateQa: "Utwórz dane testowe QA",
       generating: "Generowanie...",
-      envGuard: "Generator danych testowych jest dostępny tylko w środowisku deweloperskim.",
+      envGuard: "Generator danych testowych jest dostępny tylko lokalnie albo w Vercel Preview.",
       adminGuard: "Tylko administrator gospodarstwa może generować dane testowe.",
       feedback: {
         generated: "Dane testowe zostały wygenerowane.",

@@ -656,18 +656,21 @@ fields: {
       export: "Export",
       testData: "Test data",
       testDataTabs: {
+        qaSmoke: "QA smoke",
         small: "Small set",
         medium: "Medium set",
         deletion: "Deletion test data",
       },
       testDataDescriptions: {
+        qaSmoke: "Idempotent QA set: rooms, furniture, storage spaces, and located, unlocated, and archived items.",
         small: "Quick test of a single structure: living room with a chest of drawers and a shelf, a few sample items.",
         medium: "Several rooms with different furniture, storage spaces and items for testing search and filters.",
         deletion: "Special cases for testing delete dialogs: items with multiple locations, empty storage spaces.",
       },
       generate: "Generate",
+      generateQa: "Create QA test data",
       generating: "Generating...",
-      envGuard: "The test data generator is only available in the development environment.",
+      envGuard: "The test data generator is only available locally or in Vercel Preview.",
       adminGuard: "Only the household administrator can generate test data.",
       feedback: {
         generated: "Test data has been generated.",

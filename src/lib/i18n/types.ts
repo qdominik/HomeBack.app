@@ -578,16 +578,19 @@ export type Dictionary = {
       export: string;
       testData: string;
       testDataTabs: {
+        qaSmoke: string;
         small: string;
         medium: string;
         deletion: string;
       };
       testDataDescriptions: {
+        qaSmoke: string;
         small: string;
         medium: string;
         deletion: string;
       };
       generate: string;
+      generateQa: string;
       generating: string;
       envGuard: string;
       adminGuard: string;

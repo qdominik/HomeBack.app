@@ -3,12 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
+import {
+  QA_TEST_DATASET_TYPE,
+  generateQaSmokeTestData,
+  isQaTestDataEnvironment,
+  isSupportedTestDatasetType,
+} from "@/lib/settings/qa-test-data";
 import { createClient } from "@/lib/supabase/server";
 
 function isLocalDevEnvironment(): boolean {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const isLocal = siteUrl.includes("127.0.0.1") || siteUrl.includes("localhost");
-  return process.env.NODE_ENV !== "production" && isLocal;
+  return isQaTestDataEnvironment({
+    nodeEnv: process.env.NODE_ENV,
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+    vercelEnv: process.env.VERCEL_ENV,
+  });
 }
 
 function redirectWithStatus(status: string): never {
@@ -26,7 +34,7 @@ export async function generateTestData(formData: FormData) {
     redirectWithError("invalid_dataset");
   }
 
-  if (!["small", "medium", "deletion_test"].includes(datasetType)) {
+  if (!isSupportedTestDatasetType(datasetType)) {
     redirectWithError("invalid_dataset");
   }
 
@@ -44,7 +52,7 @@ export async function generateTestData(formData: FormData) {
 
   const { data: profile } = await supabase
     .from("profile")
-    .select("rola, household_id")
+    .select("rola, status, household_id")
     .eq("id", userId)
     .maybeSingle();
 
@@ -52,8 +60,20 @@ export async function generateTestData(formData: FormData) {
     redirectWithError("admin_required");
   }
 
-  if (profile.rola !== "admin") {
+  if (profile.rola !== "admin" || profile.status !== "aktywny") {
     redirectWithError("admin_required");
+  }
+
+  if (datasetType === QA_TEST_DATASET_TYPE) {
+    await generateQaSmokeTestData(supabase, {
+      householdId: profile.household_id,
+      userId,
+    });
+
+    revalidatePath(routes.home);
+    revalidatePath(routes.items);
+    revalidatePath(routes.settings);
+    redirectWithStatus("test_data_generated");
   }
 
   const { data, error } = await supabase.rpc("generate_test_data", {
