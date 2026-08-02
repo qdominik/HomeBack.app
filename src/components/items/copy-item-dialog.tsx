@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { copyItem } from "@/app/(app)/items/actions";
 import { Alert } from "@/components/ui/alert";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { ModalPortal } from "@/components/ui/modal-portal";
 import {
   defaultCopyName,
   resolveCopyDialogOutcome,
@@ -144,24 +145,28 @@ export function CopyItemDialog({
   return (
     <>
       <button
-        className={buttonClassName({ variant: "secondary" })}
+        className={buttonClassName({
+          className: "self-start",
+          variant: "secondary",
+        })}
         onClick={openDialog}
         ref={triggerRef}
         type="button"
       >
         {copy.item.action}
       </button>
-      <dialog
-        aria-describedby={descriptionId}
-        aria-labelledby={titleId}
-        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-lg rounded-card border border-line bg-surface p-0 text-foreground shadow-card backdrop:bg-foreground/40"
-        onCancel={(event) => {
+      <ModalPortal>
+        <dialog
+          aria-describedby={descriptionId}
+          aria-labelledby={titleId}
+          className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-lg rounded-card border border-line bg-surface p-0 text-foreground shadow-card backdrop:bg-foreground/40"
+          onCancel={(event) => {
           if (isSubmittingRef.current) {
             event.preventDefault();
           }
         }}
-        onClose={resetAfterClose}
-        ref={dialogRef}
+          onClose={resetAfterClose}
+          ref={dialogRef}
       >
         <form
           aria-busy={isSubmitting}
@@ -310,7 +315,8 @@ export function CopyItemDialog({
             </Button>
           </div>
         </form>
-      </dialog>
+        </dialog>
+      </ModalPortal>
     </>
   );
 }
