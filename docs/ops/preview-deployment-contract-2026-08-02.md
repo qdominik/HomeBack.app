@@ -1,153 +1,254 @@
 # Preview deployment contract - 2026-08-02
 
-## Scope
+## Preview purpose / scope
 
-This contract defines the minimum conditions for a HomeBack.app preview environment before it can be used for owner review or internal testers.
+This document records the HomeBack.app Preview Supabase Hosted Auth checkpoint and the operational contract for the preview environment.
 
-The sales landing page is out of scope. Landing targets `https://homeback.app`; this application targets `https://my.homeback.app` for production and a separate preview URL for preview.
+The purpose of this preview is owner/internal testing of the HomeBack.app product application after hosted Supabase Auth was connected and manually verified. It is not a production deployment and it is not the sales landing page.
 
-## Status
+Application boundaries:
+
+- Product application production target: `https://my.homeback.app`
+- Sales landing page target: `https://homeback.app`
+- Preview app URL: `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`
+
+No new product features, database schema changes, RLS changes, Supabase configuration changes, Storage buckets, or deployment actions are introduced by this document.
 
 Status: PARTIAL.
 
-This document records the required contract. It does not prove that Vercel, hosted Supabase, DNS, Auth, Storage, cookies, CORS, or GitHub repository settings already match it.
+Confirmed in this checkpoint:
 
-## Known preview deployment
+- Preview Auth works for the owner manual smoke scope.
+- Preview app is connected to hosted Supabase project `homeback-preview`.
+- Stable Auth checkpoint tag exists: `preview-supabase-hosted-auth-stable`.
 
-Owner-provided current preview deployment:
+Not fully accepted yet:
 
-- Vercel URL: `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`
-- Supabase: connected to preview deployment
-- Supabase project/ref: `[TO DECIDE]`
-- Supabase region: `[TO DECIDE]`
-- Data retention policy: `[TO DECIDE]`
+- full preview smoke for `/home`, `/items`, and `/categories`,
+- Storage upload and Storage RLS per `household_id`,
+- formal preview data reset/retention policy,
+- exact Auth Site URL and redirect allow-list from Supabase panel,
+- Vercel Preview env var verification from Vercel panel,
+- cookies over HTTPS,
+- CORS/origin policy,
+- production Supabase ref for formal separation evidence.
 
-The URL is now documented. Supabase connection is owner-confirmed, but project identity, region, migration state, Auth settings, Storage settings, and data retention still require explicit verification before preview acceptance.
+## Branch / deploy mapping
 
-## Environment matrix
+| Field | Value |
+| --- | --- |
+| Branch | `preview/supabase-hosted-preview` |
+| Stable checkpoint HEAD | `4084d06 fix: accept anon key in Supabase config` |
+| Stable checkpoint tag | `preview-supabase-hosted-auth-stable` |
+| Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
+| Deployment provider | Vercel Preview |
+| Production deploy | Out of scope |
+| Merge to `main` | Out of scope |
 
-| Environment | App URL | Supabase project | Data policy | Owner |
-| --- | --- | --- | --- | --- |
-| Local | `http://127.0.0.1:3000` | local Supabase only | local test data only | developer + Team A |
-| Preview | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` | hosted Supabase connected; project ref and region `[TO DECIDE]` | no production user data | Platform + Product + Team A |
-| Production | `https://my.homeback.app` | production hosted Supabase | real user data | Platform + DBA + Auth owner |
+The stable Auth checkpoint is explicitly `4084d06` and tag `preview-supabase-hosted-auth-stable`. The branch may contain later documentation/CI commits; those commits do not change the stable Auth checkpoint unless a new owner acceptance is recorded.
 
-Preview must not share writable production data. If a shared hosted project is proposed, that proposal requires a separate decision record that proves strict isolation and retention boundaries.
+## Supabase Preview project
 
-## Required preview variables
+Owner-provided Supabase Preview details:
 
-Preview runtime variables must be set in the hosting provider, not committed to the repo:
+| Field | Value |
+| --- | --- |
+| Project name | `homeback-preview` |
+| Project ref / Project ID | `yzewupqxkefyvljnfolk` |
+| Supabase URL | `https://yzewupqxkefyvljnfolk.supabase.co` |
+| Region | `eu-west-3` |
+| Region description | West EU (Paris) |
+| Owner | `qdominik@gmail.com` |
+| Access | organization-wide access, 1 member |
+| Role | Owner |
+| Auth version | `2.194.0` |
+| PostgREST version | `14.15` |
+| Postgres version | `17.6.1.155` |
+| Environment role | Preview / testing |
+| Production separation | Treated as separate Preview project; production ref is `PENDING` / `[WYMAGA POTWIERDZENIA]` |
 
-- `NEXT_PUBLIC_SITE_URL` = `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`
-- `NEXT_PUBLIC_SUPABASE_URL` = preview Supabase API URL
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` = preview publishable/anon key
+Preview must not share writable production data. Production Supabase ref must be recorded later to formally prove separation.
 
-`NEXT_PUBLIC_*` values are public client configuration and must not contain secrets. Service role keys, Supabase access tokens, SMTP credentials, Vercel tokens, and GitHub tokens must be stored only as provider or GitHub secrets.
+## Vercel Preview env
 
-## Auth contract
+Expected Vercel Preview runtime configuration:
 
-Preview Supabase Auth must be configured with:
+| Variable | Expected value / status |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://yzewupqxkefyvljnfolk.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | preview publishable/anon key for project `yzewupqxkefyvljnfolk`; value must not be written to docs or repo |
+| Vercel panel verification | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
 
-- Site URL equal to the exact preview origin.
-- Redirect allow-list containing only:
-  - local development origins already approved for local work,
-  - the exact preview origin plus `/auth/confirm`,
-  - the production origin plus `/auth/confirm` only when production is intentionally configured.
-- No wildcard redirect origins.
-- Email confirmation behavior documented before owner testing.
-- SMTP sender and rate limits reviewed before inviting external testers.
+Rules:
 
-## Data isolation and retention
+- Do not commit API keys, Supabase service role keys, Vercel tokens, SMTP credentials, or private env values.
+- `NEXT_PUBLIC_*` names and public URLs/refs may be documented; key values must not be written.
+- The expected values above are documented from owner-provided context, but exact Vercel panel settings remain `PENDING` / `[WYMAGA POTWIERDZENIA]`.
 
-Preview data rules:
+## Auth configuration
 
-- No production user data may be imported into preview.
-- Preview may use synthetic data, owner-created test data, or manually entered non-sensitive test records.
-- Preview project ref, region, and database migration state must be recorded before first review.
-- Preview retention must be explicit: either reset on demand, reset before each review cycle, or retained for a named period.
-- Any deletion/reset of preview data is owner-controlled and must never target local shared Supabase or production hosted Supabase.
+Stable Auth checkpoint:
 
-## Storage contract
+| Check | Status |
+| --- | --- |
+| signup | passed |
+| email confirmation | passed |
+| login | passed |
+| logout | passed |
+| tester | owner manual |
+| status | owner manual smoke passed for Auth |
+| checkpoint commit | `4084d06 fix: accept anon key in Supabase config` |
+| checkpoint tag | `preview-supabase-hosted-auth-stable` |
 
-Before preview enables user file upload or document upload, Supabase Storage must have a separate decision and implementation covering:
+Auth settings still requiring recorded confirmation from Supabase panel:
+
+- exact Supabase Auth Site URL: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- exact redirect allow-list: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- no wildcard redirect origins: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- email confirmation setting: owner smoke passed, exact panel setting `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- SMTP provider and rate limits before external testers: `PENDING` / `[WYMAGA POTWIERDZENIA]`.
+
+The owner manual smoke proves the Auth flow worked at the stable checkpoint. It does not replace recording the actual Supabase Auth panel configuration.
+
+## Data retention / reset policy
+
+Known:
+
+- Preview uses Supabase project `homeback-preview` / `yzewupqxkefyvljnfolk`.
+- Environment role is Preview / testing.
+- Preview must not contain production user data.
+
+Policy status:
+
+- final Preview data retention/reset policy: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- production Supabase ref for formal separation evidence: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- reset owner and procedure: `PENDING` / `[WYMAGA POTWIERDZENIA]`.
+
+Until the final policy is approved:
+
+- use synthetic, owner-created test data, or manually entered non-sensitive test records only,
+- do not import production user data,
+- do not run destructive reset operations from this agent session,
+- do not target local shared Supabase or production hosted Supabase for preview cleanup.
+
+## Storage scope
+
+Storage upload is out of scope for the current Preview Auth checkpoint.
+
+Storage requires a separate contract before file upload tests.
+
+Current status:
+
+- Storage upload: out of scope / pending,
+- Storage RLS per `household_id`: out of scope / pending,
+- Storage household-isolation tests: out of scope / pending,
+- bucket creation or policy changes: not performed.
+
+Before preview enables user file upload or document upload, a separate Storage contract must cover:
 
 - private buckets only,
-- object paths scoped by `household_id` or an equivalent non-guessable household boundary,
+- object paths scoped by `household_id` or an equivalent household boundary,
 - policies that prevent cross-household reads and writes,
 - MIME allow-list,
 - maximum file size,
 - deletion/retention rules,
 - tests proving one household cannot read another household's files.
 
-Until that Storage contract is implemented and verified, preview must not be treated as approved for real user files.
+## CORS / cookies
 
-## Cookies and sessions
+CORS/origin policy status:
 
-Preview cookie behavior must be verified in the deployed environment:
+- exact Supabase/Vercel origin allow-list: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- no wildcard origin for sensitive endpoints: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- no wildcard plus credentials: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- failed-origin behavior checked during smoke testing: `PENDING` / `[WYMAGA POTWIERDZENIA]`.
 
-- HTTPS only for preview.
-- `Secure` must be present for deployed preview cookies.
-- `HttpOnly` must be present where Supabase SSR/session cookies support it.
-- `SameSite` must be explicit and reviewed for email confirmation redirects.
-- Cookie domain must be the narrow preview host, not a broad parent domain unless separately approved.
+Cookie verification status:
 
-Local HTTP behavior must not be used as evidence for preview cookie security.
+- cookies over HTTPS inspected: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- `Secure` attribute verified: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- `HttpOnly` behavior verified where supported by Supabase SSR/session cookies: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- `SameSite` reviewed for email confirmation redirects: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- cookie domain narrowed to preview host or explicitly approved domain: `PENDING` / `[WYMAGA POTWIERDZENIA]`.
 
-## CORS and origins
+The owner Auth smoke confirms login/logout behavior worked, but it does not prove cookie attributes or CORS policy.
 
-Preview CORS/origin policy must be explicit:
+## Smoke test record
 
-- no wildcard origin for sensitive endpoints,
-- no wildcard plus credentials,
-- local, preview, and production origins listed separately,
-- hosted Supabase and hosting provider settings reviewed together,
-- failed-origin behavior checked during smoke testing.
+Owner manual Auth smoke record:
 
-## CI and branch protection gate
+| Area | Result |
+| --- | --- |
+| signup | passed |
+| email confirmation | passed |
+| login | passed |
+| logout | passed |
+| tester | owner manual |
+| status | owner manual smoke passed for Auth |
+| preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
+| branch | `preview/supabase-hosted-preview` |
+| checkpoint commit | `4084d06 fix: accept anon key in Supabase config` |
+| checkpoint tag | `preview-supabase-hosted-auth-stable` |
+| Supabase project/ref | `homeback-preview` / `yzewupqxkefyvljnfolk` |
 
-Preview deployment requires:
+Pending smoke:
 
-- app CI workflow passing on the preview branch or PR,
-- `npm audit` triage current enough for the review window,
-- secret scanning baseline completed for current tracked tree,
-- owner-side GitHub Secret Scanning or equivalent planned before external testers,
-- branch protection requiring green checks before merge to `main`.
+| Area | Status |
+| --- | --- |
+| `/home` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| `/items` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| `/categories` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| broader write-path smoke beyond Auth | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
+| no-production-data visibility check | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
 
-The database/pgTAP CI job remains a separate task. Until it exists, Team A must provide manual database validation evidence before preview promotion involving schema/RLS/RPC changes.
+Future smoke evidence should include date, preview URL, commit SHA/tag, Supabase project/ref, tester, scope, and result.
 
-## Smoke test gate
+## Pending confirmations
 
-Minimum preview smoke test before owner review:
+- production Supabase ref to formally confirm separation: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- final Preview data retention/reset policy: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- exact Supabase Auth Site URL from panel: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- exact Supabase Auth redirect allow-list from panel: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- Vercel Preview env vars match expected public URL/ref without secrets in repo: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- cookies over HTTPS: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- CORS/origin policy: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- full smoke for `/home`, `/items`, `/categories`: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- branch protection requiring green `CI / App` before `main` merge: `PENDING` / `[WYMAGA POTWIERDZENIA]`,
+- owner-side GitHub Secret Scanning / push protection: `PENDING` / `[WYMAGA POTWIERDZENIA]`.
 
-1. Open preview URL over HTTPS.
-2. Register or sign in with a test account.
-3. Confirm email flow reaches `/auth/confirm` on the preview origin.
-4. Create or access a test household.
-5. Read Dashboard, Home, Items, Categories, Family, Documents, and Settings without server errors.
-6. Create, update, and delete a non-sensitive test Room/Furniture/Storage structure record if the review scope includes writes.
-7. Confirm no production data is visible.
-8. Confirm logout clears the session from the preview UI.
+## Out of scope
 
-Smoke test evidence must include date, preview URL, commit SHA, Supabase project/ref, tester, and result.
+For this checkpoint, the following are explicitly out of scope:
 
-## Open decisions
-
-- Preview URL documented: `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`.
-- `[TO DECIDE]` dedicated preview Supabase project/ref and region; Supabase connection is owner-confirmed.
-- `[TO DECIDE]` preview data retention policy.
-- `[TO DECIDE]` whether preview permits file uploads before the Storage contract is implemented.
-- `[TO DECIDE]` owner of smoke test execution and evidence.
+- merge to `main`,
+- production deploy,
+- new tag creation,
+- force push,
+- `landing-v201/` changes,
+- application code changes,
+- database schema changes,
+- RLS or RPC changes,
+- Supabase Storage bucket creation,
+- Supabase Storage policy changes,
+- Storage upload tests,
+- production data import,
+- destructive reset operations.
 
 ## Acceptance checklist
 
 - [x] Preview URL selected and documented.
-- [ ] Preview hosted Supabase project/ref and region selected and documented; connection is owner-confirmed.
-- [ ] Preview env vars set in hosting provider with no secrets in repo.
-- [ ] Auth Site URL and redirect allow-list configured.
+- [x] Preview hosted Supabase project/ref and region selected and documented.
+- [x] Stable Auth checkpoint tag recorded.
+- [x] Owner manual Auth smoke passed for signup, email confirmation, login, and logout.
+- [ ] Production Supabase ref recorded for explicit separation evidence.
+- [ ] Preview data retention/reset policy documented.
+- [ ] Preview env vars verified in Vercel with no secrets in repo.
+- [ ] Auth Site URL and redirect allow-list recorded.
 - [ ] Cookie behavior verified over HTTPS.
-- [ ] CORS/origin policy reviewed.
-- [ ] Storage contract either implemented or file uploads explicitly disabled/out of review scope.
-- [ ] CI checks green for the deployed commit.
+- [ ] CORS/origin policy reviewed and recorded.
+- [ ] Storage contract created before file upload tests, or file upload explicitly kept out of preview tester scope.
+- [ ] CI checks green for the deployed commit under review.
 - [ ] Dependency audit triage accepted for the review window.
 - [ ] Secret scanning owner-side controls planned or enabled.
-- [ ] Smoke test passed with evidence.
+- [ ] Full `/home`, `/items`, and `/categories` smoke passed with evidence.
