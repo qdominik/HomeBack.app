@@ -30,6 +30,7 @@ export type ItemPhotoDraftPathInput = {
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ITEM_PHOTO_DRAFT_SEGMENT = "item-photo-drafts";
 
 function isAllowedMimeType(value: string): value is ItemPhotoAllowedMimeType {
   return ITEM_PHOTO_ALLOWED_MIME_TYPES.includes(
@@ -95,4 +96,32 @@ export function buildItemPhotoDraftPath({
       filename,
     )}`,
   };
+}
+
+export function getItemPhotoDraftPrefix(householdId: string) {
+  if (!UUID_PATTERN.test(householdId)) {
+    throw new Error("Invalid household id");
+  }
+
+  return `households/${householdId}/${ITEM_PHOTO_DRAFT_SEGMENT}/`;
+}
+
+export function isItemPhotoDraftPathForHousehold(
+  storagePath: string,
+  householdId: string,
+) {
+  if (!UUID_PATTERN.test(householdId)) {
+    return false;
+  }
+
+  const prefix = getItemPhotoDraftPrefix(householdId);
+  const rest = storagePath.slice(prefix.length);
+  const [draftId, filename, ...extraParts] = rest.split("/");
+
+  return (
+    storagePath.startsWith(prefix) &&
+    UUID_PATTERN.test(draftId ?? "") &&
+    Boolean(filename) &&
+    extraParts.length === 0
+  );
 }

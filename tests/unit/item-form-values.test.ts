@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   parseItemType,
@@ -7,7 +8,9 @@ import {
 } from "../../src/lib/items/item-form-values";
 import {
   buildItemPhotoDraftPath,
+  getItemPhotoDraftPrefix,
   ITEM_PHOTO_MAX_SIZE_BYTES,
+  isItemPhotoDraftPathForHousehold,
   sanitizeItemPhotoFilename,
   validateItemPhotoFile,
 } from "../../src/lib/items/item-photo-storage";
@@ -97,4 +100,44 @@ test("item photo draft path sanitizes filename and includes household and draft 
       path: `households/${householdId}/item-photo-drafts/${draftId}/moje-zdjecie-rzecz-1.webp`,
     },
   );
+});
+
+test("item photo draft path guard accepts only active household draft paths", () => {
+  const householdId = "25000000-0000-4000-8000-000000000001";
+  const draftId = "35000000-0000-4000-8000-000000000001";
+  const validPath = `households/${householdId}/item-photo-drafts/${draftId}/photo.webp`;
+
+  assert.equal(
+    getItemPhotoDraftPrefix(householdId),
+    `households/${householdId}/item-photo-drafts/`,
+  );
+  assert.equal(isItemPhotoDraftPathForHousehold(validPath, householdId), true);
+  assert.equal(
+    isItemPhotoDraftPathForHousehold(
+      validPath,
+      "25000000-0000-4000-8000-000000000002",
+    ),
+    false,
+  );
+  assert.equal(
+    isItemPhotoDraftPathForHousehold(
+      `households/${householdId}/final/${draftId}/photo.webp`,
+      householdId,
+    ),
+    false,
+  );
+});
+
+test("item photo draft actions do not accept household id from the client", () => {
+  const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+  const uploadStart = actions.indexOf("export async function uploadItemPhotoDraft");
+  const uploadEnd = actions.indexOf("export async function createItem", uploadStart);
+  const uploadAction = actions.slice(uploadStart, uploadEnd);
+
+  assert.notEqual(uploadStart, -1);
+  assert.notEqual(uploadEnd, -1);
+  assert.match(uploadAction, /getActiveAdminContext\(supabase\)/);
+  assert.doesNotMatch(uploadAction, /formData\.get\(["']household_id["']\)/);
+  assert.doesNotMatch(uploadAction, /getStringProperty\(.*["']household_id["']\)/);
+  assert.match(uploadAction, /validateItemPhotoFile\(formData\.get\("photo"\)\)/);
 });

@@ -10,6 +10,14 @@ import {
   type CopyActionResult,
 } from "@/lib/copy-entities/copy-contract";
 import {
+  buildItemPhotoDraftPath,
+  ITEM_PHOTO_BUCKET,
+  isItemPhotoDraftPathForHousehold,
+  validateItemPhotoFile,
+  type ItemPhotoAllowedMimeType,
+  type ItemPhotoValidationError,
+} from "@/lib/items/item-photo-storage";
+import {
   parseItemType,
   resolveItemQuantity,
 } from "@/lib/items/item-form-values";
@@ -33,6 +41,35 @@ type ProfileRole = Database["public"]["Enums"]["profile_role"];
 
 const ARCHIVED_STATUS = "archiwalne" as const;
 const AT_HOME_STATUS = "w domu" as const;
+const ITEM_PHOTO_PREVIEW_TTL_SECONDS = 60;
+
+export type ItemPhotoDraftUploadResult =
+  | {
+      ok: true;
+      draftId: string;
+      file: {
+        mimeType: ItemPhotoAllowedMimeType;
+        sizeBytes: number;
+      };
+      previewUrl: string;
+      storagePath: string;
+    }
+  | {
+      ok: false;
+      code:
+        | ItemPhotoValidationError
+        | "admin_required"
+        | "upload_failed"
+        | "preview_url_failed";
+    };
+
+export type ItemPhotoPreviewUrlResult =
+  | { ok: true; previewUrl: string }
+  | { ok: false; code: "admin_required" | "invalid_storage_path" | "preview_url_failed" };
+
+export type ItemPhotoDraftCleanupResult =
+  | { ok: true }
+  | { ok: false; code: "admin_required" | "invalid_storage_path" | "cleanup_failed" };
 
 function field(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -83,6 +120,137 @@ function requireAdmin(role: ProfileRole) {
   if (role !== "admin") {
     redirectWithError("admin_required");
   }
+}
+
+function isAdmin(role: ProfileRole) {
+  return role === "admin";
+}
+
+async function getActiveAdminContext(supabase: SupabaseClient) {
+  const { profile } = await getActiveProfile(supabase);
+
+  if (!isAdmin(profile.rola)) {
+    return { ok: false as const, code: "admin_required" as const };
+  }
+
+  return { ok: true as const, householdId: profile.household_id };
+}
+
+function getStringProperty(value: unknown, key: string) {
+  return value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as Record<string, unknown>)[key] === "string"
+    ? ((value as Record<string, string>)[key] ?? "").trim()
+    : "";
+}
+
+async function createItemPhotoPreviewUrl(
+  supabase: SupabaseClient,
+  storagePath: string,
+) {
+  return supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .createSignedUrl(storagePath, ITEM_PHOTO_PREVIEW_TTL_SECONDS);
+}
+
+export async function createItemPhotoDraftPreviewUrl(
+  value: unknown,
+): Promise<ItemPhotoPreviewUrlResult> {
+  const storagePath = getStringProperty(value, "storagePath");
+  const supabase = await createClient();
+  const context = await getActiveAdminContext(supabase);
+
+  if (!context.ok) {
+    return context;
+  }
+
+  if (!isItemPhotoDraftPathForHousehold(storagePath, context.householdId)) {
+    return { ok: false, code: "invalid_storage_path" };
+  }
+
+  const { data, error } = await createItemPhotoPreviewUrl(supabase, storagePath);
+
+  if (error || !data?.signedUrl) {
+    return { ok: false, code: "preview_url_failed" };
+  }
+
+  return { ok: true, previewUrl: data.signedUrl };
+}
+
+export async function uploadItemPhotoDraft(
+  formData: FormData,
+): Promise<ItemPhotoDraftUploadResult> {
+  const fileValidation = validateItemPhotoFile(formData.get("photo"));
+
+  if (!fileValidation.ok) {
+    return fileValidation;
+  }
+
+  const supabase = await createClient();
+  const context = await getActiveAdminContext(supabase);
+
+  if (!context.ok) {
+    return context;
+  }
+
+  const { draftId, path } = buildItemPhotoDraftPath({
+    filename: fileValidation.file.name,
+    householdId: context.householdId,
+  });
+  const { error: uploadError } = await supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .upload(path, fileValidation.file, {
+      contentType: fileValidation.mimeType,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    return { ok: false, code: "upload_failed" };
+  }
+
+  const { data, error: previewError } = await createItemPhotoPreviewUrl(
+    supabase,
+    path,
+  );
+
+  if (previewError || !data?.signedUrl) {
+    await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([path]);
+    return { ok: false, code: "preview_url_failed" };
+  }
+
+  return {
+    ok: true,
+    draftId,
+    file: {
+      mimeType: fileValidation.mimeType,
+      sizeBytes: fileValidation.sizeBytes,
+    },
+    previewUrl: data.signedUrl,
+    storagePath: path,
+  };
+}
+
+export async function cleanupItemPhotoDraft(
+  value: unknown,
+): Promise<ItemPhotoDraftCleanupResult> {
+  const storagePath = getStringProperty(value, "storagePath");
+  const supabase = await createClient();
+  const context = await getActiveAdminContext(supabase);
+
+  if (!context.ok) {
+    return context;
+  }
+
+  if (!isItemPhotoDraftPathForHousehold(storagePath, context.householdId)) {
+    return { ok: false, code: "invalid_storage_path" };
+  }
+
+  const { error } = await supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .remove([storagePath]);
+
+  return error ? { ok: false, code: "cleanup_failed" } : { ok: true };
 }
 
 async function validateCategory(
