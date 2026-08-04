@@ -57,6 +57,7 @@ const typeLabels: Record<ItemType, string> = {
 
 type ItemPhotoDraftState = {
   draftId: string;
+  filename: string;
   mimeType: string;
   previewUrl: string;
   sizeBytes: number;
@@ -85,7 +86,7 @@ const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
 const photoAnalysisErrorMessages: Record<ItemPhotoAnalysisError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
   categories_unavailable: t.modules.items.photo.errors.categoriesUnavailable,
-  invalid_model_response: t.modules.items.photo.errors.invalidModelResponse,
+  invalid_model_response: t.modules.items.photo.errors.analysisFailed,
   invalid_photo_input: t.modules.items.photo.errors.invalidPhotoInput,
   invalid_storage_path: t.modules.items.photo.errors.invalidStoragePath,
   missing_api_key: t.modules.items.photo.errors.aiNotConfigured,
@@ -270,6 +271,7 @@ export function ItemForm({
 
       setPhotoDraft({
         draftId: result.draftId,
+        filename: selectedFile.name,
         mimeType: result.file.mimeType,
         previewUrl: result.previewUrl,
         sizeBytes: result.file.sizeBytes,
@@ -463,11 +465,14 @@ export function ItemForm({
             {t.modules.items.photo.help}
           </p>
         </div>
-        <label className="block text-sm font-medium">
+        <label className="inline-flex cursor-pointer items-center">
           <span className="sr-only">{t.modules.items.photo.choose}</span>
+          <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong">
+            {t.modules.items.photo.choose}
+          </span>
           <input
             accept="image/jpeg,image/webp"
-            className="block w-full text-sm text-muted file:mr-3 file:h-9 file:rounded-md file:border-0 file:bg-primary file:px-3 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+            className="sr-only"
             disabled={isPhotoPending || isPhotoAnalysisPending}
             onChange={uploadSelectedPhoto}
             ref={fileInputRef}
@@ -481,7 +486,7 @@ export function ItemForm({
           <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
         ) : null}
         {photoDraft ? (
-          <div className="grid gap-3 sm:grid-cols-[96px_1fr_auto] sm:items-center">
+          <div className="grid gap-3 sm:grid-cols-[96px_minmax(0,1fr)_auto] sm:items-center">
             <Image
               alt={t.modules.items.photo.previewAlt}
               className="h-24 w-24 rounded-md border border-line object-cover"
@@ -491,31 +496,35 @@ export function ItemForm({
               width={96}
             />
             <div className="min-w-0 text-xs leading-5 text-muted">
-              <p className="break-words">{photoDraft.storagePath}</p>
+              <p className="truncate font-medium text-foreground">
+                {photoDraft.filename}
+              </p>
               <p>
                 {photoDraft.mimeType} · {Math.ceil(photoDraft.sizeBytes / 1024)} KB
               </p>
             </div>
-            <button
-              className="h-9 rounded-md border border-line bg-surface px-3 text-sm font-semibold text-primary-strong hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onClick={removePhotoDraft}
-              type="button"
-            >
-              {isPhotoPending
-                ? t.modules.items.photo.removing
-                : t.modules.items.photo.remove}
-            </button>
-            <button
-              className="h-9 rounded-md bg-primary px-3 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onClick={applyPhotoSuggestions}
-              type="button"
-            >
-              {isPhotoAnalysisPending
-                ? t.modules.items.photo.analyzing
-                : t.modules.items.photo.fillFromPhoto}
-            </button>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+              <button
+                className="min-h-10 rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={isPhotoPending || isPhotoAnalysisPending}
+                onClick={applyPhotoSuggestions}
+                type="button"
+              >
+                {isPhotoAnalysisPending
+                  ? t.modules.items.photo.analyzing
+                  : t.modules.items.photo.fillFromPhoto}
+              </button>
+              <button
+                className="min-h-10 rounded-md border border-line bg-surface px-4 py-2 text-sm font-semibold leading-5 text-primary-strong hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={isPhotoPending || isPhotoAnalysisPending}
+                onClick={removePhotoDraft}
+                type="button"
+              >
+                {isPhotoPending
+                  ? t.modules.items.photo.removing
+                  : t.modules.items.photo.remove}
+              </button>
+            </div>
           </div>
         ) : null}
         {photoFeedback ? (

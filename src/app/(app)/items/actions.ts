@@ -206,6 +206,35 @@ async function createItemPhotoPreviewUrl(
     .createSignedUrl(storagePath, ITEM_PHOTO_PREVIEW_TTL_SECONDS);
 }
 
+async function createItemPhotoAnalysisImageUrl(
+  supabase: SupabaseClient,
+  storagePath: string,
+  mimeType: ItemPhotoAllowedMimeType,
+) {
+  const { data, error } = await createItemPhotoPreviewUrl(supabase, storagePath);
+
+  if (error || !data?.signedUrl) {
+    return { ok: false as const, code: "preview_url_failed" as const };
+  }
+
+  try {
+    const response = await fetch(data.signedUrl, { cache: "no-store" });
+
+    if (!response.ok) {
+      return { ok: false as const, code: "preview_url_failed" as const };
+    }
+
+    const bytes = Buffer.from(await response.arrayBuffer());
+
+    return {
+      ok: true as const,
+      imageUrl: `data:${mimeType};base64,${bytes.toString("base64")}`,
+    };
+  } catch {
+    return { ok: false as const, code: "preview_url_failed" as const };
+  }
+}
+
 export async function createItemPhotoDraftPreviewUrl(
   value: unknown,
 ): Promise<ItemPhotoPreviewUrlResult> {
@@ -325,11 +354,14 @@ export async function analyzeItemPhotoDraft(
     return { ok: false, code: "invalid_storage_path" };
   }
 
-  const { data: signedUrlData, error: signedUrlError } =
-    await createItemPhotoPreviewUrl(supabase, input.storagePath);
+  const imageUrl = await createItemPhotoAnalysisImageUrl(
+    supabase,
+    input.storagePath,
+    input.mimeType,
+  );
 
-  if (signedUrlError || !signedUrlData?.signedUrl) {
-    return { ok: false, code: "preview_url_failed" };
+  if (!imageUrl.ok) {
+    return imageUrl;
   }
 
   const { data: categories, error: categoriesError } = await supabase
@@ -343,7 +375,7 @@ export async function analyzeItemPhotoDraft(
 
   const result = await analyzeItemPhoto({
     ...input,
-    imageUrl: signedUrlData.signedUrl,
+    imageUrl: imageUrl.imageUrl,
     categories: categories.map((category) => ({
       id: category.id,
       name: category.nazwa,
