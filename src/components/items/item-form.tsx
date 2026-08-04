@@ -1,8 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { createQuickCustomCategory } from "@/app/(app)/items/actions";
+import Image from "next/image";
+import {
+  type ChangeEvent,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import {
+  cleanupItemPhotoDraft,
+  createQuickCustomCategory,
+  uploadItemPhotoDraft,
+  type ItemPhotoDraftUploadResult,
+} from "@/app/(app)/items/actions";
 import { resolveInitialItemCategoryId } from "@/lib/categories/category-selection";
 import { t } from "@/lib/i18n";
 import {
@@ -42,6 +53,28 @@ const typeLabels: Record<ItemType, string> = {
   zestaw: t.modules.items.itemTypes.set,
 };
 
+type ItemPhotoDraftState = {
+  draftId: string;
+  mimeType: string;
+  previewUrl: string;
+  sizeBytes: number;
+  storagePath: string;
+};
+
+type ItemPhotoDraftError =
+  | Exclude<ItemPhotoDraftUploadResult, { ok: true }>["code"]
+  | "cleanup_failed";
+
+const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
+  admin_required: t.modules.items.photo.errors.adminRequired,
+  cleanup_failed: t.modules.items.photo.errors.cleanupFailed,
+  file_too_large: t.modules.items.photo.errors.fileTooLarge,
+  missing_file: t.modules.items.photo.errors.missingFile,
+  preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
+  unsupported_file_type: t.modules.items.photo.errors.unsupportedFileType,
+  upload_failed: t.modules.items.photo.errors.uploadFailed,
+};
+
 export function ItemForm({
   action,
   categories,
@@ -66,6 +99,10 @@ export function ItemForm({
   >(null);
   const [isQuickCategoryPending, startQuickCategoryTransition] =
     useTransition();
+  const [photoDraft, setPhotoDraft] = useState<ItemPhotoDraftState | null>(null);
+  const [photoFeedback, setPhotoFeedback] = useState<string | null>(null);
+  const [isPhotoPending, startPhotoTransition] = useTransition();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const initialQuantity = item?.ilosc ?? 1;
   const locationFieldProps = getItemLocationFieldProps(
     locationOptions,
@@ -140,6 +177,79 @@ export function ItemForm({
       }
 
       setQuickCategoryFeedback(t.modules.items.errors.actionFailed);
+    });
+  }
+
+  function clearPhotoInput() {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  async function cleanupDraft(storagePath: string) {
+    const result = await cleanupItemPhotoDraft({ storagePath });
+
+    return result.ok;
+  }
+
+  function removePhotoDraft() {
+    const currentDraft = photoDraft;
+    setPhotoFeedback(null);
+
+    if (!currentDraft) {
+      clearPhotoInput();
+      return;
+    }
+
+    startPhotoTransition(async () => {
+      const cleaned = await cleanupDraft(currentDraft.storagePath);
+
+      if (!cleaned) {
+        setPhotoFeedback(t.modules.items.photo.errors.cleanupFailed);
+        return;
+      }
+
+      setPhotoDraft(null);
+      clearPhotoInput();
+    });
+  }
+
+  function uploadSelectedPhoto(event: ChangeEvent<HTMLInputElement>) {
+    const selectedFile = event.currentTarget.files?.[0] ?? null;
+    const previousDraft = photoDraft;
+    setPhotoFeedback(null);
+
+    if (!selectedFile) {
+      return;
+    }
+
+    startPhotoTransition(async () => {
+      if (previousDraft) {
+        await cleanupDraft(previousDraft.storagePath);
+        setPhotoDraft(null);
+      }
+
+      const formData = new FormData();
+      formData.set("photo", selectedFile);
+
+      const result = await uploadItemPhotoDraft(formData);
+
+      if (!result.ok) {
+        setPhotoFeedback(
+          photoErrorMessages[result.code] ?? t.modules.items.photo.errors.unknown,
+        );
+        clearPhotoInput();
+        return;
+      }
+
+      setPhotoDraft({
+        draftId: result.draftId,
+        mimeType: result.file.mimeType,
+        previewUrl: result.previewUrl,
+        sizeBytes: result.file.sizeBytes,
+        storagePath: result.storagePath,
+      });
+      setPhotoFeedback(t.modules.items.photo.ready);
     });
   }
 
@@ -266,6 +376,69 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
+      <section
+        className={`space-y-3 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
+      >
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">
+            {t.modules.items.photo.title}
+          </h3>
+          <p className="mt-1 text-xs leading-5 text-muted">
+            {t.modules.items.photo.help}
+          </p>
+        </div>
+        <label className="block text-sm font-medium">
+          <span className="sr-only">{t.modules.items.photo.choose}</span>
+          <input
+            accept="image/jpeg,image/webp"
+            className="block w-full text-sm text-muted file:mr-3 file:h-9 file:rounded-md file:border-0 file:bg-primary file:px-3 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={isPhotoPending}
+            onChange={uploadSelectedPhoto}
+            ref={fileInputRef}
+            type="file"
+          />
+        </label>
+        {isPhotoPending ? (
+          <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
+        ) : null}
+        {photoDraft ? (
+          <div className="grid gap-3 sm:grid-cols-[96px_1fr_auto] sm:items-center">
+            <Image
+              alt={t.modules.items.photo.previewAlt}
+              className="h-24 w-24 rounded-md border border-line object-cover"
+              height={96}
+              src={photoDraft.previewUrl}
+              unoptimized
+              width={96}
+            />
+            <div className="min-w-0 text-xs leading-5 text-muted">
+              <p className="break-words">{photoDraft.storagePath}</p>
+              <p>
+                {photoDraft.mimeType} · {Math.ceil(photoDraft.sizeBytes / 1024)} KB
+              </p>
+            </div>
+            <button
+              className="h-9 rounded-md border border-line bg-surface px-3 text-sm font-semibold text-primary-strong hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={isPhotoPending}
+              onClick={removePhotoDraft}
+              type="button"
+            >
+              {isPhotoPending
+                ? t.modules.items.photo.removing
+                : t.modules.items.photo.remove}
+            </button>
+          </div>
+        ) : null}
+        {photoFeedback ? (
+          <p
+            className={`text-sm ${
+              photoDraft ? "text-primary-strong" : "text-danger"
+            }`}
+          >
+            {photoFeedback}
+          </p>
+        ) : null}
+      </section>
       <div className={fullWidthClass}>
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>

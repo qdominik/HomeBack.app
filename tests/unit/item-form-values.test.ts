@@ -141,3 +141,32 @@ test("item photo draft actions do not accept household id from the client", () =
   assert.doesNotMatch(uploadAction, /getStringProperty\(.*["']household_id["']\)/);
   assert.match(uploadAction, /validateItemPhotoFile\(formData\.get\("photo"\)\)/);
 });
+
+test("item form supports photo draft preview without submitting persistent photo fields", () => {
+  const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+
+  assert.match(form, /uploadItemPhotoDraft/);
+  assert.match(form, /cleanupItemPhotoDraft/);
+  assert.match(form, /type="file"/);
+  assert.match(form, /accept="image\/jpeg,image\/webp"/);
+  assert.match(form, /previewUrl/);
+  assert.match(form, /storagePath/);
+  assert.doesNotMatch(form, /name="miniatura_url"/);
+  assert.doesNotMatch(form, /name="file"/);
+  assert.doesNotMatch(form, /name="storagePath"/);
+});
+
+test("item create and update do not persist photo references in this stage", () => {
+  const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+  const createStart = actions.indexOf("export async function createItem");
+  const updateStart = actions.indexOf("export async function updateItem");
+  const archiveStart = actions.indexOf("export async function archiveItem");
+  const createAction = actions.slice(createStart, updateStart);
+  const updateAction = actions.slice(updateStart, archiveStart);
+
+  assert.notEqual(createStart, -1);
+  assert.notEqual(updateStart, -1);
+  assert.notEqual(archiveStart, -1);
+  assert.doesNotMatch(createAction, /miniatura_url|\.from\("file"\)/);
+  assert.doesNotMatch(updateAction, /miniatura_url|\.from\("file"\)/);
+});

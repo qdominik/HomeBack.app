@@ -141,6 +141,26 @@ export type Dictionary = {
       categoryCreatedAndSelected: string;
       categoryAlreadyExists: string;
       quickCategoryMissing: string;
+      photo: {
+        title: string;
+        help: string;
+        choose: string;
+        uploading: string;
+        remove: string;
+        removing: string;
+        ready: string;
+        previewAlt: string;
+        errors: {
+          missingFile: string;
+          unsupportedFileType: string;
+          fileTooLarge: string;
+          adminRequired: string;
+          uploadFailed: string;
+          previewUrlFailed: string;
+          cleanupFailed: string;
+          unknown: string;
+        };
+      };
       viewSelector: string;
       views: {
         all: string;
