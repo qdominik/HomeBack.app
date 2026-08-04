@@ -14,6 +14,36 @@ import {
   sanitizeItemPhotoFilename,
   validateItemPhotoFile,
 } from "../../src/lib/items/item-photo-storage";
+import {
+  analyzeItemPhoto,
+  buildItemPhotoAnalysisPrompt,
+  getItemPhotoAiProvider,
+  parseItemPhotoAiConfig,
+  validateItemPhotoAnalysisSuggestion,
+  type AnalyzeItemPhotoInput,
+  type ItemPhotoAnalysisSuggestion,
+} from "../../src/lib/items/item-photo-ai";
+
+const VALID_ANALYSIS_INPUT: AnalyzeItemPhotoInput = {
+  storagePath:
+    "households/25000000-0000-4000-8000-000000000001/item-photo-drafts/35000000-0000-4000-8000-000000000001/photo.webp",
+  mimeType: "image/webp",
+  sizeBytes: 1200,
+  categories: [{ id: "cat-1", name: "Tools" }],
+  locale: "pl",
+};
+
+const VALID_ANALYSIS_SUGGESTION: ItemPhotoAnalysisSuggestion = {
+  nazwa: "Wiertarka",
+  opis: "Akumulatorowa wiertarka w walizce.",
+  categoryId: "cat-1",
+  categoryConfidence: "high",
+  categoryFallbackUsed: false,
+  typ: "unikalny",
+  ilosc: 1,
+  jednostka: "szt.",
+  userMessage: null,
+};
 
 test("item type parser accepts only the approved enum values", () => {
   assert.equal(parseItemType("unikalny"), "unikalny");
@@ -169,4 +199,135 @@ test("item create and update do not persist photo references in this stage", () 
   assert.notEqual(archiveStart, -1);
   assert.doesNotMatch(createAction, /miniatura_url|\.from\("file"\)/);
   assert.doesNotMatch(updateAction, /miniatura_url|\.from\("file"\)/);
+});
+
+test("item photo AI config accepts the approved Groq provider", () => {
+  const result = parseItemPhotoAiConfig({
+    GROQ_API_KEY: "secret",
+    ITEM_PHOTO_AI_MODEL: "owner-selected-vision-model",
+    ITEM_PHOTO_AI_PROVIDER: "groq",
+  });
+
+  assert.deepEqual(result, {
+    ok: true,
+    data: {
+      provider: "groq",
+      groqApiKey: "secret",
+      model: "owner-selected-vision-model",
+    },
+  });
+});
+
+test("item photo AI config rejects unsupported providers with a controlled error", () => {
+  assert.deepEqual(
+    parseItemPhotoAiConfig({
+      ITEM_PHOTO_AI_PROVIDER: "gemini",
+    }),
+    { ok: false, code: "unsupported_provider" },
+  );
+});
+
+test("Groq item photo provider reports missing API key only for analysis", async () => {
+  const config = parseItemPhotoAiConfig({
+    ITEM_PHOTO_AI_MODEL: "owner-selected-vision-model",
+    ITEM_PHOTO_AI_PROVIDER: "groq",
+  });
+
+  assert.equal(config.ok, true);
+
+  if (!config.ok) {
+    return;
+  }
+
+  const provider = getItemPhotoAiProvider(config.data);
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: false,
+    code: "missing_api_key",
+  });
+});
+
+test("Groq item photo provider reports missing model only for analysis", async () => {
+  const config = parseItemPhotoAiConfig({
+    GROQ_API_KEY: "secret",
+    ITEM_PHOTO_AI_PROVIDER: "groq",
+  });
+
+  assert.equal(config.ok, true);
+
+  if (!config.ok) {
+    return;
+  }
+
+  const provider = getItemPhotoAiProvider(config.data);
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: false,
+    code: "missing_model",
+  });
+});
+
+test("item photo AI analysis helper is wired to the provider stub", async () => {
+  assert.deepEqual(
+    await analyzeItemPhoto(VALID_ANALYSIS_INPUT, {
+      GROQ_API_KEY: "secret",
+      ITEM_PHOTO_AI_MODEL: "owner-selected-vision-model",
+      ITEM_PHOTO_AI_PROVIDER: "groq",
+    }),
+    { ok: false, code: "provider_not_implemented" },
+  );
+});
+
+test("item photo AI schema accepts a valid suggestion", () => {
+  assert.deepEqual(
+    validateItemPhotoAnalysisSuggestion(VALID_ANALYSIS_SUGGESTION),
+    {
+      ok: true,
+      data: VALID_ANALYSIS_SUGGESTION,
+    },
+  );
+});
+
+test("item photo AI schema rejects unknown category confidence", () => {
+  assert.deepEqual(
+    validateItemPhotoAnalysisSuggestion({
+      ...VALID_ANALYSIS_SUGGESTION,
+      categoryConfidence: "certain",
+    }),
+    { ok: false, code: "invalid_model_response" },
+  );
+});
+
+test("item photo AI schema rejects unknown item type", () => {
+  assert.deepEqual(
+    validateItemPhotoAnalysisSuggestion({
+      ...VALID_ANALYSIS_SUGGESTION,
+      typ: "consumable",
+    }),
+    { ok: false, code: "invalid_model_response" },
+  );
+});
+
+test("item photo AI schema rejects invalid field types", () => {
+  assert.deepEqual(
+    validateItemPhotoAnalysisSuggestion({
+      ...VALID_ANALYSIS_SUGGESTION,
+      ilosc: "1",
+    }),
+    { ok: false, code: "invalid_model_response" },
+  );
+});
+
+test("item photo AI prompt stays provider and model agnostic", () => {
+  const prompt = buildItemPhotoAnalysisPrompt(VALID_ANALYSIS_INPUT);
+
+  assert.match(prompt, /Return user-facing text in Polish/);
+  assert.match(prompt, /"id":"cat-1"/);
+  assert.doesNotMatch(prompt, /groq|qwen|gemini|flash/i);
+});
+
+test("item photo AI provider selector does not require UI or action wiring yet", () => {
+  const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+
+  assert.doesNotMatch(form, /item-photo-ai|analyzeItemPhoto|Groq|Gemini/i);
+  assert.doesNotMatch(actions, /item-photo-ai|analyzeItemPhoto|Groq|Gemini/i);
 });
