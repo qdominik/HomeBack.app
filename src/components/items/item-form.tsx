@@ -128,6 +128,7 @@ export function ItemForm({
   const [isPhotoPending, startPhotoTransition] = useTransition();
   const [isPhotoAnalysisPending, startPhotoAnalysisTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoAnalysisRunIdRef = useRef(0);
   const initialQuantity = item?.ilosc ?? 1;
   const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
   const [itemUnit, setItemUnit] = useState(item?.jednostka ?? "");
@@ -213,6 +214,11 @@ export function ItemForm({
     }
   }
 
+  function resetPhotoAnalysisState() {
+    photoAnalysisRunIdRef.current += 1;
+    setPhotoFeedback(null);
+  }
+
   async function cleanupDraft(storagePath: string) {
     const result = await cleanupItemPhotoDraft({ storagePath });
 
@@ -221,9 +227,10 @@ export function ItemForm({
 
   function removePhotoDraft() {
     const currentDraft = photoDraft;
-    setPhotoFeedback(null);
+    resetPhotoAnalysisState();
 
     if (!currentDraft) {
+      setPhotoDraft(null);
       clearPhotoInput();
       return;
     }
@@ -244,11 +251,12 @@ export function ItemForm({
   function uploadSelectedPhoto(event: ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.currentTarget.files?.[0] ?? null;
     const previousDraft = photoDraft;
-    setPhotoFeedback(null);
 
     if (!selectedFile) {
       return;
     }
+
+    resetPhotoAnalysisState();
 
     startPhotoTransition(async () => {
       if (previousDraft) {
@@ -282,17 +290,25 @@ export function ItemForm({
   }
 
   function applyPhotoSuggestions() {
-    if (!photoDraft) {
+    const analyzedDraft = photoDraft;
+
+    if (!analyzedDraft) {
       return;
     }
 
+    const analysisRunId = photoAnalysisRunIdRef.current + 1;
+    photoAnalysisRunIdRef.current = analysisRunId;
     setPhotoFeedback(null);
     startPhotoAnalysisTransition(async () => {
       const result = await analyzeItemPhotoDraft({
-        storagePath: photoDraft.storagePath,
-        mimeType: photoDraft.mimeType,
-        sizeBytes: photoDraft.sizeBytes,
+        storagePath: analyzedDraft.storagePath,
+        mimeType: analyzedDraft.mimeType,
+        sizeBytes: analyzedDraft.sizeBytes,
       });
+
+      if (analysisRunId !== photoAnalysisRunIdRef.current) {
+        return;
+      }
 
       if (!result.ok) {
         setPhotoFeedback(
@@ -325,6 +341,25 @@ export function ItemForm({
       className={isCompact ? "grid gap-3 sm:grid-cols-2" : "space-y-3"}
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
+      {!item && photoDraft ? (
+        <>
+          <input
+            name="item_photo_draft_path"
+            type="hidden"
+            value={photoDraft.storagePath}
+          />
+          <input
+            name="item_photo_mime_type"
+            type="hidden"
+            value={photoDraft.mimeType}
+          />
+          <input
+            name="item_photo_size_bytes"
+            type="hidden"
+            value={photoDraft.sizeBytes}
+          />
+        </>
+      ) : null}
       <label className={`block text-sm font-medium ${fullWidthClass}`}>
         {t.modules.items.name}
         <input
@@ -454,6 +489,7 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
+      {!item ? (
       <section
         className={`space-y-3 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
       >
@@ -537,6 +573,7 @@ export function ItemForm({
           </p>
         ) : null}
       </section>
+      ) : null}
       <div className={fullWidthClass}>
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>

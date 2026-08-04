@@ -3,6 +3,7 @@ import {
   restoreItem,
   updateItem,
 } from "@/app/(app)/items/actions";
+import Image from "next/image";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
@@ -34,6 +35,7 @@ type ItemCardProps = {
   item: Item;
   location: ItemLocationOption | null;
   locationOptions: ItemLocationSelectorOptions;
+  photoPreviewUrl: string | null;
 };
 
 const statusLabels: Record<
@@ -85,6 +87,7 @@ export function ItemCard({
   item,
   location,
   locationOptions,
+  photoPreviewUrl,
 }: ItemCardProps) {
   const locationPath = location
     ? [location.roomName, location.storageName, location.positionName].join(
@@ -110,14 +113,25 @@ export function ItemCard({
     <article className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
-            <EntityIcon
-              group="item"
-              iconKey={itemIconKey}
-              size={22}
-              weight="duotone"
+          {photoPreviewUrl ? (
+            <Image
+              alt={item.nazwa}
+              className="h-12 w-12 shrink-0 rounded-md border border-line object-cover"
+              height={48}
+              src={photoPreviewUrl}
+              unoptimized
+              width={48}
             />
-          </span>
+          ) : (
+            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+              <EntityIcon
+                group="item"
+                iconKey={itemIconKey}
+                size={22}
+                weight="duotone"
+              />
+            </span>
+          )}
           <div className="min-w-0">
             <h2 className="break-words text-lg font-semibold leading-snug text-foreground">
               {item.nazwa}

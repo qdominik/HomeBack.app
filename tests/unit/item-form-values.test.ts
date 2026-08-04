@@ -7,9 +7,11 @@ import {
   showsItemQuantity,
 } from "../../src/lib/items/item-form-values";
 import {
+  buildItemPhotoFinalPath,
   buildItemPhotoDraftPath,
   getItemPhotoDraftPrefix,
   ITEM_PHOTO_MAX_SIZE_BYTES,
+  isItemPhotoFinalPathForHousehold,
   isItemPhotoDraftPathForHousehold,
   sanitizeItemPhotoFilename,
   validateItemPhotoFile,
@@ -160,6 +162,36 @@ test("item photo draft path guard accepts only active household draft paths", ()
   );
 });
 
+test("item photo final path is household-scoped and uses a stable item path", () => {
+  const householdId = "25000000-0000-4000-8000-000000000001";
+  const itemId = "45000000-0000-4000-8000-000000000001";
+  const path = buildItemPhotoFinalPath({
+    householdId,
+    itemId,
+    mimeType: "image/jpeg",
+  });
+
+  assert.equal(
+    path,
+    `households/${householdId}/items/${itemId}/photo.jpg`,
+  );
+  assert.equal(isItemPhotoFinalPathForHousehold(path, householdId), true);
+  assert.equal(
+    isItemPhotoFinalPathForHousehold(
+      path,
+      "25000000-0000-4000-8000-000000000002",
+    ),
+    false,
+  );
+  assert.equal(
+    isItemPhotoFinalPathForHousehold(
+      `households/${householdId}/item-photo-drafts/${itemId}/photo.jpg`,
+      householdId,
+    ),
+    false,
+  );
+});
+
 test("item photo draft actions do not accept household id from the client", () => {
   const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
   const uploadStart = actions.indexOf("export async function uploadItemPhotoDraft");
@@ -174,7 +206,7 @@ test("item photo draft actions do not accept household id from the client", () =
   assert.match(uploadAction, /validateItemPhotoFile\(formData\.get\("photo"\)\)/);
 });
 
-test("item form supports photo draft preview without submitting persistent photo fields", () => {
+test("item form submits only draft metadata and does not expose persistent photo fields", () => {
   const form = readFileSync("src/components/items/item-form.tsx", "utf8");
 
   assert.match(form, /uploadItemPhotoDraft/);
@@ -183,14 +215,48 @@ test("item form supports photo draft preview without submitting persistent photo
   assert.match(form, /accept="image\/jpeg,image\/webp"/);
   assert.match(form, /previewUrl/);
   assert.match(form, /storagePath/);
+  assert.match(form, /name="item_photo_draft_path"/);
+  assert.match(form, /name="item_photo_mime_type"/);
+  assert.match(form, /name="item_photo_size_bytes"/);
   assert.doesNotMatch(form, /name="miniatura_url"/);
   assert.doesNotMatch(form, /name="file"/);
   assert.doesNotMatch(form, /name="storagePath"/);
 });
 
-test("item create and update do not persist photo references in this stage", () => {
+test("item photo draft changes invalidate old analysis state and requests", () => {
+  const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const removeStart = form.indexOf("function removePhotoDraft");
+  const uploadStart = form.indexOf("function uploadSelectedPhoto");
+  const analysisStart = form.indexOf("function applyPhotoSuggestions");
+  const returnStart = form.indexOf("  return (", analysisStart);
+  const removePhotoDraft = form.slice(removeStart, uploadStart);
+  const uploadSelectedPhoto = form.slice(uploadStart, analysisStart);
+  const applyPhotoSuggestions = form.slice(analysisStart, returnStart);
+
+  assert.notEqual(removeStart, -1);
+  assert.notEqual(uploadStart, -1);
+  assert.notEqual(analysisStart, -1);
+  assert.match(form, /const photoAnalysisRunIdRef = useRef\(0\)/);
+  assert.match(form, /function resetPhotoAnalysisState\(\)/);
+  assert.match(removePhotoDraft, /resetPhotoAnalysisState\(\)/);
+  assert.match(removePhotoDraft, /setPhotoDraft\(null\)/);
+  assert.match(removePhotoDraft, /clearPhotoInput\(\)/);
+  assert.match(uploadSelectedPhoto, /resetPhotoAnalysisState\(\)/);
+  assert.match(uploadSelectedPhoto, /setPhotoDraft\(\{/);
+  assert.match(applyPhotoSuggestions, /const analyzedDraft = photoDraft/);
+  assert.match(applyPhotoSuggestions, /storagePath: analyzedDraft\.storagePath/);
+  assert.doesNotMatch(applyPhotoSuggestions, /storagePath: photoDraft\.storagePath/);
+  assert.match(
+    applyPhotoSuggestions,
+    /analysisRunId !== photoAnalysisRunIdRef\.current/,
+  );
+});
+
+test("item creation validates and persists a draft photo without storing signed URLs", () => {
   const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
-  const createStart = actions.indexOf("export async function createItem");
+  const createStart = actions.indexOf(
+    "export async function createItem(formData: FormData)",
+  );
   const updateStart = actions.indexOf("export async function updateItem");
   const archiveStart = actions.indexOf("export async function archiveItem");
   const createAction = actions.slice(createStart, updateStart);
@@ -199,8 +265,28 @@ test("item create and update do not persist photo references in this stage", () 
   assert.notEqual(createStart, -1);
   assert.notEqual(updateStart, -1);
   assert.notEqual(archiveStart, -1);
-  assert.doesNotMatch(createAction, /miniatura_url|\.from\("file"\)/);
-  assert.doesNotMatch(updateAction, /miniatura_url|\.from\("file"\)/);
+  assert.match(createAction, /getItemPhotoDraftForPersistence/);
+  assert.match(createAction, /validateItemPhotoDraftForPersistence/);
+  assert.match(createAction, /persistItemPhoto/);
+  assert.match(actions, /isItemPhotoDraftPathForHousehold/);
+  assert.match(actions, /\.download\(draft\.storagePath\)/);
+  assert.match(actions, /\.move\(draft\.storagePath, finalPath\)/);
+  assert.match(actions, /miniatura_url: finalPath/);
+  assert.match(actions, /\.from\("file"\)\.insert/);
+  assert.doesNotMatch(createAction, /createSignedUrl/);
+  assert.doesNotMatch(updateAction, /persistItemPhoto|item_photo_draft_path/);
+});
+
+test("item list creates signed previews only for household-scoped final photo paths", () => {
+  const itemsPage = readFileSync("src/app/(app)/items/page.tsx", "utf8");
+  const itemCard = readFileSync("src/components/items/item-card.tsx", "utf8");
+
+  assert.match(itemsPage, /isItemPhotoFinalPathForHousehold/);
+  assert.match(itemsPage, /createSignedUrl\(item\.miniatura_url/);
+  assert.match(itemsPage, /photoPreviewUrl=/);
+  assert.match(itemCard, /photoPreviewUrl/);
+  assert.match(itemCard, /<Image/);
+  assert.match(itemCard, /unoptimized/);
 });
 
 test("item photo AI config accepts the approved Groq provider", () => {

@@ -10,11 +10,14 @@ import {
   type CopyActionResult,
 } from "@/lib/copy-entities/copy-contract";
 import {
+  buildItemPhotoFinalPath,
   buildItemPhotoDraftPath,
   ITEM_PHOTO_BUCKET,
   ITEM_PHOTO_ALLOWED_MIME_TYPES,
   ITEM_PHOTO_MAX_SIZE_BYTES,
+  ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
   isItemPhotoDraftPathForHousehold,
+  validateItemPhotoMetadata,
   validateItemPhotoFile,
   type ItemPhotoAllowedMimeType,
   type ItemPhotoValidationError,
@@ -48,7 +51,6 @@ type ProfileRole = Database["public"]["Enums"]["profile_role"];
 
 const ARCHIVED_STATUS = "archiwalne" as const;
 const AT_HOME_STATUS = "w domu" as const;
-const ITEM_PHOTO_PREVIEW_TTL_SECONDS = 60;
 
 export type ItemPhotoDraftUploadResult =
   | {
@@ -197,13 +199,134 @@ function getItemPhotoAnalysisInput(value: unknown) {
   };
 }
 
+type ItemPhotoDraftForPersistence = {
+  storagePath: string;
+  mimeType: ItemPhotoAllowedMimeType;
+  sizeBytes: number;
+};
+
+function getItemPhotoDraftForPersistence(formData: FormData) {
+  const storagePath = field(formData, "item_photo_draft_path");
+  const mimeType = field(formData, "item_photo_mime_type");
+  const sizeBytes = field(formData, "item_photo_size_bytes");
+
+  if (!storagePath) {
+    return null;
+  }
+
+  const metadata = validateItemPhotoMetadata(mimeType, Number(sizeBytes));
+
+  if (!mimeType || !sizeBytes || !metadata.ok) {
+    redirectWithError("invalid_item_photo");
+  }
+
+  return { storagePath, ...metadata } satisfies ItemPhotoDraftForPersistence;
+}
+
+async function validateItemPhotoDraftForPersistence(
+  supabase: SupabaseClient,
+  householdId: string,
+  draft: ItemPhotoDraftForPersistence,
+) {
+  if (!isItemPhotoDraftPathForHousehold(draft.storagePath, householdId)) {
+    return null;
+  }
+
+  const { data: file, error } = await supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .download(draft.storagePath);
+
+  if (error || !file) {
+    return null;
+  }
+
+  const metadata = validateItemPhotoMetadata(file.type, file.size);
+
+  if (
+    !metadata.ok ||
+    metadata.mimeType !== draft.mimeType ||
+    metadata.sizeBytes !== draft.sizeBytes
+  ) {
+    return null;
+  }
+
+  return { ...draft, ...metadata };
+}
+
+async function persistItemPhoto(
+  supabase: SupabaseClient,
+  {
+    createdById,
+    householdId,
+    itemId,
+    draft,
+  }: {
+    createdById: string;
+    householdId: string;
+    itemId: string;
+    draft: ItemPhotoDraftForPersistence;
+  },
+) {
+  const finalPath = buildItemPhotoFinalPath({
+    householdId,
+    itemId,
+    mimeType: draft.mimeType,
+  });
+  const { error: moveError } = await supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .move(draft.storagePath, finalPath);
+
+  if (moveError) {
+    return false;
+  }
+
+  const { error: fileError } = await supabase.from("file").insert({
+    item_id: itemId,
+    household_id: householdId,
+    nazwa: finalPath.split("/").at(-1) ?? "photo",
+    plik_url: finalPath,
+    typ: "zdjecie",
+    rozmiar_kb: Math.ceil(draft.sizeBytes / 1024),
+    czy_zaszyfrowany: false,
+    created_by_id: createdById,
+  });
+
+  if (fileError) {
+    await supabase.storage
+      .from(ITEM_PHOTO_BUCKET)
+      .move(finalPath, draft.storagePath);
+    return false;
+  }
+
+  const { error: itemError } = await supabase
+    .from("item")
+    .update({ miniatura_url: finalPath })
+    .eq("id", itemId)
+    .eq("household_id", householdId);
+
+  if (!itemError) {
+    return true;
+  }
+
+  await supabase
+    .from("file")
+    .delete()
+    .eq("item_id", itemId)
+    .eq("plik_url", finalPath);
+  await supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .move(finalPath, draft.storagePath);
+
+  return false;
+}
+
 async function createItemPhotoPreviewUrl(
   supabase: SupabaseClient,
   storagePath: string,
 ) {
   return supabase.storage
     .from(ITEM_PHOTO_BUCKET)
-    .createSignedUrl(storagePath, ITEM_PHOTO_PREVIEW_TTL_SECONDS);
+    .createSignedUrl(storagePath, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
 }
 
 async function createItemPhotoAnalysisImageUrl(
@@ -538,6 +661,18 @@ export async function createItem(formData: FormData) {
   const supabase = await createClient();
   const { profile, userId } = await getActiveProfile(supabase);
   requireAdmin(profile.rola);
+  const submittedPhotoDraft = getItemPhotoDraftForPersistence(formData);
+  const photoDraft = submittedPhotoDraft
+    ? await validateItemPhotoDraftForPersistence(
+        supabase,
+        profile.household_id,
+        submittedPhotoDraft,
+      )
+    : null;
+
+  if (submittedPhotoDraft && !photoDraft) {
+    redirectWithError("invalid_item_photo");
+  }
 
   const categoryId = await validateCategory(
     supabase,
@@ -568,6 +703,24 @@ export async function createItem(formData: FormData) {
 
   if (error || !item) {
     redirectWithError("action_failed");
+  }
+
+  if (photoDraft) {
+    const photoPersisted = await persistItemPhoto(supabase, {
+      createdById: userId,
+      householdId: profile.household_id,
+      itemId: item.id,
+      draft: photoDraft,
+    });
+
+    if (!photoPersisted) {
+      await supabase
+        .from("item")
+        .delete()
+        .eq("id", item.id)
+        .eq("household_id", profile.household_id);
+      redirectWithError("photo_persist_failed");
+    }
   }
 
   if (positionId) {

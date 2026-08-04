@@ -18,6 +18,11 @@ import {
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
 import {
+  isItemPhotoFinalPathForHousehold,
+  ITEM_PHOTO_BUCKET,
+  ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
+} from "@/lib/items/item-photo-storage";
+import {
   filterItemsForView,
   parseItemView,
   type ItemView,
@@ -41,6 +46,7 @@ const errorMessages: Record<string, string> = {
   deletion_failed: t.modules.items.errors.deletionFailed,
   invalid_category: t.modules.items.errors.invalidCategory,
   invalid_item_id: t.modules.items.errors.invalidItemId,
+  invalid_item_photo: t.modules.items.errors.invalidItemPhoto,
   invalid_item_type: t.modules.items.errors.invalidItemType,
   invalid_location: t.modules.items.errors.invalidLocation,
   invalid_quantity: t.modules.items.errors.invalidQuantity,
@@ -51,6 +57,7 @@ const errorMessages: Record<string, string> = {
   item_not_archived: t.modules.items.errors.itemNotArchived,
   item_not_found: t.modules.items.errors.itemNotFound,
   missing_fields: t.modules.items.errors.missingFields,
+  photo_persist_failed: t.modules.items.errors.photoPersistFailed,
   restore_status_required: t.modules.items.errors.restoreStatusRequired,
 };
 
@@ -153,6 +160,29 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     primaryPositionByItemId,
     currentView,
   );
+  const itemPhotoPreviewEntries = await Promise.all(
+    visibleItems.map(async (item) => {
+      if (
+        !profile ||
+        profile.status !== "aktywny" ||
+        (profile.rola !== "admin" && profile.rola !== "domownik") ||
+        !item.miniatura_url ||
+        !isItemPhotoFinalPathForHousehold(
+          item.miniatura_url,
+          profile.household_id,
+        )
+      ) {
+        return [item.id, null] as const;
+      }
+
+      const { data, error } = await supabase.storage
+        .from(ITEM_PHOTO_BUCKET)
+        .createSignedUrl(item.miniatura_url, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
+
+      return [item.id, error || !data?.signedUrl ? null : data.signedUrl] as const;
+    }),
+  );
+  const itemPhotoPreviewUrlById = new Map(itemPhotoPreviewEntries);
   const emptyText =
     currentView === "unlocated"
       ? t.modules.items.emptyUnlocated
@@ -303,6 +333,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
                 key={item.id}
                 location={location}
                 locationOptions={locationSelectorOptions}
+                photoPreviewUrl={itemPhotoPreviewUrlById.get(item.id) ?? null}
               />
             );
           })}

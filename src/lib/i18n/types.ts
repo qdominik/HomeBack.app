@@ -238,6 +238,7 @@ export type Dictionary = {
         deletionFailed: string;
         invalidCategory: string;
         invalidItemId: string;
+        invalidItemPhoto: string;
         invalidItemType: string;
         invalidLocation: string;
         invalidQuantity: string;
@@ -249,6 +250,7 @@ export type Dictionary = {
         itemNotArchived: string;
         restoreStatusRequired: string;
         missingFields: string;
+        photoPersistFailed: string;
         unknown: string;
       };
       feedback: {
