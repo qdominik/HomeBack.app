@@ -17,6 +17,7 @@ import {
 import {
   analyzeItemPhoto,
   buildItemPhotoAnalysisPrompt,
+  createGroqItemPhotoAiProvider,
   getItemPhotoAiProvider,
   parseItemPhotoAiConfig,
   validateItemPhotoAnalysisSuggestion,
@@ -25,6 +26,7 @@ import {
 } from "../../src/lib/items/item-photo-ai";
 
 const VALID_ANALYSIS_INPUT: AnalyzeItemPhotoInput = {
+  imageUrl: "https://storage.example.test/signed-item-photo",
   storagePath:
     "households/25000000-0000-4000-8000-000000000001/item-photo-drafts/35000000-0000-4000-8000-000000000001/photo.webp",
   mimeType: "image/webp",
@@ -265,15 +267,88 @@ test("Groq item photo provider reports missing model only for analysis", async (
   });
 });
 
-test("item photo AI analysis helper is wired to the provider stub", async () => {
-  assert.deepEqual(
-    await analyzeItemPhoto(VALID_ANALYSIS_INPUT, {
-      GROQ_API_KEY: "secret",
-      ITEM_PHOTO_AI_MODEL: "owner-selected-vision-model",
-      ITEM_PHOTO_AI_PROVIDER: "groq",
-    }),
-    { ok: false, code: "provider_not_implemented" },
+test("Groq item photo provider sends the signed URL and validates JSON", async () => {
+  let request: RequestInit | undefined;
+  const provider = createGroqItemPhotoAiProvider(
+    {
+      provider: "groq",
+      groqApiKey: "secret",
+      model: "owner-selected-vision-model",
+    },
+    async (_url, init) => {
+      request = init;
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS_SUGGESTION) } }],
+        }),
+        { status: 200 },
+      );
+    },
   );
+
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: true,
+    data: VALID_ANALYSIS_SUGGESTION,
+  });
+  assert.match(String(request?.body), /storage\.example\.test\/signed-item-photo/);
+  assert.match(String(request?.body), /response_format/);
+});
+
+test("Groq item photo provider rejects invalid JSON with a controlled error", async () => {
+  const provider = createGroqItemPhotoAiProvider(
+    {
+      provider: "groq",
+      groqApiKey: "secret",
+      model: "owner-selected-vision-model",
+    },
+    async () =>
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: "not-json" } }] }),
+        { status: 200 },
+      ),
+  );
+
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: false,
+    code: "invalid_model_response",
+  });
+});
+
+test("Groq item photo provider falls back when JSON response format is unavailable", async () => {
+  const requestBodies: string[] = [];
+  const provider = createGroqItemPhotoAiProvider(
+    {
+      provider: "groq",
+      groqApiKey: "secret",
+      model: "owner-selected-vision-model",
+    },
+    async (_url, init) => {
+      requestBodies.push(String(init?.body));
+
+      return requestBodies.length === 1
+        ? new Response(null, { status: 400 })
+        : new Response(
+            JSON.stringify({
+              choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS_SUGGESTION) } }],
+            }),
+            { status: 200 },
+          );
+    },
+  );
+
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: true,
+    data: VALID_ANALYSIS_SUGGESTION,
+  });
+  assert.match(requestBodies[0] ?? "", /response_format/);
+  assert.doesNotMatch(requestBodies[1] ?? "", /response_format/);
+});
+
+test("item photo AI analysis helper returns configuration errors without calling Groq", async () => {
+  assert.deepEqual(await analyzeItemPhoto(VALID_ANALYSIS_INPUT, {}), {
+    ok: false,
+    code: "missing_api_key",
+  });
 });
 
 test("item photo AI schema accepts a valid suggestion", () => {
@@ -324,10 +399,21 @@ test("item photo AI prompt stays provider and model agnostic", () => {
   assert.doesNotMatch(prompt, /groq|qwen|gemini|flash/i);
 });
 
-test("item photo AI provider selector does not require UI or action wiring yet", () => {
+test("item photo analysis action and form keep the draft household-scoped", () => {
   const form = readFileSync("src/components/items/item-form.tsx", "utf8");
   const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
 
-  assert.doesNotMatch(form, /item-photo-ai|analyzeItemPhoto|Groq|Gemini/i);
-  assert.doesNotMatch(actions, /item-photo-ai|analyzeItemPhoto|Groq|Gemini/i);
+  const actionStart = actions.indexOf("export async function analyzeItemPhotoDraft");
+  const actionEnd = actions.indexOf("async function validateCategory", actionStart);
+  const analysisAction = actions.slice(actionStart, actionEnd);
+
+  assert.match(form, /analyzeItemPhotoDraft/);
+  assert.match(form, /fillFromPhoto/);
+  assert.match(form, /setItemName\(suggestion\.nazwa\)/);
+  assert.match(form, /setItemDescription\(suggestion\.opis\)/);
+  assert.match(form, /setSelectedCategoryId|selectCategory\(suggestion\.categoryId\)/);
+  assert.match(analysisAction, /getActiveAdminContext\(supabase\)/);
+  assert.match(analysisAction, /isItemPhotoDraftPathForHousehold/);
+  assert.doesNotMatch(analysisAction, /getStringProperty\(value, "household_id"\)/);
+  assert.doesNotMatch(form, /name="miniatura_url"|name="storagePath"/);
 });

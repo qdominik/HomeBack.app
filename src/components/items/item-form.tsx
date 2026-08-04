@@ -9,9 +9,11 @@ import {
   useTransition,
 } from "react";
 import {
+  analyzeItemPhotoDraft,
   cleanupItemPhotoDraft,
   createQuickCustomCategory,
   uploadItemPhotoDraft,
+  type ItemPhotoAnalysisActionResult,
   type ItemPhotoDraftUploadResult,
 } from "@/app/(app)/items/actions";
 import { resolveInitialItemCategoryId } from "@/lib/categories/category-selection";
@@ -65,6 +67,11 @@ type ItemPhotoDraftError =
   | Exclude<ItemPhotoDraftUploadResult, { ok: true }>["code"]
   | "cleanup_failed";
 
+type ItemPhotoAnalysisError = Exclude<
+  ItemPhotoAnalysisActionResult,
+  { ok: true }
+>["code"];
+
 const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
   cleanup_failed: t.modules.items.photo.errors.cleanupFailed,
@@ -73,6 +80,20 @@ const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
   preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
   unsupported_file_type: t.modules.items.photo.errors.unsupportedFileType,
   upload_failed: t.modules.items.photo.errors.uploadFailed,
+};
+
+const photoAnalysisErrorMessages: Record<ItemPhotoAnalysisError, string> = {
+  admin_required: t.modules.items.photo.errors.adminRequired,
+  categories_unavailable: t.modules.items.photo.errors.categoriesUnavailable,
+  invalid_model_response: t.modules.items.photo.errors.invalidModelResponse,
+  invalid_photo_input: t.modules.items.photo.errors.invalidPhotoInput,
+  invalid_storage_path: t.modules.items.photo.errors.invalidStoragePath,
+  missing_api_key: t.modules.items.photo.errors.aiNotConfigured,
+  missing_model: t.modules.items.photo.errors.aiNotConfigured,
+  preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
+  provider_not_implemented: t.modules.items.photo.errors.analysisFailed,
+  provider_request_failed: t.modules.items.photo.errors.analysisFailed,
+  unsupported_provider: t.modules.items.photo.errors.aiNotConfigured,
 };
 
 export function ItemForm({
@@ -89,6 +110,8 @@ export function ItemForm({
   const fullWidthClass = isCompact ? "sm:col-span-2" : "";
   const halfWidthClass = isCompact ? "sm:col-span-1" : "";
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
+  const [itemName, setItemName] = useState(item?.nazwa ?? "");
+  const [itemDescription, setItemDescription] = useState(item?.opis ?? "");
   const [availableCategories, setAvailableCategories] = useState(categories);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     resolveInitialItemCategoryId(item?.category_id, defaultCategoryId),
@@ -102,8 +125,11 @@ export function ItemForm({
   const [photoDraft, setPhotoDraft] = useState<ItemPhotoDraftState | null>(null);
   const [photoFeedback, setPhotoFeedback] = useState<string | null>(null);
   const [isPhotoPending, startPhotoTransition] = useTransition();
+  const [isPhotoAnalysisPending, startPhotoAnalysisTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initialQuantity = item?.ilosc ?? 1;
+  const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
+  const [itemUnit, setItemUnit] = useState(item?.jednostka ?? "");
   const locationFieldProps = getItemLocationFieldProps(
     locationOptions,
     selectedPositionId,
@@ -253,6 +279,44 @@ export function ItemForm({
     });
   }
 
+  function applyPhotoSuggestions() {
+    if (!photoDraft) {
+      return;
+    }
+
+    setPhotoFeedback(null);
+    startPhotoAnalysisTransition(async () => {
+      const result = await analyzeItemPhotoDraft({
+        storagePath: photoDraft.storagePath,
+        mimeType: photoDraft.mimeType,
+        sizeBytes: photoDraft.sizeBytes,
+      });
+
+      if (!result.ok) {
+        setPhotoFeedback(
+          photoAnalysisErrorMessages[result.code] ??
+            t.modules.items.photo.errors.analysisFailed,
+        );
+        return;
+      }
+
+      const { suggestion } = result;
+
+      if (suggestion.nazwa !== null) setItemName(suggestion.nazwa);
+      if (suggestion.opis !== null) setItemDescription(suggestion.opis);
+      if (suggestion.categoryId !== null) selectCategory(suggestion.categoryId);
+      if (suggestion.typ !== null) setItemType(suggestion.typ);
+      if (suggestion.ilosc !== null && suggestion.ilosc >= 1) {
+        setItemQuantity(String(suggestion.ilosc));
+      }
+      if (suggestion.jednostka !== null) setItemUnit(suggestion.jednostka);
+
+      setPhotoFeedback(
+        suggestion.userMessage ?? t.modules.items.photo.suggestionsApplied,
+      );
+    });
+  }
+
   return (
     <form
       action={action}
@@ -263,17 +327,19 @@ export function ItemForm({
         {t.modules.items.name}
         <input
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
-          defaultValue={item?.nazwa}
+          onChange={(event) => setItemName(event.currentTarget.value)}
           name="nazwa"
           required
+          value={itemName}
         />
       </label>
       <label className={`block text-sm font-medium ${fullWidthClass}`}>
         {t.modules.items.description}
         <textarea
           className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
-          defaultValue={item?.opis ?? ""}
           name="opis"
+          onChange={(event) => setItemDescription(event.currentTarget.value)}
+          value={itemDescription}
         />
       </label>
       <label className={`block text-sm font-medium ${halfWidthClass}`}>
@@ -298,18 +364,28 @@ export function ItemForm({
           {t.modules.items.quantity}
           <input
             className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
-            defaultValue={initialQuantity}
             key={itemType}
             min="1"
             name="ilosc"
+            onChange={(event) => setItemQuantity(event.currentTarget.value)}
             required
             step="1"
             type="number"
+            value={itemQuantity}
           />
         </label>
       ) : (
         <input name="ilosc" type="hidden" value="1" />
       )}
+      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+        {t.modules.items.unit}
+        <input
+          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          name="jednostka"
+          onChange={(event) => setItemUnit(event.currentTarget.value)}
+          value={itemUnit}
+        />
+      </label>
       <label className={`block text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.category}
         <select
@@ -392,7 +468,7 @@ export function ItemForm({
           <input
             accept="image/jpeg,image/webp"
             className="block w-full text-sm text-muted file:mr-3 file:h-9 file:rounded-md file:border-0 file:bg-primary file:px-3 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
-            disabled={isPhotoPending}
+            disabled={isPhotoPending || isPhotoAnalysisPending}
             onChange={uploadSelectedPhoto}
             ref={fileInputRef}
             type="file"
@@ -400,6 +476,9 @@ export function ItemForm({
         </label>
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
+        ) : null}
+        {isPhotoAnalysisPending ? (
+          <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
         ) : null}
         {photoDraft ? (
           <div className="grid gap-3 sm:grid-cols-[96px_1fr_auto] sm:items-center">
@@ -419,13 +498,23 @@ export function ItemForm({
             </div>
             <button
               className="h-9 rounded-md border border-line bg-surface px-3 text-sm font-semibold text-primary-strong hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={isPhotoPending}
+              disabled={isPhotoPending || isPhotoAnalysisPending}
               onClick={removePhotoDraft}
               type="button"
             >
               {isPhotoPending
                 ? t.modules.items.photo.removing
                 : t.modules.items.photo.remove}
+            </button>
+            <button
+              className="h-9 rounded-md bg-primary px-3 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onClick={applyPhotoSuggestions}
+              type="button"
+            >
+              {isPhotoAnalysisPending
+                ? t.modules.items.photo.analyzing
+                : t.modules.items.photo.fillFromPhoto}
             </button>
           </div>
         ) : null}

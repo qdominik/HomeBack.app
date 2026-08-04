@@ -18,6 +18,8 @@ export type ItemPhotoAnalysisSuggestion = {
 };
 
 export type AnalyzeItemPhotoInput = {
+  /** Server-only, short-lived URL created after Storage authorization. */
+  imageUrl: string;
   storagePath: string;
   mimeType: ItemPhotoAllowedMimeType;
   sizeBytes: number;
@@ -29,6 +31,7 @@ export type ItemPhotoAiErrorCode =
   | "invalid_model_response"
   | "missing_api_key"
   | "missing_model"
+  | "provider_request_failed"
   | "provider_not_implemented"
   | "unsupported_provider";
 

@@ -126,6 +126,7 @@ export type Dictionary = {
       description: string;
       itemType: string;
       quantity: string;
+      unit: string;
       selectCategory: string;
       selectRoom: string;
       selectStorage: string;
@@ -146,6 +147,9 @@ export type Dictionary = {
         help: string;
         choose: string;
         uploading: string;
+        analyzing: string;
+        fillFromPhoto: string;
+        suggestionsApplied: string;
         remove: string;
         removing: string;
         ready: string;
@@ -158,6 +162,12 @@ export type Dictionary = {
           uploadFailed: string;
           previewUrlFailed: string;
           cleanupFailed: string;
+          aiNotConfigured: string;
+          analysisFailed: string;
+          categoriesUnavailable: string;
+          invalidModelResponse: string;
+          invalidPhotoInput: string;
+          invalidStoragePath: string;
           unknown: string;
         };
       };

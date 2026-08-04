@@ -18,6 +18,7 @@ export type { ItemPhotoAiConfig } from "./config";
 export { buildItemPhotoAnalysisPrompt } from "./prompt";
 export { getItemPhotoAiProvider };
 export type { ItemPhotoAiProvider } from "./provider";
+export { createGroqItemPhotoAiProvider } from "./providers/groq";
 export { validateItemPhotoAnalysisSuggestion } from "./schema";
 
 export async function analyzeItemPhoto(

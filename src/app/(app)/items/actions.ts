@@ -12,11 +12,18 @@ import {
 import {
   buildItemPhotoDraftPath,
   ITEM_PHOTO_BUCKET,
+  ITEM_PHOTO_ALLOWED_MIME_TYPES,
+  ITEM_PHOTO_MAX_SIZE_BYTES,
   isItemPhotoDraftPathForHousehold,
   validateItemPhotoFile,
   type ItemPhotoAllowedMimeType,
   type ItemPhotoValidationError,
 } from "@/lib/items/item-photo-storage";
+import {
+  analyzeItemPhoto,
+  type ItemPhotoAiErrorCode,
+  type ItemPhotoAnalysisSuggestion,
+} from "@/lib/items/item-photo-ai";
 import {
   parseItemType,
   resolveItemQuantity,
@@ -70,6 +77,19 @@ export type ItemPhotoPreviewUrlResult =
 export type ItemPhotoDraftCleanupResult =
   | { ok: true }
   | { ok: false; code: "admin_required" | "invalid_storage_path" | "cleanup_failed" };
+
+export type ItemPhotoAnalysisActionResult =
+  | { ok: true; suggestion: ItemPhotoAnalysisSuggestion }
+  | {
+      ok: false;
+      code:
+        | ItemPhotoAiErrorCode
+        | "admin_required"
+        | "categories_unavailable"
+        | "invalid_photo_input"
+        | "invalid_storage_path"
+        | "preview_url_failed";
+    };
 
 function field(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -143,6 +163,38 @@ function getStringProperty(value: unknown, key: string) {
     typeof (value as Record<string, unknown>)[key] === "string"
     ? ((value as Record<string, string>)[key] ?? "").trim()
     : "";
+}
+
+function getNumberProperty(value: unknown, key: string) {
+  return value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as Record<string, unknown>)[key] === "number"
+    ? (value as Record<string, number>)[key]
+    : Number.NaN;
+}
+
+function getItemPhotoAnalysisInput(value: unknown) {
+  const storagePath = getStringProperty(value, "storagePath");
+  const mimeType = getStringProperty(value, "mimeType");
+  const sizeBytes = getNumberProperty(value, "sizeBytes");
+
+  if (
+    !ITEM_PHOTO_ALLOWED_MIME_TYPES.includes(
+      mimeType as ItemPhotoAllowedMimeType,
+    ) ||
+    !Number.isInteger(sizeBytes) ||
+    sizeBytes < 0 ||
+    sizeBytes > ITEM_PHOTO_MAX_SIZE_BYTES
+  ) {
+    return null;
+  }
+
+  return {
+    storagePath,
+    mimeType: mimeType as ItemPhotoAllowedMimeType,
+    sizeBytes,
+  };
 }
 
 async function createItemPhotoPreviewUrl(
@@ -251,6 +303,69 @@ export async function cleanupItemPhotoDraft(
     .remove([storagePath]);
 
   return error ? { ok: false, code: "cleanup_failed" } : { ok: true };
+}
+
+export async function analyzeItemPhotoDraft(
+  value: unknown,
+): Promise<ItemPhotoAnalysisActionResult> {
+  const input = getItemPhotoAnalysisInput(value);
+
+  if (!input) {
+    return { ok: false, code: "invalid_photo_input" };
+  }
+
+  const supabase = await createClient();
+  const context = await getActiveAdminContext(supabase);
+
+  if (!context.ok) {
+    return context;
+  }
+
+  if (!isItemPhotoDraftPathForHousehold(input.storagePath, context.householdId)) {
+    return { ok: false, code: "invalid_storage_path" };
+  }
+
+  const { data: signedUrlData, error: signedUrlError } =
+    await createItemPhotoPreviewUrl(supabase, input.storagePath);
+
+  if (signedUrlError || !signedUrlData?.signedUrl) {
+    return { ok: false, code: "preview_url_failed" };
+  }
+
+  const { data: categories, error: categoriesError } = await supabase
+    .from("category")
+    .select("id, nazwa")
+    .or(`household_id.is.null,household_id.eq.${context.householdId}`);
+
+  if (categoriesError || !categories) {
+    return { ok: false, code: "categories_unavailable" };
+  }
+
+  const result = await analyzeItemPhoto({
+    ...input,
+    imageUrl: signedUrlData.signedUrl,
+    categories: categories.map((category) => ({
+      id: category.id,
+      name: category.nazwa,
+    })),
+    locale: "pl",
+  });
+
+  if (!result.ok) {
+    return result;
+  }
+
+  const categoryIds = new Set(categories.map((category) => category.id));
+  const suggestion = categoryIds.has(result.data.categoryId ?? "")
+    ? result.data
+    : {
+        ...result.data,
+        categoryId: null,
+        categoryConfidence: "none" as const,
+        categoryFallbackUsed: true,
+      };
+
+  return { ok: true, suggestion };
 }
 
 async function validateCategory(
@@ -378,6 +493,7 @@ function parseItemPayload(formData: FormData) {
   return {
     categoryId,
     ilosc: quantity,
+    jednostka: nullableField(formData, "jednostka"),
     nazwa,
     opis: nullableField(formData, "opis"),
     positionId: field(formData, "storage_location_l3_id"),
@@ -409,7 +525,7 @@ export async function createItem(formData: FormData) {
       created_by_id: userId,
       household_id: profile.household_id,
       ilosc: payload.ilosc,
-      jednostka: null,
+      jednostka: payload.jednostka,
       nazwa: payload.nazwa,
       opis: payload.opis,
       status: AT_HOME_STATUS,
@@ -459,7 +575,7 @@ export async function updateItem(formData: FormData) {
     .update({
       category_id: categoryId,
       ilosc: payload.ilosc,
-      jednostka: null,
+      jednostka: payload.jednostka,
       nazwa: payload.nazwa,
       opis: payload.opis,
       typ: payload.typ,
