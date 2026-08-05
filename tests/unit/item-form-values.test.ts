@@ -542,7 +542,8 @@ test("item photo analysis action and form keep the draft household-scoped", () =
 
   assert.match(form, /analyzeItemPhotoDraft/);
   assert.match(form, /fillFromPhoto/);
-  assert.match(form, /setItemName\(suggestion\.nazwa\)/);
+  assert.match(form, /shouldApplyItemPhotoSuggestionName\(itemName, suggestionName\)/);
+  assert.match(form, /setItemName\(suggestionName\)/);
   assert.match(form, /setItemDescription\(suggestion\.opis\)/);
   assert.match(form, /setSelectedCategoryId|selectCategory\(suggestion\.categoryId\)/);
   assert.match(analysisAction, /getActiveAdminContext\(supabase\)/);

@@ -16,6 +16,11 @@ import {
   type ItemPhotoAnalysisActionResult,
   type ItemPhotoDraftUploadResult,
 } from "@/app/(app)/items/actions";
+import {
+  isItemPhotoWeakSuggestion,
+  shouldApplyItemPhotoSuggestionName,
+} from "@/lib/items/item-photo-ai/apply-suggestion";
+import { validateItemPhotoFile } from "@/lib/items/item-photo-storage";
 import { resolveInitialItemCategoryId } from "@/lib/categories/category-selection";
 import { t } from "@/lib/i18n";
 import {
@@ -183,7 +188,14 @@ export function ItemForm({
     }
 
     startQuickCategoryTransition(async () => {
-      const result = await createQuickCustomCategory(submittedName);
+      let result: Awaited<ReturnType<typeof createQuickCustomCategory>>;
+
+      try {
+        result = await createQuickCustomCategory(submittedName);
+      } catch {
+        setQuickCategoryFeedback(t.modules.items.errors.actionFailed);
+        return;
+      }
 
       if (result.status === "created" || result.status === "existing") {
         setAvailableCategories((currentCategories) =>
@@ -258,7 +270,13 @@ export function ItemForm({
     }
 
     startPhotoTransition(async () => {
-      const cleaned = await cleanupDraft(currentDraft.storagePath);
+      let cleaned = true;
+
+      try {
+        cleaned = await cleanupDraft(currentDraft.storagePath);
+      } catch {
+        cleaned = false;
+      }
 
       if (mutationRunId !== photoMutationRunIdRef.current) {
         return;
@@ -287,7 +305,13 @@ export function ItemForm({
     }
 
     startPhotoTransition(async () => {
-      const cleaned = await cleanupDraft(currentDraft.storagePath);
+      let cleaned = true;
+
+      try {
+        cleaned = await cleanupDraft(currentDraft.storagePath);
+      } catch {
+        cleaned = false;
+      }
 
       if (mutationRunId !== photoMutationRunIdRef.current) {
         return;
@@ -307,6 +331,17 @@ export function ItemForm({
       return;
     }
 
+    const selection = validateItemPhotoFile(selectedFile);
+
+    if (!selection.ok) {
+      setPhotoFeedback(
+        photoErrorMessages[selection.code] ??
+          t.modules.items.photo.errors.unknown,
+      );
+      clearPhotoInput();
+      return;
+    }
+
     const mutationRunId = photoMutationRunIdRef.current + 1;
     photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
@@ -314,7 +349,9 @@ export function ItemForm({
 
     startPhotoTransition(async () => {
       if (previousDraft) {
-        await cleanupDraft(previousDraft.storagePath);
+        try {
+          await cleanupDraft(previousDraft.storagePath);
+        } catch {}
       }
 
       if (mutationRunId !== photoMutationRunIdRef.current) {
@@ -324,7 +361,18 @@ export function ItemForm({
       const formData = new FormData();
       formData.set("photo", selectedFile);
 
-      const result = await uploadItemPhotoDraft(formData);
+      let result: ItemPhotoDraftUploadResult;
+
+      try {
+        result = await uploadItemPhotoDraft(formData);
+      } catch {
+        if (mutationRunId !== photoMutationRunIdRef.current) {
+          return;
+        }
+        setPhotoFeedback(t.modules.items.photo.errors.uploadFailed);
+        clearPhotoInput();
+        return;
+      }
 
       if (mutationRunId !== photoMutationRunIdRef.current) {
         return;
@@ -364,11 +412,21 @@ export function ItemForm({
     photoAnalysisRunIdRef.current = analysisRunId;
     setPhotoFeedback(null);
     startPhotoAnalysisTransition(async () => {
-      const result = await analyzeItemPhotoDraft({
-        storagePath: analyzedDraft.storagePath,
-        mimeType: analyzedDraft.mimeType,
-        sizeBytes: analyzedDraft.sizeBytes,
-      });
+      let result: ItemPhotoAnalysisActionResult;
+
+      try {
+        result = await analyzeItemPhotoDraft({
+          storagePath: analyzedDraft.storagePath,
+          mimeType: analyzedDraft.mimeType,
+          sizeBytes: analyzedDraft.sizeBytes,
+        });
+      } catch {
+        if (analysisRunId !== photoAnalysisRunIdRef.current) {
+          return;
+        }
+        setPhotoFeedback(t.modules.items.photo.errors.analysisFailed);
+        return;
+      }
 
       if (analysisRunId !== photoAnalysisRunIdRef.current) {
         return;
@@ -383,8 +441,14 @@ export function ItemForm({
       }
 
       const { suggestion } = result;
+      const suggestionName = suggestion.nazwa;
 
-      if (suggestion.nazwa !== null) setItemName(suggestion.nazwa);
+      if (
+        suggestionName !== null &&
+        shouldApplyItemPhotoSuggestionName(itemName, suggestionName)
+      ) {
+        setItemName(suggestionName);
+      }
       if (suggestion.opis !== null) setItemDescription(suggestion.opis);
       if (suggestion.categoryId !== null) selectCategory(suggestion.categoryId);
       if (suggestion.typ !== null) setItemType(suggestion.typ);
@@ -394,7 +458,10 @@ export function ItemForm({
       if (suggestion.jednostka !== null) setItemUnit(suggestion.jednostka);
 
       setPhotoFeedback(
-        suggestion.userMessage ?? t.modules.items.photo.suggestionsApplied,
+        suggestion.userMessage ??
+          (isItemPhotoWeakSuggestion(suggestion)
+            ? t.modules.items.photo.noConfidentMatch
+            : t.modules.items.photo.suggestionsApplied),
       );
     });
   }

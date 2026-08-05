@@ -150,6 +150,7 @@ export type Dictionary = {
         analyzing: string;
         fillFromPhoto: string;
         suggestionsApplied: string;
+        noConfidentMatch: string;
         remove: string;
         removing: string;
         ready: string;
