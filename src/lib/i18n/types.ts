@@ -126,6 +126,7 @@ export type Dictionary = {
       description: string;
       itemType: string;
       quantity: string;
+      unit: string;
       selectCategory: string;
       selectRoom: string;
       selectStorage: string;
@@ -141,6 +142,35 @@ export type Dictionary = {
       categoryCreatedAndSelected: string;
       categoryAlreadyExists: string;
       quickCategoryMissing: string;
+      photo: {
+        title: string;
+        help: string;
+        choose: string;
+        uploading: string;
+        analyzing: string;
+        fillFromPhoto: string;
+        suggestionsApplied: string;
+        remove: string;
+        removing: string;
+        ready: string;
+        previewAlt: string;
+        errors: {
+          missingFile: string;
+          unsupportedFileType: string;
+          fileTooLarge: string;
+          adminRequired: string;
+          uploadFailed: string;
+          previewUrlFailed: string;
+          cleanupFailed: string;
+          aiNotConfigured: string;
+          analysisFailed: string;
+          categoriesUnavailable: string;
+          invalidModelResponse: string;
+          invalidPhotoInput: string;
+          invalidStoragePath: string;
+          unknown: string;
+        };
+      };
       viewSelector: string;
       views: {
         all: string;
@@ -155,6 +185,7 @@ export type Dictionary = {
       itemDelete: {
         title: string;
         description: string;
+        descriptionWithFiles: string;
         cancel: string;
         confirm: string;
         pending: string;
@@ -208,6 +239,7 @@ export type Dictionary = {
         deletionFailed: string;
         invalidCategory: string;
         invalidItemId: string;
+        invalidItemPhoto: string;
         invalidItemType: string;
         invalidLocation: string;
         invalidQuantity: string;
@@ -219,6 +251,8 @@ export type Dictionary = {
         itemNotArchived: string;
         restoreStatusRequired: string;
         missingFields: string;
+        photoPersistFailed: string;
+        photoRemoveFailed: string;
         unknown: string;
       };
       feedback: {
@@ -578,16 +612,19 @@ export type Dictionary = {
       export: string;
       testData: string;
       testDataTabs: {
+        qaSmoke: string;
         small: string;
         medium: string;
         deletion: string;
       };
       testDataDescriptions: {
+        qaSmoke: string;
         small: string;
         medium: string;
         deletion: string;
       };
       generate: string;
+      generateQa: string;
       generating: string;
       envGuard: string;
       adminGuard: string;

@@ -20,6 +20,7 @@
     "src/lib/confirm-delete.ts",
     "src/lib/icons/**/*.ts",
     "src/lib/items/**/*.ts",
+    "src/lib/settings/**/*.ts",
     "src/lib/templates/**/*.ts",
     "tests/unit/**/*.ts"
   ],

@@ -18,7 +18,7 @@ import {
   filterHomeStructure,
   parseHomeSearchParams,
 } from "@/lib/home/home-search";
-import { createClient } from "@/lib/supabase/server";
+import { getAppContext } from "@/lib/app-context";
 
 type HomeStructurePageProps = {
   searchParams: Promise<{
@@ -113,42 +113,22 @@ export default async function HomeStructurePage({
 }: HomeStructurePageProps) {
   const params = await searchParams;
   const search = parseHomeSearchParams(params);
-  const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
+  const { household, profile, supabase } = await getAppContext();
 
-  const { data: profile } = userId
-    ? await supabase
-        .from("profile")
-        .select("household_id, rola, status")
-        .eq("id", userId)
-        .maybeSingle()
-    : { data: null };
-
-  const { data: household } = profile
-    ? await supabase
-        .from("household")
-        .select("nazwa")
-        .eq("id", profile.household_id)
-        .maybeSingle()
-    : { data: null };
-
-  const { data: roomsData } = await supabase
-    .from("room")
-    .select("*")
-    .order(orderColumn, { ascending: true })
-    .order("created_at", { ascending: true });
-
-  const roomIds = roomsData?.map((room) => room.id) ?? [];
-  const { data: locationsData } = roomIds.length
-    ? await supabase
-        .from("storage_location_l2")
-        .select("*")
-        .in("room_id", roomIds)
-        .order(orderColumn, { ascending: true })
-        .order("created_at", { ascending: true })
-    : { data: [] };
-
+  const [roomsResponse, locationsResponse] = await Promise.all([
+    supabase
+      .from("room")
+      .select("*")
+      .order(orderColumn, { ascending: true })
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("storage_location_l2")
+      .select("*")
+      .order(orderColumn, { ascending: true })
+      .order("created_at", { ascending: true }),
+  ]);
+  const roomsData = roomsResponse.data;
+  const locationsData = locationsResponse.data;
   const locationIds = locationsData?.map((location) => location.id) ?? [];
   const { data: positionsData } = locationIds.length
     ? await supabase

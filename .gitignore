@@ -17,6 +17,7 @@
 
 # next.js
 /.next/
+**/.next/
 /out/
 
 # production
@@ -52,6 +53,10 @@ next-env.d.ts
 /.supabase
 /.docker-config
 /homebase-next-scaffold
+
+# landing page workbenches live outside this app repository
+/landing-v*/
+/HomeBack.landing/
 
 .next-dev*.log
 

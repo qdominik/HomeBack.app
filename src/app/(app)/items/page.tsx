@@ -18,11 +18,17 @@ import {
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
 import {
+  getItemPhotoMimeTypeFromFinalPath,
+  isItemPhotoFinalPathForHousehold,
+  ITEM_PHOTO_BUCKET,
+  ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
+} from "@/lib/items/item-photo-storage";
+import {
   filterItemsForView,
   parseItemView,
   type ItemView,
 } from "@/lib/items/item-view-filter";
-import { createClient } from "@/lib/supabase/server";
+import { getAppContext } from "@/lib/app-context";
 
 type ItemsPageProps = {
   searchParams: Promise<{
@@ -41,6 +47,7 @@ const errorMessages: Record<string, string> = {
   deletion_failed: t.modules.items.errors.deletionFailed,
   invalid_category: t.modules.items.errors.invalidCategory,
   invalid_item_id: t.modules.items.errors.invalidItemId,
+  invalid_item_photo: t.modules.items.errors.invalidItemPhoto,
   invalid_item_type: t.modules.items.errors.invalidItemType,
   invalid_location: t.modules.items.errors.invalidLocation,
   invalid_quantity: t.modules.items.errors.invalidQuantity,
@@ -51,6 +58,8 @@ const errorMessages: Record<string, string> = {
   item_not_archived: t.modules.items.errors.itemNotArchived,
   item_not_found: t.modules.items.errors.itemNotFound,
   missing_fields: t.modules.items.errors.missingFields,
+  photo_persist_failed: t.modules.items.errors.photoPersistFailed,
+  photo_remove_failed: t.modules.items.errors.photoRemoveFailed,
   restore_status_required: t.modules.items.errors.restoreStatusRequired,
 };
 
@@ -65,17 +74,7 @@ const statusMessages: Record<string, string> = {
 
 export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
-
-  const { data: profile } = userId
-    ? await supabase
-        .from("profile")
-        .select("household_id, rola, status")
-        .eq("id", userId)
-        .maybeSingle()
-    : { data: null };
+  const { profile, supabase } = await getAppContext();
 
   const currentView = parseItemView(params);
   const itemsQueryBase = supabase
@@ -103,14 +102,25 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
 
   const rooms = roomsResponse.data ?? [];
   const roomIds = rooms.map((room) => room.id);
-  const storageResponse = roomIds.length
-    ? await supabase
-        .from("storage_location_l2")
-        .select("id, nazwa, room_id")
-        .in("room_id", roomIds)
-        .order(orderColumn, { ascending: true })
-        .order("created_at", { ascending: true })
-    : { data: [], error: null };
+  const items = itemsResponse.data ?? [];
+  const itemIds = items.map((item) => item.id);
+  const [storageResponse, primaryLocationsResponse] = await Promise.all([
+    roomIds.length
+      ? supabase
+          .from("storage_location_l2")
+          .select("id, nazwa, room_id")
+          .in("room_id", roomIds)
+          .order(orderColumn, { ascending: true })
+          .order("created_at", { ascending: true })
+      : Promise.resolve({ data: [], error: null }),
+    itemIds.length
+      ? supabase
+          .from("item_location")
+          .select("item_id, storage_location_l3_id")
+          .eq("czy_glowna", true)
+          .in("item_id", itemIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
   const storageLocations = storageResponse.data ?? [];
   const storageIds = storageLocations.map((storage) => storage.id);
   const positionsResponse = storageIds.length
@@ -122,15 +132,6 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         .order("created_at", { ascending: true })
     : { data: [], error: null };
   const positions = positionsResponse.data ?? [];
-  const items = itemsResponse.data ?? [];
-  const itemIds = items.map((item) => item.id);
-  const primaryLocationsResponse = itemIds.length
-    ? await supabase
-        .from("item_location")
-        .select("item_id, storage_location_l3_id")
-        .eq("czy_glowna", true)
-        .in("item_id", itemIds)
-    : { data: [], error: null };
   const primaryLocations = primaryLocationsResponse.data ?? [];
   const categories = categoriesResponse.data ?? [];
   const locationSelectorOptions = buildItemLocationSelectorOptions({
@@ -161,6 +162,45 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     primaryPositionByItemId,
     currentView,
   );
+  const visibleItemIds = visibleItems.map((item) => item.id);
+  const itemPhotoFilesResponse = visibleItemIds.length
+    ? await supabase
+        .from("file")
+        .select("item_id, nazwa, plik_url, rozmiar_kb, typ")
+        .in("item_id", visibleItemIds)
+        .order("created_at", { ascending: true })
+    : { data: [], error: null };
+  const itemPhotoFileByItemId = new Map(
+    (itemPhotoFilesResponse.data ?? [])
+      .filter((file) => file.typ === "zdjecie")
+      .map((file) => [file.item_id, file]),
+  );
+  const itemHasAttachedFilesById = new Set(
+    (itemPhotoFilesResponse.data ?? []).map((file) => file.item_id),
+  );
+  const itemPhotoPreviewEntries = await Promise.all(
+    visibleItems.map(async (item) => {
+      if (
+        !profile ||
+        profile.status !== "aktywny" ||
+        (profile.rola !== "admin" && profile.rola !== "domownik") ||
+        !item.miniatura_url ||
+        !isItemPhotoFinalPathForHousehold(
+          item.miniatura_url,
+          profile.household_id,
+        )
+      ) {
+        return [item.id, null] as const;
+      }
+
+      const { data, error } = await supabase.storage
+        .from(ITEM_PHOTO_BUCKET)
+        .createSignedUrl(item.miniatura_url, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
+
+      return [item.id, error || !data?.signedUrl ? null : data.signedUrl] as const;
+    }),
+  );
+  const itemPhotoPreviewUrlById = new Map(itemPhotoPreviewEntries);
   const emptyText =
     currentView === "unlocated"
       ? t.modules.items.emptyUnlocated
@@ -204,7 +244,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       roomsResponse.error ||
       storageResponse.error ||
       positionsResponse.error ||
-      primaryLocationsResponse.error,
+      primaryLocationsResponse.error ||
+      itemPhotoFilesResponse.error,
   );
   const errorMessage = params.error
     ? (errorMessages[params.error] ?? t.modules.items.errors.unknown)
@@ -308,9 +349,31 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
                 }
                 isAdmin={isAdmin}
                 item={item}
+                hasAttachedFiles={itemHasAttachedFilesById.has(item.id)}
                 key={item.id}
                 location={location}
                 locationOptions={locationSelectorOptions}
+                photo={
+                  item.miniatura_url
+                    ? {
+                        filename:
+                          itemPhotoFileByItemId.get(item.id)?.nazwa ??
+                          item.miniatura_url.split("/").at(-1) ??
+                          "photo",
+                        mimeType:
+                          getItemPhotoMimeTypeFromFinalPath(
+                            item.miniatura_url,
+                          ) ?? "image/jpeg",
+                        previewUrl:
+                          itemPhotoPreviewUrlById.get(item.id) ?? null,
+                        sizeBytes:
+                          (itemPhotoFileByItemId.get(item.id)?.rozmiar_kb ??
+                            0) * 1024,
+                        storagePath: item.miniatura_url,
+                      }
+                    : null
+                }
+                photoPreviewUrl={itemPhotoPreviewUrlById.get(item.id) ?? null}
               />
             );
           })}

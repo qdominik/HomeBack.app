@@ -11,6 +11,8 @@ import {
   resolvePermanentItemDeletionResult,
   toPermanentItemDeletionActionResult,
 } from "../../src/lib/items/permanent-item-deletion";
+import { en } from "../../src/lib/i18n/locales/en";
+import { pl } from "../../src/lib/i18n/locales/pl";
 
 const templates = {
   category: "Delete category \"{name}\"?",
@@ -156,10 +158,42 @@ test("permanent item delete dialog translations expose the approved labels", () 
   assert.equal(types.includes("itemDelete: {"), true);
   assert.equal(pl.includes('title: "Usuń rzecz trwale"'), true);
   assert.equal(pl.includes('confirm: "Usuń trwale"'), true);
+  assert.equal(pl.includes("descriptionWithFiles:"), true);
   assert.equal(pl.includes('pending: "Usuwanie..."'), true);
   assert.equal(en.includes('title: "Permanently delete item"'), true);
   assert.equal(en.includes('confirm: "Permanently delete"'), true);
+  assert.equal(en.includes("descriptionWithFiles:"), true);
   assert.equal(en.includes('pending: "Deleting..."'), true);
+});
+
+test("permanent item delete dialog descriptions format without runtime fallback", () => {
+  assert.equal(typeof pl.modules.items.itemDelete.description, "string");
+  assert.equal(typeof pl.modules.items.itemDelete.descriptionWithFiles, "string");
+  assert.equal(typeof en.modules.items.itemDelete.description, "string");
+  assert.equal(typeof en.modules.items.itemDelete.descriptionWithFiles, "string");
+
+  assert.equal(
+    formatDeleteConfirmation(pl.modules.items.itemDelete.description, "Latarka"),
+    "Czy na pewno chcesz trwale usun\u0105\u0107 rzecz \u201eLatarka\u201d? Tej operacji nie mo\u017cna cofn\u0105\u0107.",
+  );
+  assert.equal(
+    formatDeleteConfirmation(
+      pl.modules.items.itemDelete.descriptionWithFiles,
+      "Latarka",
+    ),
+    "Czy na pewno chcesz trwale usun\u0105\u0107 rzecz \u201eLatarka\u201d? Tej operacji nie mo\u017cna cofn\u0105\u0107. Zdj\u0119cie i powi\u0105zane pliki zostan\u0105 usuni\u0119te razem z Rzecz\u0105.",
+  );
+  assert.equal(
+    formatDeleteConfirmation(en.modules.items.itemDelete.description, "Flashlight"),
+    "Are you sure you want to permanently delete \u201cFlashlight\u201d? This action cannot be undone.",
+  );
+  assert.equal(
+    formatDeleteConfirmation(
+      en.modules.items.itemDelete.descriptionWithFiles,
+      "Flashlight",
+    ),
+    "Are you sure you want to permanently delete \u201cFlashlight\u201d? This action cannot be undone. The photo and related files will be deleted with the item.",
+  );
 });
 
 test("permanent item deletion action result keeps success and errors explicit", () => {
@@ -179,14 +213,21 @@ test("permanent item deletion action result keeps success and errors explicit", 
   );
   const actionSource = source.slice(actionStart, actionEnd);
 
-  assert.equal(actionSource.includes('supabase.rpc("delete_item_permanently"'), true);
+  assert.equal(actionSource.includes("permanentlyDeleteItem(supabase, itemId)"), true);
+  assert.equal(source.includes('supabase.storage'), true);
+  assert.equal(source.includes('.from("file")'), true);
+  assert.equal(source.includes('.from("item")'), true);
+  assert.equal(source.includes('isItemPhotoFinalPathForHousehold'), true);
+  assert.equal(source.includes('getActiveProfile(supabase)'), true);
+  assert.equal(source.includes('profile.household_id'), true);
+  assert.equal(source.includes('isAdmin(profile.rola)'), true);
   assert.equal(actionSource.includes("redirectWithStatus"), false);
   assert.equal(actionSource.includes("redirectWithError"), false);
   assert.equal(actionSource.includes("revalidatePath(routes.items)"), true);
   assert.equal(actionSource.includes("revalidatePath(routes.dashboard)"), true);
 });
 
-test("permanent deletion action sends only a validated item id to the RPC", () => {
+test("permanent deletion action sends only a validated item id to the server cleanup", () => {
   const source = readFileSync("src/app/(app)/items/actions.ts", "utf8");
   const actionStart = source.indexOf(
     "export async function deleteItemPermanently",
@@ -198,10 +239,27 @@ test("permanent deletion action sends only a validated item id to the RPC", () =
   const actionSource = source.slice(actionStart, actionEnd);
 
   assert.equal(actionSource.includes("isValidItemId(itemId)"), true);
-  assert.equal(
-    actionSource.includes('supabase.rpc("delete_item_permanently"'),
-    true,
-  );
-  assert.equal(actionSource.includes("household_id"), false);
+  assert.equal(actionSource.includes("permanentlyDeleteItem(supabase, itemId)"), true);
+  assert.equal(actionSource.includes("household_id"), true);
   assert.equal(actionSource.includes("status"), false);
+});
+
+test("permanent deletion dialog explains cascading photo cleanup", () => {
+  const source = readFileSync(
+    "src/components/items/item-permanent-delete-dialog.tsx",
+    "utf8",
+  );
+
+  assert.equal(source.includes("hasAttachedFiles"), true);
+  assert.equal(source.includes("copy.descriptionWithFiles"), true);
+  assert.equal(source.includes("copy.description"), true);
+  assert.equal(source.includes("formatDeleteConfirmation("), true);
+  assert.equal(source.includes("getDeleteDescriptionTemplate"), true);
+  assert.equal(
+    source.includes(
+      "(hasAttachedFiles ? copy.descriptionWithFiles : copy.description).replace",
+    ),
+    false,
+  );
+  assert.equal(source.includes("item_has_files"), false);
 });

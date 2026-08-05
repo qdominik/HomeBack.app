@@ -576,6 +576,39 @@ file
 ├── created_at (timestamp)
 ```
 
+### Zdjecia Rzeczy - stan funkcji po Etapie 9
+
+Modul Rzeczy obsluguje jedno glowne zdjecie Rzeczy. Administrator moze dodac
+zdjecie podczas tworzenia Rzeczy, zapisac Rzecz bez analizy AI albo uzyc analizy
+AI jako edytowalnej sugestii pol formularza. Zdjecie mozna pozniej zachowac przy
+edycji, wymienic na nowe albo usunac. Po usunieciu zdjecia `item.miniatura_url`
+jest czyszczone, rekord `file` typu `zdjecie` jest usuwany, a karta Rzeczy wraca
+do ikony kategorii.
+
+Zdjecia sa przechowywane w prywatnym bucketcie Supabase Storage `item-photos`.
+Upload zaczyna sie jako draft w sciezce
+`households/{household_id}/item-photo-drafts/{draft_id}/{filename}`. Po
+zatwierdzeniu formularza plik trafia do finalnej sciezki:
+`households/{household_id}/items/{item_id}/photo.jpg` albo
+`households/{household_id}/items/{item_id}/photo.webp`.
+
+W bazie danych zapisywany jest wylacznie prywatny storage path: finalna sciezka w
+`item.miniatura_url` oraz odpowiadajaca jej sciezka w `file.plik_url`. Signed URL
+sa generowane krotkotrwale po autoryzacji, tylko do podgladu albo analizy, i nie
+sa zapisywane w bazie ani jako trwale pola formularza.
+
+Trwale usuniecie Rzeczy usuwa powiazane rekordy `file`, probuje usunac finalne
+pliki Storage z aktywnego gospodarstwa, usuwa przypisania lokalizacji i dopiero
+potem usuwa rekord Rzeczy. Dialog trwalego usuwania ma jeden krok potwierdzenia;
+gdy Rzecz ma zdjecie lub pliki, komunikat informuje, ze zostana usuniete razem z
+Rzecza.
+
+Znane ograniczenie: Supabase Storage i baza PostgreSQL nie tworza jednej
+transakcji. Implementacja ogranicza ryzyko przez walidacje sciezek, cofanie
+referencji przy wybranych bledach oraz czyszczenie draftow po udanych operacjach,
+ale awaria w trakcie operacji moze wymagac pozniejszego cleanupu osieroconego
+draftu lub pliku.
+
 ### Encja: Log
 
 ```text
@@ -692,6 +725,7 @@ Analytics: Plausible — później
 ### Poza zakresem MVP
 
 - [ ] AI i rozpoznawanie przedmiotów ze zdjęcia.
+  - [ ] Poprawa rozpoznawania ze zdjęć: znalezienie metod weryfikacji jakości rozpoznań, w tym przypadków dobrych, błędnych i niejednoznacznych.
 - [ ] Home Assistant.
 - [ ] QR/NFC.
 - [ ] Dodatek do przeglądarki.

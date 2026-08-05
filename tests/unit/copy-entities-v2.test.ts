@@ -411,3 +411,20 @@ test("the SQL copy contract serializes names and documents the one member-safe d
   assert.match(decision, /SECURITY DEFINER/);
   assert.match(decision, /Domownik/);
 });
+
+test("copy dialogs render through the shared modal portal", () => {
+  const dialogs = [
+    "src/components/home/copy-room-dialog.tsx",
+    "src/components/home/copy-furniture-dialog.tsx",
+    "src/components/home/copy-storage-dialog.tsx",
+    "src/components/items/copy-item-dialog.tsx",
+  ];
+  const modalPortal = source("src/components/ui/modal-portal.tsx");
+
+  assert.match(modalPortal, /createPortal\(children, document\.body\)/);
+  for (const path of dialogs) {
+    const dialog = source(path);
+    assert.match(dialog, /ModalPortal/);
+    assert.match(dialog, /<ModalPortal>[\s\S]*<dialog/);
+  }
+});

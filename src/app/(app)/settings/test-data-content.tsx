@@ -8,13 +8,21 @@ import { t } from "@/lib/i18n";
 import type { ReactNode } from "react";
 
 type DatasetOption = {
-  type: "small" | "medium" | "deletion_test";
+  type: "qa_smoke" | "small" | "medium" | "deletion_test";
   label: string;
   description: string;
   color: "primary" | "secondary" | "danger";
+  submitLabel?: string;
 };
 
 const datasets: DatasetOption[] = [
+  {
+    type: "qa_smoke",
+    label: t.modules.settings.testDataTabs.qaSmoke,
+    description: t.modules.settings.testDataDescriptions.qaSmoke,
+    color: "primary",
+    submitLabel: t.modules.settings.generateQa,
+  },
   {
     type: "small",
     label: t.modules.settings.testDataTabs.small,
@@ -66,7 +74,7 @@ export function TestDataContent() {
       <p className="rounded-md border border-warning/50 bg-warning/10 px-4 py-3 text-sm leading-6 text-foreground">
         {t.modules.settings.envGuard}
       </p>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {datasets.map((dataset) => (
           <form
             action={generateTestData}
@@ -79,7 +87,7 @@ export function TestDataContent() {
               <p className="text-sm text-muted">{dataset.description}</p>
             </div>
             <SubmitButton
-              label={t.modules.settings.generate}
+              label={dataset.submitLabel ?? t.modules.settings.generate}
               loadingLabel={t.modules.settings.generating}
             />
           </form>

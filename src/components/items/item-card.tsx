@@ -3,7 +3,6 @@ import {
   restoreItem,
   updateItem,
 } from "@/app/(app)/items/actions";
-import { EntityIcon } from "@/components/icons/entity-icon";
 import { Badge } from "@/components/ui/badge";
 import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
 import { buttonClassName } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import {
 } from "@/lib/items/item-options";
 import type { Database } from "@/types/database";
 import { ItemForm } from "./item-form";
+import { ItemPhotoThumbnail } from "./item-photo-thumbnail";
 import { ItemSubmitButton } from "./item-submit-button";
 import { LegacyItemRestoreForm } from "./legacy-item-restore-form";
 import { CopyItemDialog } from "./copy-item-dialog";
@@ -25,15 +25,26 @@ import { ItemPermanentDeleteDialog } from "./item-permanent-delete-dialog";
 
 type Item = Database["public"]["Tables"]["item"]["Row"];
 
+type ItemPhotoForForm = {
+  filename: string;
+  mimeType: string;
+  previewUrl: string | null;
+  sizeBytes: number;
+  storagePath: string;
+};
+
 type ItemCardProps = {
   canCopy: boolean;
   categories: ItemCategoryOption[];
   categoryKey: string | null;
   categoryName: string;
+  hasAttachedFiles: boolean;
   isAdmin: boolean;
   item: Item;
   location: ItemLocationOption | null;
   locationOptions: ItemLocationSelectorOptions;
+  photo: ItemPhotoForForm | null;
+  photoPreviewUrl: string | null;
 };
 
 const statusLabels: Record<
@@ -81,10 +92,13 @@ export function ItemCard({
   categories,
   categoryKey,
   categoryName,
+  hasAttachedFiles,
   isAdmin,
   item,
   location,
   locationOptions,
+  photo,
+  photoPreviewUrl,
 }: ItemCardProps) {
   const locationPath = location
     ? [location.roomName, location.storageName, location.positionName].join(
@@ -110,14 +124,11 @@ export function ItemCard({
     <article className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
-            <EntityIcon
-              group="item"
-              iconKey={itemIconKey}
-              size={22}
-              weight="duotone"
-            />
-          </span>
+          <ItemPhotoThumbnail
+            alt={item.nazwa}
+            iconKey={itemIconKey}
+            previewUrl={photoPreviewUrl}
+          />
           <div className="min-w-0">
             <h2 className="break-words text-lg font-semibold leading-snug text-foreground">
               {item.nazwa}
@@ -198,7 +209,11 @@ export function ItemCard({
             )
           ) : null}
           {isAdmin ? (
-            <ItemPermanentDeleteDialog itemId={item.id} itemName={item.nazwa} />
+            <ItemPermanentDeleteDialog
+              hasAttachedFiles={hasAttachedFiles}
+              itemId={item.id}
+              itemName={item.nazwa}
+            />
           ) : null}
         </div>
         {isAdmin && !isArchived ? (
@@ -225,6 +240,7 @@ export function ItemCard({
                 item={item}
                 layout="compact"
                 locationOptions={editLocationProps.locationOptions}
+                photo={photo}
                 selectedPositionId={editLocationProps.selectedPositionId}
                 submitLabel={t.modules.items.saveChanges}
               />

@@ -4,9 +4,9 @@ import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
 import { buttonClassName } from "@/components/ui/button";
+import { getAppContext } from "@/lib/app-context";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
-import { createClient } from "@/lib/supabase/server";
 
 const dashboardSections = [
   t.dashboard.recentItems,
@@ -16,16 +16,7 @@ const dashboardSections = [
 ];
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
-  const { data: profile } = userId
-    ? await supabase
-        .from("profile")
-        .select("imie")
-        .eq("id", userId)
-        .maybeSingle()
-    : { data: null };
+  const { profile } = await getAppContext();
   const greeting = profile?.imie
     ? `${t.dashboard.greeting}, ${profile.imie}`
     : t.app.tagline;

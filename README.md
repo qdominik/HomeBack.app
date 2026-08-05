@@ -61,6 +61,15 @@ Domyslny adres lokalny:
 
 - `http://127.0.0.1:3000`
 
+## Landing Page
+
+Sales landing page jest osobnym projektem i nie nalezy do repozytorium aplikacji HomeBack.app.
+
+- docelowa domena landingu: `https://homeback.app`,
+- docelowa domena aplikacji produktowej: `https://my.homeback.app`,
+- lokalne katalogi robocze typu `landing-v201/` sa ignorowane w tym repo,
+- zmiany landingu powinny byc rozwijane, wersjonowane i wdrazane w osobnym repozytorium, np. `HomeBack.landing`.
+
 ## Lokalna Baza Dev
 
 Lokalne Supabase przez Supabase CLI + Docker jest obowiazkowym srodowiskiem developerskim dla migracji, RLS i testow bazy.

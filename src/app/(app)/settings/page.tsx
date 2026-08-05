@@ -6,6 +6,7 @@ import { FlaskIcon } from "@phosphor-icons/react/dist/ssr/Flask";
 import { ModulePage } from "@/components/module-page";
 import { Alert } from "@/components/ui/alert";
 import { t } from "@/lib/i18n";
+import { isQaTestDataEnvironment } from "@/lib/settings/qa-test-data";
 import { TestDataContent, TestDataGuard } from "@/app/(app)/settings/test-data-content";
 import type { ReactNode } from "react";
 
@@ -34,10 +35,11 @@ const tabs: { id: SettingsTab; label: string; href: string; icon: ReactNode }[] 
 ];
 
 function parseEnvGuard() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const isLocal = siteUrl.includes("127.0.0.1") || siteUrl.includes("localhost");
-  const isDev = process.env.NODE_ENV !== "production";
-  return isDev && isLocal;
+  return isQaTestDataEnvironment({
+    nodeEnv: process.env.NODE_ENV,
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+    vercelEnv: process.env.VERCEL_ENV,
+  });
 }
 
 export default async function SettingsPage({ searchParams }: SettingsPageProps) {

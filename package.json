@@ -2,21 +2,28 @@
   "name": "homeback-app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.18.0",
+    "npm": "11.16.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:logic": "tsc -p tsconfig.test.json && node --test .test-build/tests/unit/m3-template-logic.test.js .test-build/tests/unit/auth-signup.test.js .test-build/tests/unit/item-filter-logic.test.js .test-build/tests/unit/home-search-logic.test.js .test-build/tests/unit/item-form-values.test.js .test-build/tests/unit/item-location-options.test.js .test-build/tests/unit/item-category-options.test.js .test-build/tests/unit/entity-icon-registry.test.js .test-build/tests/unit/location-dependency-summary.test.js .test-build/tests/unit/location-detach.test.js .test-build/tests/unit/location-move.test.js .test-build/tests/unit/location-delete-resolution.test.js .test-build/tests/unit/storage-location-l2-delete-resolution.test.js .test-build/tests/unit/room-delete-resolution.test.js .test-build/tests/unit/m4d-lifecycle-final-verification.test.js .test-build/tests/unit/confirm-delete.test.js .test-build/tests/unit/item-archive-restore.test.js .test-build/tests/unit/copy-entities-v2.test.js",
+    "test:logic": "tsc -p tsconfig.test.json && node --test .test-build/tests/unit/m3-template-logic.test.js .test-build/tests/unit/auth-signup.test.js .test-build/tests/unit/item-filter-logic.test.js .test-build/tests/unit/home-search-logic.test.js .test-build/tests/unit/item-form-values.test.js .test-build/tests/unit/item-location-options.test.js .test-build/tests/unit/item-category-options.test.js .test-build/tests/unit/entity-icon-registry.test.js .test-build/tests/unit/location-dependency-summary.test.js .test-build/tests/unit/location-detach.test.js .test-build/tests/unit/location-move.test.js .test-build/tests/unit/location-delete-resolution.test.js .test-build/tests/unit/storage-location-l2-delete-resolution.test.js .test-build/tests/unit/room-delete-resolution.test.js .test-build/tests/unit/m4d-lifecycle-final-verification.test.js .test-build/tests/unit/confirm-delete.test.js .test-build/tests/unit/item-archive-restore.test.js .test-build/tests/unit/copy-entities-v2.test.js .test-build/tests/unit/app-context.test.js .test-build/tests/unit/qa-test-data.test.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.1",
-    "next": "16.2.10",
+    "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4"
+  },
+  "overrides": {
+    "sharp": "0.35.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
@@ -25,7 +32,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.2.12",
     "supabase": "^2.109.1",
     "tailwindcss": "^4",
     "typescript": "^5"
