@@ -190,7 +190,9 @@ export const pl: Dictionary = {
       itemDelete: {
         title: "Usuń rzecz trwale",
         description:
-          "Czy na pewno chcesz trwale usunąć rzecz „{name}”? Tej operacji nie można cofnąć.",
+          "Czy na pewno chcesz trwale usun\u0105\u0107 rzecz \u201e{name}\u201d? Tej operacji nie mo\u017cna cofn\u0105\u0107.",
+        descriptionWithFiles:
+          "Czy na pewno chcesz trwale usun\u0105\u0107 rzecz \u201e{name}\u201d? Tej operacji nie mo\u017cna cofn\u0105\u0107. Zdj\u0119cie i powi\u0105zane pliki zostan\u0105 usuni\u0119te razem z Rzecz\u0105.",
         cancel: "Anuluj",
         confirm: "Usuń trwale",
         pending: "Usuwanie...",
@@ -258,6 +260,7 @@ export const pl: Dictionary = {
         restoreStatusRequired: "Wybierz status, do którego przywrócić Rzecz.",
         missingFields: "Uzupełnij wymagane pola.",
         photoPersistFailed: "Nie udało się przypisać zdjęcia do Rzeczy. Spróbuj ponownie.",
+        photoRemoveFailed: "Nie udało się usunąć zdjęcia Rzeczy. Spróbuj ponownie.",
         unknown: "Wystąpił nieoczekiwany błąd.",
       },
       feedback: {

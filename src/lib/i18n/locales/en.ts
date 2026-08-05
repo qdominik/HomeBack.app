@@ -190,7 +190,9 @@ export const en: Dictionary = {
       itemDelete: {
         title: "Permanently delete item",
         description:
-          "Are you sure you want to permanently delete the item “{name}”? This action cannot be undone.",
+          "Are you sure you want to permanently delete \u201c{name}\u201d? This action cannot be undone.",
+        descriptionWithFiles:
+          "Are you sure you want to permanently delete \u201c{name}\u201d? This action cannot be undone. The photo and related files will be deleted with the item.",
         cancel: "Cancel",
         confirm: "Permanently delete",
         pending: "Deleting...",
@@ -258,6 +260,7 @@ export const en: Dictionary = {
         restoreStatusRequired: "Select the status to restore the item to.",
         missingFields: "Complete the required fields.",
         photoPersistFailed: "The photo could not be attached to the Item. Please try again.",
+        photoRemoveFailed: "The Item photo could not be removed. Please try again.",
         unknown: "An unexpected error occurred.",
       },
       feedback: {

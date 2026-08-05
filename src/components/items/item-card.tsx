@@ -26,15 +26,25 @@ import { ItemPermanentDeleteDialog } from "./item-permanent-delete-dialog";
 
 type Item = Database["public"]["Tables"]["item"]["Row"];
 
+type ItemPhotoForForm = {
+  filename: string;
+  mimeType: string;
+  previewUrl: string | null;
+  sizeBytes: number;
+  storagePath: string;
+};
+
 type ItemCardProps = {
   canCopy: boolean;
   categories: ItemCategoryOption[];
   categoryKey: string | null;
   categoryName: string;
+  hasAttachedFiles: boolean;
   isAdmin: boolean;
   item: Item;
   location: ItemLocationOption | null;
   locationOptions: ItemLocationSelectorOptions;
+  photo: ItemPhotoForForm | null;
   photoPreviewUrl: string | null;
 };
 
@@ -83,10 +93,12 @@ export function ItemCard({
   categories,
   categoryKey,
   categoryName,
+  hasAttachedFiles,
   isAdmin,
   item,
   location,
   locationOptions,
+  photo,
   photoPreviewUrl,
 }: ItemCardProps) {
   const locationPath = location
@@ -212,7 +224,11 @@ export function ItemCard({
             )
           ) : null}
           {isAdmin ? (
-            <ItemPermanentDeleteDialog itemId={item.id} itemName={item.nazwa} />
+            <ItemPermanentDeleteDialog
+              hasAttachedFiles={hasAttachedFiles}
+              itemId={item.id}
+              itemName={item.nazwa}
+            />
           ) : null}
         </div>
         {isAdmin && !isArchived ? (
@@ -239,6 +255,7 @@ export function ItemCard({
                 item={item}
                 layout="compact"
                 locationOptions={editLocationProps.locationOptions}
+                photo={photo}
                 selectedPositionId={editLocationProps.selectedPositionId}
                 submitLabel={t.modules.items.saveChanges}
               />

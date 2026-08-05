@@ -185,3 +185,17 @@ export function isItemPhotoFinalPathForHousehold(
     extraParts.length === 0
   );
 }
+
+export function getItemPhotoMimeTypeFromFinalPath(
+  storagePath: string,
+): ItemPhotoAllowedMimeType | null {
+  if (storagePath.endsWith("/photo.jpg")) {
+    return "image/jpeg";
+  }
+
+  if (storagePath.endsWith("/photo.webp")) {
+    return "image/webp";
+  }
+
+  return null;
+}

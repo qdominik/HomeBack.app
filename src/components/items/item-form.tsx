@@ -43,6 +43,7 @@ type ItemFormProps = {
   item?: Item;
   layout?: "default" | "compact";
   locationOptions: ItemLocationSelectorOptions;
+  photo?: ItemPhotoPersistedState | null;
   selectedPositionId?: string | null;
   submitLabel: string;
 };
@@ -60,6 +61,14 @@ type ItemPhotoDraftState = {
   filename: string;
   mimeType: string;
   previewUrl: string;
+  sizeBytes: number;
+  storagePath: string;
+};
+
+type ItemPhotoPersistedState = {
+  filename: string;
+  mimeType: string;
+  previewUrl: string | null;
   sizeBytes: number;
   storagePath: string;
 };
@@ -104,6 +113,7 @@ export function ItemForm({
   item,
   layout = "default",
   locationOptions,
+  photo = null,
   selectedPositionId,
   submitLabel,
 }: ItemFormProps) {
@@ -124,11 +134,15 @@ export function ItemForm({
   const [isQuickCategoryPending, startQuickCategoryTransition] =
     useTransition();
   const [photoDraft, setPhotoDraft] = useState<ItemPhotoDraftState | null>(null);
+  const [persistedPhoto, setPersistedPhoto] =
+    useState<ItemPhotoPersistedState | null>(photo);
+  const [removePersistedPhoto, setRemovePersistedPhoto] = useState(false);
   const [photoFeedback, setPhotoFeedback] = useState<string | null>(null);
   const [isPhotoPending, startPhotoTransition] = useTransition();
   const [isPhotoAnalysisPending, startPhotoAnalysisTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoAnalysisRunIdRef = useRef(0);
+  const photoMutationRunIdRef = useRef(0);
   const initialQuantity = item?.ilosc ?? 1;
   const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
   const [itemUnit, setItemUnit] = useState(item?.jednostka ?? "");
@@ -148,6 +162,7 @@ export function ItemForm({
   );
   const isAnotherCategorySelected =
     selectedCategoryId === ANOTHER_CATEGORY_VALUE;
+  const displayedPhoto = photoDraft ?? persistedPhoto;
 
   function selectCategory(value: string) {
     setSelectedCategoryId(value);
@@ -227,24 +242,57 @@ export function ItemForm({
 
   function removePhotoDraft() {
     const currentDraft = photoDraft;
+    const mutationRunId = photoMutationRunIdRef.current + 1;
+    photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
+    setPhotoDraft(null);
+    if (item && photo && !removePersistedPhoto) {
+      setPersistedPhoto(photo);
+    }
+    clearPhotoInput();
 
     if (!currentDraft) {
-      setPhotoDraft(null);
-      clearPhotoInput();
       return;
     }
 
     startPhotoTransition(async () => {
       const cleaned = await cleanupDraft(currentDraft.storagePath);
 
+      if (mutationRunId !== photoMutationRunIdRef.current) {
+        return;
+      }
+
       if (!cleaned) {
         setPhotoFeedback(t.modules.items.photo.errors.cleanupFailed);
         return;
       }
+    });
+  }
 
-      setPhotoDraft(null);
-      clearPhotoInput();
+  function removeCurrentPhoto() {
+    const currentDraft = photoDraft;
+    const mutationRunId = photoMutationRunIdRef.current + 1;
+    photoMutationRunIdRef.current = mutationRunId;
+    resetPhotoAnalysisState();
+    setPhotoDraft(null);
+    setPersistedPhoto(null);
+    setRemovePersistedPhoto(true);
+    clearPhotoInput();
+
+    if (!currentDraft) {
+      return;
+    }
+
+    startPhotoTransition(async () => {
+      const cleaned = await cleanupDraft(currentDraft.storagePath);
+
+      if (mutationRunId !== photoMutationRunIdRef.current) {
+        return;
+      }
+
+      if (!cleaned) {
+        setPhotoFeedback(t.modules.items.photo.errors.cleanupFailed);
+      }
     });
   }
 
@@ -256,18 +304,28 @@ export function ItemForm({
       return;
     }
 
+    const mutationRunId = photoMutationRunIdRef.current + 1;
+    photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
+    setPhotoDraft(null);
 
     startPhotoTransition(async () => {
       if (previousDraft) {
         await cleanupDraft(previousDraft.storagePath);
-        setPhotoDraft(null);
+      }
+
+      if (mutationRunId !== photoMutationRunIdRef.current) {
+        return;
       }
 
       const formData = new FormData();
       formData.set("photo", selectedFile);
 
       const result = await uploadItemPhotoDraft(formData);
+
+      if (mutationRunId !== photoMutationRunIdRef.current) {
+        return;
+      }
 
       if (!result.ok) {
         setPhotoFeedback(
@@ -285,6 +343,8 @@ export function ItemForm({
         sizeBytes: result.file.sizeBytes,
         storagePath: result.storagePath,
       });
+      setPersistedPhoto(null);
+      setRemovePersistedPhoto(false);
       setPhotoFeedback(t.modules.items.photo.ready);
     });
   }
@@ -341,7 +401,7 @@ export function ItemForm({
       className={isCompact ? "grid gap-3 sm:grid-cols-2" : "space-y-3"}
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
-      {!item && photoDraft ? (
+      {photoDraft ? (
         <>
           <input
             name="item_photo_draft_path"
@@ -359,6 +419,9 @@ export function ItemForm({
             value={photoDraft.sizeBytes}
           />
         </>
+      ) : null}
+      {item && removePersistedPhoto && !photoDraft ? (
+        <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
       <label className={`block text-sm font-medium ${fullWidthClass}`}>
         {t.modules.items.name}
@@ -489,7 +552,6 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
-      {!item ? (
       <section
         className={`space-y-3 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
       >
@@ -521,39 +583,45 @@ export function ItemForm({
         {isPhotoAnalysisPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
         ) : null}
-        {photoDraft ? (
+        {displayedPhoto ? (
           <div className="grid gap-3 sm:grid-cols-[96px_minmax(0,1fr)_auto] sm:items-center">
-            <Image
-              alt={t.modules.items.photo.previewAlt}
-              className="h-24 w-24 rounded-md border border-line object-cover"
-              height={96}
-              src={photoDraft.previewUrl}
-              unoptimized
-              width={96}
-            />
+            {displayedPhoto.previewUrl ? (
+              <Image
+                alt={t.modules.items.photo.previewAlt}
+                className="h-24 w-24 rounded-md border border-line object-cover"
+                height={96}
+                src={displayedPhoto.previewUrl}
+                unoptimized
+                width={96}
+              />
+            ) : (
+              <div className="h-24 w-24 rounded-md border border-dashed border-line bg-surface" />
+            )}
             <div className="min-w-0 text-xs leading-5 text-muted">
               <p className="truncate font-medium text-foreground">
-                {photoDraft.filename}
+                {displayedPhoto.filename}
               </p>
               <p>
-                {photoDraft.mimeType} · {Math.ceil(photoDraft.sizeBytes / 1024)} KB
+                {displayedPhoto.mimeType} · {Math.ceil(displayedPhoto.sizeBytes / 1024)} KB
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-              <button
-                className="min-h-10 rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
-                disabled={isPhotoPending || isPhotoAnalysisPending}
-                onClick={applyPhotoSuggestions}
-                type="button"
-              >
-                {isPhotoAnalysisPending
-                  ? t.modules.items.photo.analyzing
-                  : t.modules.items.photo.fillFromPhoto}
-              </button>
+              {photoDraft ? (
+                <button
+                  className="min-h-10 rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+                  disabled={isPhotoPending || isPhotoAnalysisPending}
+                  onClick={applyPhotoSuggestions}
+                  type="button"
+                >
+                  {isPhotoAnalysisPending
+                    ? t.modules.items.photo.analyzing
+                    : t.modules.items.photo.fillFromPhoto}
+                </button>
+              ) : null}
               <button
                 className="min-h-10 rounded-md border border-line bg-surface px-4 py-2 text-sm font-semibold leading-5 text-primary-strong hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-70"
                 disabled={isPhotoPending || isPhotoAnalysisPending}
-                onClick={removePhotoDraft}
+                onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
                 type="button"
               >
                 {isPhotoPending
@@ -566,14 +634,13 @@ export function ItemForm({
         {photoFeedback ? (
           <p
             className={`text-sm ${
-              photoDraft ? "text-primary-strong" : "text-danger"
+              displayedPhoto ? "text-primary-strong" : "text-danger"
             }`}
           >
             {photoFeedback}
           </p>
         ) : null}
       </section>
-      ) : null}
       <div className={fullWidthClass}>
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>

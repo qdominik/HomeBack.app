@@ -185,6 +185,7 @@ export type Dictionary = {
       itemDelete: {
         title: string;
         description: string;
+        descriptionWithFiles: string;
         cancel: string;
         confirm: string;
         pending: string;
@@ -251,6 +252,7 @@ export type Dictionary = {
         restoreStatusRequired: string;
         missingFields: string;
         photoPersistFailed: string;
+        photoRemoveFailed: string;
         unknown: string;
       };
       feedback: {

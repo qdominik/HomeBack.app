@@ -17,6 +17,7 @@ import {
   ITEM_PHOTO_MAX_SIZE_BYTES,
   ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
   isItemPhotoDraftPathForHousehold,
+  isItemPhotoFinalPathForHousehold,
   validateItemPhotoMetadata,
   validateItemPhotoFile,
   type ItemPhotoAllowedMimeType,
@@ -38,9 +39,7 @@ import {
 } from "@/lib/items/item-archive-restore";
 import {
   isValidItemId,
-  toPermanentItemDeletionActionResult,
   type PermanentItemDeletionActionResult,
-  resolvePermanentItemDeletionResult,
 } from "@/lib/items/permanent-item-deletion";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -205,6 +204,10 @@ type ItemPhotoDraftForPersistence = {
   sizeBytes: number;
 };
 
+type ValidatedItemPhotoDraftForPersistence = ItemPhotoDraftForPersistence & {
+  file: Blob;
+};
+
 function getItemPhotoDraftForPersistence(formData: FormData) {
   const storagePath = field(formData, "item_photo_draft_path");
   const mimeType = field(formData, "item_photo_mime_type");
@@ -227,7 +230,7 @@ async function validateItemPhotoDraftForPersistence(
   supabase: SupabaseClient,
   householdId: string,
   draft: ItemPhotoDraftForPersistence,
-) {
+): Promise<ValidatedItemPhotoDraftForPersistence | null> {
   if (!isItemPhotoDraftPathForHousehold(draft.storagePath, householdId)) {
     return null;
   }
@@ -250,7 +253,7 @@ async function validateItemPhotoDraftForPersistence(
     return null;
   }
 
-  return { ...draft, ...metadata };
+  return { ...draft, ...metadata, file };
 }
 
 async function persistItemPhoto(
@@ -318,6 +321,219 @@ async function persistItemPhoto(
     .move(finalPath, draft.storagePath);
 
   return false;
+}
+
+async function syncItemPhotoFile(
+  supabase: SupabaseClient,
+  {
+    createdById,
+    finalPath,
+    householdId,
+    itemId,
+    sizeBytes,
+  }: {
+    createdById: string;
+    finalPath: string;
+    householdId: string;
+    itemId: string;
+    sizeBytes: number;
+  },
+) {
+  const { data: existingFiles, error: existingFilesError } = await supabase
+    .from("file")
+    .select("id")
+    .eq("item_id", itemId)
+    .eq("household_id", householdId)
+    .eq("typ", "zdjecie")
+    .order("created_at", { ascending: true });
+
+  if (existingFilesError) {
+    return false;
+  }
+
+  const payload = {
+    nazwa: finalPath.split("/").at(-1) ?? "photo",
+    plik_url: finalPath,
+    rozmiar_kb: Math.ceil(sizeBytes / 1024),
+    czy_zaszyfrowany: false,
+  };
+  const primaryFile = existingFiles?.[0] ?? null;
+
+  if (primaryFile) {
+    const { error } = await supabase
+      .from("file")
+      .update(payload)
+      .eq("id", primaryFile.id)
+      .eq("household_id", householdId);
+
+    if (error) {
+      return false;
+    }
+  } else {
+    const { error } = await supabase.from("file").insert({
+      ...payload,
+      item_id: itemId,
+      household_id: householdId,
+      typ: "zdjecie",
+      created_by_id: createdById,
+    });
+
+    if (error) {
+      return false;
+    }
+  }
+
+  const duplicateIds = (existingFiles ?? [])
+    .slice(1)
+    .map((file) => file.id);
+
+  if (duplicateIds.length) {
+    const { error } = await supabase
+      .from("file")
+      .delete()
+      .eq("household_id", householdId)
+      .in("id", duplicateIds);
+
+    if (error) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+async function replaceItemPhoto(
+  supabase: SupabaseClient,
+  {
+    createdById,
+    householdId,
+    itemId,
+    oldStoragePath,
+    draft,
+  }: {
+    createdById: string;
+    householdId: string;
+    itemId: string;
+    oldStoragePath: string | null;
+    draft: ValidatedItemPhotoDraftForPersistence;
+  },
+) {
+  const finalPath = buildItemPhotoFinalPath({
+    householdId,
+    itemId,
+    mimeType: draft.mimeType,
+  });
+  const { error: uploadError } = await supabase.storage
+    .from(ITEM_PHOTO_BUCKET)
+    .upload(finalPath, draft.file, {
+      contentType: draft.mimeType,
+      upsert: true,
+    });
+
+  if (uploadError) {
+    return false;
+  }
+
+  const { error: itemError } = await supabase
+    .from("item")
+    .update({ miniatura_url: finalPath })
+    .eq("id", itemId)
+    .eq("household_id", householdId);
+
+  if (itemError) {
+    if (oldStoragePath !== finalPath) {
+      await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([finalPath]);
+    }
+    return false;
+  }
+
+  const fileSynced = await syncItemPhotoFile(supabase, {
+    createdById,
+    finalPath,
+    householdId,
+    itemId,
+    sizeBytes: draft.sizeBytes,
+  });
+
+  if (!fileSynced) {
+    await supabase
+      .from("item")
+      .update({ miniatura_url: oldStoragePath })
+      .eq("id", itemId)
+      .eq("household_id", householdId);
+
+    if (oldStoragePath !== finalPath) {
+      await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([finalPath]);
+    }
+
+    return false;
+  }
+
+  await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([draft.storagePath]);
+
+  if (
+    oldStoragePath &&
+    oldStoragePath !== finalPath &&
+    isItemPhotoFinalPathForHousehold(oldStoragePath, householdId)
+  ) {
+    await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([oldStoragePath]);
+  }
+
+  return true;
+}
+
+async function removePersistedItemPhoto(
+  supabase: SupabaseClient,
+  {
+    householdId,
+    itemId,
+    storagePath,
+  }: {
+    householdId: string;
+    itemId: string;
+    storagePath: string | null;
+  },
+) {
+  const { error: itemError } = await supabase
+    .from("item")
+    .update({ miniatura_url: null })
+    .eq("id", itemId)
+    .eq("household_id", householdId);
+
+  if (itemError) {
+    return false;
+  }
+
+  const { error: fileError } = await supabase
+    .from("file")
+    .delete()
+    .eq("item_id", itemId)
+    .eq("household_id", householdId)
+    .eq("typ", "zdjecie");
+
+  if (fileError) {
+    await supabase
+      .from("item")
+      .update({ miniatura_url: storagePath })
+      .eq("id", itemId)
+      .eq("household_id", householdId);
+    return false;
+  }
+
+  if (
+    storagePath &&
+    isItemPhotoFinalPathForHousehold(storagePath, householdId)
+  ) {
+    const { error: storageError } = await supabase.storage
+      .from(ITEM_PHOTO_BUCKET)
+      .remove([storagePath]);
+
+    if (storageError) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 async function createItemPhotoPreviewUrl(
@@ -599,7 +815,7 @@ async function getActiveItem(
 ) {
   const { data: item, error } = await supabase
     .from("item")
-    .select("id, household_id, status")
+    .select("id, household_id, status, miniatura_url")
     .eq("id", itemId)
     .eq("household_id", householdId)
     .maybeSingle();
@@ -654,6 +870,10 @@ function parseItemPayload(formData: FormData) {
     positionId: field(formData, "storage_location_l3_id"),
     typ: itemType,
   };
+}
+
+function shouldRemovePersistedItemPhoto(formData: FormData) {
+  return field(formData, "item_photo_remove_current") === "1";
 }
 
 export async function createItem(formData: FormData) {
@@ -740,10 +960,25 @@ export async function updateItem(formData: FormData) {
 
   const payload = parseItemPayload(formData);
   const supabase = await createClient();
-  const { profile } = await getActiveProfile(supabase);
+  const { profile, userId } = await getActiveProfile(supabase);
   requireAdmin(profile.rola);
 
-  await getActiveItem(supabase, profile.household_id, itemId);
+  const item = await getActiveItem(supabase, profile.household_id, itemId);
+  const submittedPhotoDraft = getItemPhotoDraftForPersistence(formData);
+  const photoDraft = submittedPhotoDraft
+    ? await validateItemPhotoDraftForPersistence(
+        supabase,
+        profile.household_id,
+        submittedPhotoDraft,
+      )
+    : null;
+  const removeCurrentPhoto =
+    !submittedPhotoDraft && shouldRemovePersistedItemPhoto(formData);
+
+  if (submittedPhotoDraft && !photoDraft) {
+    redirectWithError("invalid_item_photo");
+  }
+
   const categoryId = await validateCategory(
     supabase,
     profile.household_id,
@@ -776,6 +1011,30 @@ export async function updateItem(formData: FormData) {
   }
 
   await setPrimaryLocation(supabase, data.id, positionId);
+
+  if (photoDraft) {
+    const photoPersisted = await replaceItemPhoto(supabase, {
+      createdById: userId,
+      householdId: profile.household_id,
+      itemId: data.id,
+      oldStoragePath: item.miniatura_url,
+      draft: photoDraft,
+    });
+
+    if (!photoPersisted) {
+      redirectWithError("photo_persist_failed");
+    }
+  } else if (removeCurrentPhoto) {
+    const photoRemoved = await removePersistedItemPhoto(supabase, {
+      householdId: profile.household_id,
+      itemId: data.id,
+      storagePath: item.miniatura_url,
+    });
+
+    if (!photoRemoved) {
+      redirectWithError("photo_remove_failed");
+    }
+  }
 
   revalidatePath(routes.items);
   redirectWithStatus("item_updated");
@@ -848,23 +1107,12 @@ export async function deleteItemPermanently(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("delete_item_permanently", {
-    p_item_id: itemId,
-  });
-  const result = resolvePermanentItemDeletionResult(data, error);
+  const result = await permanentlyDeleteItem(supabase, itemId);
 
   if (result === "success") {
     revalidatePath(routes.items);
     revalidatePath(routes.dashboard);
     redirectWithStatus("item_deleted");
-  }
-
-  if (result === "auth_required") {
-    redirect(`${routes.login}?error=session_expired`);
-  }
-
-  if (result === "active_profile_required") {
-    redirectWithError("active_profile_required");
   }
 
   if (result === "admin_required") {
@@ -875,11 +1123,94 @@ export async function deleteItemPermanently(formData: FormData) {
     redirectWithError("item_not_available");
   }
 
-  if (result === "item_has_files") {
-    redirectWithError("item_has_files");
+  redirectWithError("deletion_failed");
+}
+
+async function permanentlyDeleteItem(
+  supabase: SupabaseClient,
+  itemId: string,
+) {
+  const { profile } = await getActiveProfile(supabase);
+
+  if (!isAdmin(profile.rola)) {
+    return "admin_required" as const;
   }
 
-  redirectWithError("deletion_failed");
+  const { data: item, error: itemError } = await supabase
+    .from("item")
+    .select("id, household_id, miniatura_url")
+    .eq("id", itemId)
+    .eq("household_id", profile.household_id)
+    .maybeSingle();
+
+  if (itemError) {
+    return "deletion_failed" as const;
+  }
+
+  if (!item) {
+    return "item_not_available" as const;
+  }
+
+  const { data: files, error: filesError } = await supabase
+    .from("file")
+    .select("id, plik_url")
+    .eq("item_id", item.id)
+    .eq("household_id", profile.household_id);
+
+  if (filesError) {
+    return "deletion_failed" as const;
+  }
+
+  const storagePaths = Array.from(
+    new Set(
+      [item.miniatura_url, ...(files ?? []).map((file) => file.plik_url)]
+        .filter(
+          (storagePath): storagePath is string =>
+            typeof storagePath === "string" &&
+            isItemPhotoFinalPathForHousehold(
+              storagePath,
+              profile.household_id,
+            ),
+        ),
+    ),
+  );
+
+  if (storagePaths.length) {
+    const { error: storageError } = await supabase.storage
+      .from(ITEM_PHOTO_BUCKET)
+      .remove(storagePaths);
+
+    if (storageError) {
+      return "deletion_failed" as const;
+    }
+  }
+
+  const { error: fileDeleteError } = await supabase
+    .from("file")
+    .delete()
+    .eq("item_id", item.id)
+    .eq("household_id", profile.household_id);
+
+  if (fileDeleteError) {
+    return "deletion_failed" as const;
+  }
+
+  const { error: locationDeleteError } = await supabase
+    .from("item_location")
+    .delete()
+    .eq("item_id", item.id);
+
+  if (locationDeleteError) {
+    return "deletion_failed" as const;
+  }
+
+  const { error: itemDeleteError } = await supabase
+    .from("item")
+    .delete()
+    .eq("id", item.id)
+    .eq("household_id", profile.household_id);
+
+  return itemDeleteError ? ("deletion_failed" as const) : ("success" as const);
 }
 
 export async function deleteItemPermanentlyFromDialog(
@@ -898,17 +1229,16 @@ export async function deleteItemPermanentlyFromDialog(
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("delete_item_permanently", {
-    p_item_id: itemId,
-  });
-  const result = resolvePermanentItemDeletionResult(data, error);
+  const result = await permanentlyDeleteItem(supabase, itemId);
 
   if (result === "success") {
     revalidatePath(routes.items);
     revalidatePath(routes.dashboard);
   }
 
-  return toPermanentItemDeletionActionResult(result);
+  return result === "success"
+    ? { ok: true }
+    : { ok: false, code: result };
 }
 
 export async function createQuickCustomCategory(submittedName: string) {

@@ -241,7 +241,11 @@ test("item photo draft changes invalidate old analysis state and requests", () =
   assert.match(removePhotoDraft, /resetPhotoAnalysisState\(\)/);
   assert.match(removePhotoDraft, /setPhotoDraft\(null\)/);
   assert.match(removePhotoDraft, /clearPhotoInput\(\)/);
+  assert.match(removePhotoDraft, /photoMutationRunIdRef\.current/);
+  assert.match(removePhotoDraft, /setPhotoFeedback\(t\.modules\.items\.photo\.errors\.cleanupFailed\)/);
   assert.match(uploadSelectedPhoto, /resetPhotoAnalysisState\(\)/);
+  assert.match(uploadSelectedPhoto, /setPhotoDraft\(null\)/);
+  assert.match(uploadSelectedPhoto, /photoMutationRunIdRef\.current/);
   assert.match(uploadSelectedPhoto, /setPhotoDraft\(\{/);
   assert.match(applyPhotoSuggestions, /const analyzedDraft = photoDraft/);
   assert.match(applyPhotoSuggestions, /storagePath: analyzedDraft\.storagePath/);
@@ -274,7 +278,11 @@ test("item creation validates and persists a draft photo without storing signed 
   assert.match(actions, /miniatura_url: finalPath/);
   assert.match(actions, /\.from\("file"\)\.insert/);
   assert.doesNotMatch(createAction, /createSignedUrl/);
-  assert.doesNotMatch(updateAction, /persistItemPhoto|item_photo_draft_path/);
+  assert.match(updateAction, /getItemPhotoDraftForPersistence/);
+  assert.match(updateAction, /replaceItemPhoto/);
+  assert.match(updateAction, /removePersistedItemPhoto/);
+  assert.match(actions, /item_photo_remove_current/);
+  assert.doesNotMatch(updateAction, /createSignedUrl/);
 });
 
 test("item list creates signed previews only for household-scoped final photo paths", () => {
@@ -282,11 +290,43 @@ test("item list creates signed previews only for household-scoped final photo pa
   const itemCard = readFileSync("src/components/items/item-card.tsx", "utf8");
 
   assert.match(itemsPage, /isItemPhotoFinalPathForHousehold/);
+  assert.match(itemsPage, /\.from\("file"\)/);
+  assert.match(itemsPage, /itemPhotoFileByItemId/);
   assert.match(itemsPage, /createSignedUrl\(item\.miniatura_url/);
+  assert.match(itemsPage, /photo=\{/);
   assert.match(itemsPage, /photoPreviewUrl=/);
   assert.match(itemCard, /photoPreviewUrl/);
+  assert.match(itemCard, /photo=/);
   assert.match(itemCard, /<Image/);
   assert.match(itemCard, /unoptimized/);
+});
+
+test("item edit form supports persisted photo replacement and removal", () => {
+  const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+
+  const updateStart = actions.indexOf("export async function updateItem");
+  const archiveStart = actions.indexOf("export async function archiveItem");
+  const updateAction = actions.slice(updateStart, archiveStart);
+
+  assert.match(form, /photo\?: ItemPhotoPersistedState \| null/);
+  assert.match(form, /useState<ItemPhotoPersistedState \| null>\(photo\)/);
+  assert.match(form, /const displayedPhoto = photoDraft \?\? persistedPhoto/);
+  assert.match(form, /name="item_photo_draft_path"/);
+  assert.match(form, /name="item_photo_remove_current"/);
+  assert.match(form, /setRemovePersistedPhoto\(true\)/);
+  assert.match(form, /setRemovePersistedPhoto\(false\)/);
+  assert.doesNotMatch(form, /name="miniatura_url"/);
+  assert.doesNotMatch(form, /name="photoPreviewUrl"/);
+  assert.match(updateAction, /validateItemPhotoDraftForPersistence/);
+  assert.match(updateAction, /replaceItemPhoto/);
+  assert.match(updateAction, /removePersistedItemPhoto/);
+  assert.match(actions, /isItemPhotoDraftPathForHousehold/);
+  assert.match(actions, /isItemPhotoFinalPathForHousehold/);
+  assert.match(actions, /\.upload\(finalPath, draft\.file/);
+  assert.match(actions, /miniatura_url: null/);
+  assert.match(actions, /\.from\("file"\)\s*\n\s*\.delete\(\)/);
+  assert.doesNotMatch(updateAction, /getStringProperty\(.*household_id/);
 });
 
 test("item photo AI config accepts the approved Groq provider", () => {

@@ -18,6 +18,7 @@ import {
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
 import {
+  getItemPhotoMimeTypeFromFinalPath,
   isItemPhotoFinalPathForHousehold,
   ITEM_PHOTO_BUCKET,
   ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
@@ -58,6 +59,7 @@ const errorMessages: Record<string, string> = {
   item_not_found: t.modules.items.errors.itemNotFound,
   missing_fields: t.modules.items.errors.missingFields,
   photo_persist_failed: t.modules.items.errors.photoPersistFailed,
+  photo_remove_failed: t.modules.items.errors.photoRemoveFailed,
   restore_status_required: t.modules.items.errors.restoreStatusRequired,
 };
 
@@ -160,6 +162,22 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     primaryPositionByItemId,
     currentView,
   );
+  const visibleItemIds = visibleItems.map((item) => item.id);
+  const itemPhotoFilesResponse = visibleItemIds.length
+    ? await supabase
+        .from("file")
+        .select("item_id, nazwa, plik_url, rozmiar_kb, typ")
+        .in("item_id", visibleItemIds)
+        .order("created_at", { ascending: true })
+    : { data: [], error: null };
+  const itemPhotoFileByItemId = new Map(
+    (itemPhotoFilesResponse.data ?? [])
+      .filter((file) => file.typ === "zdjecie")
+      .map((file) => [file.item_id, file]),
+  );
+  const itemHasAttachedFilesById = new Set(
+    (itemPhotoFilesResponse.data ?? []).map((file) => file.item_id),
+  );
   const itemPhotoPreviewEntries = await Promise.all(
     visibleItems.map(async (item) => {
       if (
@@ -226,7 +244,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       roomsResponse.error ||
       storageResponse.error ||
       positionsResponse.error ||
-      primaryLocationsResponse.error,
+      primaryLocationsResponse.error ||
+      itemPhotoFilesResponse.error,
   );
   const errorMessage = params.error
     ? (errorMessages[params.error] ?? t.modules.items.errors.unknown)
@@ -330,9 +349,30 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
                 }
                 isAdmin={isAdmin}
                 item={item}
+                hasAttachedFiles={itemHasAttachedFilesById.has(item.id)}
                 key={item.id}
                 location={location}
                 locationOptions={locationSelectorOptions}
+                photo={
+                  item.miniatura_url
+                    ? {
+                        filename:
+                          itemPhotoFileByItemId.get(item.id)?.nazwa ??
+                          item.miniatura_url.split("/").at(-1) ??
+                          "photo",
+                        mimeType:
+                          getItemPhotoMimeTypeFromFinalPath(
+                            item.miniatura_url,
+                          ) ?? "image/jpeg",
+                        previewUrl:
+                          itemPhotoPreviewUrlById.get(item.id) ?? null,
+                        sizeBytes:
+                          (itemPhotoFileByItemId.get(item.id)?.rozmiar_kb ??
+                            0) * 1024,
+                        storagePath: item.miniatura_url,
+                      }
+                    : null
+                }
                 photoPreviewUrl={itemPhotoPreviewUrlById.get(item.id) ?? null}
               />
             );

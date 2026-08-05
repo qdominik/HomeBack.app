@@ -5,16 +5,43 @@ import { usePathname, useRouter } from "next/navigation";
 import { deleteItemPermanentlyFromDialog } from "@/app/(app)/items/actions";
 import { Alert } from "@/components/ui/alert";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { t } from "@/lib/i18n";
 import type { PermanentItemDeletionActionResult } from "@/lib/items/permanent-item-deletion";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 
 type ItemPermanentDeleteDialogProps = {
+  hasAttachedFiles: boolean;
   itemId: string;
   itemName: string;
 };
 
+type ItemDeleteCopy = typeof t.modules.items.itemDelete;
+
+function getDeleteDescriptionTemplate({
+  copy,
+  hasAttachedFiles,
+}: {
+  copy: ItemDeleteCopy;
+  hasAttachedFiles: boolean;
+}) {
+  const template = hasAttachedFiles
+    ? copy.descriptionWithFiles
+    : copy.description;
+
+  if (typeof template === "string" && template.length > 0) {
+    return template;
+  }
+
+  if (!hasAttachedFiles) {
+    return t.modules.items.confirmations.deleteItem;
+  }
+
+  throw new Error("Missing item delete dialog description translation.");
+}
+
 export function ItemPermanentDeleteDialog({
+  hasAttachedFiles,
   itemId,
   itemName,
 }: ItemPermanentDeleteDialogProps) {
@@ -58,10 +85,6 @@ export function ItemPermanentDeleteDialog({
   function errorMessage(result: PermanentItemDeletionActionResult) {
     if (result.ok) {
       return null;
-    }
-
-    if (result.code === "item_has_files") {
-      return t.modules.items.errors.itemHasFiles;
     }
 
     if (result.code === "item_not_available") {
@@ -157,7 +180,10 @@ export function ItemPermanentDeleteDialog({
           {message ? <Alert variant="danger">{message}</Alert> : null}
 
           <Alert variant="warning">
-            {copy.description.replace("{name}", itemName)}
+            {formatDeleteConfirmation(
+              getDeleteDescriptionTemplate({ copy, hasAttachedFiles }),
+              itemName,
+            )}
           </Alert>
 
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
