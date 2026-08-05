@@ -138,6 +138,7 @@ export function ItemForm({
     useState<ItemPhotoPersistedState | null>(photo);
   const [removePersistedPhoto, setRemovePersistedPhoto] = useState(false);
   const [photoFeedback, setPhotoFeedback] = useState<string | null>(null);
+  const [photoPreviewFailed, setPhotoPreviewFailed] = useState(false);
   const [isPhotoPending, startPhotoTransition] = useTransition();
   const [isPhotoAnalysisPending, startPhotoAnalysisTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -246,6 +247,7 @@ export function ItemForm({
     photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
     setPhotoDraft(null);
+    setPhotoPreviewFailed(false);
     if (item && photo && !removePersistedPhoto) {
       setPersistedPhoto(photo);
     }
@@ -275,6 +277,7 @@ export function ItemForm({
     photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
     setPhotoDraft(null);
+    setPhotoPreviewFailed(false);
     setPersistedPhoto(null);
     setRemovePersistedPhoto(true);
     clearPhotoInput();
@@ -345,6 +348,7 @@ export function ItemForm({
       });
       setPersistedPhoto(null);
       setRemovePersistedPhoto(false);
+      setPhotoPreviewFailed(false);
       setPhotoFeedback(t.modules.items.photo.ready);
     });
   }
@@ -585,11 +589,12 @@ export function ItemForm({
         ) : null}
         {displayedPhoto ? (
           <div className="grid gap-3 sm:grid-cols-[96px_minmax(0,1fr)_auto] sm:items-center">
-            {displayedPhoto.previewUrl ? (
+            {displayedPhoto.previewUrl && !photoPreviewFailed ? (
               <Image
                 alt={t.modules.items.photo.previewAlt}
                 className="h-24 w-24 rounded-md border border-line object-cover"
                 height={96}
+                onError={() => setPhotoPreviewFailed(true)}
                 src={displayedPhoto.previewUrl}
                 unoptimized
                 width={96}
@@ -646,7 +651,12 @@ export function ItemForm({
       </div>
       <ItemSubmitButton
         className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
-        disabled={isAnotherCategorySelected || isQuickCategoryPending}
+        disabled={
+          isAnotherCategorySelected ||
+          isQuickCategoryPending ||
+          isPhotoPending ||
+          isPhotoAnalysisPending
+        }
         label={submitLabel}
         pendingLabel={t.modules.items.saving}
       />

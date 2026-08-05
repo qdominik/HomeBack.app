@@ -288,6 +288,10 @@ test("item creation validates and persists a draft photo without storing signed 
 test("item list creates signed previews only for household-scoped final photo paths", () => {
   const itemsPage = readFileSync("src/app/(app)/items/page.tsx", "utf8");
   const itemCard = readFileSync("src/components/items/item-card.tsx", "utf8");
+  const itemPhotoThumbnail = readFileSync(
+    "src/components/items/item-photo-thumbnail.tsx",
+    "utf8",
+  );
 
   assert.match(itemsPage, /isItemPhotoFinalPathForHousehold/);
   assert.match(itemsPage, /\.from\("file"\)/);
@@ -297,8 +301,11 @@ test("item list creates signed previews only for household-scoped final photo pa
   assert.match(itemsPage, /photoPreviewUrl=/);
   assert.match(itemCard, /photoPreviewUrl/);
   assert.match(itemCard, /photo=/);
-  assert.match(itemCard, /<Image/);
-  assert.match(itemCard, /unoptimized/);
+  assert.match(itemCard, /ItemPhotoThumbnail/);
+  assert.match(itemCard, /previewUrl={photoPreviewUrl}/);
+  assert.match(itemPhotoThumbnail, /<Image/);
+  assert.match(itemPhotoThumbnail, /unoptimized/);
+  assert.match(itemPhotoThumbnail, /onError/);
 });
 
 test("item edit form supports persisted photo replacement and removal", () => {
