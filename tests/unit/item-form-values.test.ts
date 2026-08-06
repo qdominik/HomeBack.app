@@ -18,6 +18,7 @@ import {
 } from "../../src/lib/items/item-photo-storage";
 import {
   ITEM_PHOTO_COMPRESSION_MAX_DIMENSION,
+  ITEM_PHOTO_UPLOAD_TARGET_BYTES,
   getItemPhotoCompressionDimensions,
   prepareItemPhotoForUpload,
   type ItemPhotoCompressionRuntime,
@@ -124,6 +125,33 @@ test("item photo validation rejects unsupported MIME types and oversized files",
   });
 });
 
+test("Next server action body limit does not exceed the 2 MB item photo limit", () => {
+  const config = readFileSync("next.config.ts", "utf8");
+  const bodySizeLimit = config.match(/bodySizeLimit:\s*["'](\d+)mb["']/i);
+
+  assert.equal(ITEM_PHOTO_MAX_SIZE_BYTES, 2 * 1024 * 1024);
+  assert.doesNotMatch(config, /bodySizeLimit:\s*["']3mb["']/i);
+
+  if (bodySizeLimit) {
+    const configuredMegabytes = Number(bodySizeLimit[1]);
+    assert.equal(Number.isFinite(configuredMegabytes), true);
+    assert.equal(configuredMegabytes * 1024 * 1024 <= ITEM_PHOTO_MAX_SIZE_BYTES, true);
+  }
+});
+
+test("Next config allows local LAN origin for Server Actions without raising body limit", () => {
+  const config = readFileSync("next.config.ts", "utf8");
+
+  assert.match(config, /allowedDevOrigins:\s*\[[\s\S]*"192\.168\.0\.205"/);
+  assert.match(config, /serverActions:\s*\{[\s\S]*allowedOrigins:\s*\[[\s\S]*"192\.168\.0\.205:3000"/);
+  assert.doesNotMatch(config, /bodySizeLimit/);
+});
+
+test("item photo compression keeps a quality-oriented target below the product limit", () => {
+  assert.equal(ITEM_PHOTO_UPLOAD_TARGET_BYTES, 1536 * 1024);
+  assert.equal(ITEM_PHOTO_UPLOAD_TARGET_BYTES < ITEM_PHOTO_MAX_SIZE_BYTES, true);
+});
+
 test("item photo compression keeps small files unchanged", async () => {
   let runtimeCalled = false;
   const file = new File(["jpeg"], "photo.jpg", { type: "image/jpeg" });
@@ -146,7 +174,7 @@ test("item photo compression keeps small files unchanged", async () => {
   assert.equal(runtimeCalled, false);
 });
 
-test("item photo compression prepares oversized JPEG and WebP files", async () => {
+test("item photo compression prepares oversized JPEG and WebP files before upload", async () => {
   const calls: number[] = [];
   const oversizedJpeg = new File(
     [new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES + 1)],
@@ -166,7 +194,7 @@ test("item photo compression prepares oversized JPEG and WebP files", async () =
       calls.push(quality);
       assert.equal(width, ITEM_PHOTO_COMPRESSION_MAX_DIMENSION);
       assert.equal(height, 1200);
-      return new Blob([new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES - 1024)], {
+      return new Blob([new Uint8Array(ITEM_PHOTO_UPLOAD_TARGET_BYTES - 1024)], {
         type: "image/jpeg",
       });
     },
@@ -182,12 +210,14 @@ test("item photo compression prepares oversized JPEG and WebP files", async () =
     assert.equal(jpegResult.wasCompressed, true);
     assert.equal(jpegResult.file.name, "large.jpg");
     assert.equal(jpegResult.file.type, "image/jpeg");
+    assert.equal(jpegResult.file.size < ITEM_PHOTO_UPLOAD_TARGET_BYTES, true);
     assert.equal(jpegResult.file.size < ITEM_PHOTO_MAX_SIZE_BYTES, true);
     assert.equal(webpResult.file.name, "large.webp");
     assert.equal(webpResult.file.type, "image/webp");
+    assert.equal(webpResult.file.size < ITEM_PHOTO_UPLOAD_TARGET_BYTES, true);
   }
 
-  assert.deepEqual(calls, [0.82, 0.82]);
+  assert.deepEqual(calls, [0.9, 0.9]);
 });
 
 test("item photo compression returns friendly errors for large or failed output", async () => {
@@ -247,41 +277,6 @@ test("item photo compression rejects unsupported formats before upload", async (
     code: "unsupported_file_type",
   });
   assert.equal(runtimeCalled, false);
-});
-
-test("item photo compression can transcode camera images to JPEG before upload", async () => {
-  const heic = new File(
-    [new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES - 1024)],
-    "camera.heic",
-    { type: "image/heic" },
-  );
-  const runtime: ItemPhotoCompressionRuntime = {
-    async createBitmap() {
-      return { height: 2400, width: 1800 };
-    },
-    async createBlob({ height, mimeType, quality, width }) {
-      assert.equal(mimeType, "image/jpeg");
-      assert.equal(quality, 0.82);
-      assert.equal(height, ITEM_PHOTO_COMPRESSION_MAX_DIMENSION);
-      assert.equal(width, 1200);
-      return new Blob([new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES - 2048)], {
-        type: "image/jpeg",
-      });
-    },
-  };
-
-  const result = await prepareItemPhotoForUpload(heic, runtime, {
-    allowUnsupportedImageTranscode: true,
-  });
-
-  assert.equal(result.ok, true);
-
-  if (result.ok) {
-    assert.equal(result.wasCompressed, true);
-    assert.equal(result.file.name, "camera.jpg");
-    assert.equal(result.file.type, "image/jpeg");
-    assert.equal(result.file.size < ITEM_PHOTO_MAX_SIZE_BYTES, true);
-  }
 });
 
 test("item photo compression dimensions preserve aspect ratio", () => {
@@ -396,7 +391,6 @@ test("item form submits only draft metadata and does not expose persistent photo
   assert.match(form, /accept="image\/jpeg,image\/webp"/);
   assert.match(form, /takePhoto/);
   assert.match(form, /capture="environment"/);
-  assert.match(form, /accept="image\/\*"/);
   assert.match(form, /cameraInputRef/);
   assert.match(form, /previewUrl/);
   assert.match(form, /storagePath/);
@@ -409,10 +403,11 @@ test("item form submits only draft metadata and does not expose persistent photo
   assert.notEqual(uploadStart, -1);
   assert.notEqual(analysisStart, -1);
   assert.match(uploadSelectedPhoto, /prepareItemPhotoForUpload\(\s*selectedFile/);
-  assert.match(uploadSelectedPhoto, /allowUnsupportedImageTranscode/);
   assert.match(uploadSelectedPhoto, /formData\.set\("photo", preparedPhoto\.file\)/);
   assert.match(uploadSelectedPhoto, /filename: preparedPhoto\.file\.name/);
   assert.doesNotMatch(uploadSelectedPhoto, /formData\.set\("photo", selectedFile\)/);
+  assert.doesNotMatch(uploadSelectedPhoto, /allowUnsupportedImageTranscode/);
+  assert.match(form, /accept="image\/jpeg,image\/webp"[\s\S]*capture="environment"[\s\S]*onChange=\{uploadSelectedPhoto\}/);
   assert.match(form, /file_too_large_after_compression/);
   assert.match(form, /compression_failed/);
 });
@@ -594,6 +589,24 @@ test("Groq item photo provider reports missing model only for analysis", async (
   });
 });
 
+test("Groq item photo provider reports a controlled timeout error", async () => {
+  const provider = createGroqItemPhotoAiProvider(
+    {
+      provider: "groq",
+      groqApiKey: "secret",
+      model: "owner-selected-vision-model",
+    },
+    async () => {
+      throw new DOMException("timeout", "AbortError");
+    },
+  );
+
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: false,
+    code: "provider_timeout",
+  });
+});
+
 test("Groq item photo provider sends the signed URL and validates JSON", async () => {
   let request: RequestInit | undefined;
   const provider = createGroqItemPhotoAiProvider(
@@ -736,10 +749,13 @@ test("item photo analysis action and form keep the draft household-scoped", () =
 
   assert.match(form, /analyzeItemPhotoDraft/);
   assert.match(form, /fillFromPhoto/);
+  assert.match(form, /provider_timeout: t\.modules\.items\.photo\.errors\.providerTimeout/);
+  assert.match(form, /invalid_model_response: t\.modules\.items\.photo\.errors\.photoQualityFailed/);
   assert.match(form, /setItemName\(suggestion\.nazwa\)/);
   assert.match(form, /setItemDescription\(suggestion\.opis\)/);
   assert.match(form, /setSelectedCategoryId|selectCategory\(suggestion\.categoryId\)/);
   assert.match(analysisAction, /getActiveAdminContext\(supabase\)/);
+  assert.match(analysisAction, /hasUsefulItemPhotoSuggestion/);
   assert.match(analysisAction, /isItemPhotoDraftPathForHousehold/);
   assert.doesNotMatch(analysisAction, /getStringProperty\(value, "household_id"\)/);
   assert.doesNotMatch(form, /name="miniatura_url"|name="storagePath"/);

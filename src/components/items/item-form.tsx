@@ -103,14 +103,15 @@ const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
 const photoAnalysisErrorMessages: Record<ItemPhotoAnalysisError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
   categories_unavailable: t.modules.items.photo.errors.categoriesUnavailable,
-  invalid_model_response: t.modules.items.photo.errors.analysisFailed,
+  invalid_model_response: t.modules.items.photo.errors.photoQualityFailed,
   invalid_photo_input: t.modules.items.photo.errors.invalidPhotoInput,
   invalid_storage_path: t.modules.items.photo.errors.invalidStoragePath,
   missing_api_key: t.modules.items.photo.errors.aiNotConfigured,
   missing_model: t.modules.items.photo.errors.aiNotConfigured,
   preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
   provider_not_implemented: t.modules.items.photo.errors.analysisFailed,
-  provider_request_failed: t.modules.items.photo.errors.analysisFailed,
+  provider_request_failed: t.modules.items.photo.errors.photoQualityFailed,
+  provider_timeout: t.modules.items.photo.errors.providerTimeout,
   unsupported_provider: t.modules.items.photo.errors.aiNotConfigured,
 };
 
@@ -315,7 +316,6 @@ export function ItemForm({
 
   function uploadSelectedPhoto(
     event: ChangeEvent<HTMLInputElement>,
-    options: { allowUnsupportedImageTranscode?: boolean } = {},
   ) {
     const selectedFile = event.currentTarget.files?.[0] ?? null;
     const previousDraft = photoDraft;
@@ -338,14 +338,7 @@ export function ItemForm({
         return;
       }
 
-      const preparedPhoto = await prepareItemPhotoForUpload(
-        selectedFile,
-        undefined,
-        {
-          allowUnsupportedImageTranscode:
-            options.allowUnsupportedImageTranscode ?? false,
-        },
-      );
+      const preparedPhoto = await prepareItemPhotoForUpload(selectedFile);
 
       if (mutationRunId !== photoMutationRunIdRef.current) {
         return;
@@ -646,15 +639,11 @@ export function ItemForm({
               {t.modules.items.photo.takePhoto}
             </span>
             <input
-              accept="image/*"
+              accept="image/jpeg,image/webp"
               capture="environment"
               className="sr-only"
               disabled={isPhotoPending || isPhotoAnalysisPending}
-              onChange={(event) =>
-                uploadSelectedPhoto(event, {
-                  allowUnsupportedImageTranscode: true,
-                })
-              }
+              onChange={uploadSelectedPhoto}
               ref={cameraInputRef}
               type="file"
             />

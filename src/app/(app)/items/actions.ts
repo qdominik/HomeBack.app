@@ -198,6 +198,17 @@ function getItemPhotoAnalysisInput(value: unknown) {
   };
 }
 
+function hasUsefulItemPhotoSuggestion(suggestion: ItemPhotoAnalysisSuggestion) {
+  return Boolean(
+    suggestion.nazwa ||
+      suggestion.opis ||
+      suggestion.categoryId ||
+      suggestion.typ ||
+      suggestion.ilosc ||
+      suggestion.jednostka,
+  );
+}
+
 type ItemPhotoDraftForPersistence = {
   storagePath: string;
   mimeType: ItemPhotoAllowedMimeType;
@@ -741,6 +752,13 @@ export async function analyzeItemPhotoDraft(
         categoryConfidence: "none" as const,
         categoryFallbackUsed: true,
       };
+
+  if (
+    suggestion.categoryConfidence === "none" &&
+    !hasUsefulItemPhotoSuggestion(suggestion)
+  ) {
+    return { ok: false, code: "invalid_model_response" };
+  }
 
   return { ok: true, suggestion };
 }

@@ -5,7 +5,14 @@ import {
 } from "../item-photo-storage";
 
 export const ITEM_PHOTO_COMPRESSION_MAX_DIMENSION = 1600;
-export const ITEM_PHOTO_COMPRESSION_QUALITIES = [0.82, 0.72, 0.62] as const;
+export const ITEM_PHOTO_COMPRESSION_QUALITIES = [
+  0.9,
+  0.84,
+  0.78,
+  0.72,
+  0.66,
+] as const;
+export const ITEM_PHOTO_UPLOAD_TARGET_BYTES = 1536 * 1024;
 
 export type ItemPhotoPreparationError =
   | "unsupported_file_type"
@@ -80,10 +87,6 @@ export type ItemPhotoCompressionRuntime = {
   }) => Promise<Blob | null>;
 };
 
-export type ItemPhotoPreparationOptions = {
-  allowUnsupportedImageTranscode?: boolean;
-};
-
 export function isItemPhotoCompressibleMimeType(
   mimeType: string,
 ): mimeType is ItemPhotoAllowedMimeType {
@@ -133,14 +136,10 @@ export function getCompressedItemPhotoFilename(
 export async function prepareItemPhotoForUpload(
   file: File,
   runtime = createBrowserItemPhotoCompressionRuntime(),
-  options: ItemPhotoPreparationOptions = {},
 ): Promise<ItemPhotoPreparationResult> {
   const isAllowedMimeType = isItemPhotoCompressibleMimeType(file.type);
-  const canTranscodeUnsupportedImage =
-    options.allowUnsupportedImageTranscode &&
-    (file.type.startsWith("image/") || file.type === "");
 
-  if (!isAllowedMimeType && !canTranscodeUnsupportedImage) {
+  if (!isAllowedMimeType) {
     return {
       ok: false,
       code: "unsupported_file_type",
@@ -155,9 +154,7 @@ export async function prepareItemPhotoForUpload(
     };
   }
 
-  const outputMimeType: ItemPhotoAllowedMimeType = isAllowedMimeType
-    ? file.type
-    : "image/jpeg";
+  const outputMimeType: ItemPhotoAllowedMimeType = file.type;
   let image: ImageBitmapLike | null = null;
   let createdBlob = false;
 
@@ -183,7 +180,7 @@ export async function prepareItemPhotoForUpload(
 
       createdBlob = true;
 
-      if (blob.size <= ITEM_PHOTO_MAX_SIZE_BYTES) {
+      if (blob.size <= ITEM_PHOTO_UPLOAD_TARGET_BYTES) {
         return {
           ok: true,
           file: new File(

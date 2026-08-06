@@ -168,6 +168,8 @@ export type Dictionary = {
           aiNotConfigured: string;
           analysisFailed: string;
           categoriesUnavailable: string;
+          photoQualityFailed: string;
+          providerTimeout: string;
           invalidModelResponse: string;
           invalidPhotoInput: string;
           invalidStoragePath: string;

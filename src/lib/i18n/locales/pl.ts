@@ -164,6 +164,10 @@ export const pl: Dictionary = {
           aiNotConfigured: "Analiza zdjęcia nie jest jeszcze skonfigurowana.",
           analysisFailed: "Nie udało się przeanalizować zdjęcia. Spróbuj przesłać inne ujęcie.",
           categoriesUnavailable: "Nie udało się pobrać kategorii do analizy zdjęcia.",
+          photoQualityFailed:
+            "Nie udało się odczytać produktu ze zdjęcia. Zrób jaśniejsze i ostrzejsze zdjęcie.",
+          providerTimeout:
+            "Analiza zdjęcia trwała zbyt długo. Spróbuj ponownie albo zrób jaśniejsze zdjęcie.",
           invalidModelResponse: "Analiza zdjęcia zwróciła nieprawidłową odpowiedź.",
           invalidPhotoInput: "Dane wybranego zdjęcia są nieprawidłowe.",
           invalidStoragePath: "Wybrane zdjęcie nie jest dostępne w aktywnym gospodarstwie.",

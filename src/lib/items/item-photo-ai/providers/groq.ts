@@ -13,6 +13,34 @@ type GroqChatCompletionResponse = {
 
 const GROQ_CHAT_COMPLETIONS_URL =
   "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_ANALYSIS_TIMEOUT_MS = 30_000;
+
+function isAbortError(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+async function fetchGroqChatCompletion(
+  fetchImplementation: typeof fetch,
+  apiKey: string,
+  body: unknown,
+) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), GROQ_ANALYSIS_TIMEOUT_MS);
+
+  try {
+    return await fetchImplementation(GROQ_CHAT_COMPLETIONS_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 function createGroqRequestBody(
   input: Parameters<ItemPhotoAiProvider["analyze"]>[0],
@@ -67,28 +95,24 @@ export function createGroqItemPhotoAiProvider(
       let response: Response;
 
       try {
-        response = await fetchImplementation(GROQ_CHAT_COMPLETIONS_URL, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${ready.data.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(createGroqRequestBody(input, ready.data.model, true)),
-        });
+        response = await fetchGroqChatCompletion(
+          fetchImplementation,
+          ready.data.apiKey,
+          createGroqRequestBody(input, ready.data.model, true),
+        );
 
         if (response.status === 400 || response.status === 422) {
-          response = await fetchImplementation(GROQ_CHAT_COMPLETIONS_URL, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${ready.data.apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(
-              createGroqRequestBody(input, ready.data.model, false),
-            ),
-          });
+          response = await fetchGroqChatCompletion(
+            fetchImplementation,
+            ready.data.apiKey,
+            createGroqRequestBody(input, ready.data.model, false),
+          );
         }
-      } catch {
+      } catch (error) {
+        if (isAbortError(error)) {
+          return { ok: false, code: "provider_timeout" };
+        }
+
         return { ok: false, code: "provider_request_failed" };
       }
 

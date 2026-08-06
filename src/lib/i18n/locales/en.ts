@@ -164,6 +164,10 @@ export const en: Dictionary = {
           aiNotConfigured: "Photo analysis is not configured yet.",
           analysisFailed: "The photo could not be analyzed.",
           categoriesUnavailable: "The categories for photo analysis could not be loaded.",
+          photoQualityFailed:
+            "The product could not be read from the photo. Take a brighter, sharper photo.",
+          providerTimeout:
+            "Photo analysis took too long. Try again or take a brighter photo.",
           invalidModelResponse: "Photo analysis returned an invalid response.",
           invalidPhotoInput: "The selected photo data is invalid.",
           invalidStoragePath: "The selected photo is not available in the active household.",
