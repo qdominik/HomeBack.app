@@ -146,6 +146,7 @@ export type Dictionary = {
         title: string;
         help: string;
         choose: string;
+        takePhoto: string;
         uploading: string;
         analyzing: string;
         fillFromPhoto: string;
@@ -158,6 +159,8 @@ export type Dictionary = {
           missingFile: string;
           unsupportedFileType: string;
           fileTooLarge: string;
+          fileTooLargeAfterCompression: string;
+          compressionFailed: string;
           adminRequired: string;
           uploadFailed: string;
           previewUrlFailed: string;

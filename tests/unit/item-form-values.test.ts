@@ -17,6 +17,12 @@ import {
   validateItemPhotoFile,
 } from "../../src/lib/items/item-photo-storage";
 import {
+  ITEM_PHOTO_COMPRESSION_MAX_DIMENSION,
+  getItemPhotoCompressionDimensions,
+  prepareItemPhotoForUpload,
+  type ItemPhotoCompressionRuntime,
+} from "../../src/lib/items/item-photo/compress-image";
+import {
   analyzeItemPhoto,
   buildItemPhotoAnalysisPrompt,
   createGroqItemPhotoAiProvider,
@@ -118,6 +124,177 @@ test("item photo validation rejects unsupported MIME types and oversized files",
   });
 });
 
+test("item photo compression keeps small files unchanged", async () => {
+  let runtimeCalled = false;
+  const file = new File(["jpeg"], "photo.jpg", { type: "image/jpeg" });
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      runtimeCalled = true;
+      return { height: 100, width: 100 };
+    },
+    async createBlob() {
+      runtimeCalled = true;
+      return null;
+    },
+  };
+
+  assert.deepEqual(await prepareItemPhotoForUpload(file, runtime), {
+    ok: true,
+    file,
+    wasCompressed: false,
+  });
+  assert.equal(runtimeCalled, false);
+});
+
+test("item photo compression prepares oversized JPEG and WebP files", async () => {
+  const calls: number[] = [];
+  const oversizedJpeg = new File(
+    [new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES + 1)],
+    "large.jpeg",
+    { type: "image/jpeg" },
+  );
+  const oversizedWebp = new File(
+    [new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES + 1)],
+    "large.webp",
+    { type: "image/webp" },
+  );
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return { close() {}, height: 2400, width: 3200 };
+    },
+    async createBlob({ height, quality, width }) {
+      calls.push(quality);
+      assert.equal(width, ITEM_PHOTO_COMPRESSION_MAX_DIMENSION);
+      assert.equal(height, 1200);
+      return new Blob([new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES - 1024)], {
+        type: "image/jpeg",
+      });
+    },
+  };
+
+  const jpegResult = await prepareItemPhotoForUpload(oversizedJpeg, runtime);
+  const webpResult = await prepareItemPhotoForUpload(oversizedWebp, runtime);
+
+  assert.equal(jpegResult.ok, true);
+  assert.equal(webpResult.ok, true);
+
+  if (jpegResult.ok && webpResult.ok) {
+    assert.equal(jpegResult.wasCompressed, true);
+    assert.equal(jpegResult.file.name, "large.jpg");
+    assert.equal(jpegResult.file.type, "image/jpeg");
+    assert.equal(jpegResult.file.size < ITEM_PHOTO_MAX_SIZE_BYTES, true);
+    assert.equal(webpResult.file.name, "large.webp");
+    assert.equal(webpResult.file.type, "image/webp");
+  }
+
+  assert.deepEqual(calls, [0.82, 0.82]);
+});
+
+test("item photo compression returns friendly errors for large or failed output", async () => {
+  const oversized = new File(
+    [new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES + 1)],
+    "large.jpg",
+    { type: "image/jpeg" },
+  );
+  const stillLargeRuntime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return { height: 1200, width: 1200 };
+    },
+    async createBlob() {
+      return new Blob([new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES + 1)], {
+        type: "image/jpeg",
+      });
+    },
+  };
+  const failingRuntime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      throw new Error("decode failed");
+    },
+    async createBlob() {
+      return null;
+    },
+  };
+
+  assert.deepEqual(
+    await prepareItemPhotoForUpload(oversized, stillLargeRuntime),
+    {
+      ok: false,
+      code: "file_too_large_after_compression",
+    },
+  );
+  assert.deepEqual(await prepareItemPhotoForUpload(oversized, failingRuntime), {
+    ok: false,
+    code: "compression_failed",
+  });
+});
+
+test("item photo compression rejects unsupported formats before upload", async () => {
+  let runtimeCalled = false;
+  const png = new File(["png"], "photo.png", { type: "image/png" });
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      runtimeCalled = true;
+      return { height: 100, width: 100 };
+    },
+    async createBlob() {
+      runtimeCalled = true;
+      return null;
+    },
+  };
+
+  assert.deepEqual(await prepareItemPhotoForUpload(png, runtime), {
+    ok: false,
+    code: "unsupported_file_type",
+  });
+  assert.equal(runtimeCalled, false);
+});
+
+test("item photo compression can transcode camera images to JPEG before upload", async () => {
+  const heic = new File(
+    [new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES - 1024)],
+    "camera.heic",
+    { type: "image/heic" },
+  );
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return { height: 2400, width: 1800 };
+    },
+    async createBlob({ height, mimeType, quality, width }) {
+      assert.equal(mimeType, "image/jpeg");
+      assert.equal(quality, 0.82);
+      assert.equal(height, ITEM_PHOTO_COMPRESSION_MAX_DIMENSION);
+      assert.equal(width, 1200);
+      return new Blob([new Uint8Array(ITEM_PHOTO_MAX_SIZE_BYTES - 2048)], {
+        type: "image/jpeg",
+      });
+    },
+  };
+
+  const result = await prepareItemPhotoForUpload(heic, runtime, {
+    allowUnsupportedImageTranscode: true,
+  });
+
+  assert.equal(result.ok, true);
+
+  if (result.ok) {
+    assert.equal(result.wasCompressed, true);
+    assert.equal(result.file.name, "camera.jpg");
+    assert.equal(result.file.type, "image/jpeg");
+    assert.equal(result.file.size < ITEM_PHOTO_MAX_SIZE_BYTES, true);
+  }
+});
+
+test("item photo compression dimensions preserve aspect ratio", () => {
+  assert.deepEqual(
+    getItemPhotoCompressionDimensions({ height: 3000, width: 1000 }),
+    { height: 1600, width: 533 },
+  );
+  assert.deepEqual(
+    getItemPhotoCompressionDimensions({ height: 900, width: 1200 }),
+    { height: 900, width: 1200 },
+  );
+});
+
 test("item photo draft path sanitizes filename and includes household and draft ids", () => {
   const householdId = "25000000-0000-4000-8000-000000000001";
   const draftId = "35000000-0000-4000-8000-000000000001";
@@ -208,11 +385,19 @@ test("item photo draft actions do not accept household id from the client", () =
 
 test("item form submits only draft metadata and does not expose persistent photo fields", () => {
   const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const uploadStart = form.indexOf("function uploadSelectedPhoto");
+  const analysisStart = form.indexOf("function applyPhotoSuggestions");
+  const uploadSelectedPhoto = form.slice(uploadStart, analysisStart);
 
   assert.match(form, /uploadItemPhotoDraft/);
+  assert.match(form, /prepareItemPhotoForUpload/);
   assert.match(form, /cleanupItemPhotoDraft/);
   assert.match(form, /type="file"/);
   assert.match(form, /accept="image\/jpeg,image\/webp"/);
+  assert.match(form, /takePhoto/);
+  assert.match(form, /capture="environment"/);
+  assert.match(form, /accept="image\/\*"/);
+  assert.match(form, /cameraInputRef/);
   assert.match(form, /previewUrl/);
   assert.match(form, /storagePath/);
   assert.match(form, /name="item_photo_draft_path"/);
@@ -221,6 +406,15 @@ test("item form submits only draft metadata and does not expose persistent photo
   assert.doesNotMatch(form, /name="miniatura_url"/);
   assert.doesNotMatch(form, /name="file"/);
   assert.doesNotMatch(form, /name="storagePath"/);
+  assert.notEqual(uploadStart, -1);
+  assert.notEqual(analysisStart, -1);
+  assert.match(uploadSelectedPhoto, /prepareItemPhotoForUpload\(\s*selectedFile/);
+  assert.match(uploadSelectedPhoto, /allowUnsupportedImageTranscode/);
+  assert.match(uploadSelectedPhoto, /formData\.set\("photo", preparedPhoto\.file\)/);
+  assert.match(uploadSelectedPhoto, /filename: preparedPhoto\.file\.name/);
+  assert.doesNotMatch(uploadSelectedPhoto, /formData\.set\("photo", selectedFile\)/);
+  assert.match(form, /file_too_large_after_compression/);
+  assert.match(form, /compression_failed/);
 });
 
 test("item photo draft changes invalidate old analysis state and requests", () => {

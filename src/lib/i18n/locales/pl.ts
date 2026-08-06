@@ -154,6 +154,7 @@ export const pl: Dictionary = {
         title: "Zdjęcie Rzeczy",
         help: "JPEG lub WebP, maksymalnie 2 MB. Zdjęcie zostanie zapisane przy Rzeczy po zatwierdzeniu formularza.",
         choose: "Wybierz zdjęcie",
+        takePhoto: "Zrób zdjęcie",
         uploading: "Wgrywanie zdjęcia...",
         remove: "Usuń zdjęcie",
         removing: "Usuwanie zdjęcia...",
@@ -169,6 +170,10 @@ export const pl: Dictionary = {
           missingFile: "Wybierz plik zdjęcia.",
           unsupportedFileType: "Dozwolone są tylko pliki JPEG i WebP.",
           fileTooLarge: "Plik może mieć maksymalnie 2 MB.",
+          fileTooLargeAfterCompression:
+            "Zdjęcie jest za duże. Spróbuj zrobić zdjęcie w niższej jakości albo wybierz mniejszy plik.",
+          compressionFailed:
+            "Nie udało się przygotować zdjęcia. Spróbuj wybrać inne zdjęcie.",
           adminRequired: "Tylko administrator może dodawać zdjęcia Rzeczy.",
           uploadFailed: "Nie udało się wgrać zdjęcia.",
           previewUrlFailed: "Nie udało się przygotować podglądu zdjęcia.",

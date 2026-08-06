@@ -24,6 +24,10 @@ import {
   showsItemQuantity,
 } from "@/lib/items/item-form-values";
 import {
+  prepareItemPhotoForUpload,
+  type ItemPhotoPreparationError,
+} from "@/lib/items/item-photo/compress-image";
+import {
   getItemLocationFieldKey,
   getItemLocationFieldProps,
   type ItemCategoryOption,
@@ -75,6 +79,7 @@ type ItemPhotoPersistedState = {
 
 type ItemPhotoDraftError =
   | Exclude<ItemPhotoDraftUploadResult, { ok: true }>["code"]
+  | ItemPhotoPreparationError
   | "cleanup_failed";
 
 type ItemPhotoAnalysisError = Exclude<
@@ -85,7 +90,10 @@ type ItemPhotoAnalysisError = Exclude<
 const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
   cleanup_failed: t.modules.items.photo.errors.cleanupFailed,
+  compression_failed: t.modules.items.photo.errors.compressionFailed,
   file_too_large: t.modules.items.photo.errors.fileTooLarge,
+  file_too_large_after_compression:
+    t.modules.items.photo.errors.fileTooLargeAfterCompression,
   missing_file: t.modules.items.photo.errors.missingFile,
   preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
   unsupported_file_type: t.modules.items.photo.errors.unsupportedFileType,
@@ -120,6 +128,7 @@ export function ItemForm({
   const isCompact = layout === "compact";
   const fullWidthClass = isCompact ? "sm:col-span-2" : "";
   const halfWidthClass = isCompact ? "sm:col-span-1" : "";
+  const mainColumnClass = isCompact ? "" : "md:col-start-1";
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
   const [itemName, setItemName] = useState(item?.nazwa ?? "");
   const [itemDescription, setItemDescription] = useState(item?.opis ?? "");
@@ -142,6 +151,7 @@ export function ItemForm({
   const [isPhotoPending, startPhotoTransition] = useTransition();
   const [isPhotoAnalysisPending, startPhotoAnalysisTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const photoAnalysisRunIdRef = useRef(0);
   const photoMutationRunIdRef = useRef(0);
   const initialQuantity = item?.ilosc ?? 1;
@@ -228,6 +238,10 @@ export function ItemForm({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = "";
+    }
   }
 
   function resetPhotoAnalysisState() {
@@ -299,7 +313,10 @@ export function ItemForm({
     });
   }
 
-  function uploadSelectedPhoto(event: ChangeEvent<HTMLInputElement>) {
+  function uploadSelectedPhoto(
+    event: ChangeEvent<HTMLInputElement>,
+    options: { allowUnsupportedImageTranscode?: boolean } = {},
+  ) {
     const selectedFile = event.currentTarget.files?.[0] ?? null;
     const previousDraft = photoDraft;
 
@@ -321,8 +338,30 @@ export function ItemForm({
         return;
       }
 
+      const preparedPhoto = await prepareItemPhotoForUpload(
+        selectedFile,
+        undefined,
+        {
+          allowUnsupportedImageTranscode:
+            options.allowUnsupportedImageTranscode ?? false,
+        },
+      );
+
+      if (mutationRunId !== photoMutationRunIdRef.current) {
+        return;
+      }
+
+      if (!preparedPhoto.ok) {
+        setPhotoFeedback(
+          photoErrorMessages[preparedPhoto.code] ??
+            t.modules.items.photo.errors.unknown,
+        );
+        clearPhotoInput();
+        return;
+      }
+
       const formData = new FormData();
-      formData.set("photo", selectedFile);
+      formData.set("photo", preparedPhoto.file);
 
       const result = await uploadItemPhotoDraft(formData);
 
@@ -340,7 +379,7 @@ export function ItemForm({
 
       setPhotoDraft({
         draftId: result.draftId,
-        filename: selectedFile.name,
+        filename: preparedPhoto.file.name,
         mimeType: result.file.mimeType,
         previewUrl: result.previewUrl,
         sizeBytes: result.file.sizeBytes,
@@ -402,7 +441,11 @@ export function ItemForm({
   return (
     <form
       action={action}
-      className={isCompact ? "grid gap-3 sm:grid-cols-2" : "space-y-3"}
+      className={
+        isCompact
+          ? "grid gap-3 sm:grid-cols-2"
+          : "grid gap-3 md:grid-cols-2 md:gap-x-4"
+      }
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
       {photoDraft ? (
@@ -427,7 +470,9 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
-      <label className={`block text-sm font-medium ${fullWidthClass}`}>
+      <label
+        className={`block text-sm font-medium ${fullWidthClass} ${mainColumnClass}`}
+      >
         {t.modules.items.name}
         <input
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -437,16 +482,23 @@ export function ItemForm({
           value={itemName}
         />
       </label>
-      <label className={`block text-sm font-medium ${fullWidthClass}`}>
+      <label
+        className={`block text-sm font-medium ${
+          isCompact ? fullWidthClass : "md:col-start-2 md:row-start-1"
+        }`}
+      >
         {t.modules.items.description}
         <textarea
-          className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
+          className="mt-1 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary md:min-h-20"
           name="opis"
           onChange={(event) => setItemDescription(event.currentTarget.value)}
+          rows={1}
           value={itemDescription}
         />
       </label>
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label
+        className={`block text-sm font-medium ${halfWidthClass} ${mainColumnClass}`}
+      >
         {t.modules.items.itemType}
         <select
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -464,7 +516,9 @@ export function ItemForm({
         </select>
       </label>
       {showsItemQuantity(itemType) ? (
-        <label className={`block text-sm font-medium ${halfWidthClass}`}>
+        <label
+          className={`block text-sm font-medium ${halfWidthClass} ${mainColumnClass}`}
+        >
           {t.modules.items.quantity}
           <input
             className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -481,7 +535,9 @@ export function ItemForm({
       ) : (
         <input name="ilosc" type="hidden" value="1" />
       )}
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label
+        className={`block text-sm font-medium ${halfWidthClass} ${mainColumnClass}`}
+      >
         {t.modules.items.unit}
         <input
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -490,7 +546,9 @@ export function ItemForm({
           value={itemUnit}
         />
       </label>
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label
+        className={`block text-sm font-medium ${halfWidthClass} ${mainColumnClass}`}
+      >
         {t.modules.items.category}
         <select
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
@@ -523,7 +581,7 @@ export function ItemForm({
       </label>
       {isAnotherCategorySelected ? (
         <div
-          className={`space-y-2 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
+          className={`space-y-2 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass} ${mainColumnClass}`}
         >
           <label className="block text-sm font-medium">
             {t.modules.items.newCategoryName}
@@ -557,7 +615,7 @@ export function ItemForm({
         </div>
       ) : null}
       <section
-        className={`space-y-3 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
+        className={`space-y-3 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass} ${mainColumnClass}`}
       >
         <div>
           <h3 className="text-sm font-semibold text-foreground">
@@ -567,20 +625,41 @@ export function ItemForm({
             {t.modules.items.photo.help}
           </p>
         </div>
-        <label className="inline-flex cursor-pointer items-center">
-          <span className="sr-only">{t.modules.items.photo.choose}</span>
-          <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong">
-            {t.modules.items.photo.choose}
-          </span>
-          <input
-            accept="image/jpeg,image/webp"
-            className="sr-only"
-            disabled={isPhotoPending || isPhotoAnalysisPending}
-            onChange={uploadSelectedPhoto}
-            ref={fileInputRef}
-            type="file"
-          />
-        </label>
+        <div className="flex flex-wrap gap-2">
+          <label className="inline-flex cursor-pointer items-center">
+            <span className="sr-only">{t.modules.items.photo.choose}</span>
+            <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong">
+              {t.modules.items.photo.choose}
+            </span>
+            <input
+              accept="image/jpeg,image/webp"
+              className="sr-only"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onChange={uploadSelectedPhoto}
+              ref={fileInputRef}
+              type="file"
+            />
+          </label>
+          <label className="inline-flex cursor-pointer items-center">
+            <span className="sr-only">{t.modules.items.photo.takePhoto}</span>
+            <span className="inline-flex min-h-10 items-center rounded-md border border-primary px-4 py-2 text-sm font-semibold leading-5 text-primary hover:bg-surface">
+              {t.modules.items.photo.takePhoto}
+            </span>
+            <input
+              accept="image/*"
+              capture="environment"
+              className="sr-only"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onChange={(event) =>
+                uploadSelectedPhoto(event, {
+                  allowUnsupportedImageTranscode: true,
+                })
+              }
+              ref={cameraInputRef}
+              type="file"
+            />
+          </label>
+        </div>
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
         ) : null}
@@ -646,11 +725,13 @@ export function ItemForm({
           </p>
         ) : null}
       </section>
-      <div className={fullWidthClass}>
+      <div className={`${fullWidthClass} ${mainColumnClass}`}>
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>
       <ItemSubmitButton
-        className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
+        className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${
+          isCompact ? "sm:col-span-2 justify-self-start" : "md:col-span-2"
+        }`}
         disabled={
           isAnotherCategorySelected ||
           isQuickCategoryPending ||

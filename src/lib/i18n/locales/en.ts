@@ -154,6 +154,7 @@ export const en: Dictionary = {
         title: "Item photo",
         help: "JPEG or WebP, up to 2 MB. The photo will be saved with the Item after you submit the form.",
         choose: "Choose photo",
+        takePhoto: "Take photo",
         uploading: "Uploading photo...",
         remove: "Remove photo",
         removing: "Removing photo...",
@@ -169,6 +170,10 @@ export const en: Dictionary = {
           missingFile: "Choose a photo file.",
           unsupportedFileType: "Only JPEG and WebP files are allowed.",
           fileTooLarge: "The file can be up to 2 MB.",
+          fileTooLargeAfterCompression:
+            "The photo is too large. Try taking it at lower quality or choose a smaller file.",
+          compressionFailed:
+            "The photo could not be prepared. Try choosing another photo.",
           adminRequired: "Only an administrator can add Item photos.",
           uploadFailed: "The photo could not be uploaded.",
           previewUrlFailed: "The photo preview could not be prepared.",
