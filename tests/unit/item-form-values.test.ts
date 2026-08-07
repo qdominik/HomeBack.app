@@ -478,7 +478,7 @@ test("Groq item photo provider falls back when JSON response format is unavailab
 });
 
 test("item photo AI analysis helper returns configuration errors without calling Groq", async () => {
-  assert.deepEqual(await analyzeItemPhoto(VALID_ANALYSIS_INPUT, {}), {
+  assert.deepEqual(await analyzeItemPhoto(VALID_ANALYSIS_INPUT, { NODE_ENV: "test" }), {
     ok: false,
     code: "missing_api_key",
   });
