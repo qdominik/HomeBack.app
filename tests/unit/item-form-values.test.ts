@@ -7,6 +7,10 @@ import {
   showsItemQuantity,
 } from "../../src/lib/items/item-form-values";
 import {
+  buildItemPhotoPreviewUrl,
+  isItemPhotoPreviewPathForHousehold,
+} from "../../src/lib/items/item-photo-preview-url";
+import {
   buildItemPhotoFinalPath,
   buildItemPhotoDraftPath,
   getItemPhotoDraftPrefix,
@@ -474,7 +478,7 @@ test("item creation validates and persists a draft photo without storing signed 
   assert.doesNotMatch(updateAction, /createSignedUrl/);
 });
 
-test("item list creates signed previews only for household-scoped final photo paths", () => {
+test("item list previews use same-origin proxy URLs for household-scoped final photo paths", () => {
   const itemsPage = readFileSync("src/app/(app)/items/page.tsx", "utf8");
   const itemCard = readFileSync("src/components/items/item-card.tsx", "utf8");
   const itemPhotoThumbnail = readFileSync(
@@ -485,7 +489,8 @@ test("item list creates signed previews only for household-scoped final photo pa
   assert.match(itemsPage, /isItemPhotoFinalPathForHousehold/);
   assert.match(itemsPage, /\.from\("file"\)/);
   assert.match(itemsPage, /itemPhotoFileByItemId/);
-  assert.match(itemsPage, /createSignedUrl\(item\.miniatura_url/);
+  assert.match(itemsPage, /buildItemPhotoPreviewUrl\(item\.miniatura_url\)/);
+  assert.doesNotMatch(itemsPage, /createSignedUrl\(item\.miniatura_url/);
   assert.match(itemsPage, /photo=\{/);
   assert.match(itemsPage, /photoPreviewUrl=/);
   assert.match(itemCard, /photoPreviewUrl/);
@@ -495,6 +500,77 @@ test("item list creates signed previews only for household-scoped final photo pa
   assert.match(itemPhotoThumbnail, /<Image/);
   assert.match(itemPhotoThumbnail, /unoptimized/);
   assert.match(itemPhotoThumbnail, /onError/);
+});
+
+test("item photo preview URLs are same-origin and never embed localhost or the Supabase host", () => {
+  const householdId = "25000000-0000-4000-8000-000000000001";
+  const itemId = "35000000-0000-4000-8000-000000000001";
+  const finalPath = buildItemPhotoFinalPath({
+    householdId,
+    itemId,
+    mimeType: "image/webp",
+  });
+  const draftPath = `households/${householdId}/item-photo-drafts/${itemId}/photo.webp`;
+  const finalPreviewUrl = buildItemPhotoPreviewUrl(finalPath);
+  const draftPreviewUrl = buildItemPhotoPreviewUrl(draftPath);
+
+  assert.equal(
+    finalPreviewUrl,
+    `/api/item-photos/photo?path=${encodeURIComponent(finalPath)}`,
+  );
+  assert.equal(
+    draftPreviewUrl,
+    `/api/item-photos/photo?path=${encodeURIComponent(draftPath)}`,
+  );
+  assert.doesNotMatch(finalPreviewUrl, /localhost|127\.0\.0\.1|supabase/);
+  assert.doesNotMatch(draftPreviewUrl, /localhost|127\.0\.0\.1|supabase/);
+  assert.equal(isItemPhotoPreviewPathForHousehold(finalPath, householdId), true);
+  assert.equal(isItemPhotoPreviewPathForHousehold(draftPath, householdId), true);
+  assert.equal(
+    isItemPhotoPreviewPathForHousehold(
+      `households/25000000-0000-4000-8000-000000000002/items/${itemId}/photo.webp`,
+      householdId,
+    ),
+    false,
+  );
+  assert.equal(
+    isItemPhotoPreviewPathForHousehold(
+      "households/not-a-uuid/items/also-not-a-uuid/photo.webp",
+      householdId,
+    ),
+    false,
+  );
+});
+
+test("item photo upload and draft preview return same-origin proxy URLs, not signed URLs", () => {
+  const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+  const uploadStart = actions.indexOf(
+    "export async function uploadItemPhotoDraft",
+  );
+  const uploadEnd = actions.indexOf(
+    "export async function cleanupItemPhotoDraft",
+    uploadStart,
+  );
+  const previewStart = actions.indexOf(
+    "export async function createItemPhotoDraftPreviewUrl",
+  );
+  const previewEnd = actions.indexOf(
+    "export async function uploadItemPhotoDraft",
+    previewStart,
+  );
+  const uploadAction = actions.slice(uploadStart, uploadEnd);
+  const previewAction = actions.slice(previewStart, previewEnd);
+
+  assert.notEqual(uploadStart, -1);
+  assert.notEqual(uploadEnd, -1);
+  assert.notEqual(previewStart, -1);
+  assert.notEqual(previewEnd, -1);
+  assert.match(uploadAction, /buildItemPhotoPreviewUrl\(path\)/);
+  assert.doesNotMatch(uploadAction, /createSignedUrl/);
+  assert.doesNotMatch(uploadAction, /getStringProperty\(.*household_id/);
+  assert.match(previewAction, /buildItemPhotoPreviewUrl\(storagePath\)/);
+  assert.doesNotMatch(previewAction, /createSignedUrl/);
+  assert.doesNotMatch(previewAction, /getStringProperty\(.*household_id/);
 });
 
 test("item edit form supports persisted photo replacement and removal", () => {
@@ -751,12 +827,42 @@ test("item photo analysis action and form keep the draft household-scoped", () =
   assert.match(form, /fillFromPhoto/);
   assert.match(form, /provider_timeout: t\.modules\.items\.photo\.errors\.providerTimeout/);
   assert.match(form, /invalid_model_response: t\.modules\.items\.photo\.errors\.photoQualityFailed/);
+  assert.match(form, /no_confident_match: t\.modules\.items\.photo\.errors\.noConfidentMatch/);
   assert.match(form, /setItemName\(suggestion\.nazwa\)/);
   assert.match(form, /setItemDescription\(suggestion\.opis\)/);
   assert.match(form, /setSelectedCategoryId|selectCategory\(suggestion\.categoryId\)/);
   assert.match(analysisAction, /getActiveAdminContext\(supabase\)/);
   assert.match(analysisAction, /hasUsefulItemPhotoSuggestion/);
+  assert.match(analysisAction, /code: "no_confident_match"/);
+  assert.match(analysisAction, /catch \{\s*return \{ ok: false, code: "analysis_failed" \};\s*\}/);
   assert.match(analysisAction, /isItemPhotoDraftPathForHousehold/);
   assert.doesNotMatch(analysisAction, /getStringProperty\(value, "household_id"\)/);
   assert.doesNotMatch(form, /name="miniatura_url"|name="storagePath"/);
+});
+
+test("photo analysis never leaves the transition pending on unexpected errors", () => {
+  const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+
+  const applyStart = form.indexOf("function applyPhotoSuggestions");
+  const applyEnd = form.indexOf("return (", applyStart);
+  const applySuggestions = form.slice(applyStart, applyEnd);
+
+  assert.match(applySuggestions, /startPhotoAnalysisTransition\(async \(\) => \{/);
+  assert.match(applySuggestions, /try \{/);
+  assert.match(applySuggestions, /catch \{/);
+  assert.match(applySuggestions, /setPhotoFeedback\(t\.modules\.items\.photo\.errors\.analysisFailed\)/);
+});
+
+test("no-confident-match translation exists in both locales", () => {
+  const pl = readFileSync("src/lib/i18n/locales/pl.ts", "utf8");
+  const en = readFileSync("src/lib/i18n/locales/en.ts", "utf8");
+
+  assert.match(
+    pl,
+    /noConfidentMatch:[\s\S]*"Nie udało się pewnie rozpoznać przedmiotu\. Wpisz nazwę ręcznie albo zrób wyraźniejsze zdjęcie\."/,
+  );
+  assert.match(
+    en,
+    /noConfidentMatch:[\s\S]*"It wasn't possible to confidently recognize the item\. Enter the name manually or take a clearer photo\."/,
+  );
 });

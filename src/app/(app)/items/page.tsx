@@ -18,10 +18,11 @@ import {
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
 import {
+  buildItemPhotoPreviewUrl,
+} from "@/lib/items/item-photo-preview-url";
+import {
   getItemPhotoMimeTypeFromFinalPath,
   isItemPhotoFinalPathForHousehold,
-  ITEM_PHOTO_BUCKET,
-  ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
 } from "@/lib/items/item-photo-storage";
 import {
   filterItemsForView,
@@ -178,29 +179,28 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const itemHasAttachedFilesById = new Set(
     (itemPhotoFilesResponse.data ?? []).map((file) => file.item_id),
   );
-  const itemPhotoPreviewEntries = await Promise.all(
-    visibleItems.map(async (item) => {
-      if (
-        !profile ||
-        profile.status !== "aktywny" ||
-        (profile.rola !== "admin" && profile.rola !== "domownik") ||
-        !item.miniatura_url ||
-        !isItemPhotoFinalPathForHousehold(
-          item.miniatura_url,
-          profile.household_id,
-        )
-      ) {
-        return [item.id, null] as const;
-      }
+  const itemPhotoPreviewUrlById = new Map(
+    visibleItems
+      .map((item) => {
+        if (
+          !profile ||
+          profile.status !== "aktywny" ||
+          (profile.rola !== "admin" && profile.rola !== "domownik") ||
+          !item.miniatura_url ||
+          !isItemPhotoFinalPathForHousehold(
+            item.miniatura_url,
+            profile.household_id,
+          )
+        ) {
+          return null;
+        }
 
-      const { data, error } = await supabase.storage
-        .from(ITEM_PHOTO_BUCKET)
-        .createSignedUrl(item.miniatura_url, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
-
-      return [item.id, error || !data?.signedUrl ? null : data.signedUrl] as const;
-    }),
+        return [item.id, buildItemPhotoPreviewUrl(item.miniatura_url)] as const;
+      })
+      .filter(
+        (entry): entry is readonly [string, string] => entry !== null,
+      ),
   );
-  const itemPhotoPreviewUrlById = new Map(itemPhotoPreviewEntries);
   const emptyText =
     currentView === "unlocated"
       ? t.modules.items.emptyUnlocated

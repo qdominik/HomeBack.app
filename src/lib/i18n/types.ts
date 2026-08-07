@@ -171,6 +171,7 @@ export type Dictionary = {
           photoQualityFailed: string;
           providerTimeout: string;
           invalidModelResponse: string;
+          noConfidentMatch: string;
           invalidPhotoInput: string;
           invalidStoragePath: string;
           unknown: string;

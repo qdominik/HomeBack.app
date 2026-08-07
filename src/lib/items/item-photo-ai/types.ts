@@ -29,6 +29,7 @@ export type AnalyzeItemPhotoInput = {
 
 export type ItemPhotoAiErrorCode =
   | "invalid_model_response"
+  | "no_confident_match"
   | "missing_api_key"
   | "missing_model"
   | "provider_timeout"

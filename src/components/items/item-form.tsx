@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { CameraIcon } from "@phosphor-icons/react/Camera";
+import { ImageIcon } from "@phosphor-icons/react/Image";
 import {
   type ChangeEvent,
   useRef,
@@ -102,12 +104,14 @@ const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
 
 const photoAnalysisErrorMessages: Record<ItemPhotoAnalysisError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
+  analysis_failed: t.modules.items.photo.errors.analysisFailed,
   categories_unavailable: t.modules.items.photo.errors.categoriesUnavailable,
   invalid_model_response: t.modules.items.photo.errors.photoQualityFailed,
   invalid_photo_input: t.modules.items.photo.errors.invalidPhotoInput,
   invalid_storage_path: t.modules.items.photo.errors.invalidStoragePath,
   missing_api_key: t.modules.items.photo.errors.aiNotConfigured,
   missing_model: t.modules.items.photo.errors.aiNotConfigured,
+  no_confident_match: t.modules.items.photo.errors.noConfidentMatch,
   preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
   provider_not_implemented: t.modules.items.photo.errors.analysisFailed,
   provider_request_failed: t.modules.items.photo.errors.photoQualityFailed,
@@ -396,11 +400,18 @@ export function ItemForm({
     photoAnalysisRunIdRef.current = analysisRunId;
     setPhotoFeedback(null);
     startPhotoAnalysisTransition(async () => {
-      const result = await analyzeItemPhotoDraft({
-        storagePath: analyzedDraft.storagePath,
-        mimeType: analyzedDraft.mimeType,
-        sizeBytes: analyzedDraft.sizeBytes,
-      });
+      let result: ItemPhotoAnalysisActionResult;
+
+      try {
+        result = await analyzeItemPhotoDraft({
+          storagePath: analyzedDraft.storagePath,
+          mimeType: analyzedDraft.mimeType,
+          sizeBytes: analyzedDraft.sizeBytes,
+        });
+      } catch {
+        setPhotoFeedback(t.modules.items.photo.errors.analysisFailed);
+        return;
+      }
 
       if (analysisRunId !== photoAnalysisRunIdRef.current) {
         return;
@@ -463,18 +474,53 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
-      <label
-        className={`block text-sm font-medium ${fullWidthClass} ${mainColumnClass}`}
-      >
-        {t.modules.items.name}
-        <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
-          onChange={(event) => setItemName(event.currentTarget.value)}
-          name="nazwa"
-          required
-          value={itemName}
-        />
-      </label>
+      <div className={`${fullWidthClass} ${mainColumnClass}`}>
+        <div className="flex items-start gap-2">
+          <label className="block min-w-0 flex-1 text-sm font-medium">
+            {t.modules.items.name}
+            <input
+              className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+              onChange={(event) => setItemName(event.currentTarget.value)}
+              name="nazwa"
+              required
+              value={itemName}
+            />
+          </label>
+          <span className="flex shrink-0 items-center gap-2 pt-6">
+            <label
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-primary text-white hover:bg-primary-strong"
+              title={t.modules.items.photo.choose}
+            >
+              <span className="sr-only">{t.modules.items.photo.choose}</span>
+              <ImageIcon aria-hidden="true" size={20} weight="bold" />
+              <input
+                accept="image/jpeg,image/webp"
+                className="sr-only"
+                disabled={isPhotoPending || isPhotoAnalysisPending}
+                onChange={uploadSelectedPhoto}
+                ref={fileInputRef}
+                type="file"
+              />
+            </label>
+            <label
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-primary text-primary hover:bg-surface"
+              title={t.modules.items.photo.takePhoto}
+            >
+              <span className="sr-only">{t.modules.items.photo.takePhoto}</span>
+              <CameraIcon aria-hidden="true" size={20} weight="bold" />
+              <input
+                accept="image/jpeg,image/webp"
+                capture="environment"
+                className="sr-only"
+                disabled={isPhotoPending || isPhotoAnalysisPending}
+                onChange={uploadSelectedPhoto}
+                ref={cameraInputRef}
+                type="file"
+              />
+            </label>
+          </span>
+        </div>
+      </div>
       <label
         className={`block text-sm font-medium ${
           isCompact ? fullWidthClass : "md:col-start-2 md:row-start-1"
@@ -617,37 +663,6 @@ export function ItemForm({
           <p className="mt-1 text-xs leading-5 text-muted">
             {t.modules.items.photo.help}
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <label className="inline-flex cursor-pointer items-center">
-            <span className="sr-only">{t.modules.items.photo.choose}</span>
-            <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong">
-              {t.modules.items.photo.choose}
-            </span>
-            <input
-              accept="image/jpeg,image/webp"
-              className="sr-only"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onChange={uploadSelectedPhoto}
-              ref={fileInputRef}
-              type="file"
-            />
-          </label>
-          <label className="inline-flex cursor-pointer items-center">
-            <span className="sr-only">{t.modules.items.photo.takePhoto}</span>
-            <span className="inline-flex min-h-10 items-center rounded-md border border-primary px-4 py-2 text-sm font-semibold leading-5 text-primary hover:bg-surface">
-              {t.modules.items.photo.takePhoto}
-            </span>
-            <input
-              accept="image/jpeg,image/webp"
-              capture="environment"
-              className="sr-only"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onChange={uploadSelectedPhoto}
-              ref={cameraInputRef}
-              type="file"
-            />
-          </label>
         </div>
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>

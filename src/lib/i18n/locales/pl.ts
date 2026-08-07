@@ -169,6 +169,8 @@ export const pl: Dictionary = {
           providerTimeout:
             "Analiza zdjęcia trwała zbyt długo. Spróbuj ponownie albo zrób jaśniejsze zdjęcie.",
           invalidModelResponse: "Analiza zdjęcia zwróciła nieprawidłową odpowiedź.",
+          noConfidentMatch:
+            "Nie udało się pewnie rozpoznać przedmiotu. Wpisz nazwę ręcznie albo zrób wyraźniejsze zdjęcie.",
           invalidPhotoInput: "Dane wybranego zdjęcia są nieprawidłowe.",
           invalidStoragePath: "Wybrane zdjęcie nie jest dostępne w aktywnym gospodarstwie.",
           missingFile: "Wybierz plik zdjęcia.",

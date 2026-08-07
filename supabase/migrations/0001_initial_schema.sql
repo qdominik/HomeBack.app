@@ -323,7 +323,7 @@ values
   ('medicines', 'Leki', true, false),
   ('food', 'Żywność', true, true),
   ('documents', 'Dokumenty', true, false),
-  ('winter_clothes', 'Ubrania zimowe', true, true),
+  ('winter_clothes', 'Ubrania', true, true),
   ('electronics', 'Elektronika', true, true),
   ('tools', 'Narzędzia', true, true),
   ('books', 'Książki', true, true),

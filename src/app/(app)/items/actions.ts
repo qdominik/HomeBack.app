@@ -10,6 +10,9 @@ import {
   type CopyActionResult,
 } from "@/lib/copy-entities/copy-contract";
 import {
+  buildItemPhotoPreviewUrl,
+} from "@/lib/items/item-photo-preview-url";
+import {
   buildItemPhotoFinalPath,
   buildItemPhotoDraftPath,
   ITEM_PHOTO_BUCKET,
@@ -86,6 +89,7 @@ export type ItemPhotoAnalysisActionResult =
       code:
         | ItemPhotoAiErrorCode
         | "admin_required"
+        | "analysis_failed"
         | "categories_unavailable"
         | "invalid_photo_input"
         | "invalid_storage_path"
@@ -606,13 +610,7 @@ export async function createItemPhotoDraftPreviewUrl(
     return { ok: false, code: "invalid_storage_path" };
   }
 
-  const { data, error } = await createItemPhotoPreviewUrl(supabase, storagePath);
-
-  if (error || !data?.signedUrl) {
-    return { ok: false, code: "preview_url_failed" };
-  }
-
-  return { ok: true, previewUrl: data.signedUrl };
+  return { ok: true, previewUrl: buildItemPhotoPreviewUrl(storagePath) };
 }
 
 export async function uploadItemPhotoDraft(
@@ -646,16 +644,6 @@ export async function uploadItemPhotoDraft(
     return { ok: false, code: "upload_failed" };
   }
 
-  const { data, error: previewError } = await createItemPhotoPreviewUrl(
-    supabase,
-    path,
-  );
-
-  if (previewError || !data?.signedUrl) {
-    await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([path]);
-    return { ok: false, code: "preview_url_failed" };
-  }
-
   return {
     ok: true,
     draftId,
@@ -663,7 +651,7 @@ export async function uploadItemPhotoDraft(
       mimeType: fileValidation.mimeType,
       sizeBytes: fileValidation.sizeBytes,
     },
-    previewUrl: data.signedUrl,
+    previewUrl: buildItemPhotoPreviewUrl(path),
     storagePath: path,
   };
 }
@@ -729,15 +717,21 @@ export async function analyzeItemPhotoDraft(
     return { ok: false, code: "categories_unavailable" };
   }
 
-  const result = await analyzeItemPhoto({
-    ...input,
-    imageUrl: imageUrl.imageUrl,
-    categories: categories.map((category) => ({
-      id: category.id,
-      name: category.nazwa,
-    })),
-    locale: "pl",
-  });
+  let result;
+
+  try {
+    result = await analyzeItemPhoto({
+      ...input,
+      imageUrl: imageUrl.imageUrl,
+      categories: categories.map((category) => ({
+        id: category.id,
+        name: category.nazwa,
+      })),
+      locale: "pl",
+    });
+  } catch {
+    return { ok: false, code: "analysis_failed" };
+  }
 
   if (!result.ok) {
     return result;
@@ -757,7 +751,7 @@ export async function analyzeItemPhotoDraft(
     suggestion.categoryConfidence === "none" &&
     !hasUsefulItemPhotoSuggestion(suggestion)
   ) {
-    return { ok: false, code: "invalid_model_response" };
+    return { ok: false, code: "no_confident_match" };
   }
 
   return { ok: true, suggestion };
