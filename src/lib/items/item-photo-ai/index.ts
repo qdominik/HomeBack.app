@@ -20,6 +20,11 @@ export { getItemPhotoAiProvider };
 export type { ItemPhotoAiProvider } from "./provider";
 export { createGroqItemPhotoAiProvider } from "./providers/groq";
 export { validateItemPhotoAnalysisSuggestion } from "./schema";
+export {
+  isItemPhotoUnknownName,
+  isItemPhotoWeakSuggestion,
+  shouldApplyItemPhotoSuggestionName,
+} from "./apply-suggestion";
 
 export async function analyzeItemPhoto(
   input: AnalyzeItemPhotoInput,
