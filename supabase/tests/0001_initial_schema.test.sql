@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = extensions, public;
 
-select plan(30);
+select plan(34);
 
 select has_table('public', 'household', 'household exists');
 select has_table('public', 'profile', 'profile exists');
@@ -34,6 +34,18 @@ select has_column(
   'storage_location_l3',
   'identyfikator_nfc',
   'future NFC field exists'
+);
+select has_column(
+  'public',
+  'storage_location_l2',
+  'ikona',
+  'storage_location_l2.ikona exists'
+);
+select has_column(
+  'public',
+  'storage_location_l3',
+  'ikona',
+  'storage_location_l3.ikona exists'
 );
 select has_column(
   'public',
@@ -183,6 +195,28 @@ select ok(
       and column_name = 'przechowywany_w_sejfie'
   ),
   'item.przechowywany_w_sejfie has default'
+);
+
+select ok(
+  (
+    select is_nullable = 'YES'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'storage_location_l2'
+      and column_name = 'ikona'
+  ),
+  'storage_location_l2.ikona is nullable'
+);
+
+select ok(
+  (
+    select is_nullable = 'YES'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'storage_location_l3'
+      and column_name = 'ikona'
+  ),
+  'storage_location_l3.ikona is nullable'
 );
 
 select ok(

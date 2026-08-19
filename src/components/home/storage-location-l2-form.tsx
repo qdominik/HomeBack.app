@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
+import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
 import { Button } from "@/components/ui/button";
 import {
   FURNITURE_CUSTOM_TEMPLATE_VALUES,
   getFurnitureTemplateOptions,
 } from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
+import { resolveStorageLocationIconKey } from "@/lib/icons/home-structure-icons";
 import { activeLocale, t } from "@/lib/i18n";
 import type { StorageLocationL2 } from "./home-types";
 
@@ -63,6 +65,15 @@ export function StorageLocationL2Form({
         label={t.modules.home.fields.storageType}
         name="typ"
         templateOptions={furnitureTemplateOptions}
+      />
+      <EntityIconPicker
+        defaultValue={resolveStorageLocationIconKey(
+          location?.typ,
+          location?.ikona,
+        )}
+        group="storage"
+        label={t.modules.home.fields.icon}
+        name="ikona"
       />
       <p className="text-sm text-muted">{t.modules.home.fields.storageHelp}</p>
       <label className="ui-label">

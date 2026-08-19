@@ -94,6 +94,14 @@ function roomIconField(formData: FormData) {
   return normalizeEntityIconKey(field(formData, "ikona"), "room");
 }
 
+function storageLocationL2IconField(formData: FormData) {
+  return normalizeEntityIconKey(field(formData, "ikona"), "storage");
+}
+
+function storageLocationL3IconField(formData: FormData) {
+  return normalizeEntityIconKey(field(formData, "ikona"), "position");
+}
+
 function redirectWithError(error: string): never {
   redirect(`${routes.home}?error=${encodeURIComponent(error)}`);
 }
@@ -739,6 +747,7 @@ export async function createStorageLocationL2(formData: FormData) {
 
   const { error } = await supabase.from("storage_location_l2").insert({
     [orderColumn]: order,
+    ikona: storageLocationL2IconField(formData),
     nazwa,
     opis: nullableField(formData, "opis"),
     room_id: roomId,
@@ -789,6 +798,7 @@ export async function updateStorageLocationL2(formData: FormData) {
 
   const payload: Database["public"]["Tables"]["storage_location_l2"]["Update"] =
     {
+      ikona: storageLocationL2IconField(formData),
       nazwa,
       opis: nullableField(formData, "opis"),
       typ,
@@ -1057,6 +1067,7 @@ export async function createStorageLocationL3(formData: FormData) {
 
   const { error } = await supabase.from("storage_location_l3").insert({
     [orderColumn]: order,
+    ikona: storageLocationL3IconField(formData),
     kod_lokalizacji,
     nazwa,
     opis: nullableField(formData, "opis"),
@@ -1105,6 +1116,7 @@ export async function updateStorageLocationL3(formData: FormData) {
   const submittedCode = field(formData, "kod_lokalizacji");
   const payload: Database["public"]["Tables"]["storage_location_l3"]["Update"] =
     {
+      ikona: storageLocationL3IconField(formData),
       kod_lokalizacji:
         submittedCode ||
         generateLocationCode({

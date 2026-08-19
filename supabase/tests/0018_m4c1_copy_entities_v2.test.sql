@@ -42,22 +42,22 @@ values
   ('48000000-0000-4000-8000-000000000002', '28000000-0000-4000-8000-000000000001', 'Office', 'biuro', 'office', 'Target Room', 2),
   ('48000000-0000-4000-8000-000000000003', '28000000-0000-4000-8000-000000000002', 'Foreign room', 'biuro', 'office', null, 1);
 
-insert into public.storage_location_l2 (id, room_id, nazwa, typ, opis, "kolejność")
+insert into public.storage_location_l2 (id, room_id, nazwa, typ, ikona, opis, "kolejność")
 values
-  ('58000000-0000-4000-8000-000000000001', '48000000-0000-4000-8000-000000000001', 'Cabinet', 'szafka', 'Source Furniture', 1),
-  ('58000000-0000-4000-8000-000000000002', '48000000-0000-4000-8000-000000000002', 'Desk cabinet', 'szafka', 'Target Furniture', 1),
-  ('58000000-0000-4000-8000-000000000003', '48000000-0000-4000-8000-000000000002', 'Rollback furniture', 'szafka', null, 2),
-  ('58000000-0000-4000-8000-000000000004', '48000000-0000-4000-8000-000000000003', 'Foreign furniture', 'szafka', null, 1);
+  ('58000000-0000-4000-8000-000000000001', '48000000-0000-4000-8000-000000000001', 'Cabinet', 'szafka', 'dresser', 'Source Furniture', 1),
+  ('58000000-0000-4000-8000-000000000002', '48000000-0000-4000-8000-000000000002', 'Desk cabinet', 'szafka', null, 'Target Furniture', 1),
+  ('58000000-0000-4000-8000-000000000003', '48000000-0000-4000-8000-000000000002', 'Rollback furniture', 'szafka', null, null, 2),
+  ('58000000-0000-4000-8000-000000000004', '48000000-0000-4000-8000-000000000003', 'Foreign furniture', 'szafka', null, null, 1);
 
 insert into public.storage_location_l3 (
-  id, storage_location_l2_id, nazwa, opis, kod_lokalizacji, "kolejność"
+  id, storage_location_l2_id, nazwa, ikona, opis, kod_lokalizacji, "kolejność"
 )
 values
-  ('68000000-0000-4000-8000-000000000001', '58000000-0000-4000-8000-000000000001', 'Drawer 1', 'Source storage A', 'LEGACY-SOURCE-A', 1),
-  ('68000000-0000-4000-8000-000000000002', '58000000-0000-4000-8000-000000000001', 'Drawer 2', 'Source storage B', 'LEGACY-SOURCE-B', 2),
-  ('68000000-0000-4000-8000-000000000003', '58000000-0000-4000-8000-000000000002', 'Target drawer', 'Target storage', 'OFF-SZF-TAR1', 1),
-  ('68000000-0000-4000-8000-000000000004', '58000000-0000-4000-8000-000000000003', '   ', null, 'OFF-SZF-ROL1', 1),
-  ('68000000-0000-4000-8000-000000000005', '58000000-0000-4000-8000-000000000004', 'Foreign drawer', null, 'FOR-SZF-DRA1', 1);
+  ('68000000-0000-4000-8000-000000000001', '58000000-0000-4000-8000-000000000001', 'Drawer 1', 'drawer', 'Source storage A', 'LEGACY-SOURCE-A', 1),
+  ('68000000-0000-4000-8000-000000000002', '58000000-0000-4000-8000-000000000001', 'Drawer 2', null, 'Source storage B', 'LEGACY-SOURCE-B', 2),
+  ('68000000-0000-4000-8000-000000000003', '58000000-0000-4000-8000-000000000002', 'Target drawer', null, 'Target storage', 'OFF-SZF-TAR1', 1),
+  ('68000000-0000-4000-8000-000000000004', '58000000-0000-4000-8000-000000000003', '   ', null, null, 'OFF-SZF-ROL1', 1),
+  ('68000000-0000-4000-8000-000000000005', '58000000-0000-4000-8000-000000000004', 'Foreign drawer', null, null, 'FOR-SZF-DRA1', 1);
 
 insert into public.item (
   id, household_id, category_id, nazwa, opis, typ, ilosc, jednostka,
@@ -182,6 +182,25 @@ select is(
   'Furniture copy to another Room includes Storage spaces'
 );
 select is(
+  (select ikona from public.storage_location_l2 where nazwa = 'Cabinet copy'),
+  'dresser',
+  'Furniture copy preserves the source L2 icon'
+);
+select is(
+  (select l3.ikona from public.storage_location_l3 as l3
+    join public.storage_location_l2 as l2 on l2.id = l3.storage_location_l2_id
+    where l2.nazwa = 'Cabinet copy' and l3.nazwa = 'Drawer 1'),
+  'drawer',
+  'Furniture copy preserves the first nested L3 icon'
+);
+select is(
+  (select l3.ikona from public.storage_location_l3 as l3
+    join public.storage_location_l2 as l2 on l2.id = l3.storage_location_l2_id
+    where l2.nazwa = 'Cabinet copy' and l3.nazwa = 'Drawer 2'),
+  null::text,
+  'Furniture copy preserves NULL for a nested L3 without an icon'
+);
+select is(
   (select copied_storage_count from public.copy_furniture_with_storage('58000000-0000-4000-8000-000000000001', '48000000-0000-4000-8000-000000000002', 'Cabinet only copy', false)),
   0,
   'Furniture copy can omit Storage spaces'
@@ -199,6 +218,22 @@ select is(
   (select copied_name from public.copy_storage_space('68000000-0000-4000-8000-000000000001', '58000000-0000-4000-8000-000000000002', 'Drawer copy')),
   'Drawer copy',
   'Storage copy can use another Furniture target'
+);
+select is(
+  (select ikona from public.storage_location_l3 where nazwa = 'Drawer copy'),
+  'drawer',
+  'direct Storage copy preserves the source L3 icon'
+);
+select is(
+  (select ikona from public.storage_location_l3
+    where (nazwa, storage_location_l2_id) = ('Drawer null copy', '58000000-0000-4000-8000-000000000002'::uuid)),
+  null::text,
+  'direct Storage copy preserves NULL'
+)
+from public.copy_storage_space(
+  '68000000-0000-4000-8000-000000000002',
+  '58000000-0000-4000-8000-000000000002',
+  'Drawer null copy'
 );
 select is(
   (select count(*) from public.item_location as il

@@ -55,7 +55,7 @@ export function StorageLocationL2Card({
   roomId,
   roomOptions,
 }: StorageLocationL2CardProps) {
-  const iconKey = resolveStorageLocationIconKey(location.typ);
+  const iconKey = resolveStorageLocationIconKey(location.typ, location.ikona);
 
   return (
     <section className="rounded-control border border-line bg-surface-muted p-4 sm:p-5">

@@ -9,6 +9,10 @@ import { getCategoryIconKey } from "../../src/lib/icons/category-icon-map";
 import { normalizeCustomCategoryIconKey } from "../../src/lib/categories/custom-category-icon";
 import { resolveItemIconKey } from "../../src/lib/icons/item-icon-resolution";
 import {
+  resolvePositionIconKey,
+  resolveStorageLocationIconKey,
+} from "../../src/lib/icons/home-structure-icons";
+import {
   getRoomIconKeyForKind,
   inferRoomIconKey,
   resolveRoomIconKey,
@@ -155,6 +159,37 @@ test("existing and legacy room icons are preserved safely during editing", () =>
     }),
     "room",
   );
+});
+
+test("furniture and storage spaces preserve saved icons and safely fall back", () => {
+  assert.equal(resolveStorageLocationIconKey("Szafa", "dresser"), "dresser");
+  assert.equal(resolveStorageLocationIconKey("Szafa", null), "wardrobe");
+  assert.equal(
+    resolveStorageLocationIconKey("Komoda", "legacy-storage-icon"),
+    "dresser",
+  );
+  assert.equal(resolvePositionIconKey("drawer"), "drawer");
+  assert.equal(resolvePositionIconKey(null), "position");
+  assert.equal(resolvePositionIconKey("legacy-position-icon"), "position");
+});
+
+test("storage forms and server actions submit validated icon keys", () => {
+  const actionSource = readFileSync("src/app/(app)/home/actions.ts", "utf8");
+  const furnitureFormSource = readFileSync(
+    "src/components/home/storage-location-l2-form.tsx",
+    "utf8",
+  );
+  const storageFormSource = readFileSync(
+    "src/components/home/storage-location-l3-form.tsx",
+    "utf8",
+  );
+
+  assert.equal(actionSource.includes("function storageLocationL2IconField"), true);
+  assert.equal(actionSource.includes("function storageLocationL3IconField"), true);
+  assert.equal(actionSource.includes("ikona: storageLocationL2IconField(formData)"), true);
+  assert.equal(actionSource.includes("ikona: storageLocationL3IconField(formData)"), true);
+  assert.equal(furnitureFormSource.includes('group="storage"'), true);
+  assert.equal(storageFormSource.includes('group="position"'), true);
 });
 test("custom category icons use other as their default and invalid fallback", () => {
   assert.equal(normalizeCustomCategoryIconKey(undefined), "other");
