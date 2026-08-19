@@ -1,9 +1,10 @@
 import { revalidatePath } from "next/cache";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
+import { getConfiguredSiteUrl } from "@/lib/site-url";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 
@@ -12,6 +13,14 @@ export async function POST(request: NextRequest) {
   }
 
   revalidatePath("/", "layout");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? request.url;
+  const siteUrl = getConfiguredSiteUrl();
+
+  if (!siteUrl) {
+    return NextResponse.json(
+      { error: "NEXT_PUBLIC_SITE_URL is not configured." },
+      { status: 500 },
+    );
+  }
+
   return NextResponse.redirect(new URL(routes.login, siteUrl), 303);
 }

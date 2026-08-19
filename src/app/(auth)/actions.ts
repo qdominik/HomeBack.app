@@ -1,9 +1,9 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
+import { getConfiguredSiteUrl } from "@/lib/site-url";
 import type { Database } from "@/types/database";
 import { classifySignupResult } from "@/lib/auth/classify-signup-result";
 
@@ -53,11 +53,11 @@ export async function register(formData: FormData) {
     redirectWithError(routes.register, "password_too_short");
   }
 
-  const requestHeaders = await headers();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    requestHeaders.get("origin") ??
-    "http://127.0.0.1:3000";
+  const siteUrl = getConfiguredSiteUrl();
+
+  if (!siteUrl) {
+    redirectWithError(routes.register, "signup_failed");
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -65,7 +65,7 @@ export async function register(formData: FormData) {
     password,
     options: {
       data: { imie: name },
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: new URL("/auth/confirm", siteUrl).toString(),
     },
   });
 

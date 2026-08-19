@@ -2,6 +2,7 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
+import { getConfiguredSiteUrl } from "@/lib/site-url";
 
 export async function GET(request: NextRequest) {
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
@@ -33,9 +34,14 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const redirectUrl = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? request.nextUrl.origin,
-  );
+  const redirectUrl = getConfiguredSiteUrl();
+
+  if (!redirectUrl) {
+    return NextResponse.json(
+      { error: "NEXT_PUBLIC_SITE_URL is not configured." },
+      { status: 500 },
+    );
+  }
 
   if (error) {
     redirectUrl.pathname = routes.login;

@@ -4,6 +4,7 @@ import { expect, type Page } from "@playwright/test";
 const appURL = "http://127.0.0.1:3001";
 const mailpitAPIURL = "http://127.0.0.1:54324/api/v1";
 const confirmationTimeout = 15_000;
+const e2ePassword = process.env.E2E_PASSWORD;
 
 export type E2ECredentials = {
   email: string;
@@ -62,13 +63,17 @@ async function latestConfirmationLink(email: string) {
 }
 
 export function newE2ECredentials(prefix: string): E2ECredentials {
+  if (!e2ePassword) {
+    throw new Error("Set E2E_PASSWORD before running local end-to-end tests.");
+  }
+
   const unique = `${Date.now()}-${randomUUID().slice(0, 8)}`;
 
   return {
     email: `${prefix}-${unique}@example.test`,
     householdName: `E2E Dom ${unique}`,
     name: "E2E Admin",
-    password: "Password123!",
+    password: e2ePassword,
   };
 }
 

@@ -143,12 +143,12 @@ test("Next server action body limit does not exceed the 2 MB item photo limit", 
   }
 });
 
-test("Next config allows local LAN origin for Server Actions without raising body limit", () => {
+test("Next config uses an optional LAN origin and keeps Server Actions within the photo limit", () => {
   const config = readFileSync("next.config.ts", "utf8");
 
-  assert.match(config, /allowedDevOrigins:\s*\[[\s\S]*"192\.168\.0\.205"/);
-  assert.match(config, /serverActions:\s*\{[\s\S]*allowedOrigins:\s*\[[\s\S]*"192\.168\.0\.205:3000"/);
-  assert.doesNotMatch(config, /bodySizeLimit/);
+  assert.match(config, /process\.env\.HOMEBACK_DEV_ORIGIN/);
+  assert.doesNotMatch(config, /192\.168\.0\.205/);
+  assert.match(config, /bodySizeLimit:\s*"2mb"/);
 });
 
 test("item photo compression keeps a quality-oriented target below the product limit", () => {

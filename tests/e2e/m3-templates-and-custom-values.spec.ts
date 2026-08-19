@@ -28,7 +28,11 @@ async function latestConfirmationLink(email: string) {
 async function registerAndCreateHousehold(page) {
   const unique = Date.now();
   const email = `m3-e2e-${unique}@example.test`;
-  const password = "Password123!";
+  const password = process.env.E2E_PASSWORD;
+
+  if (!password) {
+    throw new Error("Set E2E_PASSWORD before running local end-to-end tests.");
+  }
 
   await page.goto("/register");
   await page.getByLabel("Imię").fill("E2E Admin");
