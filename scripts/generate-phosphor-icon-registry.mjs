@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
+import { hasSameGeneratedContent } from "./icon-registry-content.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const packageDir = path.join(root, "node_modules", "@phosphor-icons", "react", "dist", "csr");
@@ -39,7 +40,7 @@ try {
     const generatedFile = targetDir ? path.join(targetDir, relative) : file;
     fs.mkdirSync(path.dirname(generatedFile), { recursive: true });
     fs.writeFileSync(generatedFile, contents);
-    if (!fs.existsSync(file) || fs.readFileSync(file, "utf8") !== contents) changed = true;
+    if (!fs.existsSync(file) || !hasSameGeneratedContent(fs.readFileSync(file, "utf8"), contents)) changed = true;
   }
 } finally {
   if (targetDir) fs.rmSync(targetDir, { recursive: true, force: true });

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { test } from "node:test";
 import {
   ENTITY_ICON_DEFINITIONS,
@@ -51,6 +52,18 @@ test("Phosphor search trims, ignores case, matches partial names, and paginates 
   assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, "zzzz-not-an-icon").length, 0);
   assert.equal(paginatePhosphorIcons(PHOSPHOR_ICON_MANIFEST, 1).entries.length, 48);
   assert.equal(paginatePhosphorIcons(PHOSPHOR_ICON_MANIFEST, 32).currentPage, 32);
+});
+
+test("generated content comparison ignores only line-ending representation", async () => {
+  const moduleURL = pathToFileURL("scripts/icon-registry-content.mjs").href;
+  const { hasSameGeneratedContent } = await Function("url", "return import(url)")(moduleURL);
+  assert.equal(hasSameGeneratedContent("a\nb\n", "a\nb\n"), true);
+  assert.equal(hasSameGeneratedContent("a\nb\n", "a\r\nb\r\n"), true);
+  assert.equal(hasSameGeneratedContent("a\r\nb\r\n", "a\nb\n"), true);
+  assert.equal(hasSameGeneratedContent("a\rb\r", "a\nb\n"), true);
+  assert.equal(hasSameGeneratedContent("a\nb\n", "a\nc\n"), false);
+  assert.equal(hasSameGeneratedContent("a\nb", "a\nb\n"), false);
+  assert.equal(hasSameGeneratedContent("a\n b\n", "a\nb\n"), false);
 });
 
 test("server icon validation accepts only semantic keys or generated Phosphor names", () => {
