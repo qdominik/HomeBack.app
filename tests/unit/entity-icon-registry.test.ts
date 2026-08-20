@@ -28,7 +28,16 @@ import {
 } from "../../src/lib/icons/entity-icon-validation";
 import { PHOSPHOR_ICON_MANIFEST } from "../../src/lib/icons/phosphor-icon-registry";
 import { isAllowedStoredEntityIcon, normalizeStoredEntityIcon } from "../../src/lib/icons/phosphor-icon-server-validation";
-import { paginatePhosphorIcons, searchPhosphorIcons } from "../../src/lib/icons/phosphor-icon-catalog";
+import {
+  localizePhosphorIconSearchEntries,
+  normalizeIconSearchText,
+  paginatePhosphorIcons,
+  searchPhosphorIcons,
+  tokenizePhosphorIconName,
+} from "../../src/lib/icons/phosphor-icon-catalog";
+import { plIconSearchLocale } from "../../src/lib/icons/search-locales/pl";
+import { enIconSearchLocale } from "../../src/lib/icons/search-locales/en";
+import { loadIconSearchLocale } from "../../src/lib/icons/search-locales";
 
 test("entity icon keys are recognized and unknown values are rejected", () => {
   assert.equal(isEntityIconKey("living-room"), true);
@@ -47,11 +56,95 @@ test("generated Phosphor registry has 1512 canonical names in groups of at most 
 });
 
 test("Phosphor search trims, ignores case, matches partial names, and paginates by 48", () => {
-  assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, " airplane ")[0]?.name, "AirplaneIcon");
-  assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, "AIRPLANEICON")[0]?.name, "AirplaneIcon");
-  assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, "zzzz-not-an-icon").length, 0);
-  assert.equal(paginatePhosphorIcons(PHOSPHOR_ICON_MANIFEST, 1).entries.length, 48);
-  assert.equal(paginatePhosphorIcons(PHOSPHOR_ICON_MANIFEST, 32).currentPage, 32);
+  const localizedEntries = localizePhosphorIconSearchEntries(PHOSPHOR_ICON_MANIFEST, plIconSearchLocale);
+  assert.equal(searchPhosphorIcons(localizedEntries, " airplane ")[0]?.name, "AirplaneIcon");
+  assert.equal(searchPhosphorIcons(localizedEntries, "AIRPLANEICON")[0]?.name, "AirplaneIcon");
+  assert.equal(searchPhosphorIcons(localizedEntries, "zzzz-not-an-icon").length, 0);
+  assert.equal(paginatePhosphorIcons(localizedEntries, 1).entries.length, 48);
+  assert.equal(paginatePhosphorIcons(localizedEntries, 32).currentPage, 32);
+});
+
+test("Phosphor search uses Polish token aliases and icon-specific exceptions", () => {
+  const localizedEntries = localizePhosphorIconSearchEntries(PHOSPHOR_ICON_MANIFEST, plIconSearchLocale);
+  const namesFor = (query: string) => searchPhosphorIcons(localizedEntries, query).map((entry) => entry.name);
+
+  assert.ok(namesFor("samolot").includes("AirplaneIcon"));
+  assert.ok(namesFor("krzesło").includes("ChairIcon"));
+  assert.ok(namesFor("archiwum").includes("FileArchiveIcon"));
+  assert.ok(namesFor("segregator").includes("FileArchiveIcon"));
+  assert.ok(namesFor("łóżko").includes("BedIcon"));
+  assert.ok(namesFor("samochód").includes("CarIcon"));
+  assert.ok(namesFor("auto").includes("CarIcon"));
+  assert.ok(namesFor("kosz").includes("TrashIcon"));
+  assert.ok(namesFor("dokument").includes("FileIcon"));
+  assert.ok(namesFor("kuchnia").includes("CookingPotIcon"));
+  assert.ok(namesFor("łazienka").includes("BathtubIcon"));
+});
+
+test("Phosphor search normalization removes Polish diacritics and tokenizes canonical names", () => {
+  assert.equal(normalizeIconSearchText("  ŁÓŻKO  "), "lozko");
+  assert.deepEqual(tokenizePhosphorIconName("AirplaneInFlightIcon"), ["airplane", "in", "flight"]);
+});
+
+const plCatalog = localizePhosphorIconSearchEntries(PHOSPHOR_ICON_MANIFEST, plIconSearchLocale);
+for (const [query, iconName] of [
+  ["samolot", "AirplaneIcon"], ["krzesło", "ChairIcon"], ["krzeslo", "ChairIcon"],
+  ["fotel", "ArmchairIcon"], ["archiwum", "FileArchiveIcon"], ["segregator", "FileArchiveIcon"],
+  ["archiwum dokumentów", "FileArchiveIcon"], ["samochód", "CarIcon"], ["samochod", "CarIcon"],
+  ["auto", "CarIcon"], ["łóżko", "BedIcon"], ["lozko", "BedIcon"], ["dokument", "FileIcon"],
+  ["kuchnia", "CookingPotIcon"], ["łazienka", "BathtubIcon"], ["apteczka", "FirstAidKitIcon"],
+  ["pralka", "WashingMachineIcon"], ["AirplaneIcon", "AirplaneIcon"], ["airplane", "AirplaneIcon"],
+] as const) {
+  test(`Polish icon search: ${query} finds ${iconName}`, () => {
+    assert.ok(searchPhosphorIcons(plCatalog, query).some((entry) => entry.name === iconName));
+  });
+}
+
+test("English locale finds canonical AirplaneIcon", () => {
+  const catalog = localizePhosphorIconSearchEntries(PHOSPHOR_ICON_MANIFEST, enIconSearchLocale);
+  assert.ok(searchPhosphorIcons(catalog, "airplane").some((entry) => entry.name === "AirplaneIcon"));
+});
+
+test("unknown locale falls back to English without throwing", async () => {
+  const locale = await loadIconSearchLocale("xx");
+  assert.equal(locale.locale, "en");
+});
+
+test("AND search narrows FileArchiveIcon and rejects a missing term", () => {
+  const file = searchPhosphorIcons(plCatalog, "plik").map((entry) => entry.name);
+  const archive = searchPhosphorIcons(plCatalog, "archiwum").map((entry) => entry.name);
+  const both = searchPhosphorIcons(plCatalog, "plik   archiwum").map((entry) => entry.name);
+  assert.ok(both.includes("FileArchiveIcon"));
+  assert.ok(both.every((name) => file.includes(name)));
+  assert.ok(both.every((name) => archive.includes(name)));
+  assert.equal(searchPhosphorIcons(plCatalog, "plik nieistniejace").length, 0);
+});
+
+test("normalization covers Polish diacritics and whitespace", () => {
+  for (const [source, expected] of [["krzesło", "krzeslo"], ["łóżko", "lozko"], ["samochód", "samochod"], ["półka", "polka"], ["narzędzie", "narzedzie"], ["  ŁÓŻKO   ", "lozko"]] as const) assert.equal(normalizeIconSearchText(source), expected);
+});
+
+test("localized dictionary integrity covers themes, real tokens and aliases", () => {
+  const names = new Set<string>(PHOSPHOR_ICON_MANIFEST.map((entry) => entry.name));
+  const manifestTokens = new Set(PHOSPHOR_ICON_MANIFEST.flatMap((entry) => tokenizePhosphorIconName(entry.name)));
+  assert.equal(plIconSearchLocale.themes?.length, 21);
+  const tokenEntries = Object.entries(plIconSearchLocale.tokenAliases);
+  assert.ok(tokenEntries.length >= 84);
+  for (const theme of plIconSearchLocale.themes ?? []) assert.ok(Object.keys(theme.tokens).length >= 4, theme.id);
+  for (const [token, aliases] of tokenEntries) { assert.ok(manifestTokens.has(token), token); assert.ok(aliases.length > 0, token); assert.equal(new Set(aliases.map(normalizeIconSearchText)).size, aliases.length, token); }
+  const terms = new Set(tokenEntries.flatMap(([, aliases]) => aliases.map(normalizeIconSearchText)));
+  assert.ok(terms.size >= 140, `terms=${terms.size}`);
+  for (const [iconName, aliases] of Object.entries(plIconSearchLocale.iconAliases)) { assert.ok(names.has(iconName), iconName); assert.ok(aliases.length > 0, iconName); assert.equal(new Set(aliases.map(normalizeIconSearchText)).size, aliases.length, iconName); }
+  assert.equal(enIconSearchLocale.locale, "en");
+  assert.equal(plIconSearchLocale.locale, "pl");
+});
+
+test("empty query preserves all canonical names and canonical icon values", () => {
+  const results = searchPhosphorIcons(plCatalog, "");
+  assert.equal(results.length, 1512);
+  assert.deepEqual(results.map((entry) => entry.name), PHOSPHOR_ICON_MANIFEST.map((entry) => entry.name));
+  assert.equal(searchPhosphorIcons(plCatalog, "samolot")[0]?.name.endsWith("Icon"), true);
+  assert.equal(searchPhosphorIcons(plCatalog, "qwerty-nie-ma").length, 0);
 });
 
 test("generated content comparison ignores only line-ending representation", async () => {

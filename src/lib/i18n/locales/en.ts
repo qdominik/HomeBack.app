@@ -378,7 +378,7 @@ fields: {
         dialogTitle: "Choose an icon",
         help: "Click to change the icon.",
         noResults: "No matching icons.",
-        placeholder: "Search by name, e.g. Living room or Kitchen",
+        placeholder: "Search, e.g. chair, document, car",
         search: "Search icon",
         selected: "Currently selected icon",
         defaults: "Defaults",

@@ -4,10 +4,11 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { EntityCatalogIcon } from "@/components/icons/entity-catalog-icon";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { getEntityIconDefinition, getEntityIconFallback, normalizeEntityIconValue, searchEntityIconOptions, type EntityIconGroup } from "@/lib/icons/entity-icon-validation";
-import { paginatePhosphorIcons, searchPhosphorIcons } from "@/lib/icons/phosphor-icon-catalog";
+import { localizePhosphorIconSearchEntries, paginatePhosphorIcons, searchPhosphorIcons, type LocalizedPhosphorIconManifestEntry } from "@/lib/icons/phosphor-icon-catalog";
+import { loadIconSearchLocale } from "@/lib/icons/search-locales";
 import { activeLocale, t } from "@/lib/i18n";
 
-type CatalogEntry = { name: string; search: string; group: number };
+type CatalogEntry = LocalizedPhosphorIconManifestEntry;
 const PAGE_SIZE = 48;
 
 type EntityIconPickerProps = {
@@ -61,8 +62,11 @@ export function EntityIconPicker({ defaultValue, dialogTitle, group, helpText, l
     if (catalog) return;
     setCatalogLoading(true);
     try {
-      const registryModule = await import("@/lib/icons/phosphor-icon-registry");
-      setCatalog(registryModule.PHOSPHOR_ICON_MANIFEST);
+      const [registryModule, searchLocale] = await Promise.all([
+        import("@/lib/icons/phosphor-icon-registry"),
+        loadIconSearchLocale(locale),
+      ]);
+      setCatalog(localizePhosphorIconSearchEntries(registryModule.PHOSPHOR_ICON_MANIFEST, searchLocale));
     } catch { setCatalogError(true); } finally { setCatalogLoading(false); }
   }
   function selectIcon(iconKey: string) {
@@ -82,7 +86,7 @@ export function EntityIconPicker({ defaultValue, dialogTitle, group, helpText, l
       <div className="flex h-full min-h-0 flex-col p-4 sm:p-5">
         <div className="flex items-center justify-between gap-4"><h2 className="text-lg font-semibold" id={dialogTitleId}>{dialogTitle ?? t.modules.home.iconPicker.dialogTitle}</h2><button className="inline-flex min-h-11 items-center justify-center rounded-control px-3 text-sm font-semibold text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" onClick={closePicker} type="button">{t.modules.home.iconPicker.close}</button></div>
         <div className="mt-4 grid grid-cols-2 gap-2" role="tablist" aria-label={t.modules.home.iconPicker.dialogTitle}><button aria-pressed={mode === "defaults"} className="min-h-11 rounded-control border border-line px-2 text-sm font-semibold aria-pressed:border-primary aria-pressed:bg-primary/10" onClick={() => { setMode("defaults"); setQuery(""); setPage(1); }} type="button">{t.modules.home.iconPicker.defaults}</button><button aria-pressed={mode === "all"} className="min-h-11 rounded-control border border-line px-2 text-sm font-semibold aria-pressed:border-primary aria-pressed:bg-primary/10" onClick={showCatalog} type="button">{t.modules.home.iconPicker.allIcons}</button></div>
-        {mode === "all" ? <label className="ui-label mt-3">{t.modules.home.iconPicker.search}<input ref={searchRef} className="ui-control mt-2" onChange={(event) => { setQuery(event.currentTarget.value); setPage(1); }} placeholder="AirplaneIcon" type="search" value={query} /></label> : null}
+        {mode === "all" ? <label className="ui-label mt-3">{t.modules.home.iconPicker.search}<input ref={searchRef} className="ui-control mt-2" onChange={(event) => { setQuery(event.currentTarget.value); setPage(1); }} placeholder={t.modules.home.iconPicker.placeholder} type="search" value={query} /></label> : null}
         <div className="mt-4 min-h-0 flex-1 overflow-y-auto">
           {mode === "all" && catalogLoading ? <p aria-live="polite" className="text-sm text-muted">{t.modules.home.iconPicker.loading}</p> : null}
           {mode === "all" && catalogError ? <div className="space-y-2"><p className="text-sm text-muted" role="alert">{t.modules.home.iconPicker.noResults}</p><button className="min-h-11 rounded-control border border-line px-3 text-sm font-semibold" onClick={() => { setCatalog(null); void showCatalog(); }} type="button">{t.modules.home.iconPicker.retry}</button></div> : null}
