@@ -1,5 +1,4 @@
-import type { EntityIconKey } from "./entity-icon-definitions";
-import { isEntityIconKey } from "./entity-icon-validation";
+import { normalizeEntityIconValue } from "./entity-icon-validation";
 
 function normalize(value: string) {
   return value
@@ -12,9 +11,10 @@ function normalize(value: string) {
 export function resolveStorageLocationIconKey(
   storageKind: string | null | undefined,
   savedIconKey?: string | null,
-): EntityIconKey {
-  if (isEntityIconKey(savedIconKey)) {
-    return savedIconKey;
+): string {
+  const normalizedSaved = normalizeEntityIconValue(savedIconKey, "storage");
+  if (normalizedSaved !== "storage") {
+    return normalizedSaved;
   }
 
   const normalizedKind = normalize(storageKind ?? "");
@@ -52,9 +52,10 @@ export function resolveStorageLocationIconKey(
 
 export function resolvePositionIconKey(
   savedIconKey?: string | null,
-): EntityIconKey {
-  if (isEntityIconKey(savedIconKey)) {
-    return savedIconKey;
+): string {
+  const normalizedSaved = normalizeEntityIconValue(savedIconKey, "position");
+  if (normalizedSaved !== "position") {
+    return normalizedSaved;
   }
 
   return "position";

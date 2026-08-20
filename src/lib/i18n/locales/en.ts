@@ -381,6 +381,13 @@ fields: {
         placeholder: "Search by name, e.g. Living room or Kitchen",
         search: "Search icon",
         selected: "Currently selected icon",
+        defaults: "Defaults",
+        allIcons: "All icons",
+        loading: "Loading icons…",
+        retry: "Try again",
+        previous: "Previous",
+        next: "Next",
+        page: "Page",
       },
       positionDelete: {
         title: "Delete Storage space",

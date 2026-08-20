@@ -25,11 +25,57 @@ import {
   normalizeEntityIconKey,
   searchEntityIconOptions,
 } from "../../src/lib/icons/entity-icon-validation";
+import { PHOSPHOR_ICON_MANIFEST } from "../../src/lib/icons/phosphor-icon-registry";
+import { isAllowedStoredEntityIcon, normalizeStoredEntityIcon } from "../../src/lib/icons/phosphor-icon-server-validation";
+import { paginatePhosphorIcons, searchPhosphorIcons } from "../../src/lib/icons/phosphor-icon-catalog";
 
 test("entity icon keys are recognized and unknown values are rejected", () => {
   assert.equal(isEntityIconKey("living-room"), true);
   assert.equal(isEntityIconKey("ArmchairIcon"), false);
   assert.equal(isEntityIconKey(""), false);
+});
+
+test("generated Phosphor registry has 1512 canonical names in groups of at most 96", () => {
+  assert.equal(PHOSPHOR_ICON_MANIFEST.length, 1512);
+  assert.equal(new Set(PHOSPHOR_ICON_MANIFEST.map((entry) => entry.name)).size, 1512);
+  assert.equal(PHOSPHOR_ICON_MANIFEST.every((entry) => entry.name.endsWith("Icon")), true);
+  assert.equal(Math.max(...PHOSPHOR_ICON_MANIFEST.map((entry) => entry.group)), 15);
+  for (const group of new Set(PHOSPHOR_ICON_MANIFEST.map((entry) => entry.group))) {
+    assert.ok(PHOSPHOR_ICON_MANIFEST.filter((entry) => entry.group === group).length <= 96);
+  }
+});
+
+test("Phosphor search trims, ignores case, matches partial names, and paginates by 48", () => {
+  assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, " airplane ")[0]?.name, "AirplaneIcon");
+  assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, "AIRPLANEICON")[0]?.name, "AirplaneIcon");
+  assert.equal(searchPhosphorIcons(PHOSPHOR_ICON_MANIFEST, "zzzz-not-an-icon").length, 0);
+  assert.equal(paginatePhosphorIcons(PHOSPHOR_ICON_MANIFEST, 1).entries.length, 48);
+  assert.equal(paginatePhosphorIcons(PHOSPHOR_ICON_MANIFEST, 32).currentPage, 32);
+});
+
+test("server icon validation accepts only semantic keys or generated Phosphor names", () => {
+  assert.equal(isAllowedStoredEntityIcon("AirplaneIcon"), true);
+  assert.equal(isAllowedStoredEntityIcon("UnknownIcon"), false);
+  assert.equal(isAllowedStoredEntityIcon("living-room"), true);
+});
+
+test("all four server-action icon mappings reject malformed catalog values and preserve empty fallbacks", () => {
+  const homeActions = readFileSync("src/app/(app)/home/actions.ts", "utf8");
+  const categoryActions = readFileSync("src/app/(app)/categories/actions.ts", "utf8");
+  for (const group of ["room", "category", "storage", "position"] as const) {
+    assert.equal(isAllowedStoredEntityIcon("AirplaneIcon"), true, group);
+    assert.equal(isAllowedStoredEntityIcon(group === "room" ? "room" : group === "category" ? "other" : group === "storage" ? "storage" : "position"), true, group);
+    assert.equal(isAllowedStoredEntityIcon("Airplane"), false, group);
+    assert.equal(isAllowedStoredEntityIcon("FakeIcon"), false, group);
+    assert.equal(isAllowedStoredEntityIcon("@phosphor-icons/react/dist/csr/Airplane"), false, group);
+    assert.equal(isAllowedStoredEntityIcon("<script>alert(1)</script>"), false, group);
+    assert.equal(normalizeStoredEntityIcon("", group), group === "room" ? "room" : group === "category" ? "other" : group === "storage" ? "storage" : "position");
+  }
+  assert.match(homeActions, /normalizeStoredEntityIcon/);
+  assert.match(homeActions, /roomIconField/);
+  assert.match(homeActions, /storageLocationL2IconField/);
+  assert.match(homeActions, /storageLocationL3IconField/);
+  assert.match(categoryActions, /isAllowedStoredEntityIcon/);
 });
 
 test("empty and unknown icon keys normalize to the requested group fallback", () => {
@@ -39,6 +85,7 @@ test("empty and unknown icon keys normalize to the requested group fallback", ()
 });
 
 test("entity icon definitions have unique keys and group labels", () => {
+  assert.equal(ENTITY_ICON_DEFINITIONS.length, 45);
   const keys = new Set<string>();
   const labelsByGroup = new Set<string>();
 
@@ -195,7 +242,7 @@ test("custom category icons use other as their default and invalid fallback", ()
   assert.equal(normalizeCustomCategoryIconKey(undefined), "other");
   assert.equal(normalizeCustomCategoryIconKey(""), "other");
   assert.equal(normalizeCustomCategoryIconKey("legacy-category-icon"), "other");
-  assert.equal(normalizeCustomCategoryIconKey("TagIcon"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("TagIcon"), "TagIcon");
 });
 
 test("custom category icons keep valid category keys and reject other groups", () => {
@@ -230,8 +277,8 @@ test("extended custom category icons are searchable by labels and aliases", () =
 });
 
 test("custom category icon validation accepts only explicit registry keys", () => {
-  assert.equal(normalizeCustomCategoryIconKey("HeartIcon"), "other");
-  assert.equal(normalizeCustomCategoryIconKey("UnknownPhosphorIcon"), "other");
+  assert.equal(normalizeCustomCategoryIconKey("HeartIcon"), "HeartIcon");
+  assert.equal(normalizeCustomCategoryIconKey("UnknownPhosphorIcon"), "UnknownPhosphorIcon");
   assert.equal(normalizeCustomCategoryIconKey("living-room"), "other");
   assert.equal(normalizeCustomCategoryIconKey("other"), "other");
 });
@@ -247,13 +294,13 @@ test("custom category create and update preserve validated icon keys", () => {
   );
 
   assert.equal(
-    createSource.includes("const ikona = normalizeCustomCategoryIconKey(submittedIconKey);"),
+    createSource.includes("const ikona = isAllowedStoredEntityIcon(submittedIconKey)"),
     true,
   );
   assert.equal(createSource.includes("      ikona,"), true);
   assert.equal(
     actionSource.includes(
-      'const ikona = normalizeCustomCategoryIconKey(field(formData, "ikona"));',
+      'const ikona = isAllowedStoredEntityIcon(submittedIcon)',
     ),
     true,
   );

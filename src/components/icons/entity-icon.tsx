@@ -1,4 +1,5 @@
 import { createElement, type ComponentType } from "react";
+import { EntityCatalogIcon } from "./entity-catalog-icon";
 import { ArchiveIcon } from "@phosphor-icons/react/dist/ssr/Archive";
 import { ArmchairIcon } from "@phosphor-icons/react/dist/ssr/Armchair";
 import { BabyIcon } from "@phosphor-icons/react/dist/ssr/Baby";
@@ -43,6 +44,7 @@ import { TreeIcon } from "@phosphor-icons/react/dist/ssr/Tree";
 import { WarehouseIcon } from "@phosphor-icons/react/dist/ssr/Warehouse";
 import {
   normalizeEntityIconKey,
+  isPhosphorIconNameCandidate,
   type EntityIconGroup,
 } from "@/lib/icons/entity-icon-validation";
 import type { EntityIconKey } from "@/lib/icons/entity-icon-definitions";
@@ -128,6 +130,17 @@ export function EntityIcon({
   size = 20,
   weight = "regular",
 }: EntityIconProps) {
+  if (isPhosphorIconNameCandidate(iconKey)) {
+    return (
+      <EntityCatalogIcon
+        className={className}
+        iconName={iconKey}
+        size={size}
+        weight={weight}
+      />
+    );
+  }
+
   const Icon = getEntityIconComponent(iconKey, group);
 
   return createElement(Icon, {

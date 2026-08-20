@@ -342,6 +342,13 @@ export const pl: Dictionary = {
         placeholder: "Szukaj w ikonach",
         search: "Szukaj ikony",
         selected: "Wybrana ikona",
+        defaults: "Domyślne",
+        allIcons: "Wszystkie ikony",
+        loading: "Ładowanie ikon…",
+        retry: "Spróbuj ponownie",
+        previous: "Poprzednia",
+        next: "Następna",
+        page: "Strona",
       },
       entityActions: {
         add: "Dodaj",

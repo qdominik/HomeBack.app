@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
 import { normalizeCustomCategoryIconKey } from "@/lib/categories/custom-category-icon";
+import { isAllowedStoredEntityIcon } from "@/lib/icons/phosphor-icon-server-validation";
 import { CUSTOM_TEMPLATE_VALUE } from "@/lib/home/home-template-options";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -148,7 +149,10 @@ export async function createCustomCategory(formData: FormData) {
 export async function updateCustomCategory(formData: FormData) {
   const categoryId = field(formData, "category_id");
   const nazwa = parseCategoryName(formData);
-  const ikona = normalizeCustomCategoryIconKey(field(formData, "ikona"));
+  const submittedIcon = field(formData, "ikona");
+  const ikona = isAllowedStoredEntityIcon(submittedIcon)
+    ? submittedIcon
+    : normalizeCustomCategoryIconKey(submittedIcon);
 
   if (!categoryId || !nazwa) {
     redirectWithError("missing_fields");

@@ -11,7 +11,7 @@ import {
   type CopyActionResult,
 } from "@/lib/copy-entities/copy-contract";
 import { HOME_KIND_OTHER } from "@/lib/home/home-kind-suggestions";
-import { normalizeEntityIconKey } from "@/lib/icons/entity-icon-validation";
+import { normalizeStoredEntityIcon } from "@/lib/icons/phosphor-icon-server-validation";
 import {
   getLocationDependencySummaryRpcName,
   mapLocationDependencySummaryError,
@@ -91,15 +91,15 @@ function nullableField(formData: FormData, key: string) {
   return value ? value : null;
 }
 function roomIconField(formData: FormData) {
-  return normalizeEntityIconKey(field(formData, "ikona"), "room");
+  return normalizeStoredEntityIcon(field(formData, "ikona"), "room");
 }
 
 function storageLocationL2IconField(formData: FormData) {
-  return normalizeEntityIconKey(field(formData, "ikona"), "storage");
+  return normalizeStoredEntityIcon(field(formData, "ikona"), "storage");
 }
 
 function storageLocationL3IconField(formData: FormData) {
-  return normalizeEntityIconKey(field(formData, "ikona"), "position");
+  return normalizeStoredEntityIcon(field(formData, "ikona"), "position");
 }
 
 function redirectWithError(error: string): never {
