@@ -8,6 +8,10 @@ import {
 
 export type { EntityIconGroup, EntityIconKey };
 
+export function isPhosphorIconNameCandidate(value: unknown): value is string {
+  return typeof value === "string" && /^[A-Z][A-Za-z0-9]*Icon$/.test(value);
+}
+
 const definitionsByKey = new Map<string, EntityIconDefinition>(
   ENTITY_ICON_DEFINITIONS.map((definition) => [definition.key, definition]),
 );
@@ -47,6 +51,14 @@ export function normalizeEntityIconKey(
     return value;
   }
 
+  return getEntityIconFallback(group);
+}
+
+export function normalizeEntityIconValue(
+  value: unknown,
+  group: EntityIconGroup = "generic",
+): string {
+  if (isEntityIconKey(value) || isPhosphorIconNameCandidate(value)) return value;
   return getEntityIconFallback(group);
 }
 

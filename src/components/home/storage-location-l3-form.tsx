@@ -1,10 +1,12 @@
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
+import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
 import { Button } from "@/components/ui/button";
 import {
   getStorageSpaceTemplateOptions,
   STORAGE_SPACE_CUSTOM_TEMPLATE_VALUES,
 } from "@/lib/home/home-template-options";
 import { activeLocale, t } from "@/lib/i18n";
+import { resolvePositionIconKey } from "@/lib/icons/home-structure-icons";
 import type { StorageLocationL3 } from "./home-types";
 
 type StorageLocationL3FormProps = {
@@ -40,6 +42,12 @@ export function StorageLocationL3Form({
         label={t.modules.home.fields.positionName}
         name="nazwa"
         templateOptions={storageSpaceTemplateOptions}
+      />
+      <EntityIconPicker
+        defaultValue={resolvePositionIconKey(position?.ikona)}
+        group="position"
+        label={t.modules.home.fields.icon}
+        name="ikona"
       />
       <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
         <label className="ui-label">

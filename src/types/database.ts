@@ -407,6 +407,7 @@ export type Database = {
           room_id: string;
           nazwa: string;
           typ: string;
+          ikona: string | null;
           opis: string | null;
           kolejność: number;
           created_at: string;
@@ -417,6 +418,7 @@ export type Database = {
           room_id: string;
           nazwa: string;
           typ: string;
+          ikona?: string | null;
           opis?: string | null;
           kolejność: number;
           created_at?: string;
@@ -427,6 +429,7 @@ export type Database = {
           room_id?: string;
           nazwa?: string;
           typ?: string;
+          ikona?: string | null;
           opis?: string | null;
           kolejność?: number;
           created_at?: string;
@@ -439,6 +442,7 @@ export type Database = {
           id: string;
           storage_location_l2_id: string;
           nazwa: string;
+          ikona: string | null;
           opis: string | null;
           kod_lokalizacji: string;
           identyfikator_qr: string | null;
@@ -451,6 +455,7 @@ export type Database = {
           id?: string;
           storage_location_l2_id: string;
           nazwa: string;
+          ikona?: string | null;
           opis?: string | null;
           kod_lokalizacji: string;
           identyfikator_qr?: string | null;
@@ -463,6 +468,7 @@ export type Database = {
           id?: string;
           storage_location_l2_id?: string;
           nazwa?: string;
+          ikona?: string | null;
           opis?: string | null;
           kod_lokalizacji?: string;
           identyfikator_qr?: string | null;

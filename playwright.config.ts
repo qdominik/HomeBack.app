@@ -2,11 +2,13 @@ import { defineConfig, devices } from "@playwright/test";
 
 const port = process.env.E2E_PORT ?? "3001";
 const baseURL = `http://127.0.0.1:${port}`;
+const productionBundle = process.env.E2E_PRODUCTION_BUNDLE === "1";
 
 export default defineConfig({
   testDir: "./tests/e2e",
   testMatch: [
     "auth-regression.spec.ts",
+    "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
   ],
   fullyParallel: false,
@@ -25,7 +27,9 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   webServer: {
-    command: `npm.cmd run dev -- --hostname 127.0.0.1 --port ${port}`,
+    command: productionBundle
+      ? `npm.cmd run start -- --hostname 127.0.0.1 --port ${port}`
+      : `npm.cmd run dev -- --hostname 127.0.0.1 --port ${port}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

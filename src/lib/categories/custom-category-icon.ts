@@ -1,14 +1,17 @@
 import {
   getEntityIconDefinition,
   getEntityIconFallback,
+  isPhosphorIconNameCandidate,
   type EntityIconKey,
 } from "../icons/entity-icon-validation";
 
 export function normalizeCustomCategoryIconKey(
   value: unknown,
-): EntityIconKey {
+): EntityIconKey | string {
+  const trimmed = typeof value === "string" ? value.trim() : null;
+  if (isPhosphorIconNameCandidate(trimmed)) return trimmed;
   const definition = getEntityIconDefinition(
-    typeof value === "string" ? value.trim() : null,
+    trimmed,
   );
 
   if (definition?.group === "category" || definition?.group === "generic") {

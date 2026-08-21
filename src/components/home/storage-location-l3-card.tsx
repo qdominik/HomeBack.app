@@ -45,7 +45,7 @@ export function StorageLocationL3Card({
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/10 text-primary">
               <EntityIcon
                 group="position"
-                iconKey={resolvePositionIconKey()}
+                iconKey={resolvePositionIconKey(position.ikona)}
                 size={20}
               />
             </span>

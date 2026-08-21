@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 import { normalizeCustomCategoryIconKey } from "./custom-category-icon";
+import { isAllowedStoredEntityIcon } from "../icons/phosphor-icon-server-validation";
 import { findMatchingCategory } from "./category-selection";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
@@ -76,7 +77,9 @@ export async function createCustomCategoryForActiveAdmin(
   submittedIconKey?: unknown,
 ): Promise<CreateCustomCategoryResult> {
   const nazwa = submittedName.trim();
-  const ikona = normalizeCustomCategoryIconKey(submittedIconKey);
+  const ikona = isAllowedStoredEntityIcon(submittedIconKey)
+    ? submittedIconKey
+    : normalizeCustomCategoryIconKey(submittedIconKey);
 
   if (!nazwa) {
     return { status: "missing_fields" };
