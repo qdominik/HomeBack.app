@@ -2,7 +2,7 @@ import { inferHomeKind } from "../home/infer-home-kind";
 import { normalizeTemplateValue } from "../templates/normalize-template-value";
 import {
   getEntityIconFallback,
-  normalizeEntityIconKey,
+  normalizeEntityIconValue,
   type EntityIconKey,
 } from "./entity-icon-validation";
 
@@ -50,9 +50,9 @@ export function resolveRoomIconKey({
   kind?: string | null;
   name: string;
   selectionMode: RoomIconSelectionMode;
-}): EntityIconKey {
+}): string {
   if (selectionMode === "manual") {
-    return normalizeEntityIconKey(currentIconKey, "room");
+    return normalizeEntityIconValue(currentIconKey, "room");
   }
 
   return inferRoomIconKey(name, kind);

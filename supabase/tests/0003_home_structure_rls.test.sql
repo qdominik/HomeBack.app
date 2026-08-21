@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = extensions, public, auth;
 
-select plan(23);
+select plan(27);
 
 insert into auth.users (
   instance_id,
@@ -284,12 +284,14 @@ select lives_ok(
       room_id,
       nazwa,
       typ,
+      ikona,
       "kolejność"
     )
     values (
       '22000000-0000-0000-0000-000000000001',
       'Lozko goscinne',
       'Łóżko rozkładane',
+      'bedroom',
       2
     )
   $$,
@@ -298,16 +300,56 @@ select lives_ok(
 
 select lives_ok(
   $$
+    update public.storage_location_l2
+    set ikona = 'dresser'
+    where id = '23000000-0000-0000-0000-000000000001'
+  $$,
+  'admin can update an icon on own L2 location'
+);
+
+select is(
+  (
+    select ikona
+    from public.storage_location_l2
+    where id = '23000000-0000-0000-0000-000000000001'
+  ),
+  'dresser',
+  'admin reads own saved L2 icon'
+);
+
+select lives_ok(
+  $$
+    update public.storage_location_l3
+    set ikona = 'drawer'
+    where id = '24000000-0000-0000-0000-000000000001'
+  $$,
+  'admin can update an icon on own L3 location'
+);
+
+select is(
+  (
+    select ikona
+    from public.storage_location_l3
+    where id = '24000000-0000-0000-0000-000000000001'
+  ),
+  'drawer',
+  'admin reads own saved L3 icon'
+);
+
+select lives_ok(
+  $$
     insert into public.storage_location_l2 (
       room_id,
       nazwa,
       typ,
+      ikona,
       "kolejność"
     )
     values (
       '22000000-0000-0000-0000-000000000001',
       'Polka narozna',
       'Półka narożna',
+      'shelf',
       3
     )
   $$,
@@ -356,12 +398,14 @@ select lives_ok(
       room_id,
       nazwa,
       typ,
+      ikona,
       "kolejność"
     )
     values (
       '22000000-0000-0000-0000-000000000001',
       'Komandor tarkin',
       'Komandor tarkin',
+      'storage',
       4
     )
   $$,
@@ -374,12 +418,14 @@ select lives_ok(
       room_id,
       nazwa,
       typ,
+      ikona,
       "kolejność"
     )
     values (
       '22000000-0000-0000-0000-000000000001',
       'Szafka narozna w kuchni',
       'Szafka narożna',
+      'wardrobe',
       5
     )
   $$,
@@ -412,12 +458,14 @@ select throws_ok(
       room_id,
       nazwa,
       typ,
+      ikona,
       "kolejność"
     )
     values (
       '22000000-0000-0000-0000-000000000002',
       'Obca szafa',
       'Szafa',
+      'wardrobe',
       1
     )
   $$,
@@ -432,12 +480,14 @@ select throws_ok(
       storage_location_l2_id,
       nazwa,
       kod_lokalizacji,
+      ikona,
       "kolejność"
     )
     values (
       '23000000-0000-0000-0000-000000000002',
       'Obca polka',
       'KUC-SZA-OBC1',
+      'shelf',
       1
     )
   $$,

@@ -8,7 +8,7 @@ import { ROOM_TEMPLATE_OPTIONS } from "@/lib/home/home-template-options";
 import { inferHomeKind } from "@/lib/home/infer-home-kind";
 import {
   getDefaultRoomIconKey,
-  normalizeEntityIconKey,
+  normalizeEntityIconValue,
 } from "@/lib/icons/entity-icon-validation";
 import { resolveRoomIconKey } from "@/lib/icons/room-icon-suggestion";
 import { t } from "@/lib/i18n";
@@ -27,7 +27,7 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
   const [roomName, setRoomName] = useState(room?.nazwa ?? "");
   const [iconKey, setIconKey] = useState(() =>
     room
-      ? normalizeEntityIconKey(room.ikona, "room")
+      ? normalizeEntityIconValue(room.ikona, "room")
       : getDefaultRoomIconKey(),
   );
   const [iconSelectionMode, setIconSelectionMode] = useState<

@@ -373,6 +373,13 @@ export type Dictionary = {
         placeholder: string;
         search: string;
         selected: string;
+        defaults: string;
+        allIcons: string;
+        loading: string;
+        retry: string;
+        previous: string;
+        next: string;
+        page: string;
       };
       positionDelete: {
         title: string;

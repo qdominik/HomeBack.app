@@ -11,7 +11,7 @@ import {
   type CopyActionResult,
 } from "@/lib/copy-entities/copy-contract";
 import { HOME_KIND_OTHER } from "@/lib/home/home-kind-suggestions";
-import { normalizeEntityIconKey } from "@/lib/icons/entity-icon-validation";
+import { normalizeStoredEntityIcon } from "@/lib/icons/phosphor-icon-server-validation";
 import {
   getLocationDependencySummaryRpcName,
   mapLocationDependencySummaryError,
@@ -91,7 +91,15 @@ function nullableField(formData: FormData, key: string) {
   return value ? value : null;
 }
 function roomIconField(formData: FormData) {
-  return normalizeEntityIconKey(field(formData, "ikona"), "room");
+  return normalizeStoredEntityIcon(field(formData, "ikona"), "room");
+}
+
+function storageLocationL2IconField(formData: FormData) {
+  return normalizeStoredEntityIcon(field(formData, "ikona"), "storage");
+}
+
+function storageLocationL3IconField(formData: FormData) {
+  return normalizeStoredEntityIcon(field(formData, "ikona"), "position");
 }
 
 function redirectWithError(error: string): never {
@@ -739,6 +747,7 @@ export async function createStorageLocationL2(formData: FormData) {
 
   const { error } = await supabase.from("storage_location_l2").insert({
     [orderColumn]: order,
+    ikona: storageLocationL2IconField(formData),
     nazwa,
     opis: nullableField(formData, "opis"),
     room_id: roomId,
@@ -789,6 +798,7 @@ export async function updateStorageLocationL2(formData: FormData) {
 
   const payload: Database["public"]["Tables"]["storage_location_l2"]["Update"] =
     {
+      ikona: storageLocationL2IconField(formData),
       nazwa,
       opis: nullableField(formData, "opis"),
       typ,
@@ -1057,6 +1067,7 @@ export async function createStorageLocationL3(formData: FormData) {
 
   const { error } = await supabase.from("storage_location_l3").insert({
     [orderColumn]: order,
+    ikona: storageLocationL3IconField(formData),
     kod_lokalizacji,
     nazwa,
     opis: nullableField(formData, "opis"),
@@ -1105,6 +1116,7 @@ export async function updateStorageLocationL3(formData: FormData) {
   const submittedCode = field(formData, "kod_lokalizacji");
   const payload: Database["public"]["Tables"]["storage_location_l3"]["Update"] =
     {
+      ikona: storageLocationL3IconField(formData),
       kod_lokalizacji:
         submittedCode ||
         generateLocationCode({
