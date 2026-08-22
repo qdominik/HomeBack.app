@@ -12,7 +12,7 @@ The current MVP focuses on seven modules:
 | --- | --- |
 | Inventory | Catalog household items with category, quantity, expiration date, owner, photo, and location. |
 | Home Structure | Model the home as rooms, furniture or storage areas, and precise storage spaces. |
-| Family | Manage household members, roles, invitations, and access boundaries. |
+| Users | Manage household members, roles, invitations, and access boundaries. |
 | Dashboard | Provide a fast overview of important household information after sign-in. |
 | Documents | Store household knowledge, manuals, procedures, and practical notes. |
 | Categories | Organize items and documents using system and custom categories. |
@@ -123,9 +123,14 @@ SUPABASE_SERVICE_ROLE_KEY=
 ITEM_PHOTO_AI_PROVIDER=
 ITEM_PHOTO_AI_MODEL=
 GROQ_API_KEY=
+HOMEBACK_DEV_ORIGIN=
+E2E_PASSWORD=
 ```
 
 Use `.env.local` for local development. Do not commit environment files.
+Set `HOMEBACK_DEV_ORIGIN` only when testing from a local LAN address, for
+example `http://192.168.0.205:3000`. `E2E_PASSWORD` is required by local
+end-to-end tests.
 
 ## Supabase Development
 
@@ -138,6 +143,10 @@ npx supabase --version
 npx supabase start
 npx supabase stop
 ```
+
+Agent safety note: `supabase start`, `supabase stop`, Docker start/stop, and
+Docker Desktop restarts are manual owner operations. Agents must ask the owner
+to run them instead of executing them independently.
 
 Migration rules:
 
