@@ -17,6 +17,13 @@ import {
   validateItemPhotoFile,
 } from "../../src/lib/items/item-photo-storage";
 import {
+  ITEM_PHOTO_COMPRESSION_ATTEMPTS,
+  ITEM_PHOTO_UPLOAD_MAX_BYTES,
+  ITEM_PHOTO_UPLOAD_TARGET_BYTES,
+  prepareItemPhotoForUpload,
+  type ItemPhotoCompressionRuntime,
+} from "../../src/lib/items/item-photo/compress-image";
+import {
   analyzeItemPhoto,
   buildItemPhotoAnalysisPrompt,
   createGroqItemPhotoAiProvider,
@@ -118,6 +125,171 @@ test("item photo validation rejects unsupported MIME types and oversized files",
   });
 });
 
+test("item photo preparation leaves safe JPEG/WebP files unchanged", async () => {
+  let runtimeCalled = false;
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      runtimeCalled = true;
+      return { width: 1600, height: 1200 };
+    },
+    async createBlob() {
+      runtimeCalled = true;
+      return null;
+    },
+  };
+
+  for (const mimeType of ["image/jpeg", "image/webp"] as const) {
+    const file = new File(
+      [new Uint8Array(ITEM_PHOTO_UPLOAD_MAX_BYTES)],
+      `safe.${mimeType === "image/jpeg" ? "jpg" : "webp"}`,
+      { type: mimeType },
+    );
+    const result = await prepareItemPhotoForUpload(file, runtime);
+
+    assert.equal(result.ok, true);
+    if (result.ok) {
+      assert.equal(result.file, file);
+      assert.equal(result.wasCompressed, false);
+    }
+  }
+
+  assert.equal(runtimeCalled, false);
+});
+
+test("item photo preparation compresses files above 1 MiB before upload", async () => {
+  const source = new File(
+    [new Uint8Array(1200 * 1024)],
+    "camera.jpg",
+    { type: "image/jpeg" },
+  );
+  const attempts: Array<{ width: number; height: number; quality: number }> = [];
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return { width: 4000, height: 3000 };
+    },
+    async createBlob(input) {
+      attempts.push({
+        height: input.height,
+        quality: input.quality,
+        width: input.width,
+      });
+      return new Blob([new Uint8Array(740 * 1024)], { type: input.mimeType });
+    },
+  };
+
+  const result = await prepareItemPhotoForUpload(source, runtime);
+
+  assert.equal(result.ok, true);
+  assert.equal(attempts.length, 1);
+  assert.equal(attempts[0]?.quality, ITEM_PHOTO_COMPRESSION_ATTEMPTS[0].quality);
+  if (result.ok) {
+    assert.equal(result.wasCompressed, true);
+    assert.equal(result.file.size <= ITEM_PHOTO_UPLOAD_MAX_BYTES, true);
+    assert.equal(result.file.size <= ITEM_PHOTO_UPLOAD_TARGET_BYTES, true);
+  }
+});
+
+test("item photo preparation closes decoded image resources after compression", async () => {
+  const source = new File(
+    [new Uint8Array(1200 * 1024)],
+    "camera.webp",
+    { type: "image/webp" },
+  );
+  let closeCalls = 0;
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return {
+        close: () => {
+          closeCalls += 1;
+        },
+        height: 3000,
+        width: 4000,
+      };
+    },
+    async createBlob({ mimeType }) {
+      return new Blob([new Uint8Array(740 * 1024)], { type: mimeType });
+    },
+  };
+
+  const result = await prepareItemPhotoForUpload(source, runtime);
+
+  assert.equal(result.ok, true);
+  assert.equal(closeCalls, 1);
+});
+
+test("item photo preparation reduces dimensions and quality across deterministic attempts", async () => {
+  const source = new File(
+    [new Uint8Array(2 * 1024 * 1024 + 1)],
+    "large.webp",
+    { type: "image/webp" },
+  );
+  const attempts: Array<{ width: number; height: number; quality: number }> = [];
+  const runtime: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return { width: 3200, height: 2400 };
+    },
+    async createBlob(input) {
+      attempts.push({
+        height: input.height,
+        quality: input.quality,
+        width: input.width,
+      });
+      if (attempts.length < 3) {
+        return new Blob([new Uint8Array(801 * 1024)], { type: input.mimeType });
+      }
+      return new Blob([new Uint8Array(749 * 1024)], { type: input.mimeType });
+    },
+  };
+
+  const result = await prepareItemPhotoForUpload(source, runtime);
+
+  assert.equal(result.ok, true);
+  assert.equal(attempts.length, 3);
+  assert.ok((attempts[1]?.width ?? 0) < (attempts[0]?.width ?? 0));
+  assert.ok((attempts[2]?.width ?? 0) < (attempts[1]?.width ?? 0));
+  assert.ok((attempts[1]?.quality ?? 1) < (attempts[0]?.quality ?? 0));
+  assert.ok((attempts[2]?.quality ?? 1) < (attempts[1]?.quality ?? 0));
+});
+
+test("item photo preparation returns controlled errors for bad MIME, decode and oversized output", async () => {
+  const unsupported = new File(["png"], "photo.png", { type: "image/png" });
+  assert.deepEqual(await prepareItemPhotoForUpload(unsupported), {
+    ok: false,
+    code: "unsupported_file_type",
+  });
+
+  const source = new File(
+    [new Uint8Array(1200 * 1024)],
+    "broken.jpg",
+    { type: "image/jpeg" },
+  );
+  const decodeFailure: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      throw new Error("decode failed");
+    },
+    async createBlob() {
+      return null;
+    },
+  };
+  const outputFailure: ItemPhotoCompressionRuntime = {
+    async createBitmap() {
+      return { width: 1600, height: 1200 };
+    },
+    async createBlob() {
+      return new Blob([new Uint8Array(801 * 1024)], { type: "image/jpeg" });
+    },
+  };
+
+  assert.deepEqual(await prepareItemPhotoForUpload(source, decodeFailure), {
+    ok: false,
+    code: "compression_failed",
+  });
+  assert.deepEqual(await prepareItemPhotoForUpload(source, outputFailure), {
+    ok: false,
+    code: "file_too_large_after_compression",
+  });
+});
+
 test("item photo draft path sanitizes filename and includes household and draft ids", () => {
   const householdId = "25000000-0000-4000-8000-000000000001";
   const draftId = "35000000-0000-4000-8000-000000000001";
@@ -208,8 +380,12 @@ test("item photo draft actions do not accept household id from the client", () =
 
 test("item form submits only draft metadata and does not expose persistent photo fields", () => {
   const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const uploadStart = form.indexOf("function uploadSelectedPhoto");
+  const analysisStart = form.indexOf("function applyPhotoSuggestions");
+  const uploadSelectedPhoto = form.slice(uploadStart, analysisStart);
 
   assert.match(form, /uploadItemPhotoDraft/);
+  assert.match(form, /prepareItemPhotoForUpload/);
   assert.match(form, /cleanupItemPhotoDraft/);
   assert.match(form, /type="file"/);
   assert.match(form, /accept="image\/jpeg,image\/webp"/);
@@ -221,6 +397,39 @@ test("item form submits only draft metadata and does not expose persistent photo
   assert.doesNotMatch(form, /name="miniatura_url"/);
   assert.doesNotMatch(form, /name="file"/);
   assert.doesNotMatch(form, /name="storagePath"/);
+  assert.match(form, /preparing/);
+  assert.match(form, /compression_failed/);
+  assert.match(form, /file_too_large_after_compression/);
+  assert.match(uploadSelectedPhoto, /prepareItemPhotoForUpload\(selectedFile\)/);
+  assert.match(uploadSelectedPhoto, /formData\.set\("photo", preparedPhoto\.file\)/);
+  assert.doesNotMatch(uploadSelectedPhoto, /formData\.set\("photo", selectedFile\)/);
+  assert.ok(uploadSelectedPhoto.indexOf("prepareItemPhotoForUpload") < uploadSelectedPhoto.indexOf("uploadItemPhotoDraft"));
+  assert.match(uploadSelectedPhoto, /setPhotoFeedback\(t\.modules\.items\.photo\.preparing\)/);
+});
+
+test("item photo preparation failure keeps form state local and avoids redirect or server action", () => {
+  const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const uploadStart = form.indexOf("function uploadSelectedPhoto");
+  const analysisStart = form.indexOf("function applyPhotoSuggestions");
+  const uploadSelectedPhoto = form.slice(uploadStart, analysisStart);
+
+  assert.match(uploadSelectedPhoto, /if \(!preparedPhoto\.ok\)/);
+  assert.match(uploadSelectedPhoto, /setPhotoFeedback\(/);
+  assert.match(uploadSelectedPhoto, /clearPhotoInput\(\)/);
+  assert.doesNotMatch(uploadSelectedPhoto, /redirect\(/);
+  assert.doesNotMatch(uploadSelectedPhoto, /revalidatePath/);
+  assert.match(uploadSelectedPhoto, /if \(!preparedPhoto\.ok\) \{[\s\S]*?return;/);
+});
+
+test("item photo upload maps Storage failures to a controlled result", () => {
+  const actions = readFileSync("src/app/(app)/items/actions.ts", "utf8");
+  const uploadStart = actions.indexOf("export async function uploadItemPhotoDraft");
+  const uploadEnd = actions.indexOf("export async function createItem", uploadStart);
+  const uploadAction = actions.slice(uploadStart, uploadEnd);
+
+  assert.match(uploadAction, /if \(uploadError\)/);
+  assert.match(uploadAction, /code: "upload_failed"/);
+  assert.match(uploadAction, /previewError/);
 });
 
 test("item photo draft changes invalidate old analysis state and requests", () => {

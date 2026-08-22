@@ -24,6 +24,10 @@ import {
   showsItemQuantity,
 } from "@/lib/items/item-form-values";
 import {
+  prepareItemPhotoForUpload,
+  type ItemPhotoPreparationError,
+} from "@/lib/items/item-photo/compress-image";
+import {
   getItemLocationFieldKey,
   getItemLocationFieldProps,
   type ItemCategoryOption,
@@ -75,6 +79,7 @@ type ItemPhotoPersistedState = {
 
 type ItemPhotoDraftError =
   | Exclude<ItemPhotoDraftUploadResult, { ok: true }>["code"]
+  | ItemPhotoPreparationError
   | "cleanup_failed";
 
 type ItemPhotoAnalysisError = Exclude<
@@ -84,8 +89,11 @@ type ItemPhotoAnalysisError = Exclude<
 
 const photoErrorMessages: Record<ItemPhotoDraftError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
+  compression_failed: t.modules.items.photo.errors.compressionFailed,
   cleanup_failed: t.modules.items.photo.errors.cleanupFailed,
   file_too_large: t.modules.items.photo.errors.fileTooLarge,
+  file_too_large_after_compression:
+    t.modules.items.photo.errors.fileTooLargeAfterCompression,
   missing_file: t.modules.items.photo.errors.missingFile,
   preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
   unsupported_file_type: t.modules.items.photo.errors.unsupportedFileType,
@@ -311,6 +319,7 @@ export function ItemForm({
     photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
     setPhotoDraft(null);
+    setPhotoFeedback(t.modules.items.photo.preparing);
 
     startPhotoTransition(async () => {
       if (previousDraft) {
@@ -321,8 +330,24 @@ export function ItemForm({
         return;
       }
 
+      const preparedPhoto = await prepareItemPhotoForUpload(selectedFile);
+
+      if (mutationRunId !== photoMutationRunIdRef.current) {
+        return;
+      }
+
+      if (!preparedPhoto.ok) {
+        setPhotoFeedback(
+          photoErrorMessages[preparedPhoto.code] ??
+            t.modules.items.photo.errors.unknown,
+        );
+        clearPhotoInput();
+        return;
+      }
+
+      setPhotoFeedback(t.modules.items.photo.uploading);
       const formData = new FormData();
-      formData.set("photo", selectedFile);
+      formData.set("photo", preparedPhoto.file);
 
       const result = await uploadItemPhotoDraft(formData);
 
@@ -340,7 +365,7 @@ export function ItemForm({
 
       setPhotoDraft({
         draftId: result.draftId,
-        filename: selectedFile.name,
+        filename: preparedPhoto.file.name,
         mimeType: result.file.mimeType,
         previewUrl: result.previewUrl,
         sizeBytes: result.file.sizeBytes,
