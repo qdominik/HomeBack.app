@@ -1,19 +1,13 @@
 import Link from "next/link";
-import { EmptyState } from "@/components/empty-state";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
-import { SectionHeader } from "@/components/ui/section-header";
 import { buttonClassName } from "@/components/ui/button";
 import { getAppContext } from "@/lib/app-context";
 import { t } from "@/lib/i18n";
+import { activeLocale } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
-
-const dashboardSections = [
-  t.dashboard.recentItems,
-  t.dashboard.expiringItems,
-  t.dashboard.categoryCount,
-  t.dashboard.activity,
-];
+import { dashboardModuleDefinitions } from "@/lib/dashboard/module-registry";
 
 export default async function DashboardPage() {
   const { profile } = await getAppContext();
@@ -34,12 +28,13 @@ export default async function DashboardPage() {
       />
 
       <section aria-label={t.dashboard.title} className="grid gap-5 md:grid-cols-2">
-        {dashboardSections.map((section) => (
-          <Card as="section" className="p-5 sm:p-6" key={section}>
-            <SectionHeader>{section}</SectionHeader>
-            <div className="mt-5">
-              <EmptyState text={t.dashboard.empty} />
+        {dashboardModuleDefinitions.filter((module) => module.defaultVisible).map((module) => (
+          <Card as="section" className="p-5 sm:p-6" key={module.key}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-base font-semibold text-foreground">{module.title[activeLocale]}</h2>
+              {module.status === "soon" ? <Badge tone="warning">{t.status.soon}</Badge> : null}
             </div>
+            <p className="mt-5 text-sm leading-6 text-muted">{module.description?.[activeLocale]}</p>
           </Card>
         ))}
       </section>
