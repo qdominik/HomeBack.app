@@ -54,8 +54,8 @@ Owner-provided Supabase Preview details:
 | Field | Value |
 | --- | --- |
 | Project name | `homeback-preview` |
-| Project ref / Project ID | `yzewupqxkefyvljnfolk` |
-| Supabase URL | `https://yzewupqxkefyvljnfolk.supabase.co` |
+| Project ref / Project ID | `<SUPABASE_PREVIEW_PROJECT_REF>` |
+| Supabase URL | `https://<SUPABASE_PREVIEW_PROJECT_REF>.supabase.co` |
 | Region | `eu-west-3` |
 | Region description | West EU (Paris) |
 | Owner | `qdominik@gmail.com` |
@@ -76,8 +76,8 @@ Expected Vercel Preview runtime configuration:
 | Variable | Expected value / status |
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://yzewupqxkefyvljnfolk.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | preview publishable/anon key for project `yzewupqxkefyvljnfolk`; value must not be written to docs or repo |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://<SUPABASE_PREVIEW_PROJECT_REF>.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | preview publishable/anon key for project `<SUPABASE_PREVIEW_PROJECT_REF>`; value must not be written to docs or repo |
 | Vercel panel verification | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
 
 Rules:
@@ -115,7 +115,7 @@ The owner manual smoke proves the Auth flow worked at the stable checkpoint. It 
 
 Known:
 
-- Preview uses Supabase project `homeback-preview` / `yzewupqxkefyvljnfolk`.
+- Preview uses Supabase project `homeback-preview` / `<SUPABASE_PREVIEW_PROJECT_REF>`.
 - Environment role is Preview / testing.
 - Preview must not contain production user data.
 
@@ -190,7 +190,7 @@ Owner manual Auth smoke record:
 | branch | `preview/supabase-hosted-preview` |
 | checkpoint commit | `4084d06 fix: accept anon key in Supabase config` |
 | checkpoint tag | `preview-supabase-hosted-auth-stable` |
-| Supabase project/ref | `homeback-preview` / `yzewupqxkefyvljnfolk` |
+| Supabase project/ref | `homeback-preview` / `<SUPABASE_PREVIEW_PROJECT_REF>` |
 
 Pending smoke:
 
@@ -210,7 +210,7 @@ Preview full-smoke attempt (2026-08-02):
 | Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
 | Branch | `preview/supabase-hosted-preview` |
 | HEAD at test start | `c11b30d docs: document preview deployment contract` |
-| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Supabase ref | `<SUPABASE_PREVIEW_PROJECT_REF>` |
 | Tester | `Codex assisted` |
 | Scope | `/home`, `/items`, `/categories` |
 | `/home` | `PENDING` / `[WYMAGA POTWIERDZENIA]` |
@@ -229,7 +229,7 @@ Owner smoke after `ab4249d fix: render copy dialogs as modals` (2026-08-02):
 | Tester | owner manual |
 | Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app` |
 | Branch / commit | `preview/supabase-hosted-preview` / `ab4249d` |
-| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Supabase ref | `<SUPABASE_PREVIEW_PROJECT_REF>` |
 | Auth/session | PASS |
 | `/home` | PARTIAL |
 | `/items` | PARTIAL |
@@ -248,7 +248,7 @@ Preview copy recovery (2026-08-02):
 | Field | Value |
 | --- | --- |
 | Branch / HEAD | `preview/supabase-hosted-preview` / `ab4249d` |
-| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Supabase ref | `<SUPABASE_PREVIEW_PROJECT_REF>` |
 | Migration `0016_m4c1_copy_entities_v2.sql` before recovery | Missing from Preview migration history |
 | Migration action | Applied only `0016_m4c1_copy_entities_v2.sql` to Preview with `supabase db push --linked`; no reset |
 | `copy_room_with_structure` | Present; `authenticated` has `EXECUTE`; `SECURITY INVOKER`; empty `search_path` |
@@ -268,7 +268,7 @@ Owner smoke after Preview copy recovery (2026-08-02):
 | --- | --- |
 | Tester | owner manual |
 | Branch / HEAD | `preview/supabase-hosted-preview` / `59fe8bf docs: record preview copy smoke recovery` |
-| Supabase ref | `yzewupqxkefyvljnfolk` |
+| Supabase ref | `<SUPABASE_PREVIEW_PROJECT_REF>` |
 | Modal/layout | PASS |
 | Auth/session | PASS |
 | Room copy | PASS |
@@ -288,7 +288,7 @@ Performance measurement checkpoint (2026-08-02):
 | Branch / local and deployed HEAD | `preview/supabase-hosted-preview` / `3a5dd237` |
 | Vercel deployment | `READY`; SSR region `iad1`; build region `sfo1` |
 | Preview URL | `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app/` |
-| Supabase ref / region | `yzewupqxkefyvljnfolk` / `eu-west-3 (Paris)` |
+| Supabase ref / region | `<SUPABASE_PREVIEW_PROJECT_REF>` / `eu-west-3 (Paris)` |
 | Patch 2 deployed | Yes; `perf: parallelize SSR page data loading` |
 | Unauthenticated HTTP timing | First request approximately `265–317 ms`; repeated requests approximately `121–142 ms` |
 | Routes measured | `/dashboard`, `/home`, `/items`, `/categories`; all returned `302` without a session |
