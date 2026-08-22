@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/brand-logo";
+import { StatusBadge } from "@/components/status-badge";
 import { buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
@@ -98,9 +99,7 @@ export function AppShell({
                     type="button"
                   >
                     <span>{item.label}</span>
-                    <span className="rounded-control bg-warning/15 px-1.5 py-0.5 text-[11px] font-bold text-foreground">
-                      {t.status.soon}
-                    </span>
+                    <StatusBadge status="soon" />
                   </button>
                 ) : (
                 <Link

@@ -706,6 +706,9 @@ fields: {
       household: "Gospodarstwo",
       account: "Konto",
       export: "Eksport",
+      dashboardPersonalization: "Personalizacja Dashboardu",
+      dashboardPersonalizationDescription:
+        "Wybór widocznych modułów pojawi się tutaj w kolejnej fazie. Preferencje nie są jeszcze zapisywane.",
       testData: "Dane testowe",
       testDataTabs: {
         qaSmoke: "QA smoke",
