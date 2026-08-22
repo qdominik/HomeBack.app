@@ -7,16 +7,17 @@ import { BrandLogo } from "@/components/brand-logo";
 import { buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
+import { appModuleDefinitions, type AppModuleKey } from "@/lib/modules/module-registry";
 import type { Database } from "@/types/database";
 
 const navigation = [
-  { href: routes.dashboard, label: t.navigation.dashboard },
-  { href: routes.items, label: t.navigation.items },
-  { href: routes.home, label: t.navigation.home },
-  { href: routes.family, label: t.navigation.family },
-  { href: routes.documents, label: t.navigation.documents },
-  { href: routes.categories, label: t.navigation.categories },
-  { href: routes.settings, label: t.navigation.settings },
+  { key: "dashboard", href: routes.dashboard, label: t.navigation.dashboard },
+  { key: "items", href: routes.items, label: t.navigation.items },
+  { key: "home", href: routes.home, label: t.navigation.home },
+  { key: "family", href: routes.family, label: t.navigation.family },
+  { key: "documents", href: routes.documents, label: t.navigation.documents },
+  { key: "categories", href: routes.categories, label: t.navigation.categories },
+  { key: "settings", href: routes.settings, label: t.navigation.settings },
 ];
 
 const roleLabels: Record<
@@ -85,8 +86,23 @@ export function AppShell({
           >
             {navigation.map((item) => {
               const isActive = pathname === item.href;
+              const isSoon = appModuleDefinitions[item.key as AppModuleKey].status === "soon";
 
               return (
+                isSoon ? (
+                  <button
+                    aria-disabled="true"
+                    className="inline-flex min-h-11 shrink-0 cursor-not-allowed items-center gap-2 rounded-control border border-transparent px-3 py-2 text-sm font-semibold text-muted opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    key={item.href}
+                    title={t.status.soonDescription}
+                    type="button"
+                  >
+                    <span>{item.label}</span>
+                    <span className="rounded-control bg-warning/15 px-1.5 py-0.5 text-[11px] font-bold text-foreground">
+                      {t.status.soon}
+                    </span>
+                  </button>
+                ) : (
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={`relative inline-flex min-h-11 shrink-0 items-center rounded-control border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none ${
@@ -97,8 +113,9 @@ export function AppShell({
                   href={item.href}
                   key={item.href}
                 >
-                  <span>{item.label}</span>
-                </Link>
+                    <span>{item.label}</span>
+                  </Link>
+                )
               );
             })}
           </nav>
