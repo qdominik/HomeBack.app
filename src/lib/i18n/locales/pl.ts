@@ -10,10 +10,14 @@ export const pl: Dictionary = {
     dashboard: "Dashboard",
     items: "Rzeczy",
     home: "Pomieszczenia",
-    family: "Rodzina",
+    family: "Osoby",
     documents: "Dokumenty",
     categories: "Kategorie",
     settings: "Ustawienia",
+  },
+  status: {
+    soon: "Wkrótce",
+    soonDescription: "Ten moduł nie jest jeszcze aktywny.",
   },
   auth: {
     loginTitle: "Logowanie",
@@ -607,15 +611,17 @@ fields: {
       },
     },
     family: {
-      title: "Rodzina",
+      title: "Osoby",
       members: "Członkowie",
       invite: "Zaproś",
       empty: "Brak członków do wyświetlenia",
+      soonDescription: "Zarządzanie osobami i rolami będzie dostępne wkrótce.",
     },
     documents: {
       title: "Dokumenty",
       upload: "Dodaj dokument",
       empty: "Brak dokumentów",
+      soonDescription: "Baza dokumentów i wiedzy będzie dostępna wkrótce.",
     },
     categories: {
       title: "Kategorie",

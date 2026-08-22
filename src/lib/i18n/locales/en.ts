@@ -10,10 +10,14 @@ export const en: Dictionary = {
     dashboard: "Dashboard",
     items: "Items",
     home: "Rooms",
-    family: "Family",
+    family: "Users",
     documents: "Documents",
     categories: "Categories",
     settings: "Settings",
+  },
+  status: {
+    soon: "Soon",
+    soonDescription: "This module is not active yet.",
   },
   auth: {
     loginTitle: "Login",
@@ -607,15 +611,17 @@ fields: {
       },
     },
     family: {
-      title: "Family",
+      title: "Users",
       members: "Members",
       invite: "Invite",
       empty: "No members to show",
+      soonDescription: "People and role management will be available soon.",
     },
     documents: {
       title: "Documents",
       upload: "Add document",
       empty: "No documents",
+      soonDescription: "The document and knowledge base will be available soon.",
     },
     categories: {
       title: "Categories",

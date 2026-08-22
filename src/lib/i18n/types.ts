@@ -13,6 +13,10 @@ export type Dictionary = {
     categories: string;
     settings: string;
   };
+  status: {
+    soon: string;
+    soonDescription: string;
+  };
   auth: {
     loginTitle: string;
     registerTitle: string;
@@ -529,11 +533,13 @@ export type Dictionary = {
       members: string;
       invite: string;
       empty: string;
+      soonDescription: string;
     };
     documents: {
       title: string;
       upload: string;
       empty: string;
+      soonDescription: string;
     };
     categories: {
       title: string;
