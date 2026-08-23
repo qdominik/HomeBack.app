@@ -1,40 +1,113 @@
+import type { Dictionary } from "../i18n/types";
+import type { EntityIconKey } from "../icons/entity-icon-definitions";
+import type { Database } from "../../types/database";
+
 export type DashboardModuleStatus = "available" | "soon";
 
+export type DashboardModuleRole = Database["public"]["Enums"]["profile_role"];
+
+export type DashboardModuleCopyKey = keyof Dictionary["dashboardModules"];
+
+export const DASHBOARD_MODULE_KEYS = [
+  "recent-items",
+  "expiring-items",
+  "category-count",
+  "activity",
+  "rooms",
+  "documents",
+  "school-schedule",
+  "shopping-list",
+] as const;
+
+export type DashboardModuleKey = (typeof DASHBOARD_MODULE_KEYS)[number];
+
 export type DashboardModuleDefinition = {
-  key: string;
+  key: DashboardModuleKey;
   status: DashboardModuleStatus;
-  title: { pl: string; en: string };
-  description?: { pl: string; en: string };
+  titleKey: DashboardModuleCopyKey;
+  descriptionKey: DashboardModuleCopyKey;
+  icon: EntityIconKey;
   defaultVisible: boolean;
+  /**
+   * Undefined/empty means the module is visible to every household role.
+   * When set, the signed-in profile role must be included.
+   */
+  requiredRoles?: DashboardModuleRole[];
 };
 
 export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   {
     key: "recent-items",
     status: "soon",
-    title: { pl: "Ostatnio dodane", en: "Recently added" },
-    description: { pl: "Podgląd ostatnio dodanych rzeczy pojawi się tutaj.", en: "A view of recently added items will appear here." },
+    titleKey: "recentItems",
+    descriptionKey: "recentItems",
+    icon: "package",
     defaultVisible: true,
   },
   {
     key: "expiring-items",
     status: "soon",
-    title: { pl: "Terminy ważności", en: "Expiration dates" },
-    description: { pl: "Informacje o zbliżających się terminach pojawią się tutaj.", en: "Upcoming expiration information will appear here." },
+    titleKey: "expiringItems",
+    descriptionKey: "expiringItems",
+    icon: "shield-check",
     defaultVisible: true,
   },
   {
     key: "category-count",
     status: "soon",
-    title: { pl: "Rzeczy według kategorii", en: "Items by category" },
-    description: { pl: "Podsumowanie kategorii pojawi się tutaj.", en: "A category summary will appear here." },
+    titleKey: "categoryCount",
+    descriptionKey: "categoryCount",
+    icon: "cube",
     defaultVisible: true,
   },
   {
     key: "activity",
     status: "soon",
-    title: { pl: "Ostatnia aktywność", en: "Recent activity" },
-    description: { pl: "Aktywność gospodarstwa pojawi się tutaj.", en: "Household activity will appear here." },
+    titleKey: "activity",
+    descriptionKey: "activity",
+    icon: "heart",
     defaultVisible: true,
   },
+  {
+    key: "rooms",
+    status: "soon",
+    titleKey: "rooms",
+    descriptionKey: "rooms",
+    icon: "room",
+    defaultVisible: false,
+  },
+  {
+    key: "documents",
+    status: "soon",
+    titleKey: "documents",
+    descriptionKey: "documents",
+    icon: "documents",
+    defaultVisible: false,
+  },
+  {
+    key: "school-schedule",
+    status: "soon",
+    titleKey: "schoolSchedule",
+    descriptionKey: "schoolSchedule",
+    icon: "graduation-cap",
+    defaultVisible: false,
+  },
+  {
+    key: "shopping-list",
+    status: "soon",
+    titleKey: "shoppingList",
+    descriptionKey: "shoppingList",
+    icon: "box",
+    defaultVisible: false,
+  },
 ];
+
+const definitionsByKey = new Map(
+  dashboardModuleDefinitions.map((definition) => [definition.key, definition]),
+);
+
+export function getDashboardModuleDefinition(
+  key: DashboardModuleKey,
+): DashboardModuleDefinition | null {
+  return definitionsByKey.get(key) ?? null;
+}

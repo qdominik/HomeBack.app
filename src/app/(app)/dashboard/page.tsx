@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { DashboardModuleCard } from "@/components/dashboard-module-card";
+import {
+  dashboardModuleRegistrations,
+} from "@/components/dashboard/module-runtime";
 import { PageHeader } from "@/components/ui/page-header";
 import { buttonClassName } from "@/components/ui/button";
 import { getAppContext } from "@/lib/app-context";
 import { resolveVisibleDashboardModules } from "@/lib/dashboard/dashboard-preferences";
+import { filterDashboardModulesForRole } from "@/lib/dashboard/module-access";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 
@@ -25,7 +29,23 @@ export default async function DashboardPage() {
     storedVisibleModules = preferences?.visible_modules ?? null;
   }
 
-  const visibleModules = resolveVisibleDashboardModules(storedVisibleModules);
+  const visibleModules = filterDashboardModulesForRole(
+    resolveVisibleDashboardModules(storedVisibleModules),
+    profile?.rola ?? null,
+  );
+
+  const registrationsByKey = new Map(
+    dashboardModuleRegistrations.map((registration) => [
+      registration.definition.key,
+      registration,
+    ]),
+  );
+
+  const registrations = visibleModules.flatMap((definition) => {
+    const registration = registrationsByKey.get(definition.key);
+
+    return registration ? [{ definition, registration }] : [];
+  });
 
   return (
     <div className="space-y-8">
@@ -39,13 +59,17 @@ export default async function DashboardPage() {
         title={t.dashboard.title}
       />
 
-      {visibleModules.length > 0 ? (
+      {registrations.length > 0 ? (
         <section
           aria-label={t.dashboard.title}
           className="grid gap-4 sm:gap-5 md:grid-cols-2"
         >
-          {visibleModules.map((module) => (
-            <DashboardModuleCard key={module.key} module={module} />
+          {registrations.map(({ definition, registration }) => (
+            <DashboardModuleCard
+              key={definition.key}
+              definition={definition}
+              Render={registration.Render}
+            />
           ))}
         </section>
       ) : (

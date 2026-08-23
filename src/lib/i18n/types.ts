@@ -1,3 +1,8 @@
+type ModuleCopy = {
+  title: string;
+  description: string;
+};
+
 export type Dictionary = {
   app: {
     name: string;
@@ -63,13 +68,19 @@ export type Dictionary = {
     title: string;
     greeting: string;
     addItem: string;
-    recentItems: string;
-    expiringItems: string;
-    categoryCount: string;
-    activity: string;
     empty: string;
     allHidden: string;
     allHiddenHint: string;
+  };
+  dashboardModules: {
+    recentItems: ModuleCopy;
+    expiringItems: ModuleCopy;
+    categoryCount: ModuleCopy;
+    activity: ModuleCopy;
+    rooms: ModuleCopy;
+    documents: ModuleCopy;
+    schoolSchedule: ModuleCopy;
+    shoppingList: ModuleCopy;
   };
   modules: {
     copy: {

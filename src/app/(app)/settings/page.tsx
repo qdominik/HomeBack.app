@@ -11,7 +11,7 @@ import {
 } from "@/lib/dashboard/dashboard-preferences";
 import { dashboardModuleDefinitions } from "@/lib/dashboard/module-registry";
 import { getAppContext } from "@/lib/app-context";
-import { activeLocale, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { isQaTestDataEnvironment } from "@/lib/settings/qa-test-data";
 import { TestDataContent, TestDataGuard } from "@/app/(app)/settings/test-data-content";
 import {
@@ -89,11 +89,12 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
     dashboardPersonalizationContent = (
       <DashboardPersonalizationContent
-        modules={dashboardModuleDefinitions.map((module) => ({
-          key: module.key,
-          title: module.title[activeLocale],
-          description: module.description?.[activeLocale] ?? "",
-          soon: module.status === "soon",
+        modules={dashboardModuleDefinitions.map((definition) => ({
+          key: definition.key,
+          title: t.dashboardModules[definition.titleKey].title,
+          description:
+            t.dashboardModules[definition.descriptionKey].description,
+          soon: definition.status === "soon",
         }))}
         initiallyVisibleKeys={resolveVisibleDashboardModules(
           storedVisibleModules,
