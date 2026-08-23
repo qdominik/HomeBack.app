@@ -68,6 +68,8 @@ export type Dictionary = {
     categoryCount: string;
     activity: string;
     empty: string;
+    allHidden: string;
+    allHiddenHint: string;
   };
   modules: {
     copy: {
@@ -628,6 +630,9 @@ export type Dictionary = {
       export: string;
       dashboardPersonalization: string;
       dashboardPersonalizationDescription: string;
+      dashboardPersonalizationScopeHint: string;
+      dashboardPersonalizationSave: string;
+      dashboardPersonalizationSaving: string;
       testData: string;
       testDataTabs: {
         qaSmoke: string;
@@ -649,12 +654,15 @@ export type Dictionary = {
       feedback: {
         generated: string;
         failed: string;
+        dashboardSaved: string;
       };
       errors: {
         actionFailed: string;
         adminRequired: string;
         productionOnly: string;
         invalidDataset: string;
+        dashboardInvalidPayload: string;
+        dashboardSaveFailed: string;
       };
     };
   };

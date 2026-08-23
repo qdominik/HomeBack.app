@@ -6,9 +6,17 @@ import { FlaskIcon } from "@phosphor-icons/react/dist/ssr/Flask";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { ModulePage } from "@/components/module-page";
 import { Alert } from "@/components/ui/alert";
-import { t } from "@/lib/i18n";
+import {
+  resolveVisibleDashboardModules,
+} from "@/lib/dashboard/dashboard-preferences";
+import { dashboardModuleDefinitions } from "@/lib/dashboard/module-registry";
+import { getAppContext } from "@/lib/app-context";
+import { activeLocale, t } from "@/lib/i18n";
 import { isQaTestDataEnvironment } from "@/lib/settings/qa-test-data";
 import { TestDataContent, TestDataGuard } from "@/app/(app)/settings/test-data-content";
+import {
+  DashboardPersonalizationContent,
+} from "@/app/(app)/settings/dashboard-personalization-content";
 import type { ReactNode } from "react";
 
 type SettingsTab =
@@ -62,6 +70,38 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
     (tab) => tab.id !== "test-data" || isDevEnv,
   );
 
+  let dashboardPersonalizationContent: ReactNode = null;
+
+  if (currentTab === "dashboard-personalization") {
+    const { profile, supabase, userId } = await getAppContext();
+
+    let storedVisibleModules: string[] | null = null;
+
+    if (userId && profile) {
+      const { data: preferences } = await supabase
+        .from("profile_dashboard_preferences")
+        .select("visible_modules")
+        .eq("profil_id", userId)
+        .maybeSingle();
+
+      storedVisibleModules = preferences?.visible_modules ?? null;
+    }
+
+    dashboardPersonalizationContent = (
+      <DashboardPersonalizationContent
+        modules={dashboardModuleDefinitions.map((module) => ({
+          key: module.key,
+          title: module.title[activeLocale],
+          description: module.description?.[activeLocale] ?? "",
+          soon: module.status === "soon",
+        }))}
+        initiallyVisibleKeys={resolveVisibleDashboardModules(
+          storedVisibleModules,
+        ).map((module) => module.key)}
+      />
+    );
+  }
+
   const errorMessage = params.error
     ? (params.error === "action_failed"
         ? t.modules.settings.errors.actionFailed
@@ -71,14 +111,20 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             ? t.modules.settings.errors.productionOnly
             : params.error === "invalid_dataset"
               ? t.modules.settings.errors.invalidDataset
-              : null)
+              : params.error === "dashboard_invalid_payload"
+                ? t.modules.settings.errors.dashboardInvalidPayload
+                : params.error === "dashboard_save_failed"
+                  ? t.modules.settings.errors.dashboardSaveFailed
+                  : null)
     : null;
 
   const statusMessage = params.status === "test_data_generated"
     ? t.modules.settings.feedback.generated
     : params.status === "test_data_failed"
       ? t.modules.settings.feedback.failed
-      : null;
+      : params.status === "dashboard_preferences_saved"
+        ? t.modules.settings.feedback.dashboardSaved
+        : null;
 
   return (
     <ModulePage title={t.modules.settings.title}>
@@ -123,13 +169,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             <h2 className="text-base font-semibold">{t.modules.settings.export}</h2>
           </div>
         ) : currentTab === "dashboard-personalization" ? (
-          <div className="rounded-md border border-line bg-surface p-4">
-            <h2 className="text-base font-semibold">
-              {t.modules.settings.dashboardPersonalization}
-            </h2>
-            <p className="mt-2 max-w-prose text-sm leading-6 text-muted">
+          <div className="space-y-4">
+            <p className="max-w-prose text-sm leading-6 text-muted">
               {t.modules.settings.dashboardPersonalizationDescription}
             </p>
+            {dashboardPersonalizationContent}
           </div>
         ) : currentTab === "test-data" ? (
           isDevEnv ? (

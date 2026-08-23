@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
 import {
+  parseDashboardModuleKeysInput,
+} from "@/lib/dashboard/dashboard-preferences";
+import {
   QA_TEST_DATASET_TYPE,
   generateQaSmokeTestData,
   isQaTestDataEnvironment,
@@ -25,6 +28,63 @@ function redirectWithStatus(status: string): never {
 
 function redirectWithError(error: string): never {
   redirect(`${routes.settings}?tab=test-data&error=${encodeURIComponent(error)}`);
+}
+
+function redirectWithDashboardStatus(status: string): never {
+  redirect(
+    `${routes.settings}?tab=dashboard-personalization&status=${encodeURIComponent(status)}`,
+  );
+}
+
+function redirectWithDashboardError(error: string): never {
+  redirect(
+    `${routes.settings}?tab=dashboard-personalization&error=${encodeURIComponent(error)}`,
+  );
+}
+
+export async function saveDashboardPreferences(formData: FormData) {
+  const parsedModules = parseDashboardModuleKeysInput(
+    formData.getAll("modules"),
+  );
+
+  if (!parsedModules.ok) {
+    redirectWithDashboardError("dashboard_invalid_payload");
+  }
+
+  const supabase = await createClient();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+
+  if (!userId) {
+    redirectWithDashboardError("dashboard_save_failed");
+  }
+
+  const { data: profile } = await supabase
+    .from("profile")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!profile) {
+    redirectWithDashboardError("dashboard_save_failed");
+  }
+
+  // RLS on profile_dashboard_preferences restricts writes to profil_id = auth.uid().
+  const { error } = await supabase
+    .from("profile_dashboard_preferences")
+    .upsert({
+      profil_id: userId,
+      visible_modules: parsedModules.moduleKeys,
+      updated_at: new Date().toISOString(),
+    });
+
+  if (error) {
+    redirectWithDashboardError("dashboard_save_failed");
+  }
+
+  revalidatePath(routes.dashboard);
+  revalidatePath(routes.settings);
+  redirectWithDashboardStatus("dashboard_preferences_saved");
 }
 
 export async function generateTestData(formData: FormData) {

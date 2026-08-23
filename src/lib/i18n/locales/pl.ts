@@ -73,6 +73,9 @@ export const pl: Dictionary = {
     categoryCount: "Rzeczy według kategorii",
     activity: "Ostatnia aktywność",
     empty: "Brak danych",
+    allHidden: "Wszystkie moduły Dashboardu są ukryte.",
+    allHiddenHint:
+      "Możesz przywrócić moduły w Ustawieniach, w sekcji Personalizacja Dashboardu.",
   },
   modules: {
     copy: {
@@ -708,7 +711,11 @@ fields: {
       export: "Eksport",
       dashboardPersonalization: "Personalizacja Dashboardu",
       dashboardPersonalizationDescription:
-        "Wybór widocznych modułów pojawi się tutaj w kolejnej fazie. Preferencje nie są jeszcze zapisywane.",
+        "Wybierz, które moduły mają być widoczne na Twoim Dashboardzie. Sterujesz widocznością modułów, nie ich aktywacją.",
+      dashboardPersonalizationScopeHint:
+        "Zaznaczone moduły pojawią się na Dashboardzie, odznaczone zostaną ukryte. Moduły oznaczone jako „Wkrótce” pozostają nieaktywne funkcjonalnie, nawet gdy są widoczne.",
+      dashboardPersonalizationSave: "Zapisz widoczność",
+      dashboardPersonalizationSaving: "Zapisywanie...",
       testData: "Dane testowe",
       testDataTabs: {
         qaSmoke: "QA smoke",
@@ -730,12 +737,16 @@ fields: {
       feedback: {
         generated: "Dane testowe zostały wygenerowane.",
         failed: "Nie udało się wygenerować danych testowych.",
+        dashboardSaved: "Preferencje Dashboardu zostały zapisane.",
       },
       errors: {
         actionFailed: "Nie udało się wygenerować danych testowych.",
         adminRequired: "Tylko administrator może generować dane testowe.",
         productionOnly: "Generator danych testowych jest wyłączony w środowisku produkcyjnym.",
         invalidDataset: "Nieprawidłowy typ zestawu danych.",
+        dashboardInvalidPayload:
+          "Odebrano nieprawidłowe dane modułów. Odśwież stronę i spróbuj ponownie.",
+        dashboardSaveFailed: "Nie udało się zapisać preferencji Dashboardu.",
       },
     },
   },
