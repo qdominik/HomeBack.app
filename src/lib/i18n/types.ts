@@ -626,6 +626,8 @@ export type Dictionary = {
       household: string;
       account: string;
       export: string;
+      dashboardPersonalization: string;
+      dashboardPersonalizationDescription: string;
       testData: string;
       testDataTabs: {
         qaSmoke: string;

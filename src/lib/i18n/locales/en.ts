@@ -706,6 +706,9 @@ fields: {
       household: "Household",
       account: "Account",
       export: "Export",
+      dashboardPersonalization: "Dashboard personalization",
+      dashboardPersonalizationDescription:
+        "Module visibility controls will be added in a later phase. Preferences are not saved yet.",
       testData: "Test data",
       testDataTabs: {
         qaSmoke: "QA smoke",

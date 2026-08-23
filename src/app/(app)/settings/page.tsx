@@ -3,6 +3,7 @@ import { HouseIcon } from "@phosphor-icons/react/dist/ssr/House";
 import { UserIcon } from "@phosphor-icons/react/dist/ssr/User";
 import { DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
 import { FlaskIcon } from "@phosphor-icons/react/dist/ssr/Flask";
+import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { ModulePage } from "@/components/module-page";
 import { Alert } from "@/components/ui/alert";
 import { t } from "@/lib/i18n";
@@ -10,7 +11,12 @@ import { isQaTestDataEnvironment } from "@/lib/settings/qa-test-data";
 import { TestDataContent, TestDataGuard } from "@/app/(app)/settings/test-data-content";
 import type { ReactNode } from "react";
 
-type SettingsTab = "household" | "account" | "export" | "test-data";
+type SettingsTab =
+  | "household"
+  | "account"
+  | "export"
+  | "dashboard-personalization"
+  | "test-data";
 
 type SettingsPageProps = {
   searchParams: Promise<{
@@ -21,7 +27,12 @@ type SettingsPageProps = {
 };
 
 function parseSettingsTab(raw: string | undefined): SettingsTab {
-  if (raw === "account" || raw === "export" || raw === "test-data") {
+  if (
+    raw === "account" ||
+    raw === "export" ||
+    raw === "dashboard-personalization" ||
+    raw === "test-data"
+  ) {
     return raw;
   }
   return "household";
@@ -31,6 +42,7 @@ const tabs: { id: SettingsTab; label: string; href: string; icon: ReactNode }[] 
   { id: "household", label: t.modules.settings.household, href: "/settings", icon: <HouseIcon aria-hidden="true" size={18} /> },
   { id: "account", label: t.modules.settings.account, href: "/settings?tab=account", icon: <UserIcon aria-hidden="true" size={18} /> },
   { id: "export", label: t.modules.settings.export, href: "/settings?tab=export", icon: <DownloadSimpleIcon aria-hidden="true" size={18} /> },
+  { id: "dashboard-personalization", label: t.modules.settings.dashboardPersonalization, href: "/settings?tab=dashboard-personalization", icon: <GearSixIcon aria-hidden="true" size={18} /> },
   { id: "test-data", label: t.modules.settings.testData, href: "/settings?tab=test-data", icon: <FlaskIcon aria-hidden="true" size={18} /> },
 ];
 
@@ -109,6 +121,15 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         ) : currentTab === "export" ? (
           <div className="rounded-md border border-line bg-surface p-4">
             <h2 className="text-base font-semibold">{t.modules.settings.export}</h2>
+          </div>
+        ) : currentTab === "dashboard-personalization" ? (
+          <div className="rounded-md border border-line bg-surface p-4">
+            <h2 className="text-base font-semibold">
+              {t.modules.settings.dashboardPersonalization}
+            </h2>
+            <p className="mt-2 max-w-prose text-sm leading-6 text-muted">
+              {t.modules.settings.dashboardPersonalizationDescription}
+            </p>
           </div>
         ) : currentTab === "test-data" ? (
           isDevEnv ? (
