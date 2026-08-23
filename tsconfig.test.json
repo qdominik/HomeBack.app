@@ -13,6 +13,7 @@
   },
   "include": [
     "src/lib/categories/category-template-options.ts",
+    "src/lib/dashboard/*.ts",
     "src/lib/home/home-template-options.ts",
     "src/lib/home/infer-home-kind.ts",
     "src/lib/home/home-search.ts",

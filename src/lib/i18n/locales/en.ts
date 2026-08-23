@@ -73,6 +73,9 @@ export const en: Dictionary = {
     categoryCount: "Items by category",
     activity: "Recent activity",
     empty: "No data",
+    allHidden: "All Dashboard modules are hidden.",
+    allHiddenHint:
+      "You can restore modules in Settings, in the Dashboard personalization section.",
   },
   modules: {
     copy: {
@@ -708,7 +711,11 @@ fields: {
       export: "Export",
       dashboardPersonalization: "Dashboard personalization",
       dashboardPersonalizationDescription:
-        "Module visibility controls will be added in a later phase. Preferences are not saved yet.",
+        "Choose which modules are visible on your Dashboard. You control module visibility, not their activation.",
+      dashboardPersonalizationScopeHint:
+        "Selected modules appear on the Dashboard; deselected ones stay hidden. Modules marked as \u201cSoon\u201d remain functionally inactive, even when visible.",
+      dashboardPersonalizationSave: "Save visibility",
+      dashboardPersonalizationSaving: "Saving...",
       testData: "Test data",
       testDataTabs: {
         qaSmoke: "QA smoke",
@@ -730,12 +737,16 @@ fields: {
       feedback: {
         generated: "Test data has been generated.",
         failed: "Failed to generate test data.",
+        dashboardSaved: "Dashboard preferences have been saved.",
       },
       errors: {
         actionFailed: "Failed to generate test data.",
         adminRequired: "Only an administrator can generate test data.",
         productionOnly: "The test data generator is disabled in the production environment.",
         invalidDataset: "Invalid dataset type.",
+        dashboardInvalidPayload:
+          "Invalid module data received. Refresh the page and try again.",
+        dashboardSaveFailed: "Failed to save Dashboard preferences.",
       },
     },
   },

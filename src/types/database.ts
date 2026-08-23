@@ -365,6 +365,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      profile_dashboard_preferences: {
+        Row: {
+          profil_id: string;
+          visible_modules: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          profil_id: string;
+          visible_modules?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          profil_id?: string;
+          visible_modules?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       room: {
         Row: {
           id: string;
