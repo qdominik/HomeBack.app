@@ -3,7 +3,6 @@
 import { useFormStatus } from "react-dom";
 import { saveDashboardPreferences } from "@/app/(app)/settings/actions";
 import { StatusBadge } from "@/components/status-badge";
-import { Alert } from "@/components/ui/alert";
 import { buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 
@@ -36,7 +35,7 @@ function SaveButton() {
 }
 
 const moduleToggleClassName =
-  "mt-0.5 h-6 w-10 shrink-0 cursor-pointer appearance-none rounded-full border border-line bg-line transition-colors " +
+  "h-6 w-10 shrink-0 cursor-pointer appearance-none rounded-full border border-line bg-surface-muted transition-colors " +
   "before:absolute before:left-0.5 before:top-1/2 before:h-5 before:w-5 before:-translate-y-1/2 " +
   "before:rounded-full before:bg-white before:shadow before:transition-transform before:content-[''] " +
   "checked:border-primary checked:bg-primary checked:before:translate-x-4 " +
@@ -47,44 +46,44 @@ export function DashboardPersonalizationContent({
   initiallyVisibleKeys,
 }: DashboardPersonalizationContentProps) {
   return (
-    <div className="space-y-4">
-      <Alert variant="info">
-        {t.modules.settings.dashboardPersonalizationScopeHint}
-      </Alert>
-      <form action={saveDashboardPreferences}>
-        <ul className="divide-y divide-line rounded-md border border-line bg-surface">
-          {modules.map((module) => (
-            <li key={module.key}>
-              <label className="flex cursor-pointer items-start justify-between gap-3 p-4">
-                <span className="min-w-0">
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-foreground">
-                      {module.title}
-                    </span>
-                    {module.soon ? <StatusBadge status="soon" /> : null}
+    <form action={saveDashboardPreferences}>
+      <ul className="divide-y divide-line overflow-hidden rounded-control border border-line bg-surface">
+        {modules.map((module) => (
+          <li key={module.key} className="transition-colors hover:bg-surface-muted/50">
+            <label className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
+              <span className="min-w-0">
+                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="text-sm font-semibold text-foreground">
+                    {module.title}
                   </span>
-                  <span className="mt-1 block text-sm leading-6 text-muted">
-                    {module.description}
-                  </span>
+                  {module.soon ? <StatusBadge status="soon" /> : null}
                 </span>
-                <span className="relative inline-flex">
-                  <input
-                    aria-label={module.title}
-                    className={`relative ${moduleToggleClassName}`}
-                    defaultChecked={initiallyVisibleKeys.includes(module.key)}
-                    name="modules"
-                    type="checkbox"
-                    value={module.key}
-                  />
+                <span className="mt-0.5 block text-sm leading-6 text-muted">
+                  {module.description}
                 </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4">
+              </span>
+              <span className="relative inline-flex">
+                <input
+                  aria-label={module.title}
+                  className={`relative ${moduleToggleClassName}`}
+                  defaultChecked={initiallyVisibleKeys.includes(module.key)}
+                  name="modules"
+                  type="checkbox"
+                  value={module.key}
+                />
+              </span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 flex flex-col gap-3 rounded-control border border-line bg-surface-muted/50 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <p className="text-sm leading-6 text-muted">
+          {t.modules.settings.dashboardPersonalizationScopeHint}
+        </p>
+        <div className="shrink-0">
           <SaveButton />
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }

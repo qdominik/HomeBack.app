@@ -40,23 +40,31 @@ export default async function DashboardPage() {
       />
 
       {visibleModules.length > 0 ? (
-        <section aria-label={t.dashboard.title} className="grid gap-5 md:grid-cols-2">
+        <section
+          aria-label={t.dashboard.title}
+          className="grid gap-4 sm:gap-5 md:grid-cols-2"
+        >
           {visibleModules.map((module) => (
             <DashboardModuleCard key={module.key} module={module} />
           ))}
         </section>
       ) : (
-        <section aria-label={t.dashboard.title} className="space-y-2">
-          <p className="text-sm leading-6 text-muted">{t.dashboard.allHidden}</p>
-          <p className="text-sm leading-6 text-muted">
-            {t.dashboard.allHiddenHint}{" "}
-            <Link
-              className="font-semibold text-primary-strong underline underline-offset-4"
-              href={`${routes.settings}?tab=dashboard-personalization`}
-            >
-              {t.modules.settings.dashboardPersonalization}
-            </Link>
+        <section
+          aria-label={t.dashboard.title}
+          className="rounded-control border border-dashed border-line bg-surface px-6 py-10 text-center shadow-card"
+        >
+          <p className="text-base font-semibold text-foreground">
+            {t.dashboard.allHidden}
           </p>
+          <p className="mx-auto mt-2 max-w-prose text-sm leading-6 text-muted">
+            {t.dashboard.allHiddenHint}
+          </p>
+          <Link
+            className={`${buttonClassName({ variant: "secondary" })} mt-5`}
+            href={`${routes.settings}?tab=dashboard-personalization`}
+          >
+            {t.modules.settings.dashboardPersonalization}
+          </Link>
         </section>
       )}
     </div>
