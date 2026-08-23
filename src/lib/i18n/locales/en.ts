@@ -68,14 +68,44 @@ export const en: Dictionary = {
     title: "Dashboard",
     greeting: "Good morning",
     addItem: "Add item",
-    recentItems: "Recently added",
-    expiringItems: "Expiration dates",
-    categoryCount: "Items by category",
-    activity: "Recent activity",
     empty: "No data",
     allHidden: "All Dashboard modules are hidden.",
     allHiddenHint:
       "You can restore modules in Settings, in the Dashboard personalization section.",
+  },
+  dashboardModules: {
+    recentItems: {
+      title: "Recently added",
+      description: "A view of recently added items will appear here.",
+    },
+    expiringItems: {
+      title: "Expiration dates",
+      description: "Upcoming expiration information will appear here.",
+    },
+    categoryCount: {
+      title: "Items by category",
+      description: "A category summary will appear here.",
+    },
+    activity: {
+      title: "Recent activity",
+      description: "Household activity will appear here.",
+    },
+    rooms: {
+      title: "Rooms",
+      description: "A home structure summary with item counts will appear here.",
+    },
+    documents: {
+      title: "Documents",
+      description: "Access to stored documents will appear here.",
+    },
+    schoolSchedule: {
+      title: "School schedule",
+      description: "A school schedule captured from a photo will appear here.",
+    },
+    shoppingList: {
+      title: "Shopping list",
+      description: "A shopping list split by store will appear here.",
+    },
   },
   modules: {
     copy: {

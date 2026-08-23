@@ -68,14 +68,44 @@ export const pl: Dictionary = {
     title: "Dashboard",
     greeting: "Dzień dobry",
     addItem: "Dodaj przedmiot",
-    recentItems: "Ostatnio dodane",
-    expiringItems: "Terminy ważności",
-    categoryCount: "Rzeczy według kategorii",
-    activity: "Ostatnia aktywność",
     empty: "Brak danych",
     allHidden: "Wszystkie moduły Dashboardu są ukryte.",
     allHiddenHint:
       "Możesz przywrócić moduły w Ustawieniach, w sekcji Personalizacja Dashboardu.",
+  },
+  dashboardModules: {
+    recentItems: {
+      title: "Ostatnio dodane",
+      description: "Podgląd ostatnio dodanych rzeczy pojawi się tutaj.",
+    },
+    expiringItems: {
+      title: "Terminy ważności",
+      description: "Informacje o zbliżających się terminach pojawią się tutaj.",
+    },
+    categoryCount: {
+      title: "Rzeczy według kategorii",
+      description: "Podsumowanie kategorii pojawi się tutaj.",
+    },
+    activity: {
+      title: "Ostatnia aktywność",
+      description: "Aktywność gospodarstwa pojawi się tutaj.",
+    },
+    rooms: {
+      title: "Pomieszczenia",
+      description: "Skrót struktury domu z liczbą rzeczy pojawi się tutaj.",
+    },
+    documents: {
+      title: "Dokumenty",
+      description: "Dostęp do przechowywanych dokumentów pojawi się tutaj.",
+    },
+    schoolSchedule: {
+      title: "Plan lekcji",
+      description: "Plan lekcji ze zdjęcia pojawi się tutaj.",
+    },
+    shoppingList: {
+      title: "Lista zakupów",
+      description: "Lista zakupów z podziałem na sklepy pojawi się tutaj.",
+    },
   },
   modules: {
     copy: {

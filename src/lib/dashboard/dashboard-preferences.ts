@@ -5,7 +5,7 @@ export type DashboardModuleKeysInput =
   | { ok: true; moduleKeys: string[] }
   | { ok: false };
 
-const knownModuleKeys = new Set(
+const knownModuleKeys = new Set<string>(
   dashboardModuleDefinitions.map((module) => module.key),
 );
 
