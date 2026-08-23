@@ -134,7 +134,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
       >
         {visibleTabs.map((tab) => (
           <Link
-            className={`inline-flex items-center rounded-md border px-3 py-2 text-sm font-semibold ${
+            className={`inline-flex items-center rounded-control border px-3 py-2 text-sm font-semibold ${
               currentTab === tab.id
                 ? "border-primary bg-primary text-white"
                 : "border-line bg-surface text-primary-strong hover:border-primary/60"
@@ -157,15 +157,15 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
       <section className="mt-6">
         {currentTab === "household" ? (
-          <div className="rounded-md border border-line bg-surface p-4">
+          <div className="rounded-control border border-line bg-surface p-4">
             <h2 className="text-base font-semibold">{t.modules.settings.household}</h2>
           </div>
         ) : currentTab === "account" ? (
-          <div className="rounded-md border border-line bg-surface p-4">
+          <div className="rounded-control border border-line bg-surface p-4">
             <h2 className="text-base font-semibold">{t.modules.settings.account}</h2>
           </div>
         ) : currentTab === "export" ? (
-          <div className="rounded-md border border-line bg-surface p-4">
+          <div className="rounded-control border border-line bg-surface p-4">
             <h2 className="text-base font-semibold">{t.modules.settings.export}</h2>
           </div>
         ) : currentTab === "dashboard-personalization" ? (
