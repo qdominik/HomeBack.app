@@ -9,6 +9,13 @@ import {
   filterItemsForView,
   parseItemView,
 } from "../../src/lib/items/item-view-filter";
+import {
+  buildItemSearchLocationPath,
+  filterItemSearchCandidates,
+  normalizeItemSearchQuery,
+  resolveDashboardItemSearchView,
+} from "../../src/lib/items/item-search";
+import { readFileSync } from "node:fs";
 
 const validUuid = "11111111-2222-3333-4444-555555555555";
 
@@ -115,4 +122,94 @@ test("item views separate active, unlocated, and archived items", () => {
     ),
     ["archived-with-location", "archived-without-location"],
   );
+});
+
+test("dashboard item search normalizes a submitted name without fuzzy matching", () => {
+  const query = normalizeItemSearchQuery(
+    `  ${"baterie   kuchenne ".repeat(20)} `,
+  );
+
+  assert.equal(query.length, 100);
+  assert.equal(query.includes("  "), false);
+  assert.equal(query.startsWith("baterie kuchenne"), true);
+});
+
+test("dashboard item search filters names within the current household only", () => {
+  const results = filterItemSearchCandidates(
+    [
+      { id: "item-a", household_id: "household-a", nazwa: "Baterie AA" },
+      { id: "item-b", household_id: "household-b", nazwa: "Baterie AAA" },
+      { id: "item-c", household_id: "household-a", nazwa: "Latarka" },
+    ],
+    "household-a",
+    " baterie ",
+  );
+
+  assert.deepEqual(results.map((item) => item.id), ["item-a"]);
+});
+
+test("dashboard item search exposes initial, loading, error, no-result, and result states", () => {
+  assert.equal(
+    resolveDashboardItemSearchView({ isLoading: false, response: null }),
+    "initial",
+  );
+  assert.equal(
+    resolveDashboardItemSearchView({ isLoading: true, response: null }),
+    "loading",
+  );
+  assert.equal(
+    resolveDashboardItemSearchView({ isLoading: false, response: { kind: "error" } }),
+    "error",
+  );
+  assert.equal(
+    resolveDashboardItemSearchView({
+      isLoading: false,
+      response: { kind: "success", query: "baterie", results: [] },
+    }),
+    "no-results",
+  );
+  assert.equal(
+    resolveDashboardItemSearchView({
+      isLoading: false,
+      response: {
+        kind: "success",
+        query: "baterie",
+        results: [
+          {
+            id: "item-a",
+            name: "Baterie AA",
+            location: { kind: "missing", path: null },
+          },
+        ],
+      },
+    }),
+    "results",
+  );
+});
+
+test("dashboard item search presents complete, partial, and missing location paths", () => {
+  assert.deepEqual(
+    buildItemSearchLocationPath({
+      roomName: "Salon",
+      storageName: "Komoda",
+      positionName: "Górna szuflada",
+    }),
+    { kind: "complete", path: "Salon / Komoda / Górna szuflada" },
+  );
+  assert.deepEqual(
+    buildItemSearchLocationPath({ roomName: "Salon", storageName: "Komoda" }),
+    { kind: "partial", path: "Salon / Komoda" },
+  );
+  assert.deepEqual(buildItemSearchLocationPath({}), {
+    kind: "missing",
+    path: null,
+  });
+});
+
+test("dashboard item search action keeps the item and room reads scoped to household_id", () => {
+  const source = readFileSync("src/app/(app)/dashboard/actions.ts", "utf8");
+
+  assert.match(source, /\.eq\("household_id", householdId\)/);
+  assert.match(source, /\.from\("item"\)/);
+  assert.match(source, /\.from\("room"\)/);
 });

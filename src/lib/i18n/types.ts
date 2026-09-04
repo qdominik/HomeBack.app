@@ -71,6 +71,20 @@ export type Dictionary = {
     empty: string;
     allHidden: string;
     allHiddenHint: string;
+    itemSearch: {
+      title: string;
+      label: string;
+      placeholder: string;
+      submit: string;
+      clear: string;
+      initial: string;
+      loading: string;
+      error: string;
+      noResults: string;
+      results: string;
+      noLocation: string;
+      incompleteLocation: string;
+    };
   };
   dashboardModules: {
     recentItems: ModuleCopy;

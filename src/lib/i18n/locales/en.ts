@@ -72,6 +72,20 @@ export const en: Dictionary = {
     allHidden: "All Dashboard modules are hidden.",
     allHiddenHint:
       "You can restore modules in Settings, in the Dashboard personalization section.",
+    itemSearch: {
+      title: "Find an item",
+      label: "Item name",
+      placeholder: "For example, batteries",
+      submit: "Search",
+      clear: "Clear search",
+      initial: "Enter an item name to start searching.",
+      loading: "Searching for items.",
+      error: "We could not search for items. Try again.",
+      noResults: "No items with that name were found.",
+      results: "Item search results",
+      noLocation: "No location",
+      incompleteLocation: "Incomplete location",
+    },
   },
   dashboardModules: {
     recentItems: {

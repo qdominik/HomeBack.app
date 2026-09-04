@@ -72,6 +72,20 @@ export const pl: Dictionary = {
     allHidden: "Wszystkie moduły Dashboardu są ukryte.",
     allHiddenHint:
       "Możesz przywrócić moduły w Ustawieniach, w sekcji Personalizacja Dashboardu.",
+    itemSearch: {
+      title: "Znajdź rzecz",
+      label: "Nazwa rzeczy",
+      placeholder: "Np. baterie",
+      submit: "Szukaj",
+      clear: "Wyczyść wyszukiwanie",
+      initial: "Wpisz nazwę rzeczy, aby rozpocząć wyszukiwanie.",
+      loading: "Wyszukiwanie rzeczy.",
+      error: "Nie udało się wyszukać rzeczy. Spróbuj ponownie.",
+      noResults: "Nie znaleziono rzeczy o tej nazwie.",
+      results: "Wyniki wyszukiwania rzeczy",
+      noLocation: "Brak lokalizacji",
+      incompleteLocation: "Niepełna lokalizacja",
+    },
   },
   dashboardModules: {
     recentItems: {
