@@ -2,7 +2,7 @@
 
 **Wersja:** v0.2  
 **Status:** dokument roboczy do implementacji MVP + zasady pracy AI  
-**Typ produktu:** Progressive Web App  
+**Typ produktu:** responsywna aplikacja webowa; PWA/offline pozostaje celem osobnej decyzji implementacyjnej
 **Backend:** Supabase + PostgreSQL  
 **Data opracowania:** 2026-07-08  
 
@@ -35,7 +35,7 @@
 
 ### Czym jest HomeBack?
 
-**HomeBack.app** to aplikacja webowa typu PWA do zarządzania informacją i zasobami domowymi dla całej rodziny.
+**HomeBack.app** to responsywna aplikacja webowa do zarządzania informacją i zasobami domowymi dla całej rodziny. Pełny status PWA/offline nie jest deklarowany w aktualnej implementacji bez manifestu i service workera.
 
 Aplikacja ma być wspólną bazą wiedzy o domu: rzeczach, dokumentach, lokalizacjach, zapasach, procedurach i informacjach praktycznych.
 

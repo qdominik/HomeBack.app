@@ -1,6 +1,6 @@
 # HomeBack.app
 
-HomeBack.app is a privacy-conscious Progressive Web App for organizing household information: items, rooms, storage locations, categories, documents, family members, and household settings.
+HomeBack.app is a privacy-conscious web application for organizing household information: items, rooms, storage locations, categories, documents, family members, and household settings.
 
 The product is built around a simple problem: families often know that something exists, but not where it is, who owns it, when it expires, or which document explains it. HomeBack creates a shared, structured source of truth for the home.
 
@@ -12,13 +12,13 @@ The current MVP focuses on seven modules:
 | --- | --- |
 | Inventory | Catalog household items with category, quantity, expiration date, owner, photo, and location. |
 | Home Structure | Model the home as rooms, furniture or storage areas, and precise storage spaces. |
-| Users | Manage household members, roles, invitations, and access boundaries. |
+| Users | Planned module for household members, roles, invitations, and access boundaries. Currently marked `Wkrotce` / `Soon` in the app. |
 | Dashboard | Provide a fast overview of important household information after sign-in. |
-| Documents | Store household knowledge, manuals, procedures, and practical notes. |
+| Documents | Planned module for household knowledge, manuals, procedures, and practical notes. Currently marked `Wkrotce` / `Soon` in the app. |
 | Categories | Organize items and documents using system and custom categories. |
 | Settings | Manage household-level configuration and user preferences. |
 
-Future directions include richer AI assistance, QR/NFC labels, Home Assistant integrations, stronger document workflows, backups, and native mobile experiences. These are intentionally outside the MVP unless explicitly accepted in the product decision log.
+The current MVP includes an item-photo AI Vision extension for editable form suggestions. Future directions include broader AI assistance, QR/NFC labels, Home Assistant integrations, stronger document workflows, backups, full PWA/offline support, and native mobile experiences. These are intentionally outside the MVP unless explicitly accepted in the product decision log.
 
 ## Core Concepts
 
@@ -53,7 +53,7 @@ Home -> Living room -> TV cabinet -> Left drawer -> Spare batteries
 | Auth | Supabase Auth |
 | Storage | Supabase Storage |
 | Hosting | Vercel |
-| App type | Progressive Web App |
+| App type | Responsive web application; full PWA/offline support is not claimed until manifest and service-worker support are implemented. |
 
 ## Security Model
 
@@ -124,6 +124,7 @@ ITEM_PHOTO_AI_PROVIDER=
 ITEM_PHOTO_AI_MODEL=
 GROQ_API_KEY=
 HOMEBACK_DEV_ORIGIN=
+E2E_BASE_URL=
 E2E_PASSWORD=
 ```
 
@@ -164,10 +165,16 @@ The project uses a layered validation approach:
 - end-to-end tests for critical user flows,
 - production or preview smoke tests before public sharing.
 
-Run the available test suite:
+Run the available logic test suite:
 
 ```bash
-npm test
+npm run test:logic
+```
+
+Run end-to-end tests when the required local services and test environment are available:
+
+```bash
+npm run test:e2e
 ```
 
 Run linting:
