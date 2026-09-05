@@ -9,7 +9,6 @@ import {
   normalizeItemSearchQuery,
   type DashboardItemSearchResponse,
 } from "@/lib/items/item-search";
-import { searchPattern } from "@/lib/items/item-search-params";
 
 export async function searchDashboardItems(
   rawQuery: string,
@@ -33,9 +32,7 @@ export async function searchDashboardItems(
     .select("id, household_id, nazwa")
     .eq("household_id", householdId)
     .neq("status", "archiwalne")
-    .ilike("nazwa", searchPattern(searchableQuery))
-    .order("nazwa", { ascending: true })
-    .limit(DASHBOARD_ITEM_SEARCH_LIMIT);
+    .order("nazwa", { ascending: true });
 
   if (itemError) {
     return { kind: "error" };
@@ -45,7 +42,7 @@ export async function searchDashboardItems(
     itemData ?? [],
     householdId,
     searchableQuery,
-  );
+  ).slice(0, DASHBOARD_ITEM_SEARCH_LIMIT);
   const itemIds = items.map((item) => item.id);
 
   if (!itemIds.length) {

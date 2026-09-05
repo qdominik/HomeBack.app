@@ -13,6 +13,7 @@ import {
   buildItemSearchLocationPath,
   filterItemSearchCandidates,
   normalizeItemSearchQuery,
+  normalizeItemSearchText,
   resolveDashboardItemSearchView,
 } from "../../src/lib/items/item-search";
 import { readFileSync } from "node:fs";
@@ -143,6 +144,46 @@ test("dashboard item search filters names within the current household only", ()
     ],
     "household-a",
     " baterie ",
+  );
+
+  assert.deepEqual(results.map((item) => item.id), ["item-a"]);
+});
+
+test("dashboard item search treats Polish diacritics as optional", () => {
+  assert.equal(normalizeItemSearchText("Ładowarka"), "ladowarka");
+
+  assert.deepEqual(
+    filterItemSearchCandidates(
+      [
+        { id: "item-a", household_id: "household-a", nazwa: "Ładowarka" },
+        { id: "item-b", household_id: "household-a", nazwa: "Latarka" },
+      ],
+      "household-a",
+      "ladowarka",
+    ).map((item) => item.id),
+    ["item-a"],
+  );
+  assert.deepEqual(
+    filterItemSearchCandidates(
+      [
+        { id: "item-a", household_id: "household-a", nazwa: "Ladowarka" },
+        { id: "item-b", household_id: "household-a", nazwa: "Baterie" },
+      ],
+      "household-a",
+      "ładowarka",
+    ).map((item) => item.id),
+    ["item-a"],
+  );
+});
+
+test("dashboard item search remains case-insensitive after diacritic normalization", () => {
+  const results = filterItemSearchCandidates(
+    [
+      { id: "item-a", household_id: "household-a", nazwa: "ŁADOWARKA USB-C" },
+      { id: "item-b", household_id: "household-a", nazwa: "Kabel USB-C" },
+    ],
+    "household-a",
+    "łAdOwArKa",
   );
 
   assert.deepEqual(results.map((item) => item.id), ["item-a"]);

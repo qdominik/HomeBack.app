@@ -1,3 +1,5 @@
+import { normalizeTemplateValue } from "../templates/normalize-template-value";
+
 export const DASHBOARD_ITEM_SEARCH_LIMIT = 12;
 
 export type ItemSearchCandidate = {
@@ -39,12 +41,16 @@ export function getItemNameSearchQuery(query: string) {
   return normalizeItemSearchQuery(query).replace(/[%_]/g, "").trim();
 }
 
+export function normalizeItemSearchText(value: string) {
+  return normalizeTemplateValue(value);
+}
+
 export function filterItemSearchCandidates(
   candidates: ItemSearchCandidate[],
   householdId: string,
   query: string,
 ) {
-  const normalizedQuery = getItemNameSearchQuery(query).toLocaleLowerCase();
+  const normalizedQuery = normalizeItemSearchText(getItemNameSearchQuery(query));
 
   if (!normalizedQuery) {
     return [];
@@ -53,7 +59,7 @@ export function filterItemSearchCandidates(
   return candidates.filter(
     (candidate) =>
       candidate.household_id === householdId &&
-      candidate.nazwa.toLocaleLowerCase().includes(normalizedQuery),
+      normalizeItemSearchText(candidate.nazwa).includes(normalizedQuery),
   );
 }
 
