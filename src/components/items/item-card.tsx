@@ -121,7 +121,10 @@ export function ItemCard({
   );
 
   return (
-    <article className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
+    <article
+      className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5"
+      id={`item-${item.id}`}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
           <ItemPhotoThumbnail

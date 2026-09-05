@@ -8,6 +8,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   testMatch: [
     "auth-regression.spec.ts",
+    "dashboard-item-search.spec.ts",
     "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
   ],

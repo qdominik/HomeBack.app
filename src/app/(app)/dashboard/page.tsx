@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DashboardItemSearch } from "@/components/dashboard/item-search";
 import { DashboardModuleCard } from "@/components/dashboard-module-card";
 import {
   dashboardModuleRegistrations,
@@ -58,6 +59,8 @@ export default async function DashboardPage() {
         description={greeting}
         title={t.dashboard.title}
       />
+
+      <DashboardItemSearch />
 
       {registrations.length > 0 ? (
         <section
