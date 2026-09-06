@@ -52,7 +52,6 @@ if (process.argv.includes("--example")) {
     "NEXT_PUBLIC_SUPABASE_URL",
   ];
 
-  if (environment === "local") required.push("NEXT_PUBLIC_DEV_ORIGIN");
 
   const missing = required.filter((key) => !env[key]?.trim());
   const hasPublicKey = Boolean(

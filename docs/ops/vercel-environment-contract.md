@@ -22,12 +22,14 @@ Wszystkie trzy środowiska wymagają:
 
 - `NEXT_PUBLIC_SITE_URL` — absolutny adres aplikacji danego środowiska;
 - `NEXT_PUBLIC_SUPABASE_URL` — URL tego samego projektu Supabase;
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — publiczny klucz tego samego projektu.
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` albo legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` — publiczny klucz tego samego projektu; wystarczy jedna nazwa.
 
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` jest wyłącznie kompatybilnością wsteczną. Jeżeli
-obie nazwy istnieją, wartości muszą być identyczne. Nie ustawiaj obu nazw jako
-różnych kluczy. `NEXT_PUBLIC_DEV_ORIGIN` jest wymagane tylko lokalnie i nie
-powinno być ustawiane w Vercel Preview/Production. `VERCEL_ENV` jest ustawiane
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` pozostaje obsługiwanym aliasem legacy. Runtime
+zachowuje dotychczasowy priorytet `NEXT_PUBLIC_SUPABASE_ANON_KEY`, a
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` jest fallbackiem. Wystarczy jedna z tych
+zmiennych; aplikacja nie porównuje ani nie loguje ich wartości.
+`NEXT_PUBLIC_DEV_ORIGIN` jest opcjonalnym lokalnym nadpisaniem i nie powinno być
+ustawiane w Vercel Preview/Production. `VERCEL_ENV` jest ustawiane
 przez Vercel i rozróżnia `preview` oraz `production`.
 
 Zmienne E2E są lokalne albo Preview-only:
@@ -42,8 +44,8 @@ nie mogą mieć prefiksu `NEXT_PUBLIC_` ani być wpisywane do dokumentacji.
 
 `src/lib/runtime/environment.ts` sprawdza obecność i oczywisty format URL-i,
 public key, środowisko, lokalny origin oraz produkcyjny/preview site URL. Gdy
-legacy i canonical key są różne, albo gdy JWT anon key zawiera project ref
-inny niż URL, aplikacja odrzuca konfigurację bez ujawniania wartości.
+JWT wybranego klucza zawiera project ref inny niż URL, aplikacja odrzuca
+konfigurację bez ujawniania wartości.
 
 Uruchom lokalnie:
 
@@ -81,7 +83,7 @@ W projekcie `homeback-app`, w Settings → Environment Variables:
 | Nazwa | Development | Preview | Production |
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | `http://127.0.0.1:3000` lokalnie | dokładny adres Preview | `https://my.homeback.app` |
-| `NEXT_PUBLIC_DEV_ORIGIN` | `http://127.0.0.1:3000` lokalnie | usuń/nie ustawiaj | usuń/nie ustawiaj |
+| `NEXT_PUBLIC_DEV_ORIGIN` | opcjonalne; nadpisuje origin lokalny | usuń/nie ustawiaj | usuń/nie ustawiaj |
 | `NEXT_PUBLIC_SUPABASE_URL` | lokalny URL | URL potwierdzonego stagingu | URL produkcyjny |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | lokalny public key | stagingowy public key | produkcyjny public key |
 | `E2E_BASE_URL` | `http://127.0.0.1:3001` dla runnera | dokładny Preview, tylko do smoke | nie ustawiaj |
@@ -125,7 +127,7 @@ celu obejścia błędu konfiguracji.
 - [ ] Potwierdzono trzy project ref: local, Preview/staging i Production.
 - [ ] Ustawiono `NEXT_PUBLIC_SITE_URL` w odpowiednim scope Vercel.
 - [ ] Ustawiono URL i public key z tego samego projektu Supabase.
-- [ ] Usunięto rozbieżne duplikaty legacy/canonical key.
+- [ ] Potwierdzono, że co najmniej jeden obsługiwany public key jest ustawiony; legacy ma pierwszeństwo.
 - [ ] Skonfigurowano Site URL i redirect URLs w odpowiednim Supabase Auth.
 - [ ] Utworzono lub potwierdzono konto testowe Preview z potwierdzonym e-mailem.
 - [ ] Wykonano redeploy Preview po zmianie zmiennych.

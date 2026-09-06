@@ -1,10 +1,9 @@
 import { revalidatePath } from "next/cache";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
-import { getRuntimeConfig } from "@/lib/runtime/environment";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 
@@ -13,8 +12,6 @@ export async function POST() {
   }
 
   revalidatePath("/", "layout");
-  return NextResponse.redirect(
-    new URL(routes.login, getRuntimeConfig().siteUrl),
-    303,
-  );
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? request.url;
+  return NextResponse.redirect(new URL(routes.login, siteUrl), 303);
 }

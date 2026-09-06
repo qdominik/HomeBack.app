@@ -1,11 +1,11 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
 import { classifySignupResult } from "@/lib/auth/classify-signup-result";
-import { getRuntimeConfig } from "@/lib/runtime/environment";
 
 const householdTypes: Database["public"]["Enums"]["household_type"][] = [
   "dom",
@@ -53,8 +53,11 @@ export async function register(formData: FormData) {
     redirectWithError(routes.register, "password_too_short");
   }
 
-  const runtimeConfig = getRuntimeConfig();
-  const origin = runtimeConfig.siteUrl;
+  const requestHeaders = await headers();
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    requestHeaders.get("origin") ??
+    "http://127.0.0.1:3000";
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({

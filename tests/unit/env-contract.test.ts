@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   detectAppEnvironment,
+  selectSupabasePublicKey,
   validateRuntimeEnvironment,
 } from "../../src/lib/runtime/environment";
 
@@ -29,14 +30,78 @@ test("partial Supabase configuration is rejected without exposing values", () =>
   assert.match(result.ok ? "" : result.errors.join(" "), /required/);
 });
 
-test("legacy and canonical public keys cannot silently diverge", () => {
+test("Local uses NEXT_PUBLIC_SITE_URL when DEV_ORIGIN is absent", () => {
+  const localWithoutDevOrigin = {
+    NEXT_PUBLIC_SITE_URL: base.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_SUPABASE_URL: base.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: base.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  };
+  const result = validateRuntimeEnvironment(localWithoutDevOrigin);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.ok ? result.config.devOrigin : undefined, base.NEXT_PUBLIC_SITE_URL);
+});
+
+test("Local prefers an explicit NEXT_PUBLIC_DEV_ORIGIN", () => {
   const result = validateRuntimeEnvironment({
     ...base,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_different-key",
+    NEXT_PUBLIC_DEV_ORIGIN: "http://localhost:3001",
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.ok ? result.config.devOrigin : undefined, "http://localhost:3001");
+});
+
+test("accepts the legacy anon key without the publishable key", () => {
+  const result = validateRuntimeEnvironment({
+    NEXT_PUBLIC_SITE_URL: base.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_DEV_ORIGIN: base.NEXT_PUBLIC_DEV_ORIGIN,
+    NEXT_PUBLIC_SUPABASE_URL: base.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_anon_legacy-test-key",
+  });
+
+  assert.equal(result.ok, true);
+});
+
+test("accepts the publishable key without the legacy anon key", () => {
+  const result = validateRuntimeEnvironment(base);
+
+  assert.equal(result.ok, true);
+});
+
+test("accepts both public key names and preserves anon-key priority", () => {
+  const anonKey = "sb_anon_legacy-test-key";
+  const publishableKey = "sb_publishable_new-test-key";
+  const result = validateRuntimeEnvironment({
+    ...base,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: anonKey,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(selectSupabasePublicKey(anonKey, publishableKey), anonKey);
+});
+
+test("missing Supabase URL is rejected", () => {
+  const result = validateRuntimeEnvironment({
+    NEXT_PUBLIC_SITE_URL: base.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_DEV_ORIGIN: base.NEXT_PUBLIC_DEV_ORIGIN,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: base.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   });
 
   assert.equal(result.ok, false);
-  assert.match(result.ok ? "" : result.errors.join(" "), /must match/);
+  assert.match(result.ok ? "" : result.errors.join(" "), /NEXT_PUBLIC_SUPABASE_URL/);
+});
+
+test("missing both public keys is rejected", () => {
+  const result = validateRuntimeEnvironment({
+    NEXT_PUBLIC_SITE_URL: base.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_DEV_ORIGIN: base.NEXT_PUBLIC_DEV_ORIGIN,
+    NEXT_PUBLIC_SUPABASE_URL: base.NEXT_PUBLIC_SUPABASE_URL,
+  });
+
+  assert.equal(result.ok, false);
+  assert.match(result.ok ? "" : result.errors.join(" "), /one of/);
 });
 
 test("production and preview site URLs are explicit", () => {

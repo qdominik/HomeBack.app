@@ -10,6 +10,13 @@ export type RuntimeConfig = {
   devOrigin?: string;
 };
 
+export function selectSupabasePublicKey(
+  anonKey: string,
+  publishableKey: string,
+): string {
+  return anonKey || publishableKey;
+}
+
 type ValidationResult =
   | { ok: true; config: RuntimeConfig }
   | { ok: false; errors: string[] };
@@ -110,13 +117,7 @@ export function validateRuntimeEnvironment(
     errors.push("NEXT_PUBLIC_SUPABASE_URL must be an absolute http(s) URL");
   }
 
-  if (anonKey && publishableKey && anonKey !== publishableKey) {
-    errors.push(
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY must match when both are set",
-    );
-  }
-
-  const selectedKey = publishableKey || anonKey;
+  const selectedKey = selectSupabasePublicKey(anonKey, publishableKey);
   if (!selectedKey) {
     errors.push(
       "one of NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY is required",
@@ -132,12 +133,15 @@ export function validateRuntimeEnvironment(
   }
 
   if (environment === "local") {
-    if (!devOriginValue || isPlaceholder(devOriginValue)) {
-      errors.push("NEXT_PUBLIC_DEV_ORIGIN is required for Local");
-    } else if (!parseHttpUrl(devOriginValue)) {
+    if (devOriginValue && (isPlaceholder(devOriginValue) || !parseHttpUrl(devOriginValue))) {
       errors.push("NEXT_PUBLIC_DEV_ORIGIN must be an absolute http(s) URL");
     }
   }
+
+  const resolvedDevOrigin =
+    devOriginValue ||
+    siteUrlValue ||
+    (environment === "local" ? "http://127.0.0.1:3000" : undefined);
 
   if (environment === "production" && siteUrl?.origin !== "https://my.homeback.app") {
     errors.push("Production NEXT_PUBLIC_SITE_URL must be https://my.homeback.app");
@@ -159,7 +163,7 @@ export function validateRuntimeEnvironment(
       siteUrl: siteUrlValue,
       supabaseUrl: supabaseUrlValue,
       supabasePublishableKey: selectedKey,
-      ...(devOriginValue ? { devOrigin: devOriginValue } : {}),
+      ...(resolvedDevOrigin ? { devOrigin: resolvedDevOrigin } : {}),
     },
   };
 }

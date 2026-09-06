@@ -37,12 +37,14 @@ testów sprawdź kontrakt nazw zmiennych:
 npm.cmd run check:env
 ```
 
-Wymagane są `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_DEV_ORIGIN`,
-`NEXT_PUBLIC_SUPABASE_URL`, jedna z pary `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+Wymagane są `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, jedna z pary `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 / legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` oraz `E2E_PASSWORD`. Preview E2E nie
 może używać lokalnego konta ani produkcyjnego Supabase; wymaga osobnego,
 zatwierdzonego konta testowego w projekcie Preview. Hasła i klucze pozostają w
 Vercel/menedżerze haseł i nie trafiają do logów.
+
+`NEXT_PUBLIC_DEV_ORIGIN` jest opcjonalnym lokalnym nadpisaniem. Gdy nie jest
+ustawione, Local używa `NEXT_PUBLIC_SITE_URL`.
 
 Hosted Preview smoke test wymaga jawnego `E2E_BASE_URL` wskazującego dokładny
 deployment oraz konta testowego z potwierdzonym e-mailem. Nie uruchamiaj go
