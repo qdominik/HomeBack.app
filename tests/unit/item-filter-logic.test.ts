@@ -218,8 +218,10 @@ test("dashboard item search exposes initial, loading, error, no-result, and resu
         results: [
           {
             id: "item-a",
+            iconKey: "other",
             name: "Baterie AA",
             location: { kind: "missing", path: null },
+            previewUrl: null,
           },
         ],
       },
@@ -245,6 +247,33 @@ test("dashboard item search presents complete, partial, and missing location pat
     kind: "missing",
     path: null,
   });
+});
+
+test("dashboard item search results reuse the item thumbnail fallback chain", () => {
+  const searchComponent = readFileSync(
+    "src/components/dashboard/item-search.tsx",
+    "utf8",
+  );
+  const searchAction = readFileSync(
+    "src/app/(app)/dashboard/actions.ts",
+    "utf8",
+  );
+  const thumbnail = readFileSync(
+    "src/components/items/item-photo-thumbnail.tsx",
+    "utf8",
+  );
+
+  assert.match(searchComponent, /<ItemPhotoThumbnail/);
+  assert.match(searchComponent, /alt=\{result\.name\}/);
+  assert.match(searchComponent, /iconKey=\{result\.iconKey\}/);
+  assert.match(searchComponent, /previewUrl=\{result\.previewUrl\}/);
+  assert.match(searchComponent, /href=\{`\$\{routes\.items\}\?focus=\$\{result\.id\}`\}/);
+  assert.match(searchAction, /isItemPhotoFinalPathForHousehold/);
+  assert.match(searchAction, /createSignedUrl\(item\.miniatura_url/);
+  assert.match(searchAction, /resolveItemIconKey/);
+  assert.match(thumbnail, /alt=\{alt\}/);
+  assert.match(thumbnail, /onError=\{\(\) => setPreviewFailed\(true\)\}/);
+  assert.match(thumbnail, /<EntityIcon[\s\S]*iconKey=\{iconKey\}/);
 });
 
 test("dashboard item search action keeps the item and room reads scoped to household_id", () => {

@@ -1,6 +1,7 @@
 "use server";
 
 import { getAppContext } from "@/lib/app-context";
+import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
 import {
   buildItemSearchLocationPath,
   DASHBOARD_ITEM_SEARCH_LIMIT,
@@ -9,6 +10,11 @@ import {
   normalizeItemSearchQuery,
   type DashboardItemSearchResponse,
 } from "@/lib/items/item-search";
+import {
+  isItemPhotoFinalPathForHousehold,
+  ITEM_PHOTO_BUCKET,
+  ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
+} from "@/lib/items/item-photo-storage";
 
 export async function searchDashboardItems(
   rawQuery: string,
@@ -29,7 +35,7 @@ export async function searchDashboardItems(
 
   const { data: itemData, error: itemError } = await supabase
     .from("item")
-    .select("id, household_id, nazwa")
+    .select("id, household_id, nazwa, category_id, miniatura_url")
     .eq("household_id", householdId)
     .neq("status", "archiwalne")
     .order("nazwa", { ascending: true });
@@ -47,6 +53,24 @@ export async function searchDashboardItems(
 
   if (!itemIds.length) {
     return { kind: "success", query, results: [] };
+  }
+
+  const categoryIds = Array.from(
+    new Set(
+      items.flatMap((item) =>
+        item.category_id ? [item.category_id] : [],
+      ),
+    ),
+  );
+  const { data: categoryData, error: categoryError } = categoryIds.length
+    ? await supabase
+        .from("category")
+        .select("id, key")
+        .in("id", categoryIds)
+    : { data: [], error: null };
+
+  if (categoryError) {
+    return { kind: "error" };
   }
 
   const { data: primaryLocationData, error: primaryLocationError } =
@@ -116,6 +140,32 @@ export async function searchDashboardItems(
   }
 
   const roomsById = new Map((roomData ?? []).map((room) => [room.id, room]));
+  const categoryKeyById = new Map(
+    (categoryData ?? []).map((category) => [category.id, category.key]),
+  );
+  const itemPhotoPreviewEntries = await Promise.all(
+    items.map(async (item) => {
+      if (
+        !profile ||
+        profile.status !== "aktywny" ||
+        (profile.rola !== "admin" && profile.rola !== "domownik") ||
+        !item.miniatura_url ||
+        !isItemPhotoFinalPathForHousehold(
+          item.miniatura_url,
+          householdId,
+        )
+      ) {
+        return [item.id, null] as const;
+      }
+
+      const { data, error } = await supabase.storage
+        .from(ITEM_PHOTO_BUCKET)
+        .createSignedUrl(item.miniatura_url, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
+
+      return [item.id, error || !data?.signedUrl ? null : data.signedUrl] as const;
+    }),
+  );
+  const itemPhotoPreviewUrlById = new Map(itemPhotoPreviewEntries);
 
   return {
     kind: "success",
@@ -129,12 +179,18 @@ export async function searchDashboardItems(
 
       return {
         id: item.id,
+        iconKey: resolveItemIconKey({
+          categoryKey: item.category_id
+            ? categoryKeyById.get(item.category_id)
+            : undefined,
+        }),
         location: buildItemSearchLocationPath({
           positionName: position?.nazwa,
           roomName: room?.nazwa,
           storageName: storage?.nazwa,
         }),
         name: item.nazwa,
+        previewUrl: itemPhotoPreviewUrlById.get(item.id) ?? null,
       };
     }),
   };
