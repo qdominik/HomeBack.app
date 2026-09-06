@@ -2,6 +2,8 @@ import Link from "next/link";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { Card } from "@/components/ui/card";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import type { HomeSearch } from "@/lib/home/home-search";
@@ -27,8 +29,8 @@ export function HomeSearch({ search }: HomeSearchProps) {
       >
         <label className="ui-label min-w-0 flex-1">
           <span>{t.modules.home.search.label}</span>
-          <input
-            className="ui-control mt-2"
+          <Input
+            className="mt-2"
             defaultValue={search.query}
             name="q"
             placeholder={t.modules.home.search.placeholder}
@@ -37,8 +39,8 @@ export function HomeSearch({ search }: HomeSearchProps) {
         </label>
         <label className="ui-label lg:w-56 lg:shrink-0">
           <span>{t.modules.home.search.scope}</span>
-          <select
-            className="ui-control mt-2"
+          <Select
+            className="mt-2"
             defaultValue={search.scope}
             name="scope"
           >
@@ -47,7 +49,7 @@ export function HomeSearch({ search }: HomeSearchProps) {
                 {scope.label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <div className="flex flex-col gap-2 sm:flex-row lg:shrink-0">
           <Button className="w-full sm:w-auto" type="submit">
