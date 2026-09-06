@@ -2,6 +2,8 @@ import Link from "next/link";
 import { routes } from "@/lib/routes";
 import type { ItemFilters } from "@/lib/items/item-search-params";
 import { t } from "@/lib/i18n";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 
 type FilterOption = {
   id: string;
@@ -45,8 +47,8 @@ export function ItemFilters({
     >
       <label className="grid gap-1 text-sm font-medium text-foreground md:col-span-2">
         <span>{t.modules.items.search}</span>
-        <input
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Input
+          className="text-sm font-normal"
           defaultValue={filters.query}
           name="q"
           placeholder={t.modules.items.searchPlaceholder}
@@ -55,8 +57,8 @@ export function ItemFilters({
       </label>
       <label className="grid gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.category}</span>
-        <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Select
+          className="text-sm font-normal"
           defaultValue={filters.categoryId ?? ""}
           name="category"
         >
@@ -66,12 +68,12 @@ export function ItemFilters({
               {category.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label className="grid gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.status}</span>
-        <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Select
+          className="text-sm font-normal"
           defaultValue={filters.status ?? ""}
           name="status"
         >
@@ -81,12 +83,12 @@ export function ItemFilters({
               {status.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label className="grid gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.room}</span>
-        <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Select
+          className="text-sm font-normal"
           defaultValue={filters.roomId ?? ""}
           name="room"
         >
@@ -96,12 +98,12 @@ export function ItemFilters({
               {room.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label className="grid gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.storage}</span>
-        <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Select
+          className="text-sm font-normal"
           defaultValue={filters.storageId ?? ""}
           name="storage"
         >
@@ -111,12 +113,12 @@ export function ItemFilters({
               {storageLocation.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label className="grid gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.position}</span>
-        <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Select
+          className="text-sm font-normal"
           defaultValue={filters.positionId ?? ""}
           name="position"
         >
@@ -126,12 +128,12 @@ export function ItemFilters({
               {position.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label className="grid gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.sort}</span>
-        <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+        <Select
+          className="text-sm font-normal"
           defaultValue={filters.sort}
           name="sort"
         >
@@ -140,7 +142,7 @@ export function ItemFilters({
               {sort.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <div className="flex items-end gap-3">
         <button

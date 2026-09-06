@@ -6,6 +6,9 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGl
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { searchDashboardItems } from "@/app/(app)/dashboard/actions";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
+import { Input } from "@/components/ui/input";
+import { ListItem } from "@/components/ui/list-item";
 import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
 import { t } from "@/lib/i18n";
 import {
@@ -64,9 +67,9 @@ export function DashboardItemSearch() {
       >
         <label className="ui-label min-w-0 flex-1" htmlFor="dashboard-item-search-input">
           <span>{t.dashboard.itemSearch.label}</span>
-          <input
+          <Input
             aria-describedby="dashboard-item-search-status"
-            className="ui-control mt-2"
+            className="mt-2"
             id="dashboard-item-search-input"
             onChange={(event) => {
               setQuery(event.currentTarget.value);
@@ -103,9 +106,7 @@ export function DashboardItemSearch() {
         <p className="mt-4 text-sm text-muted">{t.dashboard.itemSearch.loading}</p>
       ) : null}
       {view === "error" ? (
-        <p className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger" role="alert">
-          {t.dashboard.itemSearch.error}
-        </p>
+        <ErrorState className="mt-4">{t.dashboard.itemSearch.error}</ErrorState>
       ) : null}
       {view === "no-results" ? (
         <p className="mt-4 text-sm text-muted">{t.dashboard.itemSearch.noResults}</p>
@@ -113,7 +114,7 @@ export function DashboardItemSearch() {
       {view === "results" && response?.kind === "success" ? (
         <ul aria-label={t.dashboard.itemSearch.results} className="mt-4 divide-y divide-line border-y border-line">
           {response.results.map((result) => (
-            <li key={result.id}>
+            <ListItem key={result.id} className="rounded-none border-0 bg-transparent p-0 hover:bg-transparent">
               <Link
                 className="block py-3 outline-none hover:bg-surface-muted focus-visible:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 href={`${routes.items}?focus=${result.id}`}
@@ -140,7 +141,7 @@ export function DashboardItemSearch() {
                   </span>
                 </span>
               </Link>
-            </li>
+            </ListItem>
           ))}
         </ul>
       ) : null}
