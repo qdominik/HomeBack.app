@@ -3,9 +3,11 @@ import test from "node:test";
 import {
   hasItemFilters,
   parseItemSearchParams,
+  parseItemFocusId,
   searchPattern,
 } from "../../src/lib/items/item-search-params";
 import {
+  filterItemsForFocus,
   filterItemsForView,
   parseItemView,
 } from "../../src/lib/items/item-view-filter";
@@ -58,6 +60,13 @@ test("item filters preserve valid UUIDs and reject malformed values", () => {
   assert.equal(filters.roomId, validUuid);
   assert.equal(filters.positionId, null);
   assert.equal(filters.storageId, null);
+});
+
+test("item focus accepts only a valid item UUID", () => {
+  assert.equal(parseItemFocusId(validUuid), validUuid);
+  assert.equal(parseItemFocusId([validUuid, "other"]), validUuid);
+  assert.equal(parseItemFocusId("not-an-item-id"), null);
+  assert.equal(parseItemFocusId(undefined), null);
 });
 
 test("item filters support a system category key and technical status value", () => {
@@ -122,6 +131,27 @@ test("item views separate active, unlocated, and archived items", () => {
       (item) => item.id,
     ),
     ["archived-with-location", "archived-without-location"],
+  );
+});
+
+test("item focus keeps the full list without a focus id and isolates one household item", () => {
+  const items = [
+    { id: "item-a", household_id: "household-a", status: "w domu" as const },
+    { id: "item-b", household_id: "household-a", status: "w domu" as const },
+    { id: "item-a", household_id: "household-b", status: "w domu" as const },
+  ];
+
+  assert.deepEqual(
+    filterItemsForFocus(items, null, "household-a").map((item) => item.id),
+    ["item-a", "item-b", "item-a"],
+  );
+  assert.deepEqual(
+    filterItemsForFocus(items, "item-a", "household-a"),
+    [items[0]],
+  );
+  assert.deepEqual(
+    filterItemsForFocus(items, "item-a", "household-c"),
+    [],
   );
 });
 

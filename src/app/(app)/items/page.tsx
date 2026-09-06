@@ -24,15 +24,19 @@ import {
   ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
 } from "@/lib/items/item-photo-storage";
 import {
+  filterItemsForFocus,
   filterItemsForView,
   parseItemView,
   type ItemView,
 } from "@/lib/items/item-view-filter";
 import { getAppContext } from "@/lib/app-context";
+import { buildItemSearchLocationPath } from "@/lib/items/item-search";
+import { parseItemFocusId } from "@/lib/items/item-search-params";
 
 type ItemsPageProps = {
   searchParams: Promise<{
     error?: string;
+    focus?: string | string[];
     status?: string;
     view?: string | string[];
   }>;
@@ -77,12 +81,16 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const { profile, supabase } = await getAppContext();
 
   const currentView = parseItemView(params);
+  const focusItemId = parseItemFocusId(params.focus);
   const itemsQueryBase = supabase
     .from("item")
     .select("*")
+    .eq("household_id", profile?.household_id ?? "")
     .order("created_at", { ascending: false });
   const itemsQuery =
-    currentView === "archived"
+    focusItemId
+      ? itemsQueryBase.eq("id", focusItemId)
+      : currentView === "archived"
       ? itemsQueryBase.eq("status", "archiwalne")
       : itemsQueryBase.neq("status", "archiwalne");
 
@@ -157,11 +165,18 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const categoryKeyById = new Map(
     categories.map((category) => [category.id, category.key]),
   );
-  const visibleItems = filterItemsForView(
-    items,
-    primaryPositionByItemId,
-    currentView,
+  const visibleItems = filterItemsForFocus(
+    filterItemsForView(
+      items,
+      primaryPositionByItemId,
+      currentView,
+    ),
+    focusItemId,
+    profile?.household_id ?? "",
   );
+  const focusItem = focusItemId
+    ? visibleItems.find((item) => item.id === focusItemId) ?? null
+    : null;
   const visibleItemIds = visibleItems.map((item) => item.id);
   const itemPhotoFilesResponse = visibleItemIds.length
     ? await supabase
@@ -329,6 +344,55 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           ))}
         </nav>
       </section>
+      {focusItem ? (
+        <section aria-labelledby="focused-item-title" className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2
+              className="text-lg font-semibold text-foreground"
+              id="focused-item-title"
+            >
+              {focusItem.nazwa}
+            </h2>
+            <Link
+              className="inline-flex min-h-10 items-center rounded-md border border-line bg-surface px-3 py-2 text-sm font-semibold text-primary-strong hover:border-primary/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              href="/items"
+            >
+              <ListBulletsIcon aria-hidden="true" className="mr-2" size={18} />
+              {t.modules.items.views.all}
+            </Link>
+          </div>
+          {(() => {
+            const positionId = primaryPositionByItemId.get(focusItem.id) ?? null;
+            const location =
+              locationSelectorOptions.positions.find(
+                (option) => option.id === positionId,
+              ) ?? null;
+            const locationPath = buildItemSearchLocationPath({
+              positionName: location?.positionName,
+              roomName: location?.roomName,
+              storageName: location?.storageName,
+            });
+
+            return (
+              <nav
+                aria-label={t.modules.items.location}
+                className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-line bg-surface-muted px-3 py-2 text-sm text-muted"
+              >
+                {locationPath.path ? (
+                  locationPath.path.split(" / ").map((segment, index) => (
+                    <span className="min-w-0 break-words" key={`${segment}-${index}`}>
+                      {index ? <span aria-hidden="true" className="mr-2">→</span> : null}
+                      {segment}
+                    </span>
+                  ))
+                ) : (
+                  <span>{t.modules.items.noLocation}</span>
+                )}
+              </nav>
+            );
+          })()}
+        </section>
+      ) : null}
       {visibleItems.length ? (
         <section className="grid gap-3 lg:grid-cols-2">
           {visibleItems.map((item) => {
@@ -349,6 +413,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
                 }
                 isAdmin={isAdmin}
                 item={item}
+                focusMode={focusItemId === item.id}
                 hasAttachedFiles={itemHasAttachedFilesById.has(item.id)}
                 key={item.id}
                 location={location}

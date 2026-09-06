@@ -36,8 +36,19 @@ test("dashboard item search finds household items and links to the item list", a
   await expect(result).toContainText(data.storageSpace.upperDrawer);
 
   await result.click();
-  await expect(page).toHaveURL(/\/items#item-/);
+  await expect(page).toHaveURL(/\/items\?focus=[0-9a-f-]+$/);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
+  await expect(page.locator('article[id^="item-"]')).toHaveCount(1);
+  const location = page.getByRole("navigation", { name: "Lokalizacja" });
+  await expect(location).toContainText(data.room.salon);
+  await expect(location).toContainText(data.furniture.chest);
+  await expect(location).toContainText(data.storageSpace.upperDrawer);
+  await page
+    .locator('section[aria-labelledby="focused-item-title"]')
+    .getByRole("link", { name: "Wszystkie" })
+    .click();
+  await expect(page).toHaveURL(/\/items$/);
+  await expect(page.locator('article[id^="item-"]')).not.toHaveCount(1);
 });
 
 test("dashboard item search shows no-result and clear states", async ({

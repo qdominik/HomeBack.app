@@ -116,7 +116,7 @@ export function DashboardItemSearch() {
             <li key={result.id}>
               <Link
                 className="block py-3 outline-none hover:bg-surface-muted focus-visible:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                href={`${routes.items}#item-${result.id}`}
+                href={`${routes.items}?focus=${result.id}`}
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <ItemPhotoThumbnail

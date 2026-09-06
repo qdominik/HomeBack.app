@@ -48,6 +48,10 @@ function parseUuid(value: string | string[] | undefined) {
     : null;
 }
 
+export function parseItemFocusId(value: string | string[] | undefined) {
+  return parseUuid(value);
+}
+
 function parseCategory(value: string | string[] | undefined) {
   const candidate = firstValue(value)?.trim().toLowerCase() ?? "";
   const categoryId = parseUuid(candidate);
