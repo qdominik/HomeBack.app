@@ -32,6 +32,12 @@ Konfiguracja Playwright uruchamia aplikacje na `http://127.0.0.1:3001`; nie
 uzywa portu deweloperskiego `3000`. Jezeli na `3001` dziala juz wlasciwa,
 lokalna instancja, Playwright ja wykorzysta.
 
+Podczas uruchamiania zarzadzanej instancji Next.js Playwright przekazuje
+`NEXT_PUBLIC_SITE_URL` zgodny z adresem testowym, domyslnie
+`http://127.0.0.1:3001`. Dzieki temu akcje auth, w tym wylogowanie, nie
+przekierowuja przegladarki testowej na port deweloperski `3000`. Jawnie
+ustawiony `NEXT_PUBLIC_SITE_URL` nadal ma pierwszenstwo.
+
 Lokalny szablon wiadomosci Supabase moze wystawic link z portem `3000`, poniewaz
 jest to wartosc `site_url` srodowiska Auth. Pomocnik E2E odczytuje link wylacznie
 z Mailpit, kieruje jego token do aplikacji na `3001` i potwierdza go przez
