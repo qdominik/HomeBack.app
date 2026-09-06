@@ -111,14 +111,19 @@ http://localhost:3000
 
 ## Environment Variables
 
-The application expects Supabase configuration and optional AI provider configuration through environment variables.
+The application uses one explicit public configuration contract per environment.
+The complete variable-name template is in `.env.example`; values must be supplied
+through local `.env.local` or the Vercel Environment Variables UI. Never commit
+keys or copy them into documentation.
 
 Typical local variables:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SITE_URL=
+NEXT_PUBLIC_DEV_ORIGIN=
 SUPABASE_SERVICE_ROLE_KEY=
 ITEM_PHOTO_AI_PROVIDER=
 ITEM_PHOTO_AI_MODEL=
@@ -129,9 +134,23 @@ E2E_PASSWORD=
 ```
 
 Use `.env.local` for local development. Do not commit environment files.
-Set `HOMEBACK_DEV_ORIGIN` only when testing from a local LAN address, for
-example `http://192.168.0.205:3000`. `E2E_PASSWORD` is required by local
-end-to-end tests.
+`NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_DEV_ORIGIN` must be absolute URLs. Local
+development uses the local Supabase project; Vercel Preview and Production use
+separate hosted projects and explicit site URLs. The legacy anon key name is
+accepted only when it exactly matches the publishable key. `E2E_PASSWORD` is
+required by local end-to-end tests.
+
+Validate only the presence and shape of the current process environment with:
+
+```powershell
+npm.cmd run check:env
+```
+
+Validate the committed variable-name template in CI with:
+
+```powershell
+npm.cmd run check:env -- --example
+```
 
 ## Supabase Development
 
@@ -205,6 +224,11 @@ Public URLs:
 
 - Landing page: `https://homeback.app`
 - Application: `https://my.homeback.app`
+
+The deployment contract, Vercel scope checklist, Supabase redirect policy and
+the current limitation that no new staging project may be created without owner
+approval are documented in
+[`docs/ops/vercel-environment-contract.md`](docs/ops/vercel-environment-contract.md).
 
 ## Project Status
 

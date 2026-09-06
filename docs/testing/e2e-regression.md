@@ -28,6 +28,26 @@ wyscigi pomiedzy wiadomosciami i limitami Auth.
    npm.cmd run test:e2e
    ```
 
+## Kontrakt środowiska E2E
+
+Lokalny runner E2E korzysta z lokalnego Supabase i Mailpit. Przed uruchomieniem
+testów sprawdź kontrakt nazw zmiennych:
+
+```powershell
+npm.cmd run check:env
+```
+
+Wymagane są `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_DEV_ORIGIN`,
+`NEXT_PUBLIC_SUPABASE_URL`, jedna z pary `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+/ legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` oraz `E2E_PASSWORD`. Preview E2E nie
+może używać lokalnego konta ani produkcyjnego Supabase; wymaga osobnego,
+zatwierdzonego konta testowego w projekcie Preview. Hasła i klucze pozostają w
+Vercel/menedżerze haseł i nie trafiają do logów.
+
+Hosted Preview smoke test wymaga jawnego `E2E_BASE_URL` wskazującego dokładny
+deployment oraz konta testowego z potwierdzonym e-mailem. Nie uruchamiaj go
+przeciwko Production ani nie używaj danych produkcyjnych.
+
 Konfiguracja Playwright uruchamia aplikacje na `http://127.0.0.1:3001`; nie
 uzywa portu deweloperskiego `3000`. Jezeli na `3001` dziala juz wlasciwa,
 lokalna instancja, Playwright ja wykorzysta.

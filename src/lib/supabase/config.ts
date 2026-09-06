@@ -1,13 +1,11 @@
+import { getRuntimeConfig } from "@/lib/runtime/environment";
+
 export function getSupabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const config = getRuntimeConfig();
 
-  if (!url || !publishableKey) {
-    throw new Error("Brak lokalnej konfiguracji Supabase.");
-  }
-
-  return { publishableKey, url };
+  return {
+    publishableKey: config.supabasePublishableKey,
+    url: config.supabaseUrl,
+  };
 }
 

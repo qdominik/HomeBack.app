@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check environment contract
+        run: npm run check:env -- --example
+
       - name: Check whitespace
         run: git diff --check
 

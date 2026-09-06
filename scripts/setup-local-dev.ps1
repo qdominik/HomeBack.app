@@ -62,6 +62,7 @@ if (-not $apiUrl -or -not $publishableKey) {
 
 @(
   "NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000"
+  "NEXT_PUBLIC_DEV_ORIGIN=http://127.0.0.1:3000"
   "NEXT_PUBLIC_SUPABASE_URL=$apiUrl"
   "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$publishableKey"
 ) | Set-Content -LiteralPath ".env.local" -Encoding ascii
