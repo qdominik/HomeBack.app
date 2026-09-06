@@ -1,10 +1,13 @@
 import { normalizeTemplateValue } from "../templates/normalize-template-value";
+import type { EntityIconKey } from "../icons/entity-icon-definitions";
 
 export const DASHBOARD_ITEM_SEARCH_LIMIT = 12;
 
 export type ItemSearchCandidate = {
+  category_id?: string;
   household_id: string;
   id: string;
+  miniatura_url?: string | null;
   nazwa: string;
 };
 
@@ -14,9 +17,11 @@ export type ItemSearchLocationPath = {
 };
 
 export type DashboardItemSearchResult = {
+  iconKey: EntityIconKey;
   id: string;
   location: ItemSearchLocationPath;
   name: string;
+  previewUrl: string | null;
 };
 
 export type DashboardItemSearchResponse =

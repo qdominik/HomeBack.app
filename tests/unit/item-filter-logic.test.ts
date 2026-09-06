@@ -3,9 +3,11 @@ import test from "node:test";
 import {
   hasItemFilters,
   parseItemSearchParams,
+  parseItemFocusId,
   searchPattern,
 } from "../../src/lib/items/item-search-params";
 import {
+  filterItemsForFocus,
   filterItemsForView,
   parseItemView,
 } from "../../src/lib/items/item-view-filter";
@@ -58,6 +60,13 @@ test("item filters preserve valid UUIDs and reject malformed values", () => {
   assert.equal(filters.roomId, validUuid);
   assert.equal(filters.positionId, null);
   assert.equal(filters.storageId, null);
+});
+
+test("item focus accepts only a valid item UUID", () => {
+  assert.equal(parseItemFocusId(validUuid), validUuid);
+  assert.equal(parseItemFocusId([validUuid, "other"]), validUuid);
+  assert.equal(parseItemFocusId("not-an-item-id"), null);
+  assert.equal(parseItemFocusId(undefined), null);
 });
 
 test("item filters support a system category key and technical status value", () => {
@@ -122,6 +131,27 @@ test("item views separate active, unlocated, and archived items", () => {
       (item) => item.id,
     ),
     ["archived-with-location", "archived-without-location"],
+  );
+});
+
+test("item focus keeps the full list without a focus id and isolates one household item", () => {
+  const items = [
+    { id: "item-a", household_id: "household-a", status: "w domu" as const },
+    { id: "item-b", household_id: "household-a", status: "w domu" as const },
+    { id: "item-a", household_id: "household-b", status: "w domu" as const },
+  ];
+
+  assert.deepEqual(
+    filterItemsForFocus(items, null, "household-a").map((item) => item.id),
+    ["item-a", "item-b", "item-a"],
+  );
+  assert.deepEqual(
+    filterItemsForFocus(items, "item-a", "household-a"),
+    [items[0]],
+  );
+  assert.deepEqual(
+    filterItemsForFocus(items, "item-a", "household-c"),
+    [],
   );
 });
 
@@ -218,8 +248,10 @@ test("dashboard item search exposes initial, loading, error, no-result, and resu
         results: [
           {
             id: "item-a",
+            iconKey: "other",
             name: "Baterie AA",
             location: { kind: "missing", path: null },
+            previewUrl: null,
           },
         ],
       },
@@ -245,6 +277,33 @@ test("dashboard item search presents complete, partial, and missing location pat
     kind: "missing",
     path: null,
   });
+});
+
+test("dashboard item search results reuse the item thumbnail fallback chain", () => {
+  const searchComponent = readFileSync(
+    "src/components/dashboard/item-search.tsx",
+    "utf8",
+  );
+  const searchAction = readFileSync(
+    "src/app/(app)/dashboard/actions.ts",
+    "utf8",
+  );
+  const thumbnail = readFileSync(
+    "src/components/items/item-photo-thumbnail.tsx",
+    "utf8",
+  );
+
+  assert.match(searchComponent, /<ItemPhotoThumbnail/);
+  assert.match(searchComponent, /alt=\{result\.name\}/);
+  assert.match(searchComponent, /iconKey=\{result\.iconKey\}/);
+  assert.match(searchComponent, /previewUrl=\{result\.previewUrl\}/);
+  assert.match(searchComponent, /href=\{`\$\{routes\.items\}\?focus=\$\{result\.id\}`\}/);
+  assert.match(searchAction, /isItemPhotoFinalPathForHousehold/);
+  assert.match(searchAction, /createSignedUrl\(item\.miniatura_url/);
+  assert.match(searchAction, /resolveItemIconKey/);
+  assert.match(thumbnail, /alt=\{alt\}/);
+  assert.match(thumbnail, /onError=\{\(\) => setPreviewFailed\(true\)\}/);
+  assert.match(thumbnail, /<EntityIcon[\s\S]*iconKey=\{iconKey\}/);
 });
 
 test("dashboard item search action keeps the item and room reads scoped to household_id", () => {

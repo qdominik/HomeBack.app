@@ -39,3 +39,19 @@ export function filterItemsForView<TItem extends ItemViewFilterItem>(
 
   return activeItems;
 }
+
+export function filterItemsForFocus<
+  TItem extends { household_id: string; id: string },
+>(
+  items: readonly TItem[],
+  focusItemId: string | null,
+  householdId: string,
+) {
+  if (!focusItemId) {
+    return items;
+  }
+
+  return items.filter(
+    (item) => item.id === focusItemId && item.household_id === householdId,
+  );
+}

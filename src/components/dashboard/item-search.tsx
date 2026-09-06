@@ -6,6 +6,7 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGl
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { searchDashboardItems } from "@/app/(app)/dashboard/actions";
 import { Button } from "@/components/ui/button";
+import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
 import { t } from "@/lib/i18n";
 import {
   resolveDashboardItemSearchView,
@@ -115,19 +116,28 @@ export function DashboardItemSearch() {
             <li key={result.id}>
               <Link
                 className="block py-3 outline-none hover:bg-surface-muted focus-visible:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                href={`${routes.items}#item-${result.id}`}
+                href={`${routes.items}?focus=${result.id}`}
               >
-                <span className="block break-words font-semibold text-foreground">
-                  {result.name}
-                </span>
-                <span className="mt-1 block break-words text-sm leading-5 text-muted">
-                  {result.location.kind === "complete" ? result.location.path : null}
-                  {result.location.kind === "partial"
-                    ? `${t.dashboard.itemSearch.incompleteLocation}: ${result.location.path}`
-                    : null}
-                  {result.location.kind === "missing"
-                    ? t.dashboard.itemSearch.noLocation
-                    : null}
+                <span className="flex min-w-0 items-center gap-3">
+                  <ItemPhotoThumbnail
+                    alt={result.name}
+                    iconKey={result.iconKey}
+                    previewUrl={result.previewUrl}
+                  />
+                  <span className="min-w-0">
+                    <span className="block break-words font-semibold text-foreground">
+                      {result.name}
+                    </span>
+                    <span className="mt-1 block break-words text-sm leading-5 text-muted">
+                      {result.location.kind === "complete" ? result.location.path : null}
+                      {result.location.kind === "partial"
+                        ? `${t.dashboard.itemSearch.incompleteLocation}: ${result.location.path}`
+                        : null}
+                      {result.location.kind === "missing"
+                        ? t.dashboard.itemSearch.noLocation
+                        : null}
+                    </span>
+                  </span>
                 </span>
               </Link>
             </li>

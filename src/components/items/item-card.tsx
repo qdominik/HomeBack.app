@@ -41,6 +41,7 @@ type ItemCardProps = {
   hasAttachedFiles: boolean;
   isAdmin: boolean;
   item: Item;
+  focusMode?: boolean;
   location: ItemLocationOption | null;
   locationOptions: ItemLocationSelectorOptions;
   photo: ItemPhotoForForm | null;
@@ -95,6 +96,7 @@ export function ItemCard({
   hasAttachedFiles,
   isAdmin,
   item,
+  focusMode = false,
   location,
   locationOptions,
   photo,
@@ -124,6 +126,8 @@ export function ItemCard({
     <article
       className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5"
       id={`item-${item.id}`}
+      tabIndex={focusMode ? -1 : undefined}
+      autoFocus={focusMode}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
