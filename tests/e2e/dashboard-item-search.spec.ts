@@ -64,7 +64,7 @@ test("main navigation opens search from Structure and each structural result lin
     [data.furniture.chest, "Mebel", `${data.room.salon} → ${data.furniture.chest}`],
     [data.storageSpace.upperDrawer, "Schowek", `${data.room.salon} → ${data.furniture.chest} → ${data.storageSpace.upperDrawer}`],
   ]) {
-    const trigger = page.getByRole("navigation", { name: "Główna nawigacja" }).getByRole("button", { name: "Wyszukiwarka", exact: true });
+    const trigger = page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true });
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
     await expect(dialog.getByRole("searchbox")).toBeFocused();
@@ -84,7 +84,7 @@ test("mobile search supports empty, no-result, loading, stale response, error an
   await page.setViewportSize({ width: 390, height: 844 });
   await prepareDeletionDataset(page, "global-mobile");
   await page.goto("/dashboard");
-  const trigger = page.getByRole("navigation", { name: "Główna nawigacja" }).getByRole("button", { name: "Wyszukiwarka", exact: true });
+  const trigger = page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true });
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
   await expect(dialog.getByRole("status")).toContainText("Wpisz nazwę");

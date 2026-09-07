@@ -25,6 +25,8 @@ export const pl: Dictionary = {
     tagline: "Wszystko o Twoim domu w jednym miejscu",
   },
   navigation: {
+    openMenu: "Otwórz menu",
+    closeMenu: "Zamknij menu",
     main: "Główna nawigacja",
     dashboard: "Dashboard",
     items: "Rzeczy",
