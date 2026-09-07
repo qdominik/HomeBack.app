@@ -25,6 +25,7 @@ export default async function ProtectedLayout({
 
   return (
     <AppShell
+      canAddItem={profile.rola === "admin" && profile.status === "aktywny"}
       householdName={household.nazwa}
       role={profile.rola}
       userName={profile.imie}

@@ -14,7 +14,8 @@ function results(region: Locator) {
 test("global search defaults to all, finds four types and applies every type filter", async ({ page }) => {
   const data = await prepareDeletionDataset(page, "global-types");
   await page.goto("/dashboard");
-  const region = page.getByRole("region", { name: "Wyszukiwarka", exact: true });
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const region = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
   await expect(region.getByRole("button", { name: "Wszystko", exact: true })).toHaveAttribute("aria-pressed", "true");
   await search(region, data.suffix);
   const list = results(region);
@@ -44,7 +45,8 @@ test("global search defaults to all, finds four types and applies every type fil
 test("Polish normalization preserves item breadcrumbs and the item hash link", async ({ page }) => {
   const data = await prepareDeletionDataset(page, "global-item");
   await page.goto("/dashboard");
-  const region = page.getByRole("region", { name: "Wyszukiwarka", exact: true });
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const region = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
   await search(region, "ladowarka");
   const result = results(region).getByRole("link").filter({ hasText: data.item.charger });
   await expect(result).toContainText("Rzecz");
@@ -64,7 +66,7 @@ test("main navigation opens search from Structure and each structural result lin
     [data.furniture.chest, "Mebel", `${data.room.salon} → ${data.furniture.chest}`],
     [data.storageSpace.upperDrawer, "Schowek", `${data.room.salon} → ${data.furniture.chest} → ${data.storageSpace.upperDrawer}`],
   ]) {
-    const trigger = page.getByRole("navigation", { name: "Główna nawigacja" }).getByRole("button", { name: "Wyszukiwarka", exact: true });
+    const trigger = page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true });
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
     await expect(dialog.getByRole("searchbox")).toBeFocused();
@@ -84,7 +86,7 @@ test("mobile search supports empty, no-result, loading, stale response, error an
   await page.setViewportSize({ width: 390, height: 844 });
   await prepareDeletionDataset(page, "global-mobile");
   await page.goto("/dashboard");
-  const trigger = page.getByRole("navigation", { name: "Główna nawigacja" }).getByRole("button", { name: "Wyszukiwarka", exact: true });
+  const trigger = page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true });
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
   await expect(dialog.getByRole("status")).toContainText("Wpisz nazwę");
@@ -131,7 +133,8 @@ test("global search never returns another household's items or structure", async
   try {
     const otherPage = await other.newPage();
     await registerAndCreateHousehold(otherPage, "global-isolation-target");
-    const region = otherPage.getByRole("region", { name: "Wyszukiwarka", exact: true });
+    await otherPage.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+    const region = otherPage.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
     await search(region, data.suffix);
     await expect(region.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
     await expect(results(region)).toHaveCount(0);
