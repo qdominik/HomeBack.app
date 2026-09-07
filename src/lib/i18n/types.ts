@@ -4,6 +4,25 @@ type ModuleCopy = {
 };
 
 export type Dictionary = {
+  globalSearch: {
+    title: string;
+    label: string;
+    placeholder: string;
+    submit: string;
+    clear: string;
+    close: string;
+    filter: string;
+    initial: string;
+    ready: string;
+    loading: string;
+    error: string;
+    noResults: string;
+    results: string;
+    noLocation: string;
+    limited: string;
+    filters: Record<"all" | "item" | "room" | "furniture" | "storage", string>;
+    types: Record<"item" | "room" | "furniture" | "storage", string>;
+  };
   app: {
     name: string;
     tagline: string;

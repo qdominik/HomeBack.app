@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import { GlobalSearch } from "@/components/dashboard/item-search";
 import { BrandLogo } from "@/components/brand-logo";
 import { StatusBadge } from "@/components/status-badge";
 import { buttonClassName } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import type { Database } from "@/types/database";
 
 const navigation = [
   { key: "dashboard", href: routes.dashboard, label: t.navigation.dashboard },
+  { key: "search", href: "#global-search", label: t.globalSearch.title },
   { key: "items", href: routes.items, label: t.navigation.items },
   { key: "home", href: routes.home, label: t.navigation.home },
   { key: "family", href: routes.family, label: t.navigation.family },
@@ -45,6 +47,8 @@ export function AppShell({
   userName,
 }: AppShellProps) {
   const pathname = usePathname();
+  const searchDialog = useRef<HTMLDialogElement>(null);
+  const searchTrigger = useRef<HTMLButtonElement>(null);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -86,6 +90,19 @@ export function AppShell({
             className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-3"
           >
             {navigation.map((item) => {
+              if (item.key === "search") {
+                return <button
+                  aria-haspopup="dialog"
+                  className="relative inline-flex min-h-11 shrink-0 items-center rounded-control border border-transparent px-3 py-2 text-sm font-semibold text-muted hover:border-line hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+                  key={item.key}
+                  onClick={() => {
+                    searchDialog.current?.showModal();
+                    searchDialog.current?.querySelector("input")?.focus();
+                  }}
+                  ref={searchTrigger}
+                  type="button"
+                >{item.label}</button>;
+              }
               const isActive = pathname === item.href;
               const isSoon = appModuleDefinitions[item.key as AppModuleKey].status === "soon";
 
@@ -120,6 +137,17 @@ export function AppShell({
           </nav>
         </div>
       </header>
+      <dialog
+        aria-label={t.globalSearch.title}
+        className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-control border border-line bg-surface p-3 text-foreground shadow-card backdrop:bg-black/40 sm:p-5"
+        onClose={() => searchTrigger.current?.focus()}
+        ref={searchDialog}
+      >
+        <div className="mb-3 flex justify-end">
+          <button className={buttonClassName({ variant: "secondary" })} onClick={() => searchDialog.current?.close()} type="button">{t.globalSearch.close}</button>
+        </div>
+        <GlobalSearch onNavigate={() => searchDialog.current?.close()} />
+      </dialog>
       <main className="mx-auto w-full max-w-content px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         {children}
       </main>

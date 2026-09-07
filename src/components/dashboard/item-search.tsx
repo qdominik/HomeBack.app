@@ -1,149 +1,93 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
-import { searchDashboardItems } from "@/app/(app)/dashboard/actions";
+import { searchGlobalObjects } from "@/app/(app)/dashboard/actions";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { EntityIcon } from "@/components/icons/entity-icon";
 import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
 import { t } from "@/lib/i18n";
-import {
-  resolveDashboardItemSearchView,
-  type DashboardItemSearchResponse,
-} from "@/lib/items/item-search";
-import { routes } from "@/lib/routes";
+import { GLOBAL_SEARCH_FILTERS, type GlobalSearchFilter, type GlobalSearchResponse } from "@/lib/global-search/search";
 
-export function DashboardItemSearch() {
+export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
+  const id = useId();
   const [query, setQuery] = useState("");
-  const [response, setResponse] = useState<DashboardItemSearchResponse | null>(
-    null,
-  );
+  const [filter, setFilter] = useState<GlobalSearchFilter>("all");
+  const [response, setResponse] = useState<GlobalSearchResponse | null>(null);
   const [isPending, startTransition] = useTransition();
-  const view = resolveDashboardItemSearchView({
-    isLoading: isPending,
-    response,
-  });
+  const requestVersion = useRef(0);
+  const copy = t.globalSearch;
 
-  function submitSearch() {
+  function submitSearch(nextFilter = filter) {
+    const version = ++requestVersion.current;
     startTransition(async () => {
       try {
-        const nextResponse = await searchDashboardItems(query);
-        setResponse(nextResponse);
+        const next = await searchGlobalObjects(query, nextFilter);
+        if (version === requestVersion.current) setResponse(next);
       } catch {
-        setResponse({ kind: "error" });
+        if (version === requestVersion.current) setResponse({ kind: "error" });
       }
     });
   }
 
-  function clearSearch() {
-    setQuery("");
+  function changeQuery(value: string) {
+    requestVersion.current += 1;
+    setQuery(value);
     setResponse(null);
   }
 
-  const statusMessage =
-    view === "loading"
-      ? t.dashboard.itemSearch.loading
-      : view === "error"
-        ? t.dashboard.itemSearch.error
-        : view === "no-results"
-          ? t.dashboard.itemSearch.noResults
-          : t.dashboard.itemSearch.initial;
+  const results = !isPending && response?.kind === "success" ? response.results : [];
+  const statusMessage = isPending ? copy.loading
+    : response?.kind === "error" ? copy.error
+    : response?.kind === "success" ? (results.length ? `${copy.results}: ${response.total}.` : copy.noResults)
+    : query ? copy.ready : copy.initial;
 
   return (
-    <section aria-labelledby="dashboard-item-search-title" className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
-      <h2 className="text-lg font-semibold text-foreground" id="dashboard-item-search-title">
-        {t.dashboard.itemSearch.title}
-      </h2>
-      <form
-        className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end"
-        onSubmit={(event) => {
-          event.preventDefault();
-          submitSearch();
-        }}
-      >
-        <label className="ui-label min-w-0 flex-1" htmlFor="dashboard-item-search-input">
-          <span>{t.dashboard.itemSearch.label}</span>
-          <input
-            aria-describedby="dashboard-item-search-status"
-            className="ui-control mt-2"
-            id="dashboard-item-search-input"
-            onChange={(event) => {
-              setQuery(event.currentTarget.value);
-              setResponse(null);
-            }}
-            placeholder={t.dashboard.itemSearch.placeholder}
-            type="search"
-            value={query}
-          />
+    <section aria-labelledby={`${id}-title`} className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
+      <h2 className="text-lg font-semibold text-foreground" id={`${id}-title`}>{copy.title}</h2>
+      <form className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(event) => { event.preventDefault(); submitSearch(); }}>
+        <label className="ui-label min-w-0 flex-1" htmlFor={`${id}-input`}>
+          <span>{copy.label}</span>
+          <input aria-describedby={`${id}-status`} className="ui-control mt-2" id={`${id}-input`} maxLength={100}
+            onChange={(event) => changeQuery(event.currentTarget.value)} placeholder={copy.placeholder} type="search" value={query} />
         </label>
         <div className="flex gap-2 sm:shrink-0">
-          {query ? (
-            <button
-              aria-label={t.dashboard.itemSearch.clear}
-              className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-line bg-surface text-muted hover:border-primary hover:text-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              onClick={clearSearch}
-              type="button"
-            >
-              <XIcon aria-hidden="true" size={18} weight="bold" />
-            </button>
-          ) : null}
-          <Button className="flex-1 sm:flex-none" disabled={isPending} type="submit">
-            <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
-            {t.dashboard.itemSearch.submit}
-          </Button>
+          {query ? <button aria-label={copy.clear} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-line bg-surface text-muted hover:border-primary focus-visible:outline-2 focus-visible:outline-primary" onClick={() => changeQuery("")} type="button"><XIcon aria-hidden="true" size={18} /></button> : null}
+          <Button className="flex-1 sm:flex-none" disabled={isPending} type="submit"><MagnifyingGlassIcon aria-hidden="true" size={18} />{copy.submit}</Button>
         </div>
       </form>
-
-      <p aria-live="polite" className="sr-only" id="dashboard-item-search-status" role="status">
-        {statusMessage}
-      </p>
-
-      {view === "loading" ? (
-        <p className="mt-4 text-sm text-muted">{t.dashboard.itemSearch.loading}</p>
-      ) : null}
-      {view === "error" ? (
-        <p className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger" role="alert">
-          {t.dashboard.itemSearch.error}
-        </p>
-      ) : null}
-      {view === "no-results" ? (
-        <p className="mt-4 text-sm text-muted">{t.dashboard.itemSearch.noResults}</p>
-      ) : null}
-      {view === "results" && response?.kind === "success" ? (
-        <ul aria-label={t.dashboard.itemSearch.results} className="mt-4 divide-y divide-line border-y border-line">
-          {response.results.map((result) => (
-            <li key={result.id}>
-              <Link
-                className="block py-3 outline-none hover:bg-surface-muted focus-visible:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                href={`${routes.items}?focus=${result.id}`}
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <ItemPhotoThumbnail
-                    alt={result.name}
-                    iconKey={result.iconKey}
-                    previewUrl={result.previewUrl}
-                  />
-                  <span className="min-w-0">
-                    <span className="block break-words font-semibold text-foreground">
-                      {result.name}
-                    </span>
-                    <span className="mt-1 block break-words text-sm leading-5 text-muted">
-                      {result.location.kind === "complete" ? result.location.path : null}
-                      {result.location.kind === "partial"
-                        ? `${t.dashboard.itemSearch.incompleteLocation}: ${result.location.path}`
-                        : null}
-                      {result.location.kind === "missing"
-                        ? t.dashboard.itemSearch.noLocation
-                        : null}
-                    </span>
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <div aria-label={copy.filter} className="mt-3 flex flex-wrap gap-2" role="group">
+        {GLOBAL_SEARCH_FILTERS.map((value) => <button aria-pressed={filter === value} className={`min-h-11 rounded-control border px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${filter === value ? "border-primary-hover bg-primary text-white" : "border-line bg-surface text-foreground hover:border-primary"}`} key={value} type="button" onClick={() => {
+          setFilter(value);
+          setResponse(null);
+          submitSearch(value);
+        }}>{copy.filters[value]}</button>)}
+      </div>
+      <p aria-live="polite" className="mt-4 text-sm text-muted" id={`${id}-status`} role="status">{statusMessage}</p>
+      {!isPending && response?.kind === "error" ? <p className="mt-2 text-sm text-danger" role="alert">{copy.error}</p> : null}
+      {results.length ? <ul aria-label={copy.results} className="mt-4 divide-y divide-line border-y border-line">
+        {results.map((result) => <li key={`${result.type}-${result.id}`}>
+          <Link className="block rounded-md py-3 outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-primary" href={result.href} onClick={onNavigate}>
+            <span className="flex min-w-0 items-start gap-3">
+              {result.type === "item" ? <ItemPhotoThumbnail alt={result.name} iconKey={result.icon ?? null} previewUrl={result.previewUrl ?? null} />
+                : <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary"><EntityIcon group={result.type === "room" ? "room" : result.type === "furniture" ? "storage" : "position"} iconKey={result.icon} size={22} /></span>}
+              <span className="min-w-0">
+                <span className="block break-words font-semibold text-foreground">{result.name}</span>
+                <Badge tone="primary">{copy.types[result.type]}</Badge>
+                <span className="mt-1 block break-words text-sm leading-5 text-muted">{result.breadcrumb.length ? result.breadcrumb.join(" → ") : copy.noLocation}</span>
+              </span>
+            </span>
+          </Link>
+        </li>)}
+      </ul> : null}
+      {!isPending && response?.kind === "success" && response.total > results.length ? <p className="mt-3 text-sm text-muted">{copy.limited}</p> : null}
     </section>
   );
+}
+
+export function DashboardItemSearch() {
+  return <GlobalSearch />;
 }

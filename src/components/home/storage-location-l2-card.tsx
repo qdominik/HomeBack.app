@@ -58,7 +58,7 @@ export function StorageLocationL2Card({
   const iconKey = resolveStorageLocationIconKey(location.typ, location.ikona);
 
   return (
-    <section className="rounded-control border border-line bg-surface-muted p-4 sm:p-5">
+    <section id={`furniture-${location.id}`} className="scroll-mt-4 rounded-control border border-line bg-surface-muted p-4 sm:p-5 target:ring-2 target:ring-primary">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
