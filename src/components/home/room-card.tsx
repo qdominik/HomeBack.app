@@ -55,7 +55,7 @@ export function RoomCard({
   );
 
   return (
-    <Card as="article" className="p-5 sm:p-6">
+    <Card as="article" id={`room-${room.id}`} className="scroll-mt-4 p-5 sm:p-6 target:ring-2 target:ring-primary">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">

@@ -295,9 +295,9 @@ test("dashboard item search results reuse the item thumbnail fallback chain", ()
 
   assert.match(searchComponent, /<ItemPhotoThumbnail/);
   assert.match(searchComponent, /alt=\{result\.name\}/);
-  assert.match(searchComponent, /iconKey=\{result\.iconKey\}/);
-  assert.match(searchComponent, /previewUrl=\{result\.previewUrl\}/);
-  assert.match(searchComponent, /href=\{`\$\{routes\.items\}\?focus=\$\{result\.id\}`\}/);
+  assert.match(searchComponent, /iconKey=\{result\.icon \?\? null\}/);
+  assert.match(searchComponent, /previewUrl=\{result\.previewUrl \?\? null\}/);
+  assert.match(searchComponent, /href=\{result\.href\}/);
   assert.match(searchAction, /isItemPhotoFinalPathForHousehold/);
   assert.match(searchAction, /createSignedUrl\(item\.miniatura_url/);
   assert.match(searchAction, /resolveItemIconKey/);
@@ -307,7 +307,7 @@ test("dashboard item search results reuse the item thumbnail fallback chain", ()
 });
 
 test("dashboard item search action keeps the item and room reads scoped to household_id", () => {
-  const source = readFileSync("src/app/(app)/dashboard/actions.ts", "utf8");
+  const source = readFileSync("src/lib/global-search/load-sources.ts", "utf8");
 
   assert.match(source, /\.eq\("household_id", householdId\)/);
   assert.match(source, /\.from\("item"\)/);

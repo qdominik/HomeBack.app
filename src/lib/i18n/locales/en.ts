@@ -1,6 +1,25 @@
 import type { Dictionary } from "../types";
 
 export const en: Dictionary = {
+  globalSearch: {
+    title: "Search",
+    label: "Object name",
+    placeholder: "E.g. charger, garage or chest of drawers",
+    submit: "Search",
+    clear: "Clear search",
+    close: "Close search",
+    filter: "Object type",
+    initial: "Enter the name of an item, room, furniture item or storage space.",
+    ready: "Press Search to find the entered name.",
+    loading: "Searching…",
+    error: "Search failed. Please try again.",
+    noResults: "No objects found with this name.",
+    results: "Search results",
+    noLocation: "No location",
+    limited: "Showing the 40 best matches. Refine the name or select a type.",
+    filters: { all: "All", item: "Items", room: "Rooms", furniture: "Furniture", storage: "Storage spaces" },
+    types: { item: "Item", room: "Room", furniture: "Furniture item", storage: "Storage space" },
+  },
   app: {
     name: "HomeBack.app",
     tagline: "Everything about your home in one place",
