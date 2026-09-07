@@ -150,3 +150,17 @@ test("role filter keeps registry order and drops restricted modules", () => {
     ["a", "c"],
   );
 });
+
+
+test("navigation keeps MVP order and matches only exact routes or their children", async () => {
+  const { navigationKeys, isNavigationActive } = await import("../../src/lib/modules/navigation");
+  assert.deepEqual(navigationKeys, ["dashboard", "items", "home", "family", "documents", "categories", "settings"]);
+  assert.equal(isNavigationActive("/items", "/items"), true);
+  assert.equal(isNavigationActive("/items/new", "/items"), true);
+  assert.equal(isNavigationActive("/items-archive", "/items"), false);
+  assert.equal(isNavigationActive("/dashboard", "/items"), false);
+  for (const dictionary of [pl, en]) {
+    assert.ok(dictionary.navigation.openMenu);
+    assert.ok(dictionary.navigation.closeMenu);
+  }
+});

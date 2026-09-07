@@ -12,6 +12,7 @@ test("registration, Mailpit confirmation, household, login and route protection"
 
   await registerAndConfirmEmail(page, credentials);
   await createHousehold(page, credentials);
+  await page.getByRole("button", { name: "Otwórz menu", exact: true }).click();
   await expect(page.getByText(credentials.householdName)).toBeVisible();
   await expect(page.getByRole("button", { name: "Wyloguj" })).toBeVisible();
 
@@ -25,5 +26,6 @@ test("registration, Mailpit confirmation, household, login and route protection"
   await page.locator('input[name="password"]').fill(credentials.password);
   await page.getByRole("button", { name: /Zaloguj/ }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
+  await page.getByRole("button", { name: "Otwórz menu", exact: true }).click();
   await expect(page.getByText(credentials.householdName)).toBeVisible();
 });
