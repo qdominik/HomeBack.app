@@ -6,7 +6,6 @@ import { PackageIcon } from "@phosphor-icons/react/dist/ssr/Package";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { createItem } from "@/app/(app)/items/actions";
 import { ItemCard } from "@/components/items/item-card";
-import { ItemCreateDialog } from "@/components/items/item-create-dialog";
 import { ItemForm } from "@/components/items/item-form";
 import { EmptyState } from "@/components/empty-state";
 import {
@@ -36,7 +35,6 @@ import { parseItemFocusId } from "@/lib/items/item-search-params";
 
 type ItemsPageProps = {
   searchParams: Promise<{
-    add?: string;
     error?: string;
     focus?: string | string[];
     status?: string;
@@ -281,12 +279,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
 
   return (
     <div className="space-y-6">
-      {isAdmin && params.add === "1" ? (
-        <>
-          <h1 className="text-2xl font-semibold">{t.modules.items.title}</h1>
-          <ItemCreateDialog>{createForm}</ItemCreateDialog>
-        </>
-      ) : isAdmin ? (
+      {isAdmin ? (
         <details className="space-y-4">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-line pb-6 [&::-webkit-details-marker]:hidden">
             <h1 className="text-2xl font-semibold tracking-normal text-foreground">

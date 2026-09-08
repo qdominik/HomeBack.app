@@ -13,9 +13,11 @@ Dashboard nie renderuje już osadzonego panelu wyszukiwania ani tekstowego przyc
 
 Popup wyszukiwarki zamyka przycisk tekstowy, X, Escape i kliknięcie w tło poza panelem. Kliknięcie wewnątrz ani przeciągnięcie rozpoczęte wewnątrz panelu nie jest traktowane jako kliknięcie w tło. Otwarcie ustawia fokus w zapytaniu, zamknięcie przywraca fokus na lupę. Zachowano styl i zawartość popupu.
 
-Zielona ikona + poprzedza lupę i hamburger. Ma etykietę oraz tooltip Dodaj przedmiot i obszar minimum 44×44 px. Kliknięcie przechodzi na istniejącą trasę `/items?add=1` i automatycznie otwiera natywny dialog z istniejącym ItemForm, istniejącymi opcjami kategorii/lokalizacji i niezmienioną akcją createItem. Nie powstał drugi formularz ani nowa trasa. Zapis wraca do istniejącej listy Rzeczy. X i Escape zamykają dialog, usuwają parametr add i przywracają fokus na +.
+Przycisk + ma zielone tło głównego akcentu, białą ikonę, tooltip i aria-label Dodaj przedmiot oraz obszar minimum 44×44 px. Kliknięcie bezpośrednio otwiera dialog w nagłówku, bez zmiany URL, ładowania /items ani renderowania listy rzeczy. Nie wymaga drugiego kliknięcia. Opcje formularza są przygotowane po stronie serwera w chronionym layoucie. Odczyty respektują household_id, dostępne kategorie systemowe oraz RLS; poziomy lokalizacji ograniczono do potomków pomieszczeń gospodarstwa.
 
-Zachowano dotychczasowe uprawnienia: formularz i + są dostępne dla aktywnego administratora, tak jak istniejące dodawanie na stronie Rzeczy. Nie rozszerzono dostępu innym rolom. Dotychczasowy formularz rozwijany na stronie Rzeczy pozostaje dostępny przy zwykłym wejściu na `/items`; ten sam element jest renderowany w dialogu przy `add=1`, nigdy w obu miejscach równocześnie.
+Dialog montuje istniejący ItemForm dopiero przy otwarciu. Używa niezmienionej akcji createItem. Po zapisie zamyka się, a istniejąca akcja odświeża dane i przekierowuje na listę rzeczy ze statusem item_created. X i Escape zamykają formularz bez nawigacji i przywracają fokus na +. Usunięto pośredni mechanizm /items?add=1. Zwykłe strony i ich routing pozostają bez zmian.
+
+Zachowano dotychczasowe uprawnienia: formularz i + są dostępne dla aktywnego administratora. Nie rozszerzono dostępu innym rolom. Formularz na stronie Rzeczy nadal korzysta z tego samego ItemForm.
 
 Logo nadal kieruje bezpośrednio na `/dashboard`. Hamburger zachowuje układ i pozycje z PR #60. Nagłówek ma stałą wysokość w danym breakpointcie; jego otwieranie i korzystanie z ikon nie zmienia wysokości.
 
@@ -48,11 +50,11 @@ Nie zmieniono plików env, ustawień Vercel, NEXT_PUBLIC_SUPABASE_URL ani kluczy
 | npm run test:logic | 308 PASS, 0 FAIL |
 | npm run lint | PASS |
 | npm run build | PASS, także TypeScript |
-| npm run test:e2e | 24 PASS, 2 SKIP, 0 FAIL, 2,1 min |
+| npm run test:e2e | 25 PASS, 2 SKIP, 0 FAIL (ponowny pełny przebieg po korekcie +) |
 | Dodatkowa regresja logout z wygasłym SITE_URL | 1 PASS: 303, Location /login, GET /login 200 |
 | git diff --check | PASS |
 
-Pełny przebieg E2E sprawdził autentyczne lokalne logowanie/wylogowanie, przekierowanie i ponowną ochronę Dashboardu. Dwa pominięcia są istniejącym brakiem zatwierdzonych fixture dla ról domownika i dziecka; nie dodano nowych pominięć. Dodatkowy test regresji zapisano w auth-regression.spec.ts; uruchomiono go osobno po pełnym przebiegu. W sumie zaliczono 25 scenariuszy E2E, a 2 pozostały pominięte.
+Pełny przebieg E2E sprawdził autentyczne lokalne logowanie/wylogowanie, przekierowanie i ponowną ochronę Dashboardu. Dwa pominięcia są istniejącym brakiem zatwierdzonych fixture dla ról domownika i dziecka; nie dodano nowych pominięć. Regresja logoutu jest częścią końcowego pełnego przebiegu. W sumie zaliczono 25 scenariuszy E2E, a 2 pozostały pominięte.
 
 Testy wyszukiwarki przełączono z osadzonego panelu na dialog pod lupą. Nadal testują filtry, cztery typy, polskie znaki, wyniki i ich linki oraz izolację gospodarstw. Testy nawigacji sprawdzają brak wyszukiwarki/przycisku w Dashboardzie, zielony +, fokus, otwieranie/zamykanie dialogu, skuteczny zapis nowej rzeczy i jej obecność na liście. Test logoutu weryfikuje względny Location, ten sam origin oraz HTTP 200 na `/login`, bez 410.
 
@@ -69,8 +71,9 @@ Zrzuty lokalne w ignorowanym `test-results/`:
 ## Pliki zmienione względem main
 
 - `src/app/(app)/dashboard/page.tsx` — usunięcie panelu i tekstowej akcji.
-- `src/app/(app)/items/page.tsx` — ten sam formularz wewnątrz dialogu dla add=1.
-- `src/app/(app)/layout.tsx` — przekazanie istniejącego warunku uprawnień do +.
+- `src/app/(app)/items/page.tsx` — usunięcie pośredniego mechanizmu add=1.
+- `src/app/(app)/layout.tsx` — przygotowanie opcji formularza dla uprawnionego administratora.
+- `src/lib/server/item-create-options.ts` — odczyt opcji kategorii i lokalizacji ograniczonych do gospodarstwa.
 - `src/app/auth/signout/route.ts` — względne przekierowanie /login.
 - `src/components/app-shell.tsx` — zachowany hamburger, +, tło zamykające wyszukiwanie, stała wysokość.
 - `src/components/items/item-create-dialog.tsx` — wyłącznie oprawa dialogu dla istniejącego formularza.
@@ -91,3 +94,10 @@ Zrzuty lokalne w ignorowanym `test-results/`:
 Zgodność z MVP: tak. Sprawdzony diff potwierdza brak zmian ItemForm, akcji zapisu rzeczy, komponentu/logiki globalnego wyszukiwania, migracji, RLS, schematu, zależności i konfiguracji środowiska. Automatyczny dopisek Next dev do AGENTS.md usunięto z diffu.
 
 Właściciel zaakceptował wyniki i zlecił przygotowanie commita oraz PR do main. Przed commitem ponownie zaliczono npm run test:logic (308/308), npm run lint, npm run build i git diff --check. Wcześniejsze wyniki E2E pozostają opisane powyżej. Zakres publikacji obejmuje branch i PR z Preview, bez merge ani tagu.
+
+
+## Korekta po odbiorze warunkowym (2026-09-08)
+
+Zmieniono wyłącznie przycisk +, sposób osadzenia jego dialogu i przygotowania opcji, usunięto przejście add=1 oraz zaktualizowano testy i raport. Hamburger, lupa, logout, ItemForm, createItem, Supabase, RLS, migracje i zależności pozostały bez zmian względem poprzedniego commita PR #61.
+
+Testy dla 390×844, 768×844 i 1280×844 sprawdzają kolor tła i białą ikonę, natychmiastowy dialog, niezmieniony URL i brak żądań /items przed zapisem, zamknięcie oraz skuteczny zapis. Lint, build, testy logiki (308) i diff-check ponownie zaliczono. Lokalny node_modules wymagał odtworzenia przez npm ci --ignore-scripts z niezmienionego lockfile; brakujące pliki Next/ESLint były problemem środowiska testowego. Narzędzia zgłosiły lokalne Node 24.19.0/npm 12.0.2 względem deklarowanych 24.18.0/11.16.0; kontroli nie blokowało to po odtworzeniu zależności.

@@ -7,7 +7,7 @@ for (const width of [390, 768, 1280]) {
     await registerAndCreateHousehold(page, `navigation-${width}`);
     const header = page.getByRole("banner");
     await expect(page.getByRole("main").getByRole("searchbox")).toHaveCount(0);
-    await expect(page.getByRole("main").getByRole("link", { name: "Dodaj przedmiot", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("main").getByRole("button", { name: "Dodaj przedmiot", exact: true })).toHaveCount(0);
     const toggle = header.getByRole("button", { name: /menu$/ });
     const menu = page.getByRole("navigation", { name: "Główna nawigacja" });
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
@@ -31,7 +31,7 @@ for (const width of [390, 768, 1280]) {
     await page.screenshot({ path: `test-results/authenticated-navigation-${width}.png`, fullPage: true });
     const logo = header.getByRole("link", { name: "HomeBack.app" });
     const logoBox = await logo.boundingBox();
-    const addBox = await header.getByRole("link", { name: "Dodaj przedmiot", exact: true }).boundingBox();
+    const addBox = await header.getByRole("button", { name: "Dodaj przedmiot", exact: true }).boundingBox();
     expect(logoBox!.x + logoBox!.width).toBeLessThanOrEqual(addBox!.x);
     expect(addBox!.width).toBeGreaterThanOrEqual(44);
     expect(addBox!.height).toBeGreaterThanOrEqual(44);
@@ -75,15 +75,23 @@ for (const width of [390, 768, 1280]) {
       await expect(dialog).not.toBeVisible();
       await expect(search).toBeFocused();
     }
-    const add = header.getByRole("link", { name: "Dodaj przedmiot", exact: true });
-    const color = await add.evaluate(el => getComputedStyle(el).color);
+    const add = header.getByRole("button", { name: "Dodaj przedmiot", exact: true });
+    const color = await add.evaluate(el => getComputedStyle(el).backgroundColor);
     const [red, green, blue] = color.match(/\d+/g)!.map(Number);
     expect(green).toBeGreaterThan(red);
     expect(green).toBeGreaterThan(blue);
+    await expect(add).toHaveCSS("color", "rgb(255, 255, 255)");
+    const beforeAddURL = page.url();
+    const itemsRequests: string[] = [];
+    const trackItems = (request: import("@playwright/test").Request) => {
+      if (new URL(request.url()).pathname === "/items") itemsRequests.push(request.url());
+    };
+    page.on("request", trackItems);
     const headerHeight = (await header.boundingBox())!.height;
     await add.click();
     const addDialog = page.getByRole("dialog", { name: "Dodaj przedmiot", exact: true });
     await expect(addDialog).toBeVisible();
+    expect(page.url()).toBe(beforeAddURL);
     await expect(addDialog.locator('input[name="nazwa"]')).toBeFocused();
     expect(await addDialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     expect((await header.boundingBox())!.height).toBe(headerHeight);
@@ -91,12 +99,15 @@ for (const width of [390, 768, 1280]) {
     await page.keyboard.press("Escape");
     await expect(addDialog).not.toBeVisible();
     await expect(add).toBeFocused();
-    await expect(page).toHaveURL(/\/items$/);
+    expect(page.url()).toBe(beforeAddURL);
     await add.click();
     await expect(addDialog).toBeVisible();
+    expect(page.url()).toBe(beforeAddURL);
     await addDialog.getByRole("button", { name: "Zamknij dodawanie przedmiotu" }).click();
-    await expect(page).toHaveURL(/\/items$/);
+    expect(page.url()).toBe(beforeAddURL);
     await add.click();
+    page.off("request", trackItems);
+    expect(itemsRequests).toEqual([]);
     await addDialog.locator('input[name="nazwa"]').fill(`Header item ${width}`);
     await addDialog.getByRole("button", { name: "Utwórz rzecz", exact: true }).click();
     await expect(page).toHaveURL(/status=item_created/);

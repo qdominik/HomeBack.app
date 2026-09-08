@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { ItemCreateDialog } from "@/components/items/item-create-dialog";
+import type { ItemCreateOptions } from "@/lib/server/item-create-options";
 import { ListIcon } from "@phosphor-icons/react/dist/ssr/List";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
@@ -30,7 +31,7 @@ type AppShellProps = {
   householdName: string;
   role: Database["public"]["Enums"]["profile_role"];
   userName: string;
-  canAddItem: boolean;
+  itemCreateOptions: ItemCreateOptions | null;
 };
 
 export function AppHeader({ authenticated = false, account }: { authenticated?: boolean; account?: Omit<AppShellProps, "children"> }) {
@@ -68,18 +69,7 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
           <BrandLogo className="w-52 max-w-full sm:w-64" priority variant="horizontal" />
         </Link>
         <div className="flex shrink-0 items-center gap-2">
-          {account?.canAddItem ? (
-            <Link
-              aria-label={t.dashboard.addItem}
-              title={t.dashboard.addItem}
-              id="add-item-trigger"
-              className={`${iconButton} text-primary hover:bg-surface-muted`}
-              href={`${routes.items}?add=1`}
-              onClick={() => setMenuOpen(false)}
-            >
-              <PlusIcon aria-hidden="true" size={22} weight="bold" />
-            </Link>
-          ) : null}
+          {account?.itemCreateOptions ? <ItemCreateDialog options={account.itemCreateOptions} /> : null}
           <button aria-label={t.globalSearch.title} aria-haspopup="dialog" aria-controls="global-search-dialog" className={`${iconButton} hover:bg-surface-muted`} ref={searchTrigger} type="button" onClick={() => {
             setMenuOpen(false);
             searchDialog.current?.showModal();
