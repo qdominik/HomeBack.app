@@ -50,6 +50,7 @@ test("Polish normalization preserves item breadcrumbs and the item hash link", a
   await search(region, "ladowarka");
   const result = results(region).getByRole("link").filter({ hasText: data.item.charger });
   await expect(result).toContainText("Rzecz");
+  await expect(result).not.toContainText("Brak lokalizacji");
   await expect(result).toContainText(`${data.room.salon} → ${data.furniture.chest} → ${data.storageSpace.upperDrawer}`);
   const href = await result.getAttribute("href");
   expect(href).toMatch(/^\/items#item-[0-9a-f-]+$/);
@@ -141,4 +142,18 @@ test("global search never returns another household's items or structure", async
   } finally {
     await other.close();
   }
+});
+
+
+test("an item without a persisted location displays Brak lokalizacji", async ({ page }) => {
+  await registerAndCreateHousehold(page, "search-unlocated");
+  await page.getByRole("banner").getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const form = page.getByRole("dialog", { name: "Dodaj przedmiot", exact: true });
+  await form.locator('input[name="nazwa"]').fill("Rzecz bez przypisania");
+  await form.getByRole("button", { name: "Utwórz rzecz", exact: true }).click();
+  await expect(page).toHaveURL(/status=item_created/);
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
+  await search(dialog, "Rzecz bez przypisania");
+  await expect(results(dialog).getByRole("link").filter({ hasText: "Rzecz bez przypisania" })).toContainText("Brak lokalizacji");
 });

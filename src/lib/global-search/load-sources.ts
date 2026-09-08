@@ -46,6 +46,6 @@ export async function loadSearchSources(client: SupabaseClient<Database>, househ
     .order("id").range(from, to));
   const categoriesById = new Map(categories.map((category) => [category.id, category]));
   const locations = await readByIds(matchingItems.map((item) => item.id), (ids, from, to) => client.from("item_location")
-    .select("item_id, storage_location_l3_id, czy_glowna").in("item_id", ids).eq("czy_glowna", true).order("id").range(from, to));
+    .select("item_id, storage_location_l3_id, czy_glowna").in("item_id", ids).order("id").range(from, to));
   return { items: matchingItems.map((item) => ({ ...item, category: categoriesById.get(item.category_id) ?? null })), rooms, furniture, storage, locations };
 }

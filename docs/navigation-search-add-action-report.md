@@ -91,7 +91,7 @@ Zrzuty lokalne w ignorowanym `test-results/`:
 
 ## Zakres i status
 
-Zgodność z MVP: tak. Sprawdzony diff potwierdza brak zmian ItemForm, akcji zapisu rzeczy, komponentu/logiki globalnego wyszukiwania, migracji, RLS, schematu, zależności i konfiguracji środowiska. Automatyczny dopisek Next dev do AGENTS.md usunięto z diffu.
+Zgodność z MVP: tak. Sprawdzony diff potwierdza brak zmian ItemForm, akcji zapisu rzeczy, komponentu globalnego wyszukiwania, migracji, RLS, schematu, zależności i konfiguracji środowiska. Automatyczny dopisek Next dev do AGENTS.md usunięto z diffu.
 
 Właściciel zaakceptował wyniki i zlecił przygotowanie commita oraz PR do main. Przed commitem ponownie zaliczono npm run test:logic (308/308), npm run lint, npm run build i git diff --check. Wcześniejsze wyniki E2E pozostają opisane powyżej. Zakres publikacji obejmuje branch i PR z Preview, bez merge ani tagu.
 
@@ -101,3 +101,15 @@ Właściciel zaakceptował wyniki i zlecił przygotowanie commita oraz PR do mai
 Zmieniono wyłącznie przycisk +, sposób osadzenia jego dialogu i przygotowania opcji, usunięto przejście add=1 oraz zaktualizowano testy i raport. Hamburger, lupa, logout, ItemForm, createItem, Supabase, RLS, migracje i zależności pozostały bez zmian względem poprzedniego commita PR #61.
 
 Testy dla 390×844, 768×844 i 1280×844 sprawdzają kolor tła i białą ikonę, natychmiastowy dialog, niezmieniony URL i brak żądań /items przed zapisem, zamknięcie oraz skuteczny zapis. Lint, build, testy logiki (308) i diff-check ponownie zaliczono. Lokalny node_modules wymagał odtworzenia przez npm ci --ignore-scripts z niezmienionego lockfile; brakujące pliki Next/ESLint były problemem środowiska testowego. Narzędzia zgłosiły lokalne Node 24.19.0/npm 12.0.2 względem deklarowanych 24.18.0/11.16.0; kontroli nie blokowało to po odtworzeniu zależności.
+
+## Domknięcie wyszukiwarki w obecnym modelu (2026-09-08)
+
+Przyczyną pomijania dodatkowych lokalizacji był filtr czy_glowna=true zarówno w loaderze, jak i podczas wyboru breadcrumb. Loader pobiera teraz wszystkie przypisania pasujących rzeczy w bieżącym gospodarstwie, zachowując paginację i RLS. Wybór najpierw odrzuca ścieżki spoza dostępnej struktury gospodarstwa, następnie preferuje poprawną lokalizację główną. Jeśli jej brak, wybiera poprawne przypisanie do schowka o najmniejszym UUID (porządek leksykograficzny), niezależnie od kolejności rekordów. Zwracana jest pełna ścieżka Pomieszczenie → Mebel → Schowek. Bez poprawnego zapisanego przypisania pozostaje Brak lokalizacji.
+
+Ograniczenie modelu: item_location wymaga storage_location_l3_id; same wybory L1/L2 nie są utrwalane przez istniejący zapis. PR #61 nie dodaje pól, migracji, zmian formularza ani akcji zapisu i nie symuluje takich przypisań w testach. Rozszerzenie L1/L2 odłożono do osobnego zadania po zamknięciu PR #61, wraz z decyzją, migracją, kompatybilnością, zapisami, formularzem, loaderami, RLS i testami. Decyzję zapisano w docs/decisions/decision-log.md.
+
+Pliki tej korekty: src/lib/global-search/load-sources.ts, src/lib/global-search/search.ts, tests/unit/global-search.test.ts, tests/e2e/dashboard-item-search.spec.ts oraz niniejszy raport i decision log.
+
+Testy logiki obejmują pełną ścieżkę Kuchnia → Lodówka → Górna półka, brak przypisania, odczyt dodatkowej lokalizacji bez głównej, pierwszeństwo głównej, deterministyczny wybór przy wielu dodatkowych przypisaniach i izolację gospodarstw. E2E sprawdza pełną lokalizację bez fałszywego Brak lokalizacji oraz rzeczywisty zapis rzeczy bez lokalizacji i prezentację tego stanu w wyszukiwarce. Nie zmieniono rankingu, normalizacji, filtrów, miniatur, linków, limitu 40, interfejsu wyszukiwarki, hamburgera, + ani formularza.
+
+Końcowa walidacja domknięcia: npm run test:logic — 312 PASS; npm run lint — PASS; npm run build — PASS; npm run test:e2e — 26 PASS, 2 istniejące SKIP fixture ról, 0 FAIL (1,8 min); git diff --check — PASS.

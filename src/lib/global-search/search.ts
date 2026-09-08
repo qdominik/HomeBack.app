@@ -50,7 +50,16 @@ export function searchGlobalSources(sources: SearchSources, householdId: string,
   const rooms = new Map(sources.rooms.filter((room) => room.household_id === householdId).map((room) => [room.id, room]));
   const furniture = new Map(sources.furniture.filter((entry) => rooms.has(entry.room_id)).map((entry) => [entry.id, entry]));
   const storage = new Map(sources.storage.filter((entry) => furniture.has(entry.storage_location_l2_id)).map((entry) => [entry.id, entry]));
-  const locations = new Map(sources.locations.filter((entry) => entry.czy_glowna && storage.has(entry.storage_location_l3_id)).map((entry) => [entry.item_id, entry.storage_location_l3_id]));
+  // Only complete, household-scoped paths are eligible. Prefer the primary
+  // assignment; otherwise use the lowest storage UUID, independent of read order.
+  const locations = new Map<string, string>();
+  const validLocations = sources.locations
+    .filter((entry) => storage.has(entry.storage_location_l3_id))
+    .sort((a, b) => Number(b.czy_glowna) - Number(a.czy_glowna)
+      || a.storage_location_l3_id.localeCompare(b.storage_location_l3_id));
+  for (const entry of validLocations) {
+    if (!locations.has(entry.item_id)) locations.set(entry.item_id, entry.storage_location_l3_id);
+  }
   const roomPath = (roomId: string) => [rooms.get(roomId)!.nazwa];
   const furniturePath = (id: string) => {
     const entry = furniture.get(id)!;
