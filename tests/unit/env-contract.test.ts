@@ -150,3 +150,13 @@ test("JWT anon keys with a project ref must match the Supabase URL", () => {
   assert.equal(result.ok, false);
   assert.match(result.ok ? "" : result.errors.join(" "), /different projects/);
 });
+
+
+test("logout uses a relative login redirect independent of expired Preview environment URLs", async () => {
+  const { readFileSync } = await import("node:fs");
+  const source = readFileSync("src/app/auth/signout/route.ts", "utf8");
+  assert.match(source, /status: 303/);
+  assert.match(source, /Location: routes.login/);
+  assert.doesNotMatch(source, /NEXT_PUBLIC_SITE_URL|NEXT_PUBLIC_DEV_ORIGIN|request.url/);
+  assert.match(source, /supabase.auth.signOut\(\)/);
+});

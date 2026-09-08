@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
+import { getItemCreateOptions } from "@/lib/server/item-create-options";
 import { AppShell } from "@/components/app-shell";
 import { getAppContext } from "@/lib/app-context";
 import { routes } from "@/lib/routes";
@@ -25,6 +26,7 @@ export default async function ProtectedLayout({
 
   return (
     <AppShell
+      itemCreateOptions={await getItemCreateOptions()}
       householdName={household.nazwa}
       role={profile.rola}
       userName={profile.imie}

@@ -1,3 +1,4 @@
+import { AppHeader } from "@/components/app-shell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BrandLogo } from "@/components/brand-logo";
@@ -56,6 +57,8 @@ export default async function RegisterPage({
 
   if (!userId && params.status === "check_email") {
     return (
+      <>
+      <AppHeader authenticated={Boolean(userId)} />
       <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
         <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6 text-center">
           <div className="flex justify-center">
@@ -75,6 +78,7 @@ export default async function RegisterPage({
           </Link>
         </section>
       </main>
+    </>
     );
   }
 
@@ -89,6 +93,8 @@ export default async function RegisterPage({
         : "";
 
     return (
+      <>
+      <AppHeader authenticated={Boolean(userId)} />
       <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
         <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6">
           <div className="flex justify-center">
@@ -151,11 +157,14 @@ export default async function RegisterPage({
           </form>
         </section>
       </main>
+    </>
     );
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
+    <>
+      <AppHeader authenticated={Boolean(userId)} />
+      <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
       <section className="w-full max-w-sm rounded-md border border-line bg-surface p-6">
         <div className="flex justify-center">
           <BrandLogo className="w-44 sm:w-52" priority variant="vertical" />
@@ -205,5 +214,6 @@ export default async function RegisterPage({
         </Link>
       </section>
     </main>
+    </>
   );
 }

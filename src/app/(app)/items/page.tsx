@@ -267,6 +267,16 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     : null;
   const statusMessage = params.status ? statusMessages[params.status] : null;
 
+  const createForm = isAdmin ? (
+    <ItemForm
+      action={createItem}
+      categories={categoryOptions}
+      defaultCategoryId={defaultCategoryId}
+      locationOptions={locationSelectorOptions}
+      submitLabel={t.modules.items.createItem}
+    />
+  ) : null;
+
   return (
     <div className="space-y-6">
       {isAdmin ? (
@@ -281,13 +291,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             </span>
           </summary>
           <div className="w-full rounded-md border border-line bg-surface p-5">
-            <ItemForm
-              action={createItem}
-              categories={categoryOptions}
-              defaultCategoryId={defaultCategoryId}
-              locationOptions={locationSelectorOptions}
-              submitLabel={t.modules.items.createItem}
-            />
+            {createForm}
           </div>
         </details>
       ) : (

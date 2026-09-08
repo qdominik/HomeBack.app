@@ -256,6 +256,7 @@ test("M4D.8 shows a Furniture error, retries after login, then detaches Items", 
   const chest = furnitureCard(salon, data.furniture.chest);
   const secondPage = await page.context().newPage();
   await secondPage.goto("/home");
+  await secondPage.getByRole("button", { name: "Otwórz menu", exact: true }).click();
   await secondPage.getByRole("button", { name: "Wyloguj" }).click();
   await expect(secondPage).toHaveURL(/\/login$/);
 
@@ -480,6 +481,7 @@ test("M4D.8 isolates a second household from source data and move targets", asyn
   page,
 }) => {
   const first = await prepareDeletionDataset(page, "m4d8-isolation-a");
+  await page.getByRole("button", { name: "Otwórz menu", exact: true }).click();
   await page.getByRole("button", { name: "Wyloguj" }).click();
   await expect(page).toHaveURL(/\/login$/);
   const second = await prepareDeletionDataset(page, "m4d8-isolation-b");

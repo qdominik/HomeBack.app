@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { DashboardItemSearch } from "@/components/dashboard/item-search";
 import { DashboardModuleCard } from "@/components/dashboard-module-card";
 import {
   dashboardModuleRegistrations,
@@ -51,16 +50,9 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        action={
-          <Link className={buttonClassName()} href={routes.items}>
-            {t.dashboard.addItem}
-          </Link>
-        }
         description={greeting}
         title={t.dashboard.title}
       />
-
-      <DashboardItemSearch />
 
       {registrations.length > 0 ? (
         <section

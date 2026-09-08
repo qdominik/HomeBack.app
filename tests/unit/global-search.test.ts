@@ -61,7 +61,7 @@ test("breadcrumbs and hrefs identify each target on existing pages", () => {
 });
 
 test("missing or cross-household location references cannot leak breadcrumb names", () => {
-  for (const locations of [[], [{ item_id: "i", storage_location_l3_id: "other-s", czy_glowna: true }], [{ item_id: "i", storage_location_l3_id: "s", czy_glowna: false }]]) {
+  for (const locations of [[], [{ item_id: "i", storage_location_l3_id: "other-s", czy_glowna: true }]]) {
     assert.deepEqual(searchGlobalSources({ ...sources, locations }, "home", "ładowarka")[0].breadcrumb, []);
   }
 });
@@ -84,13 +84,13 @@ test("pagination reads past 1000 rows and fails closed on any source error", asy
 });
 
 // Executable query double: intentionally exposes both households unless the loader scopes reads.
-function queryClient(failTable?: string) {
+function queryClient(failTable?: string, locations = sources.locations) {
   const records: Record<string, object[]> = {
     item: sources.items,
     room: sources.rooms,
     storage_location_l2: sources.furniture,
     storage_location_l3: sources.storage,
-    item_location: [...sources.locations, { item_id: "other-i", storage_location_l3_id: "other-s", czy_glowna: true }],
+    item_location: [...locations, { item_id: "other-i", storage_location_l3_id: "other-s", czy_glowna: true }],
   };
   const observed: Record<string, object[]> = {};
   const client = { from(table: string) {
@@ -123,4 +123,50 @@ test("data adapter rejects missing household and any failed descendant read", as
   const { client } = queryClient("storage_location_l3");
   await assert.rejects(loadSearchSources(client, "", "garaz", "all"), /Household required/);
   await assert.rejects(loadSearchSources(client, "home", "garaz", "all"), /unavailable/);
+});
+
+
+test("additional persisted location is loaded and supplies a full breadcrumb without a primary", async () => {
+  const locations = [{ item_id: "i", storage_location_l3_id: "s", czy_glowna: false }];
+  const { client } = queryClient(undefined, locations);
+  const loaded = await loadSearchSources(client, "home", "garaz", "all");
+  assert.deepEqual(loaded.locations, locations);
+  assert.deepEqual(searchGlobalSources(loaded, "home", "ładowarka")[0].breadcrumb,
+    ["Garaż", "Garaż — komoda", "Garaż — półka 2"]);
+});
+
+test("valid primary takes precedence over additional locations regardless of input order", () => {
+  const data: SearchSources = { ...sources,
+    storage: [...sources.storage, { id: "a", storage_location_l2_id: "f", nazwa: "Dodatkowy schowek" }],
+    locations: [...sources.locations, { item_id: "i", storage_location_l3_id: "a", czy_glowna: false }],
+  };
+  for (const locations of [data.locations, [...data.locations].reverse()]) {
+    assert.equal(searchGlobalSources({ ...data, locations }, "home", "ładowarka")[0].breadcrumb.at(-1), "Garaż — półka 2");
+  }
+});
+
+test("additional locations use the lowest storage id and never accept another household's primary", () => {
+  const data: SearchSources = { ...sources,
+    storage: [...sources.storage, { id: "a", storage_location_l2_id: "f", nazwa: "Pierwszy schowek" }],
+    locations: [
+      { item_id: "i", storage_location_l3_id: "other-s", czy_glowna: true },
+      { item_id: "i", storage_location_l3_id: "s", czy_glowna: false },
+      { item_id: "i", storage_location_l3_id: "a", czy_glowna: false },
+    ],
+  };
+  for (const locations of [data.locations, [...data.locations].reverse()]) {
+    assert.deepEqual(searchGlobalSources({ ...data, locations }, "home", "ładowarka")[0].breadcrumb,
+      ["Garaż", "Garaż — komoda", "Pierwszy schowek"]);
+  }
+});
+
+test("preserves Kitchen fridge upper shelf path and distinguishes genuinely unlocated items", () => {
+  const data: SearchSources = { ...sources,
+    rooms: [{ id: "r", household_id: "home", nazwa: "Kuchnia" }],
+    furniture: [{ id: "f", room_id: "r", nazwa: "Lodówka" }],
+    storage: [{ id: "s", storage_location_l2_id: "f", nazwa: "Górna półka" }],
+  };
+  assert.deepEqual(searchGlobalSources(data, "home", "ładowarka")[0].breadcrumb,
+    ["Kuchnia", "Lodówka", "Górna półka"]);
+  assert.deepEqual(searchGlobalSources({ ...data, locations: [] }, "home", "ładowarka")[0].breadcrumb, []);
 });
