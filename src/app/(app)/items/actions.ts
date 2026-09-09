@@ -1,5 +1,7 @@
 "use server";
 
+import { getItemLocationTarget, type ItemLocationSelection, type ItemLocationTarget } from "@/lib/items/item-options";
+
 import { revalidatePath } from "next/cache";
 import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
 import { redirect } from "next/navigation";
@@ -772,46 +774,31 @@ async function validateCategory(
   return category.id;
 }
 
-async function validatePosition(
+async function validateLocation(
   supabase: SupabaseClient,
   householdId: string,
-  positionId: string,
-) {
-  if (!positionId) {
-    return null;
+  selection: ItemLocationSelection,
+): Promise<ItemLocationTarget> {
+  let storageId = selection.storageId;
+  let roomId = selection.roomId;
+  if (selection.positionId) {
+    const { data, error } = await supabase.from("storage_location_l3")
+      .select("id, storage_location_l2_id").eq("id", selection.positionId).maybeSingle();
+    if (error || !data || (storageId && storageId !== data.storage_location_l2_id)) redirectWithError("invalid_location");
+    storageId = data.storage_location_l2_id;
   }
-
-  const { data: position, error: positionError } = await supabase
-    .from("storage_location_l3")
-    .select("id, storage_location_l2_id")
-    .eq("id", positionId)
-    .maybeSingle();
-
-  if (positionError || !position) {
-    redirectWithError("invalid_location");
+  if (storageId) {
+    const { data, error } = await supabase.from("storage_location_l2")
+      .select("id, room_id").eq("id", storageId).maybeSingle();
+    if (error || !data || (roomId && roomId !== data.room_id)) redirectWithError("invalid_location");
+    roomId = data.room_id;
   }
-
-  const { data: storageLocation, error: storageError } = await supabase
-    .from("storage_location_l2")
-    .select("id, room_id")
-    .eq("id", position.storage_location_l2_id)
-    .maybeSingle();
-
-  if (storageError || !storageLocation) {
-    redirectWithError("invalid_location");
+  if (roomId) {
+    const { data, error } = await supabase.from("room").select("id")
+      .eq("id", roomId).eq("household_id", householdId).maybeSingle();
+    if (error || !data) redirectWithError("invalid_location");
   }
-
-  const { data: room, error: roomError } = await supabase
-    .from("room")
-    .select("id, household_id")
-    .eq("id", storageLocation.room_id)
-    .maybeSingle();
-
-  if (roomError || !room || room.household_id !== householdId) {
-    redirectWithError("invalid_location");
-  }
-
-  return position.id;
+  return getItemLocationTarget({ ...selection, storageId, roomId });
 }
 
 async function getActiveItem(
@@ -836,11 +823,13 @@ async function getActiveItem(
 async function setPrimaryLocation(
   supabase: SupabaseClient,
   itemId: string,
-  positionId: string | null,
+  location: ItemLocationTarget,
 ) {
   const { error } = await supabase.rpc("set_item_primary_location", {
     p_item_id: itemId,
-    p_storage_location_l3_id: positionId,
+    p_storage_location_l3_id: location.storage_location_l3_id,
+    p_storage_location_l2_id: location.storage_location_l2_id ?? null,
+    p_room_id: location.room_id ?? null,
   });
 
   if (error) {
@@ -874,6 +863,8 @@ function parseItemPayload(formData: FormData) {
     nazwa,
     opis: nullableField(formData, "opis"),
     positionId: field(formData, "storage_location_l3_id"),
+    storageId: field(formData, "storage_location_l2_id"),
+    roomId: field(formData, "room_id"),
     typ: itemType,
   };
 }
@@ -906,10 +897,10 @@ export async function createItem(formData: FormData) {
     profile.household_id,
     payload.categoryId,
   );
-  const positionId = await validatePosition(
+  const location = await validateLocation(
     supabase,
     profile.household_id,
-    payload.positionId,
+    payload,
   );
 
   const { data: item, error } = await supabase
@@ -952,9 +943,7 @@ export async function createItem(formData: FormData) {
     }
   }
 
-  if (positionId) {
-    await setPrimaryLocation(supabase, item.id, positionId);
-  }
+  await setPrimaryLocation(supabase, item.id, location);
 
   revalidatePath(routes.items);
   redirectWithStatus("item_created");
@@ -994,10 +983,10 @@ export async function updateItem(formData: FormData) {
     profile.household_id,
     payload.categoryId,
   );
-  const positionId = await validatePosition(
+  const location = await validateLocation(
     supabase,
     profile.household_id,
-    payload.positionId,
+    payload,
   );
 
   if (photoDraft) {
@@ -1045,7 +1034,7 @@ export async function updateItem(formData: FormData) {
     redirectWithError("action_failed");
   }
 
-  await setPrimaryLocation(supabase, data.id, positionId);
+  await setPrimaryLocation(supabase, data.id, location);
 
   revalidatePath(routes.items);
   redirectWithStatus("item_updated");

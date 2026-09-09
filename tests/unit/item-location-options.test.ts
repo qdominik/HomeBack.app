@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildItemLocationSelectorOptions,
+  buildItemLocationAssignments,
+  getInitialItemLocationSelection,
+  getItemEditFormLocationProps,
+  getItemLocationTarget,
+  resolveItemLocation,
   getPositionOptionsForStorage,
   getStorageOptionsForRoom,
   selectItemLocationRoom,
@@ -96,4 +101,67 @@ test("location selector clears child choices when a parent selection changes", (
       positionId: "",
     },
   );
+});
+
+const roomSelection = { roomId: "room-salon", storageId: "", positionId: "" };
+const furnitureSelection = { ...roomSelection, storageId: "storage-komoda" };
+const storageSelection = { ...furnitureSelection, positionId: "position-szuflada-1" };
+for (const [level, selection, names] of [
+  ["L1", roomSelection, ["Salon", "", ""]],
+  ["L2", furnitureSelection, ["Salon", "Komoda", ""]],
+  ["L3", storageSelection, ["Salon", "Komoda", "Szuflada 1"]],
+] as const) {
+  test(`${level} persists only the deepest target and restores all selectors`, () => {
+    const target = getItemLocationTarget(selection);
+    assert.equal(Object.values(target).filter(Boolean).length, 1);
+    const location = resolveItemLocation(options, target)!;
+    assert.deepEqual([location.roomName, location.storageName, location.positionName], names);
+    const props = getItemEditFormLocationProps(options, location);
+    assert.deepEqual(getInitialItemLocationSelection(options, props.selectedPositionId, props.selectedStorageId, props.selectedRoomId), selection);
+  });
+}
+
+test("L1 -> L2 -> L3 -> L1 -> empty replaces the target without retaining parents", () => {
+  for (const selection of [roomSelection, furnitureSelection, storageSelection, roomSelection, selectItemLocationRoom("")]) {
+    const target = getItemLocationTarget(selection);
+    assert.equal(Object.values(target).filter(Boolean).length, selection.roomId ? 1 : 0);
+    assert.equal(resolveItemLocation(options, target)?.roomId ?? "", selection.roomId);
+  }
+});
+
+test("invalid, empty and foreign targets cannot produce a breadcrumb", () => {
+  for (const target of [
+    { room_id: "foreign", storage_location_l3_id: null },
+    { storage_location_l2_id: "foreign", storage_location_l3_id: null },
+    { storage_location_l3_id: "foreign" },
+    { storage_location_l3_id: null },
+    { room_id: "room-salon", storage_location_l3_id: "position-szuflada-1" },
+  ]) assert.equal(resolveItemLocation(options, target), null);
+});
+
+test("mixed assignments prefer the primary, then deterministic valid additional targets", () => {
+  const assignments = [
+    { item_id: "item", czy_glowna: false, ...getItemLocationTarget(storageSelection) },
+    { item_id: "item", czy_glowna: true, ...getItemLocationTarget(roomSelection) },
+    { item_id: "item", czy_glowna: false, ...getItemLocationTarget(furnitureSelection) },
+  ];
+  for (const rows of [assignments, [...assignments].reverse()]) {
+    assert.equal(buildItemLocationAssignments(options, rows).get("item")?.id, "room-salon");
+    assert.equal(buildItemLocationAssignments(options, rows.filter((r) => !r.czy_glowna)).get("item")?.id, "position-szuflada-1");
+  }
+});
+
+
+test("L2/L3 breadcrumbs follow reparented furniture instead of stored ancestors", () => {
+  const movedOptions = buildItemLocationSelectorOptions({
+    ...supabaseItemsLocationRows,
+    storageLocations: supabaseItemsLocationRows.storageLocations.map((entry) =>
+      entry.id === "storage-komoda" ? { ...entry, room_id: "room-bedroom" } : entry),
+  });
+  for (const selection of [furnitureSelection, storageSelection]) {
+    const location = resolveItemLocation(movedOptions, getItemLocationTarget(selection));
+    assert.equal(location?.roomName, "Sypialnia");
+    assert.equal(location?.roomId, "room-bedroom");
+  }
+  assert.equal(resolveItemLocation(movedOptions, getItemLocationTarget(roomSelection))?.roomName, "Salon");
 });

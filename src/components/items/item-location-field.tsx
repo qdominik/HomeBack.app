@@ -14,14 +14,18 @@ import {
 type ItemLocationFieldProps = {
   options: ItemLocationSelectorOptions;
   selectedPositionId?: string | null;
+  selectedStorageId?: string | null;
+  selectedRoomId?: string | null;
 };
 
 export function ItemLocationField({
   options,
   selectedPositionId,
+  selectedStorageId,
+  selectedRoomId,
 }: ItemLocationFieldProps) {
   const [selection, setSelection] = useState(() =>
-    getInitialItemLocationSelection(options, selectedPositionId),
+    getInitialItemLocationSelection(options, selectedPositionId, selectedStorageId, selectedRoomId),
   );
 
   const storageOptions = getStorageOptionsForRoom(options, selection.roomId);

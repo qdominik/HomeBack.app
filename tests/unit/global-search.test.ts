@@ -170,3 +170,25 @@ test("preserves Kitchen fridge upper shelf path and distinguishes genuinely unlo
     ["Kuchnia", "Lodówka", "Górna półka"]);
   assert.deepEqual(searchGlobalSources({ ...data, locations: [] }, "home", "ładowarka")[0].breadcrumb, []);
 });
+
+
+test("L1/L2/L3 and no assignment preserve global search breadcrumb and href", () => {
+  const cases: [SearchSources["locations"], string[]][] = [
+    [[{ item_id: "i", room_id: "r", storage_location_l3_id: null, czy_glowna: true }], ["Garaż"]],
+    [[{ item_id: "i", storage_location_l2_id: "f", storage_location_l3_id: null, czy_glowna: true }], ["Garaż", "Garaż — komoda"]],
+    [sources.locations, ["Garaż", "Garaż — komoda", "Garaż — półka 2"]],
+    [[], []],
+  ];
+  for (const [locations, breadcrumb] of cases) {
+    const result = searchGlobalSources({ ...sources, locations }, "home", "ładowarka")[0];
+    assert.deepEqual(result.breadcrumb, breadcrumb);
+    assert.equal(result.href, "/items#item-i");
+  }
+});
+
+test("foreign L1 and L2 references are excluded even when primary", () => {
+  for (const target of [{ room_id: "other-r" }, { storage_location_l2_id: "other-f" }]) {
+    const locations = [{ item_id: "i", storage_location_l3_id: null, czy_glowna: true, ...target }];
+    assert.deepEqual(searchGlobalSources({ ...sources, locations }, "home", "ładowarka")[0].breadcrumb, []);
+  }
+});

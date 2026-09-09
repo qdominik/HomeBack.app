@@ -294,7 +294,6 @@ test("M4D.8 shows a Furniture error, retries after login, then detaches Items", 
     data.item.charger,
     data.item.remote,
     data.item.warrantyDocuments,
-    data.item.extension,
     data.item.jewelryBox,
   ]) {
     await expect(itemCard(page, itemName)).toContainText(
@@ -302,6 +301,12 @@ test("M4D.8 shows a Furniture error, retries after login, then detaches Items", 
     );
   }
   await expect(itemCard(page, data.item.album)).toHaveCount(0);
+  // Its additional assignment is outside the deleted Furniture subtree.
+  await expect(itemCard(page, data.item.extension)).toHaveCount(0);
+  await page.goto("/items");
+  await expect(itemCard(page, data.item.extension)).toContainText(
+    `${data.room.salon} / ${data.furniture.shelf} / ${data.storageSpace.middleShelf}`,
+  );
 });
 
 test("M4D.8 moves Furniture Items, changes target and blocks submit while loading", async ({

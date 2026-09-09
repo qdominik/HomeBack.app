@@ -49,6 +49,8 @@ type ItemFormProps = {
   locationOptions: ItemLocationSelectorOptions;
   photo?: ItemPhotoPersistedState | null;
   selectedPositionId?: string | null;
+  selectedStorageId?: string | null;
+  selectedRoomId?: string | null;
   submitLabel: string;
 };
 
@@ -123,6 +125,8 @@ export function ItemForm({
   locationOptions,
   photo = null,
   selectedPositionId,
+  selectedStorageId,
+  selectedRoomId,
   submitLabel,
 }: ItemFormProps) {
   const isCompact = layout === "compact";
@@ -158,10 +162,14 @@ export function ItemForm({
   const locationFieldProps = getItemLocationFieldProps(
     locationOptions,
     selectedPositionId,
+    selectedStorageId,
+    selectedRoomId,
   );
   const locationFieldKey = getItemLocationFieldKey(
     item?.id,
     selectedPositionId,
+    selectedStorageId,
+    selectedRoomId,
   );
   const systemCategories = availableCategories.filter(
     (category) => category.isSystem,

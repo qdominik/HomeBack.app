@@ -15,6 +15,7 @@ import {
 import { t } from "@/lib/i18n";
 import {
   buildItemLocationSelectorOptions,
+  buildItemLocationAssignments,
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
 import {
@@ -104,6 +105,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     supabase
       .from("room")
       .select("id, nazwa")
+      .eq("household_id", profile?.household_id ?? "")
       .order(orderColumn, { ascending: true })
       .order("created_at", { ascending: true }),
   ]);
@@ -124,8 +126,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     itemIds.length
       ? supabase
           .from("item_location")
-          .select("item_id, storage_location_l3_id")
-          .eq("czy_glowna", true)
+          .select("id, item_id, room_id, storage_location_l2_id, storage_location_l3_id, czy_glowna")
           .in("item_id", itemIds)
       : Promise.resolve({ data: [], error: null }),
   ]);
@@ -148,12 +149,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     storageLocations,
   });
 
-  const primaryPositionByItemId = new Map(
-    primaryLocations.map((location) => [
-      location.item_id,
-      location.storage_location_l3_id,
-    ]),
-  );
+  const locationByItemId = buildItemLocationAssignments(locationSelectorOptions, primaryLocations);
+  const primaryPositionByItemId = new Map([...locationByItemId].map(([id, location]) => [id, location.id]));
   const categoryOptions: ItemCategoryOption[] = getItemCategoryOptions(
     categories,
     profile?.household_id,
@@ -366,11 +363,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             </Link>
           </div>
           {(() => {
-            const positionId = primaryPositionByItemId.get(focusItem.id) ?? null;
-            const location =
-              locationSelectorOptions.positions.find(
-                (option) => option.id === positionId,
-              ) ?? null;
+            const location = locationByItemId.get(focusItem.id) ?? null;
             const locationPath = buildItemSearchLocationPath({
               positionName: location?.positionName,
               roomName: location?.roomName,
@@ -400,11 +393,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {visibleItems.length ? (
         <section className="grid gap-3 lg:grid-cols-2">
           {visibleItems.map((item) => {
-            const positionId = primaryPositionByItemId.get(item.id) ?? null;
-            const location =
-              locationSelectorOptions.positions.find(
-                (option) => option.id === positionId,
-              ) ?? null;
+            const location = locationByItemId.get(item.id) ?? null;
 
             return (
               <ItemCard

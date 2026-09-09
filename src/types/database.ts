@@ -264,7 +264,9 @@ export type Database = {
         Row: {
           id: string;
           item_id: string;
-          storage_location_l3_id: string;
+          storage_location_l3_id: string | null;
+          room_id: string | null;
+          storage_location_l2_id: string | null;
           czy_glowna: boolean;
           notatka: string | null;
           created_at: string;
@@ -273,7 +275,9 @@ export type Database = {
         Insert: {
           id?: string;
           item_id: string;
-          storage_location_l3_id: string;
+          storage_location_l3_id?: string | null;
+          room_id?: string | null;
+          storage_location_l2_id?: string | null;
           czy_glowna: boolean;
           notatka?: string | null;
           created_at?: string;
@@ -282,7 +286,9 @@ export type Database = {
         Update: {
           id?: string;
           item_id?: string;
-          storage_location_l3_id?: string;
+          storage_location_l3_id?: string | null;
+          room_id?: string | null;
+          storage_location_l2_id?: string | null;
           czy_glowna?: boolean;
           notatka?: string | null;
           created_at?: string;
@@ -658,6 +664,8 @@ export type Database = {
         Args: {
           p_item_id: string;
           p_storage_location_l3_id?: string | null;
+          p_storage_location_l2_id?: string | null;
+          p_room_id?: string | null;
         };
         Returns: undefined;
       };

@@ -209,7 +209,7 @@ export const pl: Dictionary = {
       selectRoom: "Wybierz pomieszczenie",
       selectStorage: "Wybierz Mebel",
       selectPosition: "Wybierz Schowek",
-      locationHelp: "Wybierz Schowek, aby przypisa\u0107 lokalizacj\u0119.",
+      locationHelp: "Wybierz Pomieszczenie, opcjonalnie Mebel i Schowek. Pusty wybór Pomieszczenia usuwa główne przypisanie.",
       categoryUnavailable: "Kategoria niedostępna",
       systemCategories: "Kategorie systemowe",
       customCategories: "Kategorie własne",
