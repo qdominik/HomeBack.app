@@ -260,3 +260,18 @@ test("summary mapper rejects contradictory aggregate counts and entity invariant
     can_delete_immediately: false,
   });
 });
+
+
+test("room and furniture accept direct item counts with distinct totals", () => {
+  for (const entity of ["room", "storage"] as const) {
+    const summary = mapLocationDependencySummaryRow(entity, {
+      entity_id: "36000000-0000-0000-0000-000000000001", storage_count: 0, position_count: 0,
+      active_direct_items_count: 1, active_nested_items_count: 0, active_items_count: 1,
+      archived_direct_items_count: 1, archived_nested_items_count: 0, archived_items_count: 1,
+      total_distinct_items_count: 2, primary_location_links_count: 2, non_primary_location_links_count: 0,
+      total_location_links_count: 2, requires_item_resolution: true,
+      requires_subtree_deletion: false, can_delete_immediately: false,
+    });
+    assert.equal(summary.activeDirectItemsCount, 1);
+  }
+});

@@ -209,7 +209,7 @@ export const en: Dictionary = {
       selectRoom: "Select a room",
       selectStorage: "Select furniture",
       selectPosition: "Select storage space",
-      locationHelp: "Select a Storage space to assign a location.",
+      locationHelp: "Select a Room, optionally Furniture and a Storage space. An empty Room selection clears the primary assignment.",
       categoryUnavailable: "Category unavailable",
       systemCategories: "System categories",
       customCategories: "Custom categories",

@@ -126,14 +126,19 @@ export function getPositionOptionsForStorage(
 export function getInitialItemLocationSelection(
   options: ItemLocationSelectorOptions,
   selectedPositionId?: string | null,
+  selectedStorageId?: string | null,
+  selectedRoomId?: string | null,
 ): ItemLocationSelection {
   const initialOption =
     options.positions.find((option) => option.id === selectedPositionId) ?? null;
 
+  const storage = options.storageLocations.find((entry) => entry.id === selectedStorageId);
+  const roomId = initialOption?.roomId ?? storage?.roomId ?? selectedRoomId;
+  const room = options.rooms.find((entry) => entry.id === roomId);
   return {
     positionId: initialOption?.id ?? "",
-    roomId: initialOption?.roomId ?? "",
-    storageId: initialOption?.storageId ?? "",
+    roomId: room?.id ?? "",
+    storageId: initialOption?.storageId ?? (room ? storage?.id : null) ?? "",
   };
 }
 
@@ -143,23 +148,31 @@ export function getItemEditFormLocationProps(
 ) {
   return {
     locationOptions,
-    selectedPositionId: location?.id ?? null,
+    selectedPositionId: location?.positionName ? location.id : null,
+    selectedStorageId: location?.storageId || null,
+    selectedRoomId: location?.roomId || null,
   };
 }
 
 export function getItemLocationFieldKey(
   itemId?: string | null,
   selectedPositionId?: string | null,
+  selectedStorageId?: string | null,
+  selectedRoomId?: string | null,
 ) {
-  return `${itemId ?? "new"}:${selectedPositionId ?? "none"}`;
+  return `${itemId ?? "new"}:${selectedPositionId ?? selectedStorageId ?? selectedRoomId ?? "none"}`;
 }
 
 export function getItemLocationFieldProps(
   options: ItemLocationSelectorOptions,
   selectedPositionId?: string | null,
+  selectedStorageId?: string | null,
+  selectedRoomId?: string | null,
 ) {
   return {
     options,
+    selectedStorageId: selectedStorageId ?? null,
+    selectedRoomId: selectedRoomId ?? null,
     selectedPositionId: selectedPositionId ?? null,
   };
 }
@@ -173,4 +186,47 @@ export function selectItemLocationStorage(
   storageId: string,
 ): ItemLocationSelection {
   return { ...selection, storageId, positionId: "" };
+}
+
+export type ItemLocationTarget = {
+  room_id?: string | null;
+  storage_location_l2_id?: string | null;
+  storage_location_l3_id: string | null;
+};
+
+// Selectors carry parents; a persisted assignment carries only its deepest target.
+export function getItemLocationTarget(selection: ItemLocationSelection): ItemLocationTarget {
+  return {
+    room_id: !selection.positionId && !selection.storageId ? selection.roomId || null : null,
+    storage_location_l2_id: !selection.positionId ? selection.storageId || null : null,
+    storage_location_l3_id: selection.positionId || null,
+  };
+}
+
+export function resolveItemLocation(options: ItemLocationSelectorOptions, target: ItemLocationTarget): ItemLocationOption | null {
+  if ([target.room_id, target.storage_location_l2_id, target.storage_location_l3_id].filter(Boolean).length !== 1) return null;
+  if (target.storage_location_l3_id) return options.positions.find((p) => p.id === target.storage_location_l3_id) ?? null;
+  const furniture = target.storage_location_l2_id
+    ? options.storageLocations.find((f) => f.id === target.storage_location_l2_id) : null;
+  if (target.storage_location_l2_id && !furniture) return null;
+  const room = options.rooms.find((r) => r.id === (furniture?.roomId ?? target.room_id));
+  if (!room) return null;
+  return { id: furniture?.id ?? room.id, roomId: room.id, roomName: room.label,
+    storageId: furniture?.id ?? "", storageName: furniture?.label ?? "",
+    positionName: "", locationCode: "" };
+}
+
+export function buildItemLocationAssignments(
+  options: ItemLocationSelectorOptions,
+  assignments: (ItemLocationTarget & { id?: string; item_id: string; czy_glowna: boolean })[],
+) {
+  const result = new Map<string, ItemLocationOption>();
+  const key = (a: ItemLocationTarget) => a.storage_location_l3_id ?? a.storage_location_l2_id ?? a.room_id ?? "";
+  const level = (a: ItemLocationTarget) => a.storage_location_l3_id ? 3 : a.storage_location_l2_id ? 2 : 1;
+  for (const assignment of [...assignments].sort((a, b) => Number(b.czy_glowna) - Number(a.czy_glowna)
+    || key(a).localeCompare(key(b)) || level(a) - level(b) || (a.id ?? "").localeCompare(b.id ?? ""))) {
+    const location = resolveItemLocation(options, assignment);
+    if (location && !result.has(assignment.item_id)) result.set(assignment.item_id, location);
+  }
+  return result;
 }
