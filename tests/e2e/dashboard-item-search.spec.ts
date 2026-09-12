@@ -342,16 +342,22 @@ test.describe("useful Dashboard widgets", () => {
     await generateQaSmokeDataset(page);
 
     await page.goto("/items");
-    const filters = page
-      .getByRole("button", { name: "Filtruj", exact: true })
-      .locator("xpath=ancestor::form[1]");
-    await filters.getByLabel("Kategoria", { exact: true }).selectOption({
+    const categoryFilter = page.locator('select[name="category"]');
+    const statusFilter = page.locator('select[name="status"]');
+    const roomFilter = page.locator('select[name="room"]');
+    const storageFilter = page.locator('select[name="storage"]');
+    const positionFilter = page.locator('select[name="position"]');
+    const applyFilters = page.getByRole("button", {
+      name: "Filtruj",
+      exact: true,
+    });
+    await categoryFilter.selectOption({
       label: "Elektronika",
     });
-    await filters.getByLabel("Status", { exact: true }).selectOption({
+    await statusFilter.selectOption({
       label: "W domu",
     });
-    await filters.getByRole("button", { name: "Filtruj", exact: true }).click();
+    await applyFilters.click();
     await expect(page).toHaveURL(/category=[0-9a-f-]{36}/);
     await expect(page).toHaveURL(/status=w(?:\+|%20)domu/);
     await expect(itemCard(page, "QA Kabel USB")).toBeVisible();
@@ -359,32 +365,32 @@ test.describe("useful Dashboard widgets", () => {
     await expect(itemCard(page, "QA Latarka")).toHaveCount(0);
 
     await page.goto("/items");
-    await filters.getByLabel("Pomieszczenie", { exact: true }).selectOption({
+    await roomFilter.selectOption({
       label: "QA Salon",
     });
-    await filters.getByLabel("Mebel", { exact: true }).selectOption({
+    await storageFilter.selectOption({
       label: "QA Półka wisząca",
     });
-    await filters.getByLabel("Schowek", { exact: true }).selectOption({
+    await positionFilter.selectOption({
       label: "QA Salon / QA Półka wisząca / QA Górna półka",
     });
-    await filters.getByRole("button", { name: "Filtruj", exact: true }).click();
+    await applyFilters.click();
     await expect(itemCard(page, "QA Baterie AA")).toBeVisible();
     await expect(itemCard(page, "QA Latarka")).toHaveCount(0);
 
     await page.goto("/items?view=unlocated");
-    await filters.getByLabel("Kategoria", { exact: true }).selectOption({
+    await categoryFilter.selectOption({
       label: "Elektronika",
     });
-    await filters.getByLabel("Status", { exact: true }).selectOption({
+    await statusFilter.selectOption({
       label: "W domu",
     });
-    await filters.getByRole("button", { name: "Filtruj", exact: true }).click();
+    await applyFilters.click();
     await expect(page).toHaveURL(/view=unlocated/);
     await expect(itemCard(page, "QA Kabel USB")).toBeVisible();
     await expect(itemCard(page, "QA Stary pilot")).toHaveCount(0);
 
-    await filters.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
+    await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
     await expect(page).toHaveURL(/\/items$/);
   });
 
