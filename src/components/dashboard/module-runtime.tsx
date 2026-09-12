@@ -71,7 +71,7 @@ export function RecentItemsDashboardModule({ data }: { data: DashboardWidgetData
   }
 
   return (
-    <ul className="mt-4 divide-y divide-line" data-widget-content="recent-items">
+    <ul className="mt-4 min-w-0 divide-y divide-line" data-widget-content="recent-items">
       {data.recentItems.data.map((item) => (
         <li key={item.id}>
           <Link
@@ -112,11 +112,11 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
   }
 
   return (
-    <ul className="mt-4 grid gap-2 sm:grid-cols-2" data-widget-content="category-count">
+    <ul className="mt-4 grid min-w-0 gap-2 sm:grid-cols-2" data-widget-content="category-count">
       {data.categories.data.map((category) => (
-        <li key={category.id}>
+        <li className="min-w-0" key={category.id}>
           <Link
-            className="flex min-h-12 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
+            className="flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
             href={`${routes.items}?category=${category.id}`}
           >
             <EntityIcon
@@ -156,11 +156,11 @@ export function RoomsDashboardModule({ data }: { data: DashboardWidgetData }) {
   }
 
   return (
-    <ul className="mt-4 grid gap-2 sm:grid-cols-2" data-widget-content="rooms">
+    <ul className="mt-4 grid min-w-0 gap-2 sm:grid-cols-2" data-widget-content="rooms">
       {data.rooms.data.map((room) => (
-        <li key={room.id}>
+        <li className="min-w-0" key={room.id}>
           <Link
-            className="flex min-h-12 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
+            className="flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
             href={`${routes.home}#room-${room.id}`}
           >
             <EntityIcon
@@ -173,7 +173,7 @@ export function RoomsDashboardModule({ data }: { data: DashboardWidgetData }) {
             <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
               {room.name}
             </span>
-            <span className="text-xs font-medium text-muted">
+            <span className="shrink-0 text-xs font-medium text-muted">
               {formatItemCount(room.itemCount)}
             </span>
           </Link>

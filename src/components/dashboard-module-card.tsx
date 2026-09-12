@@ -27,7 +27,7 @@ export function DashboardModuleCard({
     <Card
       as="section"
       aria-disabled={isDisabled || undefined}
-      className={`flex flex-col ${uiTokens.cardContent} ${
+      className={`min-w-0 flex flex-col ${uiTokens.cardContent} ${
         isDisabled ? "bg-surface-muted/40" : "hover:border-primary/50"
       }`}
       data-module-status={definition.status}

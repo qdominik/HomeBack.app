@@ -60,7 +60,7 @@ export default async function DashboardPage() {
       {registrations.length > 0 ? (
         <section
           aria-label={t.dashboard.title}
-          className="grid gap-4 sm:gap-5 md:grid-cols-2"
+          className="grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2"
         >
           {registrations.map(({ definition, registration }) => (
             <DashboardModuleCard
