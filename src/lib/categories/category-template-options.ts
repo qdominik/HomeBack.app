@@ -4,7 +4,7 @@ export const CATEGORY_TEMPLATE_OPTIONS = [
   "Leki",
   "Żywność",
   "Dokumenty",
-  "Ubrania zimowe",
+  "Ubrania",
   "Elektronika",
   "Narzędzia",
   "Książki",

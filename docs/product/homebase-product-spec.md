@@ -301,7 +301,7 @@ Kategoryzacja przedmiotów i filtrowanie.
 - Leki,
 - Żywność,
 - Dokumenty,
-- Ubrania zimowe,
+- Ubrania,
 - Elektronika,
 - Narzędzia,
 - Książki,
