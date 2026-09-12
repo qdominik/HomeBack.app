@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 import type { ItemFilters } from "@/lib/items/item-search-params";
+import type { ItemView } from "@/lib/items/item-view-filter";
 import { t } from "@/lib/i18n";
 
 type FilterOption = {
@@ -14,6 +15,7 @@ type ItemFiltersProps = {
   positions: FilterOption[];
   rooms: FilterOption[];
   storageLocations: FilterOption[];
+  view: ItemView;
 };
 
 const statusOptions = [
@@ -36,6 +38,7 @@ export function ItemFilters({
   positions,
   rooms,
   storageLocations,
+  view,
 }: ItemFiltersProps) {
   return (
     <form
@@ -43,6 +46,7 @@ export function ItemFilters({
       className="grid gap-3 rounded-md border border-line bg-surface p-4 md:grid-cols-2 xl:grid-cols-4"
       method="get"
     >
+      {view !== "all" ? <input name="view" type="hidden" value={view} /> : null}
       <label className="grid gap-1 text-sm font-medium text-foreground md:col-span-2">
         <span>{t.modules.items.search}</span>
         <input
@@ -57,7 +61,7 @@ export function ItemFilters({
         <span>{t.modules.items.category}</span>
         <select
           className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
-          defaultValue={filters.categoryId ?? ""}
+          defaultValue={filters.categoryId ?? filters.categoryKey ?? ""}
           name="category"
         >
           <option value="">{t.modules.items.allCategories}</option>

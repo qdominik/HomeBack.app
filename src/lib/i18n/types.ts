@@ -91,6 +91,11 @@ export type Dictionary = {
     greeting: string;
     addItem: string;
     empty: string;
+    emptyCategoryCounts: string;
+    emptyRecentItems: string;
+    emptyRooms: string;
+    itemCount: string;
+    widgetReadError: string;
     allHidden: string;
     allHiddenHint: string;
     itemSearch: {

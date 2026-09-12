@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applyItemFilters,
   hasItemFilters,
   parseItemSearchParams,
   parseItemFocusId,
@@ -90,6 +91,39 @@ test("item filters keep supported status and sort values", () => {
   assert.equal(filters.status, "pożyczone");
   assert.equal(hasItemFilters(filters), true);
   assert.equal(hasItemFilters(parseItemSearchParams({ sort: "name" })), false);
+});
+
+test("existing inventory filters apply status, category, location, text, and household isolation", () => {
+  const roomId = "aaaaaaaa-1111-4111-8111-111111111111";
+  const storageId = "bbbbbbbb-2222-4222-8222-222222222222";
+  const items = [
+    { id: "item-a", household_id: "household-a", category_id: "category-tools", nazwa: "Wiertarka", opis: "Akumulatorowa", status: "w domu" as const, created_at: "2026-09-02" },
+    { id: "item-b", household_id: "household-a", category_id: "category-food", nazwa: "Mąka", opis: null, status: "w domu" as const, created_at: "2026-09-03" },
+    { id: "item-c", household_id: "household-b", category_id: "category-tools", nazwa: "Obca wiertarka", opis: null, status: "w domu" as const, created_at: "2026-09-04" },
+  ];
+  const locationByItemId = new Map([
+    ["item-a", { id: validUuid, locationCode: "GAR-REG-SZ1", positionName: "Szuflada", roomId, roomName: "Garaż", storageId, storageName: "Regał" }],
+    ["item-b", { id: "position-b", locationCode: "KUC-SZA-P1", positionName: "Półka", roomId: "room-b", roomName: "Kuchnia", storageId: "storage-b", storageName: "Szafka" }],
+  ]);
+  const filters = parseItemSearchParams({
+    category: "tools",
+    position: validUuid,
+    q: "gar-reg",
+    room: roomId,
+    status: "w_domu",
+    storage: storageId,
+  });
+
+  const result = applyItemFilters({
+    categoryKeyById: new Map([["category-tools", "tools"], ["category-food", "food"]]),
+    categoryNameById: new Map([["category-tools", "Narzędzia"], ["category-food", "Żywność"]]),
+    filters,
+    householdId: "household-a",
+    items,
+    locationByItemId,
+  });
+
+  assert.deepEqual(result.map((item) => item.id), ["item-a"]);
 });
 
 test("item view parser defaults to all and accepts supported views", () => {

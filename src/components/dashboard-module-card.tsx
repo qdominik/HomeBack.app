@@ -6,14 +6,17 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import { t } from "@/lib/i18n";
 import type { DashboardModuleDefinition } from "@/lib/dashboard/module-registry";
+import type { DashboardWidgetData } from "@/lib/dashboard/dashboard-widgets";
 import { uiTokens } from "@/lib/ui/tokens";
 
 type DashboardModuleCardProps = {
+  data: DashboardWidgetData;
   definition: DashboardModuleDefinition;
   Render: DashboardModuleRenderer;
 };
 
 export function DashboardModuleCard({
+  data,
   definition,
   Render,
 }: DashboardModuleCardProps) {
@@ -28,6 +31,7 @@ export function DashboardModuleCard({
         isDisabled ? "bg-surface-muted/40" : "hover:border-primary/50"
       }`}
       data-module-status={definition.status}
+      data-dashboard-module={definition.key}
     >
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <h2 className="flex flex-wrap items-center gap-2 text-base font-semibold text-foreground">
@@ -39,7 +43,7 @@ export function DashboardModuleCard({
       <p className={`mt-2 ${uiTokens.mutedText}`}>
         {t.dashboardModules[definition.descriptionKey].description}
       </p>
-      <Render definition={definition} />
+      <Render data={data} definition={definition} />
     </Card>
   );
 }
