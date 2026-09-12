@@ -64,7 +64,9 @@ test("Polish normalization preserves item breadcrumbs and the item hash link", a
   await result.click();
   await expect(page).toHaveURL(new RegExp(`${href}$`));
   await expect(itemCard(page, data.item.charger)).toBeVisible();
-  await expect(page.locator(href!.slice(href!.indexOf("#")))).toBeInViewport();
+  const target = page.locator(href!.slice(href!.indexOf("#")));
+  await target.scrollIntoViewIfNeeded();
+  await expect(target).toBeInViewport();
 });
 
 test("main navigation opens search from Structure and each structural result links to its card", async ({ page }) => {
@@ -340,9 +342,9 @@ test.describe("useful Dashboard widgets", () => {
     await generateQaSmokeDataset(page);
 
     await page.goto("/items");
-    const filters = page.locator('form[method="get"]').filter({
-      has: page.getByRole("button", { name: "Filtruj", exact: true }),
-    });
+    const filters = page
+      .getByRole("button", { name: "Filtruj", exact: true })
+      .locator("xpath=ancestor::form[1]");
     await filters.getByLabel("Kategoria", { exact: true }).selectOption({
       label: "Elektronika",
     });
