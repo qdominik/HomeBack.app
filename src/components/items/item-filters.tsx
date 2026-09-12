@@ -43,24 +43,24 @@ export function ItemFilters({
   return (
     <form
       action={routes.items}
-      className="grid gap-3 rounded-md border border-line bg-surface p-4 md:grid-cols-2 xl:grid-cols-4"
+      className="grid min-w-0 gap-3 rounded-md border border-line bg-surface p-4 md:grid-cols-2 xl:grid-cols-4"
       method="get"
     >
       {view !== "all" ? <input name="view" type="hidden" value={view} /> : null}
-      <label className="grid gap-1 text-sm font-medium text-foreground md:col-span-2">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground md:col-span-2">
         <span>{t.modules.items.search}</span>
         <input
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.query}
           name="q"
           placeholder={t.modules.items.searchPlaceholder}
           type="search"
         />
       </label>
-      <label className="grid gap-1 text-sm font-medium text-foreground">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.category}</span>
         <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.categoryId ?? filters.categoryKey ?? ""}
           name="category"
         >
@@ -72,10 +72,10 @@ export function ItemFilters({
           ))}
         </select>
       </label>
-      <label className="grid gap-1 text-sm font-medium text-foreground">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.status}</span>
         <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.status ?? ""}
           name="status"
         >
@@ -87,10 +87,10 @@ export function ItemFilters({
           ))}
         </select>
       </label>
-      <label className="grid gap-1 text-sm font-medium text-foreground">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.room}</span>
         <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.roomId ?? ""}
           name="room"
         >
@@ -102,10 +102,10 @@ export function ItemFilters({
           ))}
         </select>
       </label>
-      <label className="grid gap-1 text-sm font-medium text-foreground">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.storage}</span>
         <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.storageId ?? ""}
           name="storage"
         >
@@ -117,10 +117,10 @@ export function ItemFilters({
           ))}
         </select>
       </label>
-      <label className="grid gap-1 text-sm font-medium text-foreground">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.position}</span>
         <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.positionId ?? ""}
           name="position"
         >
@@ -132,10 +132,10 @@ export function ItemFilters({
           ))}
         </select>
       </label>
-      <label className="grid gap-1 text-sm font-medium text-foreground">
+      <label className="grid min-w-0 gap-1 text-sm font-medium text-foreground">
         <span>{t.modules.items.sort}</span>
         <select
-          className="h-10 rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
+          className="h-10 min-w-0 w-full rounded-md border border-line bg-white px-3 text-sm font-normal outline-none focus:border-primary"
           defaultValue={filters.sort}
           name="sort"
         >
