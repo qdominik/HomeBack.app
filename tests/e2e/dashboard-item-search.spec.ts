@@ -282,7 +282,9 @@ test.describe("useful Dashboard widgets", () => {
     )
       .getByRole("link")
       .filter({ hasText: "Narzędzia" });
-    await expect(toolsCategory).toContainText(/\b1\b/);
+    await expect(
+      toolsCategory.getByLabel("Liczba Rzeczy: 1", { exact: true }),
+    ).toBeVisible();
     await expect(toolsCategory).toHaveAttribute(
       "href",
       /^\/items\?category=[0-9a-f-]{36}$/,
@@ -338,7 +340,9 @@ test.describe("useful Dashboard widgets", () => {
     await generateQaSmokeDataset(page);
 
     await page.goto("/items");
-    const filters = page.locator('form[action="/items"][method="get"]');
+    const filters = page.locator('form[method="get"]').filter({
+      has: page.getByRole("button", { name: "Filtruj", exact: true }),
+    });
     await filters.getByLabel("Kategoria", { exact: true }).selectOption({
       label: "Elektronika",
     });
