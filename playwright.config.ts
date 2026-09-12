@@ -4,6 +4,7 @@ const port = process.env.E2E_PORT ?? "3001";
 const baseURL = `http://127.0.0.1:${port}`;
 const siteURL = process.env.NEXT_PUBLIC_SITE_URL ?? baseURL;
 const productionBundle = process.env.E2E_PRODUCTION_BUNDLE === "1";
+const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -31,8 +32,8 @@ export default defineConfig({
   },
   webServer: {
     command: productionBundle
-      ? `npm.cmd run start -- --hostname 127.0.0.1 --port ${port}`
-      : `npm.cmd run dev -- --hostname 127.0.0.1 --port ${port}`,
+      ? `${npmCommand} run start -- --hostname 127.0.0.1 --port ${port}`
+      : `${npmCommand} run dev -- --hostname 127.0.0.1 --port ${port}`,
     env: {
       NEXT_PUBLIC_SITE_URL: siteURL,
     },
