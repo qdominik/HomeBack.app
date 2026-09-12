@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   pull_request:
   push:
@@ -16,16 +19,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit
 
       - name: Check environment contract
         run: npm run check:env -- --example
@@ -41,3 +47,103 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  database:
+    name: Database (pgTAP)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start ephemeral Supabase
+        run: npx supabase start
+
+      - name: Run database tests
+        run: npx supabase test db
+
+      - name: Capture Supabase status on failure
+        if: failure()
+        run: npx supabase status || true
+
+      - name: Stop ephemeral Supabase
+        if: always()
+        run: npx supabase stop --no-backup
+
+  e2e:
+    name: E2E (local)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start ephemeral Supabase
+        run: npx supabase start
+
+      - name: Export local public Supabase environment
+        shell: bash
+        run: |
+          api_url=""
+          public_key=""
+          while IFS='=' read -r key value; do
+            value="${value%\"}"
+            value="${value#\"}"
+            case "$key" in
+              API_URL) api_url="$value" ;;
+              PUBLISHABLE_KEY) public_key="$value" ;;
+              ANON_KEY) if [ -z "$public_key" ]; then public_key="$value"; fi ;;
+            esac
+          done < <(npx supabase status -o env)
+
+          test -n "$api_url"
+          test -n "$public_key"
+          echo "NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_DEV_ORIGIN=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$api_url" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$public_key" >> "$GITHUB_ENV"
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E
+        run: npm run test:e2e
+
+      - name: Capture Supabase status on failure
+        if: failure()
+        run: |
+          mkdir -p test-results
+          npx supabase status > test-results/supabase-status.txt 2>&1 || true
+
+      - name: Upload E2E diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-local-diagnostics
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Stop ephemeral Supabase
+        if: always()
+        run: npx supabase stop --no-backup
