@@ -124,8 +124,8 @@ test("Structure search is removed while icon search remains and mobile filters d
   await page.keyboard.press("Escape");
 
   await page.goto("/items");
-  await page.getByRole("button", { name: "Dodaj rzecz", exact: true }).click();
-  const desktopDialog = page.getByRole("dialog", { name: "Dodaj rzecz" });
+  await page.getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const desktopDialog = page.getByRole("dialog", { name: "Dodaj przedmiot" });
   const desktopSelects = desktopDialog.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
   const desktopWidths = await desktopSelects.evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().width));
   expect(Math.max(...desktopWidths) - Math.min(...desktopWidths)).toBeLessThanOrEqual(1);
@@ -139,8 +139,8 @@ test("Structure search is removed while icon search remains and mobile filters d
   await expect(page.getByText("Czas dodania", { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
-  await page.getByRole("button", { name: "Dodaj rzecz", exact: true }).click();
-  const addDialog = page.getByRole("dialog", { name: "Dodaj rzecz" });
+  await page.getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const addDialog = page.getByRole("dialog", { name: "Dodaj przedmiot" });
   const itemForm = addDialog.locator("form");
   const formSelects = itemForm.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
   await expect(formSelects).toHaveCount(5);
