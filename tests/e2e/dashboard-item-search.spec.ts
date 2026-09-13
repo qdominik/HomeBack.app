@@ -325,9 +325,19 @@ test.describe("useful Dashboard widgets", () => {
       await showRoomsDashboardModule(otherPage);
       await otherPage.goto("/dashboard");
 
-      for (const title of Object.values(dashboardModuleTitles)) {
+      for (const title of [
+        dashboardModuleTitles.recentItems,
+        dashboardModuleTitles.rooms,
+      ]) {
         await expect(dashboardModule(otherPage, title).getByRole("status")).toBeVisible();
       }
+      const unlocated = dashboardModule(
+        otherPage,
+        dashboardModuleTitles.categories,
+      ).getByRole("link", { name: /Bez lokalizacji/ });
+      await expect(unlocated).toBeVisible();
+      await expect(unlocated).toContainText(/\b0\b/);
+      await expect(unlocated).toHaveAttribute("href", "/items?view=unlocated");
       await expect(otherPage.getByText("QA Kabel USB", { exact: true })).toHaveCount(0);
       await expect(otherPage.getByText("QA Salon", { exact: true })).toHaveCount(0);
     } finally {
