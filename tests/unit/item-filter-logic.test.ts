@@ -171,17 +171,27 @@ test("inventory text search applies the global 40-result contract", () => {
 
 test("inventory filter UI keeps required order, responsive row, removable filters, and separate icon search", () => {
   const filtersSource = readFileSync("src/components/items/item-filters.tsx", "utf8");
+  const formSource = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const locationSource = readFileSync("src/components/items/item-location-field.tsx", "utf8");
+  const dialogSource = readFileSync("src/components/items/item-create-dialog.tsx", "utf8");
   const homeSource = readFileSync("src/app/(app)/home/page.tsx", "utf8");
   const iconSource = readFileSync("src/components/icons/entity-icon-picker.tsx", "utf8");
   const searchIndex = filtersSource.indexOf("placeholder={t.modules.items.searchPlaceholder}");
-  const categoryIndex = filtersSource.indexOf("label={t.modules.items.category}", searchIndex);
+  const submitIndex = filtersSource.indexOf('type="submit"', searchIndex);
+  const categoryIndex = filtersSource.indexOf("label={t.modules.items.category}", submitIndex);
   const roomIndex = filtersSource.indexOf("label={t.modules.items.room}", categoryIndex);
   const storageIndex = filtersSource.indexOf("label={t.modules.items.storage}", roomIndex);
   const moreIndex = filtersSource.indexOf("t.modules.items.moreFilters", storageIndex);
-  assert.ok(searchIndex < categoryIndex && categoryIndex < roomIndex && roomIndex < storageIndex && storageIndex < moreIndex);
-  assert.match(filtersSource, /lg:flex-row/);
-  assert.match(filtersSource, /lg:absolute/);
+  assert.ok(searchIndex < submitIndex && submitIndex < categoryIndex && categoryIndex < roomIndex && roomIndex < storageIndex && storageIndex < moreIndex);
+  assert.match(filtersSource.slice(searchIndex, categoryIndex), /MagnifyingGlassIcon[\s\S]*t\.modules\.items\.search/);
+  assert.match(filtersSource, /xl:flex-row/);
+  assert.match(filtersSource, /xl:absolute/);
   assert.match(filtersSource, /clearFilters/);
+  assert.match(formSource, /name="typ"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="typ"/);
+  assert.match(formSource, /name="category_id"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="category_id"/);
+  assert.match(locationSource, /fieldset className="min-w-0 max-w-full/);
+  assert.equal((locationSource.match(/w-full min-w-0 max-w-full/g) ?? []).length, 3);
+  assert.match(dialogSource, /overflow-x-hidden/);
   assert.doesNotMatch(homeSource, /HomeSearch|modules\.home\.search/);
   assert.match(iconSource, /type="search"/);
 });

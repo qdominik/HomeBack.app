@@ -61,22 +61,26 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
 
   return (
     <div className="space-y-3">
-      <form action={routes.items} className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-end" method="get">
+      <form action={routes.items} className="flex min-w-0 flex-col gap-2 xl:flex-row xl:items-end" method="get">
         {view !== "all" ? <input name="view" type="hidden" value={view} /> : null}
         <label className="relative min-w-0 flex-1">
           <span className="sr-only">{t.modules.items.search}</span>
           <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
           <input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" defaultValue={filters.query} name="q" placeholder={t.modules.items.searchPlaceholder} type="search" />
         </label>
+        <button className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" type="submit">
+          <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
+          {t.modules.items.search}
+        </button>
         <FilterSelect label={t.modules.items.category} name="category" options={categories} value={filters.categoryId ?? ""} onChange={update} />
         <FilterSelect label={t.modules.items.room} name="room" options={rooms} value={filters.roomId ?? ""} onChange={update} />
         <FilterSelect label={t.modules.items.storage} name="storage" options={storageLocations} value={filters.storageId ?? ""} onChange={update} />
-        <details className="relative min-w-0 lg:w-44 lg:shrink-0" ref={moreFilters}>
+        <details className="relative min-w-0 xl:w-40 xl:shrink-0" ref={moreFilters}>
           <summary className={`${selectClassName} flex cursor-pointer list-none items-center justify-center gap-2 [&::-webkit-details-marker]:hidden`}>
             <FunnelIcon aria-hidden="true" size={18} />
             {t.modules.items.moreFilters}
           </summary>
-          <div className="mt-2 grid gap-3 rounded-control border border-line bg-surface p-4 shadow-card lg:absolute lg:right-0 lg:top-full lg:z-20 lg:w-80">
+          <div className="mt-2 grid gap-3 rounded-control border border-line bg-surface p-4 shadow-card xl:absolute xl:right-0 xl:top-full xl:z-20 xl:w-80">
             <label className="ui-label">
               <span>{t.modules.items.position}</span>
               <select className="ui-control mt-1" defaultValue={filters.positionId ?? ""} name="position" onChange={(event) => update("position", event.currentTarget.value)}>
@@ -128,7 +132,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
 
 function FilterSelect({ label, name, onChange, options, value }: { label: string; name: string; onChange: (name: string, value: string) => void; options: FilterOption[]; value: string }) {
   return (
-    <label className="min-w-0 lg:w-44 lg:shrink-0">
+    <label className="min-w-0 xl:w-36 xl:shrink-0">
       <span className="sr-only">{label}</span>
       <select aria-label={label} className={`${selectClassName} w-full`} defaultValue={value} name={name} onChange={(event) => onChange(name, event.currentTarget.value)}>
         <option value="">{label}</option>

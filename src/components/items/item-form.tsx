@@ -435,7 +435,7 @@ export function ItemForm({
   return (
     <form
       action={action}
-      className={isCompact ? "grid gap-3 sm:grid-cols-2" : "space-y-3"}
+      className={isCompact ? "grid min-w-0 max-w-full gap-3 sm:grid-cols-2" : "min-w-0 max-w-full space-y-3"}
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
       {photoDraft ? (
@@ -479,10 +479,10 @@ export function ItemForm({
           value={itemDescription}
         />
       </label>
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label className={`block min-w-0 max-w-full text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.itemType}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
           name="typ"
           onChange={(event) =>
             setItemType(event.currentTarget.value as ItemType)
@@ -523,10 +523,10 @@ export function ItemForm({
           value={itemUnit}
         />
       </label>
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label className={`block min-w-0 max-w-full text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.category}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
           name="category_id"
           onChange={(event) => selectCategory(event.currentTarget.value)}
           required
@@ -679,7 +679,7 @@ export function ItemForm({
           </p>
         ) : null}
       </section>
-      <div className={fullWidthClass}>
+      <div className={`min-w-0 max-w-full ${fullWidthClass}`}>
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>
       <ItemSubmitButton
