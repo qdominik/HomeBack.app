@@ -35,12 +35,12 @@ export function ItemLocationField({
   );
 
   return (
-    <fieldset className="space-y-3">
+    <fieldset className="min-w-0 max-w-full space-y-3">
       <legend className="text-sm font-medium">{t.modules.items.location}</legend>
-      <label className="block text-sm font-medium">
+      <label className="block min-w-0 max-w-full text-sm font-medium">
         {t.modules.items.room}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
           name="room_id"
           onChange={(event) => {
             setSelection(selectItemLocationRoom(event.currentTarget.value));
@@ -55,10 +55,10 @@ export function ItemLocationField({
           ))}
         </select>
       </label>
-      <label className="block text-sm font-medium">
+      <label className="block min-w-0 max-w-full text-sm font-medium">
         {t.modules.items.storage}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
           disabled={!selection.roomId || storageOptions.length === 0}
           name="storage_location_l2_id"
           onChange={(event) => {
@@ -78,10 +78,10 @@ export function ItemLocationField({
           ))}
         </select>
       </label>
-      <label className="block text-sm font-medium">
+      <label className="block min-w-0 max-w-full text-sm font-medium">
         {t.modules.items.position}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
           disabled={!selection.storageId || positionOptions.length === 0}
           name="storage_location_l3_id"
           onChange={(event) => {

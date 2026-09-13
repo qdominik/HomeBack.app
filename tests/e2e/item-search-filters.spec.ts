@@ -8,22 +8,40 @@ test("Items share normalized search and combine category and location filters", 
   await page.goto("/items");
 
   const search = page.getByRole("searchbox", { name: "Szukaj", exact: true });
+  const searchButton = page.getByRole("button", { name: "Szukaj", exact: true });
   const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
   const room = page.getByRole("combobox", { name: "Pomieszczenie", exact: true });
   const furniture = page.getByRole("combobox", { name: "Mebel", exact: true });
   const more = page.locator("summary").filter({ hasText: "Więcej filtrów" });
-  const tops = await Promise.all([search, category, room, furniture, more].map(async (locator) => (await locator.boundingBox())?.y));
+  await expect(searchButton).toBeVisible();
+  await expect(searchButton.locator("svg")).toHaveCount(1);
+  const tops = await Promise.all([search, searchButton, category, room, furniture, more].map(async (locator) => (await locator.boundingBox())?.y));
   const visibleTops = tops.filter((top): top is number => top !== undefined);
   expect(Math.max(...visibleTops) - Math.min(...visibleTops)).toBeLessThanOrEqual(2);
 
   await search.fill("ladowarka");
-  await search.press("Enter");
+  await searchButton.click();
   await expect(page).toHaveURL(/q=ladowarka/);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await expect(itemCard(page, data.item.remote)).toHaveCount(0);
 
+  await search.fill("Pilot do telewizora");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/q=Pilot(\+|%20)do(\+|%20)telewizora/);
+  await expect(itemCard(page, data.item.remote)).toBeVisible();
+  await expect(itemCard(page, data.item.charger)).toHaveCount(0);
+
+  await search.fill("ladowarka");
+  await searchButton.click();
+
   await category.selectOption({ label: "Elektronika" });
   await expect(page).toHaveURL(/category=/);
+  await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
+  await expect(itemCard(page, data.item.charger)).toBeVisible();
+  await search.fill("");
+  await searchButton.click();
+  await expect(page).toHaveURL(/category=/);
+  expect(new URL(page.url()).searchParams.get("q")).toBe("");
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await room.selectOption({ label: data.room.salon });
@@ -33,6 +51,13 @@ test("Items share normalized search and combine category and location filters", 
   await expect(itemCard(page, data.item.charger)).toBeVisible();
 
   await more.click();
+  const morePanel = page.locator("summary").filter({ hasText: "Więcej filtrów" }).locator("xpath=following-sibling::div[1]");
+  const moreBox = await more.boundingBox();
+  const morePanelBox = await morePanel.boundingBox();
+  expect(morePanelBox?.y).toBeGreaterThanOrEqual((moreBox?.y ?? 0) + (moreBox?.height ?? 0));
+  await expect(morePanel.getByText("Schowek", { exact: true })).toBeVisible();
+  await expect(morePanel.getByText("Status", { exact: true })).toBeVisible();
+  await expect(morePanel.getByText("Czas dodania", { exact: true })).toBeVisible();
   const storage = page.locator('select[name="position"]');
   await storage.selectOption({ label: `${data.room.salon} / ${data.furniture.chest} / ${data.storageSpace.upperDrawer}` });
   await expect(itemCard(page, data.item.charger)).toBeVisible();
@@ -85,7 +110,7 @@ test("Item filters and results remain isolated to the active household", async (
 });
 
 test("Structure search is removed while icon search remains and mobile filters do not overflow", async ({ page }) => {
-  await prepareDeletionDataset(page, "item-filter-layout");
+  const data = await prepareDeletionDataset(page, "item-filter-layout");
   await page.goto("/home");
   await expect(page.getByText("Szukaj w domu", { exact: true })).toHaveCount(0);
   await expect(page.getByPlaceholder("Pomieszczenie, Mebel, Schowek lub kod")).toHaveCount(0);
@@ -98,10 +123,60 @@ test("Structure search is removed while icon search remains and mobile filters d
   await expect(iconDialog.getByRole("searchbox", { name: "Szukaj ikony" })).toBeVisible();
   await page.keyboard.press("Escape");
 
+  await page.goto("/items");
+  await page.getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const desktopDialog = page.getByRole("dialog", { name: "Dodaj przedmiot" });
+  const desktopSelects = desktopDialog.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
+  const desktopWidths = await desktopSelects.evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().width));
+  expect(Math.max(...desktopWidths) - Math.min(...desktopWidths)).toBeLessThanOrEqual(1);
+  await page.keyboard.press("Escape");
+
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/items");
   await expect(page.getByRole("searchbox", { name: "Szukaj", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Szukaj", exact: true })).toBeVisible();
   await page.locator("summary").filter({ hasText: "Więcej filtrów" }).click();
   await expect(page.getByText("Czas dodania", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  await page.getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const addDialog = page.getByRole("dialog", { name: "Dodaj przedmiot" });
+  const itemForm = addDialog.locator("form");
+  const formSelects = itemForm.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
+  await expect(formSelects).toHaveCount(5);
+  const mobileWidths = await formSelects.evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().width));
+  expect(Math.max(...mobileWidths) - Math.min(...mobileWidths)).toBeLessThanOrEqual(1);
+  const dialogBox = await addDialog.boundingBox();
+  for (const select of await formSelects.all()) {
+    const box = await select.boundingBox();
+    expect(box?.x).toBeGreaterThanOrEqual(dialogBox?.x ?? 0);
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual((dialogBox?.x ?? 0) + (dialogBox?.width ?? 0));
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  const roomSelect = itemForm.locator('select[name="room_id"]');
+  const furnitureSelect = itemForm.locator('select[name="storage_location_l2_id"]');
+  const storageSelect = itemForm.locator('select[name="storage_location_l3_id"]');
+  await roomSelect.selectOption({ label: data.room.salon });
+  await expect(furnitureSelect).toBeEnabled();
+  await furnitureSelect.selectOption({ label: data.furniture.chest });
+  await expect(storageSelect).toBeEnabled();
+  await storageSelect.selectOption({ label: data.storageSpace.upperDrawer });
+  await roomSelect.selectOption({ label: data.room.kitchen });
+  await expect(furnitureSelect).toHaveValue("");
+  await expect(storageSelect).toHaveValue("");
+
+  await page.keyboard.press("Escape");
+  const card = itemCard(page, data.item.charger);
+  await card.getByText("Edytuj rzecz", { exact: true }).click();
+  const editForm = card.locator("details form");
+  const editSelects = editForm.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
+  await expect(editSelects).toHaveCount(5);
+  const editFormBox = await editForm.boundingBox();
+  for (const select of await editSelects.all()) {
+    const box = await select.boundingBox();
+    expect(box?.x).toBeGreaterThanOrEqual(editFormBox?.x ?? 0);
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual((editFormBox?.x ?? 0) + (editFormBox?.width ?? 0));
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });

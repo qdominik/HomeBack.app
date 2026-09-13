@@ -34,7 +34,7 @@ export function ItemCreateDialog({ options }: { options: ItemCreateOptions }) {
     <dialog
       aria-labelledby="add-item-title"
       id="add-item-dialog"
-      className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto rounded-control border border-line bg-surface p-3 text-foreground shadow-card backdrop:bg-black/40 sm:p-5"
+      className="m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-3xl overflow-x-hidden overflow-y-auto rounded-control border border-line bg-surface p-3 text-foreground shadow-card backdrop:bg-black/40 sm:p-5"
       onClose={() => { setOpen(false); trigger.current?.focus(); }}
       ref={dialog}
     >
