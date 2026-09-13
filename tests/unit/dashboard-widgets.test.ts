@@ -100,3 +100,29 @@ test("dashboard reads and links keep the household and existing route contracts"
   assert.match(runtime, /#room-\$\{room\.id\}/);
   assert.match(runtime, /\?category=\$\{category\.id\}/);
 });
+
+test("implemented dashboard modules render widgets instead of the coming-soon placeholder", () => {
+  const registry = readFileSync("src/lib/dashboard/module-registry.ts", "utf8");
+  const runtime = readFileSync("src/components/dashboard/module-runtime.tsx", "utf8");
+  const page = readFileSync("src/app/(app)/dashboard/page.tsx", "utf8");
+
+  for (const key of ["recent-items", "category-count", "rooms"]) {
+    assert.match(
+      registry,
+      new RegExp(`key: "${key}"[\\s\\S]*?status: "available"`),
+    );
+  }
+
+  assert.match(runtime, /"recent-items": RecentItemsDashboardModule/);
+  assert.match(runtime, /"category-count": CategoryCountDashboardModule/);
+  assert.match(runtime, /rooms: RoomsDashboardModule/);
+  assert.match(
+    runtime,
+    /dashboardModuleDefinitions\.map\([\s\S]*?Render: renderers\[definition\.key\]/,
+  );
+  assert.match(page, /Render=\{registration\.Render\}/);
+
+  assert.match(runtime, /data-widget-content="recent-items"/);
+  assert.match(runtime, /data-widget-content="category-count"/);
+  assert.match(runtime, /data-widget-content="rooms"/);
+});
