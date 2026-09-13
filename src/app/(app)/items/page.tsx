@@ -7,6 +7,7 @@ import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { createItem } from "@/app/(app)/items/actions";
 import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
+import { ItemFilters } from "@/components/items/item-filters";
 import { EmptyState } from "@/components/empty-state";
 import {
   getDefaultItemCategoryId,
@@ -16,6 +17,7 @@ import { t } from "@/lib/i18n";
 import {
   buildItemLocationSelectorOptions,
   buildItemLocationAssignments,
+  resolveItemLocation,
   type ItemCategoryOption,
 } from "@/lib/items/item-options";
 import {
@@ -32,10 +34,16 @@ import {
 } from "@/lib/items/item-view-filter";
 import { getAppContext } from "@/lib/app-context";
 import { buildItemSearchLocationPath } from "@/lib/items/item-search";
-import { parseItemFocusId } from "@/lib/items/item-search-params";
+import {
+  applyItemFilters,
+  hasItemFilters,
+  parseItemFocusId,
+  parseItemSearchParams,
+} from "@/lib/items/item-search-params";
 
 type ItemsPageProps = {
   searchParams: Promise<{
+    [key: string]: string | string[] | undefined;
     error?: string;
     focus?: string | string[];
     status?: string;
@@ -82,24 +90,30 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const { profile, supabase } = await getAppContext();
 
   const currentView = parseItemView(params);
+  const parsedFilters = parseItemSearchParams(params);
+  const filters = params.itemStatus
+    ? parsedFilters
+    : { ...parsedFilters, status: currentView === "archived" ? "archived" as const : "active" as const };
   const focusItemId = parseItemFocusId(params.focus);
   const itemsQueryBase = supabase
     .from("item")
     .select("*")
     .eq("household_id", profile?.household_id ?? "")
     .order("created_at", { ascending: false });
-  const itemsQuery =
-    focusItemId
-      ? itemsQueryBase.eq("id", focusItemId)
-      : currentView === "archived"
+  const itemsQuery = focusItemId
+    ? itemsQueryBase.eq("id", focusItemId)
+    : filters.status === "archived"
       ? itemsQueryBase.eq("status", "archiwalne")
-      : itemsQueryBase.neq("status", "archiwalne");
+      : filters.status === "active"
+        ? itemsQueryBase.neq("status", "archiwalne")
+        : itemsQueryBase;
 
   const [itemsResponse, categoriesResponse, roomsResponse] = await Promise.all([
     itemsQuery,
     supabase
       .from("category")
       .select("id, household_id, key, nazwa, czy_systemowa")
+      .or(`household_id.is.null,household_id.eq.${profile?.household_id ?? ""}`)
       .order("czy_systemowa", { ascending: false })
       .order("created_at", { ascending: true }),
     supabase
@@ -150,6 +164,14 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   });
 
   const locationByItemId = buildItemLocationAssignments(locationSelectorOptions, primaryLocations);
+  const locationsByItemId = new Map<string, NonNullable<ReturnType<typeof resolveItemLocation>>[]>();
+  for (const assignment of primaryLocations) {
+    const location = resolveItemLocation(locationSelectorOptions, assignment);
+    if (!location) continue;
+    const current = locationsByItemId.get(assignment.item_id) ?? [];
+    current.push(location);
+    locationsByItemId.set(assignment.item_id, current);
+  }
   const primaryPositionByItemId = new Map([...locationByItemId].map(([id, location]) => [id, location.id]));
   const categoryOptions: ItemCategoryOption[] = getItemCategoryOptions(
     categories,
@@ -162,15 +184,18 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const categoryKeyById = new Map(
     categories.map((category) => [category.id, category.key]),
   );
-  const visibleItems = filterItemsForFocus(
-    filterItemsForView(
-      items,
-      primaryPositionByItemId,
-      currentView,
-    ),
-    focusItemId,
-    profile?.household_id ?? "",
-  );
+  const viewItems = currentView === "unlocated"
+    ? filterItemsForView(items, primaryPositionByItemId, "unlocated")
+    : items;
+  const visibleItems = focusItemId
+    ? filterItemsForFocus(items, focusItemId, profile?.household_id ?? "")
+    : applyItemFilters({
+        categoryKeyById,
+        filters,
+        householdId: profile?.household_id ?? "",
+        items: viewItems,
+        locationsByItemId,
+      });
   const focusItem = focusItemId
     ? visibleItems.find((item) => item.id === focusItemId) ?? null
     : null;
@@ -213,8 +238,9 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     }),
   );
   const itemPhotoPreviewUrlById = new Map(itemPhotoPreviewEntries);
-  const emptyText =
-    currentView === "unlocated"
+  const emptyText = hasItemFilters(filters)
+    ? t.modules.items.noResults
+    : currentView === "unlocated"
       ? t.modules.items.emptyUnlocated
       : currentView === "archived"
         ? t.modules.items.emptyArchived
@@ -344,6 +370,19 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             </Link>
           ))}
         </nav>
+        <div className="mt-4">
+          <ItemFilters
+            categories={categoryOptions.map((category) => ({ id: category.id, label: category.label }))}
+            filters={filters}
+            positions={locationSelectorOptions.positions.map((position) => ({
+              id: position.id,
+              label: `${position.roomName} / ${position.storageName} / ${position.positionName}`,
+            }))}
+            rooms={locationSelectorOptions.rooms}
+            storageLocations={locationSelectorOptions.storageLocations}
+            view={currentView}
+          />
+        </div>
       </section>
       {focusItem ? (
         <section aria-labelledby="focused-item-title" className="space-y-3">

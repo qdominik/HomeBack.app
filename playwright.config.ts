@@ -12,6 +12,7 @@ export default defineConfig({
     "auth-regression.spec.ts",
     "mobile-navigation.spec.ts",
     "dashboard-item-search.spec.ts",
+    "item-search-filters.spec.ts",
     "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
   ],

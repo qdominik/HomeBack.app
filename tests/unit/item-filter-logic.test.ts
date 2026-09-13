@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applyItemFilters,
   hasItemFilters,
   parseItemSearchParams,
   parseItemFocusId,
@@ -24,18 +25,21 @@ const validUuid = "11111111-2222-3333-4444-555555555555";
 
 test("item filters use safe defaults for empty and unknown parameters", () => {
   assert.deepEqual(parseItemSearchParams({}), {
+    added: null,
     categoryId: null,
     categoryKey: null,
+    dateFrom: null,
+    dateTo: null,
     positionId: null,
     query: "",
     roomId: null,
     sort: "recent",
-    status: null,
+    status: "active",
     storageId: null,
   });
 
   assert.equal(parseItemSearchParams({ sort: "newest", status: "removed" }).sort, "recent");
-  assert.equal(parseItemSearchParams({ sort: "newest", status: "removed" }).status, null);
+  assert.equal(parseItemSearchParams({ sort: "newest", itemStatus: "removed" }).status, "active");
 });
 
 test("item filters trim and cap a text query", () => {
@@ -69,27 +73,117 @@ test("item focus accepts only a valid item UUID", () => {
   assert.equal(parseItemFocusId(undefined), null);
 });
 
-test("item filters support a system category key and technical status value", () => {
+test("item filters support category keys, archive scopes, and date ranges", () => {
   const filters = parseItemSearchParams({
+    added: "custom",
     category: "tools",
-    status: "w_domu",
+    from: "2026-08-01",
+    itemStatus: "all",
+    to: "2026-08-31",
   });
 
   assert.equal(filters.categoryId, null);
   assert.equal(filters.categoryKey, "tools");
-  assert.equal(filters.status, "w domu");
+  assert.equal(filters.status, "all");
+  assert.equal(filters.added, "custom");
+  assert.equal(filters.dateFrom, "2026-08-01");
+  assert.equal(filters.dateTo, "2026-08-31");
 });
 
-test("item filters keep supported status and sort values", () => {
+test("item filters keep supported archive and sort values", () => {
   const filters = parseItemSearchParams({
+    itemStatus: "archived",
     sort: "location",
-    status: "pożyczone",
   });
 
   assert.equal(filters.sort, "location");
-  assert.equal(filters.status, "pożyczone");
+  assert.equal(filters.status, "archived");
   assert.equal(hasItemFilters(filters), true);
   assert.equal(hasItemFilters(parseItemSearchParams({ sort: "name" })), false);
+});
+
+const categoryA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const categoryB = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+const roomA = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+const furnitureA = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+const positionA = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee";
+const filterItems = [
+  { id: "item-a", household_id: "home", nazwa: "Ładowarka USB", category_id: categoryA, status: "w domu" as const, created_at: "2026-09-13T08:00:00.000Z" },
+  { id: "item-b", household_id: "home", nazwa: "Ładowarka zapasowa", category_id: categoryB, status: "archiwalne" as const, created_at: "2026-08-01T08:00:00.000Z" },
+  { id: "item-c", household_id: "other", nazwa: "Ładowarka obca", category_id: categoryA, status: "w domu" as const, created_at: "2026-09-13T08:00:00.000Z" },
+];
+const location = {
+  id: positionA,
+  locationCode: "SAL-KOM-SZU1",
+  positionName: "Szuflada",
+  roomId: roomA,
+  roomName: "Salon",
+  storageId: furnitureA,
+  storageName: "Komoda",
+};
+
+function apply(params: Record<string, string>) {
+  return applyItemFilters({
+    categoryKeyById: new Map([[categoryA, "electronics"], [categoryB, "other"]]),
+    filters: parseItemSearchParams(params),
+    householdId: "home",
+    items: filterItems,
+    locationsByItemId: new Map([["item-a", [location]]]),
+    now: new Date("2026-09-13T12:00:00.000Z"),
+  }).map((item) => item.id);
+}
+
+test("inventory text search reuses global Polish normalization and household scope", () => {
+  assert.deepEqual(apply({ q: "ladowarka" }), ["item-a"]);
+});
+
+test("inventory combines name, category, Room, Furniture, and Storage space filters", () => {
+  assert.deepEqual(apply({ q: "ładowarka", category: categoryA, room: roomA, storage: furnitureA, position: positionA }), ["item-a"]);
+  assert.deepEqual(apply({ q: "ładowarka", category: categoryB, room: roomA }), []);
+});
+
+test("inventory archive and added-time filters compose with text search", () => {
+  assert.deepEqual(apply({ q: "ładowarka", itemStatus: "all" }), ["item-a", "item-b"]);
+  assert.deepEqual(apply({ q: "ładowarka", itemStatus: "archived" }), ["item-b"]);
+  assert.deepEqual(apply({ q: "ładowarka", added: "today" }), ["item-a"]);
+  assert.deepEqual(apply({ q: "ładowarka", added: "7d" }), ["item-a"]);
+  assert.deepEqual(apply({ q: "ładowarka", added: "30d" }), ["item-a"]);
+  assert.deepEqual(apply({ q: "ładowarka", itemStatus: "all", added: "3m" }), ["item-a", "item-b"]);
+  assert.deepEqual(apply({ q: "ładowarka", itemStatus: "all", added: "custom", from: "2026-08-01", to: "2026-08-01" }), ["item-b"]);
+});
+
+test("inventory text search applies the global 40-result contract", () => {
+  const items = Array.from({ length: 41 }, (_, index) => ({
+    ...filterItems[0],
+    id: `item-${String(index).padStart(2, "0")}`,
+    nazwa: `Ładowarka ${String(index).padStart(2, "0")}`,
+  }));
+  const results = applyItemFilters({
+    categoryKeyById: new Map([[categoryA, "electronics"]]),
+    filters: parseItemSearchParams({ q: "ladowarka" }),
+    householdId: "home",
+    items,
+    locationsByItemId: new Map(),
+  });
+  assert.equal(results.length, 40);
+  assert.equal(results.at(-1)?.id, "item-39");
+});
+
+test("inventory filter UI keeps required order, responsive row, removable filters, and separate icon search", () => {
+  const filtersSource = readFileSync("src/components/items/item-filters.tsx", "utf8");
+  const homeSource = readFileSync("src/app/(app)/home/page.tsx", "utf8");
+  const iconSource = readFileSync("src/components/icons/entity-icon-picker.tsx", "utf8");
+  const searchIndex = filtersSource.indexOf("placeholder={t.modules.items.searchPlaceholder}");
+  const categoryIndex = filtersSource.indexOf("label={t.modules.items.category}", searchIndex);
+  const roomIndex = filtersSource.indexOf("label={t.modules.items.room}", categoryIndex);
+  const storageIndex = filtersSource.indexOf("label={t.modules.items.storage}", roomIndex);
+  const moreIndex = filtersSource.indexOf("t.modules.items.moreFilters", storageIndex);
+  assert.ok(searchIndex < categoryIndex && categoryIndex < roomIndex && roomIndex < storageIndex && storageIndex < moreIndex);
+  assert.match(filtersSource, /lg:flex-row/);
+  assert.match(filtersSource, /lg:absolute/);
+  assert.match(filtersSource, /clearFilters/);
+  assert.doesNotMatch(homeSource, /HomeSearch|modules\.home\.search/);
+  assert.match(iconSource, /type="search"/);
 });
 
 test("item view parser defaults to all and accepts supported views", () => {
