@@ -91,6 +91,12 @@ export const en: Dictionary = {
     greeting: "Good morning",
     addItem: "Add item",
     empty: "No data",
+    emptyCategoryCounts: "There are no Items to summarize by category.",
+    emptyRecentItems: "No Items have been added yet.",
+    emptyRooms: "No Rooms have been added yet.",
+    itemCount: "Items: {count}",
+    unlocatedItems: "Without location",
+    widgetReadError: "The module data could not be loaded.",
     allHidden: "All Dashboard modules are hidden.",
     allHiddenHint:
       "You can restore modules in Settings, in the Dashboard personalization section.",
@@ -111,8 +117,8 @@ export const en: Dictionary = {
   },
   dashboardModules: {
     recentItems: {
-      title: "Recently added",
-      description: "A view of recently added items will appear here.",
+      title: "Recent Items",
+      description: "Recently added or updated Items.",
     },
     expiringItems: {
       title: "Expiration dates",
@@ -120,7 +126,7 @@ export const en: Dictionary = {
     },
     categoryCount: {
       title: "Items by category",
-      description: "A category summary will appear here.",
+      description: "The number of active Items in each category.",
     },
     activity: {
       title: "Recent activity",
@@ -128,7 +134,7 @@ export const en: Dictionary = {
     },
     rooms: {
       title: "Rooms",
-      description: "A home structure summary with item counts will appear here.",
+      description: "Room shortcuts with Item counts.",
     },
     documents: {
       title: "Documents",
@@ -349,7 +355,7 @@ export const en: Dictionary = {
         itemRestored: "Item restored.",
       },
       search: "Search",
-      searchPlaceholder: "Name, description, or location code",
+      searchPlaceholder: "Search items...",
       category: "Category",
       room: "Room",
       storage: "Furniture item",
@@ -358,6 +364,24 @@ export const en: Dictionary = {
       sort: "Sort",
       filter: "Filter",
       clearFilters: "Clear filters",
+      activeFilters: "Active filters",
+      moreFilters: "More filters",
+      addedTime: "Time added",
+      anyTime: "Any time",
+      dateFrom: "From",
+      dateTo: "To",
+      filterStatuses: {
+        active: "Active",
+        archived: "Archived",
+        all: "All",
+      },
+      addedOptions: {
+        today: "Today",
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "3m": "Last 3 months",
+        custom: "Custom date range",
+      },
       allCategories: "All categories",
       allRooms: "All rooms",
       allStorageLocations: "All furniture",
@@ -395,20 +419,6 @@ export const en: Dictionary = {
       empty: "Add the first room",
       noLocations: "No furniture",
       noPositions: "No storage spaces",
-      search: {
-        label: "Search home",
-        placeholder: "Room, furniture, storage space or code",
-        scope: "Scope",
-        clear: "Clear",
-        submit: "Search",
-        noResults: "No Rooms, Furniture or Storage spaces match the search.",
-        scopes: {
-          all: "All",
-          rooms: "Rooms",
-          storage: "Furniture",
-          positions: "Storage spaces",
-        },
-      },
       entityActions: {
         add: "Add",
         create: "Create",

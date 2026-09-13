@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
 
-const appURL = "http://127.0.0.1:3001";
+const appURL = `http://127.0.0.1:${process.env.E2E_PORT ?? "3001"}`;
 const mailpitAPIURL = "http://127.0.0.1:54324/api/v1";
 const confirmationTimeout = 15_000;
 
