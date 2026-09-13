@@ -41,7 +41,7 @@ test("Items share normalized search and combine category and location filters", 
   await search.fill("");
   await searchButton.click();
   await expect(page).toHaveURL(/category=/);
-  expect(page.url()).not.toContain("q=");
+  expect(new URL(page.url()).searchParams.get("q")).toBe("");
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await room.selectOption({ label: data.room.salon });
@@ -123,6 +123,7 @@ test("Structure search is removed while icon search remains and mobile filters d
   await expect(iconDialog.getByRole("searchbox", { name: "Szukaj ikony" })).toBeVisible();
   await page.keyboard.press("Escape");
 
+  await page.goto("/items");
   await page.getByRole("button", { name: "Dodaj rzecz", exact: true }).click();
   const desktopDialog = page.getByRole("dialog", { name: "Dodaj rzecz" });
   const desktopSelects = desktopDialog.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
