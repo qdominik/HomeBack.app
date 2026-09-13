@@ -91,6 +91,12 @@ export const pl: Dictionary = {
     greeting: "Dzień dobry",
     addItem: "Dodaj przedmiot",
     empty: "Brak danych",
+    emptyCategoryCounts: "Brak Rzeczy do podsumowania według kategorii.",
+    emptyRecentItems: "Nie dodano jeszcze żadnych Rzeczy.",
+    emptyRooms: "Nie dodano jeszcze żadnych Pomieszczeń.",
+    itemCount: "Liczba Rzeczy: {count}",
+    unlocatedItems: "Bez lokalizacji",
+    widgetReadError: "Nie udało się odczytać danych modułu.",
     allHidden: "Wszystkie moduły Dashboardu są ukryte.",
     allHiddenHint:
       "Możesz przywrócić moduły w Ustawieniach, w sekcji Personalizacja Dashboardu.",
@@ -111,8 +117,8 @@ export const pl: Dictionary = {
   },
   dashboardModules: {
     recentItems: {
-      title: "Ostatnio dodane",
-      description: "Podgląd ostatnio dodanych rzeczy pojawi się tutaj.",
+      title: "Ostatnie Rzeczy",
+      description: "Ostatnio dodane lub zmodyfikowane Rzeczy.",
     },
     expiringItems: {
       title: "Terminy ważności",
@@ -120,7 +126,7 @@ export const pl: Dictionary = {
     },
     categoryCount: {
       title: "Rzeczy według kategorii",
-      description: "Podsumowanie kategorii pojawi się tutaj.",
+      description: "Liczba aktywnych Rzeczy w poszczególnych kategoriach.",
     },
     activity: {
       title: "Ostatnia aktywność",
@@ -128,7 +134,7 @@ export const pl: Dictionary = {
     },
     rooms: {
       title: "Pomieszczenia",
-      description: "Skrót struktury domu z liczbą rzeczy pojawi się tutaj.",
+      description: "Skróty do Pomieszczeń wraz z liczbą Rzeczy.",
     },
     documents: {
       title: "Dokumenty",
