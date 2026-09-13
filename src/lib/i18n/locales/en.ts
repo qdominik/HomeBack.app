@@ -95,6 +95,7 @@ export const en: Dictionary = {
     emptyRecentItems: "No Items have been added yet.",
     emptyRooms: "No Rooms have been added yet.",
     itemCount: "Items: {count}",
+    unlocatedItems: "Without location",
     widgetReadError: "The module data could not be loaded.",
     allHidden: "All Dashboard modules are hidden.",
     allHiddenHint:

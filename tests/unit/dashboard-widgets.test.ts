@@ -86,7 +86,28 @@ test("dashboard widgets expose empty collections and an explicit read-error stat
     categories: { kind: "error" },
     recentItems: { kind: "error" },
     rooms: { kind: "error" },
+    unlocatedItemCount: { kind: "error" },
   });
+});
+
+test("dashboard counts only active household items without any L1, L2, or L3 location", () => {
+  const sources = buildSources();
+  const result = buildDashboardWidgetContent({
+    ...sources,
+    items: [
+      ...sources.items,
+      { id: "item-unlocated", household_id: householdA, category_id: "category-tools", nazwa: "Bez miejsca", status: "w domu", miniatura_url: null, created_at: "2026-09-05", updated_at: "2026-09-08" },
+      { id: "item-l2", household_id: householdA, category_id: "category-tools", nazwa: "W szafce", status: "w domu", miniatura_url: null, created_at: "2026-09-05", updated_at: "2026-09-07" },
+      { id: "item-foreign-unlocated", household_id: householdB, category_id: "category-custom-b", nazwa: "Obce bez miejsca", status: "w domu", miniatura_url: null, created_at: "2026-09-05", updated_at: "2026-09-06" },
+      { id: "item-archived-unlocated", household_id: householdA, category_id: "category-tools", nazwa: "Archiwalne bez miejsca", status: "archiwalne", miniatura_url: null, created_at: "2026-09-05", updated_at: "2026-09-05" },
+    ],
+    locations: [
+      ...sources.locations,
+      { id: "location-l2", item_id: "item-l2", czy_glowna: true, room_id: null, storage_location_l2_id: "storage-cabinet", storage_location_l3_id: null },
+    ],
+  });
+
+  assert.equal(result.unlocatedItemCount, 1);
 });
 
 test("dashboard reads and links keep the household and existing route contracts", () => {
@@ -99,6 +120,7 @@ test("dashboard reads and links keep the household and existing route contracts"
   assert.match(runtime, /\?focus=\$\{item\.id\}/);
   assert.match(runtime, /#room-\$\{room\.id\}/);
   assert.match(runtime, /\?category=\$\{category\.id\}/);
+  assert.match(runtime, /\?view=unlocated/);
 });
 
 test("implemented dashboard modules render widgets instead of the coming-soon placeholder", () => {

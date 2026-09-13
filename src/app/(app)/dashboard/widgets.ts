@@ -127,5 +127,9 @@ export async function loadDashboardWidgets({
     categories: { data: content.categories, kind: "success" },
     recentItems: { data: recentItems, kind: "success" },
     rooms: { data: content.rooms, kind: "success" },
+    unlocatedItemCount: {
+      data: content.unlocatedItemCount,
+      kind: "success",
+    },
   };
 }

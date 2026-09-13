@@ -1,5 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 import Link from "next/link";
+import { MapPinLineIcon } from "@phosphor-icons/react/dist/ssr/MapPinLine";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
 import type { DashboardWidgetData } from "@/lib/dashboard/dashboard-widgets";
@@ -103,12 +104,11 @@ export function ExpiringItemsDashboardModule() {
 }
 
 export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetData }) {
-  if (data.categories.kind === "error") {
+  if (
+    data.categories.kind === "error" ||
+    data.unlocatedItemCount.kind === "error"
+  ) {
     return <WidgetMessage error>{t.dashboard.widgetReadError}</WidgetMessage>;
-  }
-
-  if (!data.categories.data.length) {
-    return <WidgetMessage>{t.dashboard.emptyCategoryCounts}</WidgetMessage>;
   }
 
   return (
@@ -138,6 +138,28 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
           </Link>
         </li>
       ))}
+      <li className="min-w-0">
+        <Link
+          className="flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
+          href={`${routes.items}?view=unlocated`}
+        >
+          <MapPinLineIcon
+            aria-hidden="true"
+            className="shrink-0 text-primary"
+            size={20}
+            weight="duotone"
+          />
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
+            {t.dashboard.unlocatedItems}
+          </span>
+          <span
+            aria-label={formatItemCount(data.unlocatedItemCount.data)}
+            className="inline-flex min-w-7 justify-center rounded-full bg-primary/10 px-2 py-1 text-xs font-bold text-primary-strong"
+          >
+            {data.unlocatedItemCount.data}
+          </span>
+        </Link>
+      </li>
     </ul>
   );
 }

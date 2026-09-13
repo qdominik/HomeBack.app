@@ -35,6 +35,7 @@ export type DashboardWidgetData = {
   categories: DashboardWidgetState<DashboardCategoryCount[]>;
   recentItems: DashboardWidgetState<RecentDashboardItem[]>;
   rooms: DashboardWidgetState<DashboardRoomShortcut[]>;
+  unlocatedItemCount: DashboardWidgetState<number>;
 };
 
 export type DashboardItemSource = {
@@ -175,6 +176,9 @@ export function buildDashboardWidgetContent({
   const householdLocations = locations.filter((location) =>
     householdItemIds.has(location.item_id),
   );
+  const locatedItemIds = new Set(
+    householdLocations.map((location) => location.item_id),
+  );
   const resolvedLocations = householdLocations.flatMap((location) => {
     const resolved = resolveLocation(
       location,
@@ -275,6 +279,9 @@ export function buildDashboardWidgetContent({
     categories: categoryCountItems,
     recentItems,
     rooms: roomShortcuts,
+    unlocatedItemCount: householdItems.filter(
+      (item) => !locatedItemIds.has(item.id),
+    ).length,
   };
 }
 
@@ -283,5 +290,6 @@ export function createDashboardWidgetErrorData(): DashboardWidgetData {
     categories: { kind: "error" },
     recentItems: { kind: "error" },
     rooms: { kind: "error" },
+    unlocatedItemCount: { kind: "error" },
   };
 }

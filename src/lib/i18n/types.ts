@@ -95,6 +95,7 @@ export type Dictionary = {
     emptyRecentItems: string;
     emptyRooms: string;
     itemCount: string;
+    unlocatedItems: string;
     widgetReadError: string;
     allHidden: string;
     allHiddenHint: string;

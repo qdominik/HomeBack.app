@@ -95,6 +95,7 @@ export const pl: Dictionary = {
     emptyRecentItems: "Nie dodano jeszcze żadnych Rzeczy.",
     emptyRooms: "Nie dodano jeszcze żadnych Pomieszczeń.",
     itemCount: "Liczba Rzeczy: {count}",
+    unlocatedItems: "Bez lokalizacji",
     widgetReadError: "Nie udało się odczytać danych modułu.",
     allHidden: "Wszystkie moduły Dashboardu są ukryte.",
     allHiddenHint:
