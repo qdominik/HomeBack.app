@@ -38,7 +38,7 @@ export type DashboardModuleDefinition = {
 export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   {
     key: "recent-items",
-    status: "soon",
+    status: "available",
     titleKey: "recentItems",
     descriptionKey: "recentItems",
     icon: "package",
@@ -54,7 +54,7 @@ export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   },
   {
     key: "category-count",
-    status: "soon",
+    status: "available",
     titleKey: "categoryCount",
     descriptionKey: "categoryCount",
     icon: "cube",
@@ -70,11 +70,11 @@ export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   },
   {
     key: "rooms",
-    status: "soon",
+    status: "available",
     titleKey: "rooms",
     descriptionKey: "rooms",
     icon: "room",
-    defaultVisible: false,
+    defaultVisible: true,
   },
   {
     key: "documents",

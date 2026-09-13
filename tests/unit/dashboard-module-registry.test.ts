@@ -57,28 +57,26 @@ test("module icons come from the existing entity icon catalog", () => {
   }
 });
 
-test("existing dashboard modules keep their current defaults", () => {
+test("implemented dashboard modules are available and visible by default", () => {
   const byKey = new Map(dashboardModuleDefinitions.map((m) => [m.key, m]));
 
   for (const key of [
     "recent-items",
-    "expiring-items",
     "category-count",
-    "activity",
+    "rooms",
   ] as const) {
     const definition = byKey.get(key);
 
     assert.ok(definition, `missing module ${key}`);
-    assert.equal(definition.status, "soon");
+    assert.equal(definition.status, "available");
     assert.equal(definition.defaultVisible, true);
   }
 });
 
-test("future modules are soon placeholders hidden by default", () => {
+test("remaining modules keep their placeholder status and defaults", () => {
   const byKey = new Map(dashboardModuleDefinitions.map((m) => [m.key, m]));
 
   for (const key of [
-    "rooms",
     "documents",
     "school-schedule",
     "shopping-list",
@@ -88,6 +86,14 @@ test("future modules are soon placeholders hidden by default", () => {
     assert.ok(definition, `missing module ${key}`);
     assert.equal(definition.status, "soon");
     assert.equal(definition.defaultVisible, false);
+  }
+
+  for (const key of ["expiring-items", "activity"] as const) {
+    const definition = byKey.get(key);
+
+    assert.ok(definition, `missing module ${key}`);
+    assert.equal(definition.status, "soon");
+    assert.equal(definition.defaultVisible, true);
   }
 });
 
