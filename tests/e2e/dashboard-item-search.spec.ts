@@ -336,7 +336,7 @@ test.describe("useful Dashboard widgets", () => {
         dashboardModuleTitles.categories,
       ).getByRole("link", { name: /Bez lokalizacji/ });
       await expect(unlocated).toBeVisible();
-      await expect(unlocated).toContainText(/\b0\b/);
+      await expect(unlocated.getByLabel("Liczba Rzeczy: 0")).toBeVisible();
       await expect(unlocated).toHaveAttribute("href", "/items?view=unlocated");
       await expect(otherPage.getByText("QA Kabel USB", { exact: true })).toHaveCount(0);
       await expect(otherPage.getByText("QA Salon", { exact: true })).toHaveCount(0);
