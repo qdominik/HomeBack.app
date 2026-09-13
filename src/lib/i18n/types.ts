@@ -329,6 +329,24 @@ export type Dictionary = {
       sort: string;
       filter: string;
       clearFilters: string;
+      activeFilters: string;
+      moreFilters: string;
+      addedTime: string;
+      anyTime: string;
+      dateFrom: string;
+      dateTo: string;
+      filterStatuses: {
+        active: string;
+        archived: string;
+        all: string;
+      };
+      addedOptions: {
+        today: string;
+        "7d": string;
+        "30d": string;
+        "3m": string;
+        custom: string;
+      };
       allCategories: string;
       allRooms: string;
       allStorageLocations: string;
@@ -366,20 +384,6 @@ export type Dictionary = {
       empty: string;
       noLocations: string;
       noPositions: string;
-      search: {
-        label: string;
-        placeholder: string;
-        scope: string;
-        clear: string;
-        submit: string;
-        noResults: string;
-        scopes: {
-          all: string;
-          rooms: string;
-          storage: string;
-          positions: string;
-        };
-      };
       entityActions: {
         add: string;
         create: string;
