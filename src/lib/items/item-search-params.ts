@@ -1,4 +1,6 @@
 import type { Database } from "../../types/database";
+import { normalizeTemplateValue } from "../templates/normalize-template-value";
+import type { ItemLocationOption } from "./item-options";
 
 export const ITEM_SORT_OPTIONS = [
   "recent",
@@ -120,4 +122,120 @@ export function hasItemFilters(filters: ItemFilters) {
 
 export function searchPattern(query: string) {
   return `%${query.replace(/[%_]/g, "").trim()}%`;
+}
+
+type ItemFilterCandidate = {
+  category_id: string;
+  created_at: string;
+  household_id: string;
+  id: string;
+  nazwa: string;
+  opis: string | null;
+  status: Database["public"]["Enums"]["item_status"];
+};
+
+export function applyItemFilters<TItem extends ItemFilterCandidate>({
+  categoryKeyById,
+  categoryNameById,
+  filters,
+  householdId,
+  items,
+  locationByItemId,
+}: {
+  categoryKeyById: ReadonlyMap<string, string | null>;
+  categoryNameById: ReadonlyMap<string, string>;
+  filters: ItemFilters;
+  householdId: string;
+  items: readonly TItem[];
+  locationByItemId: ReadonlyMap<string, ItemLocationOption>;
+}) {
+  const query = normalizeTemplateValue(filters.query);
+  const filtered = items.filter((item) => {
+    if (item.household_id !== householdId) {
+      return false;
+    }
+
+    if (filters.status && item.status !== filters.status) {
+      return false;
+    }
+
+    if (filters.categoryId && item.category_id !== filters.categoryId) {
+      return false;
+    }
+
+    if (
+      filters.categoryKey &&
+      categoryKeyById.get(item.category_id) !== filters.categoryKey
+    ) {
+      return false;
+    }
+
+    const location = locationByItemId.get(item.id);
+
+    if (filters.roomId && location?.roomId !== filters.roomId) {
+      return false;
+    }
+
+    if (filters.storageId && location?.storageId !== filters.storageId) {
+      return false;
+    }
+
+    if (filters.positionId && location?.id !== filters.positionId) {
+      return false;
+    }
+
+    if (query) {
+      const searchableText = normalizeTemplateValue(
+        [item.nazwa, item.opis, location?.locationCode]
+          .filter(Boolean)
+          .join(" "),
+      );
+
+      if (!searchableText.includes(query)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  return [...filtered].sort((left, right) => {
+    if (filters.sort === "name") {
+      return left.nazwa.localeCompare(right.nazwa) || left.id.localeCompare(right.id);
+    }
+
+    if (filters.sort === "category") {
+      return (
+        (categoryNameById.get(left.category_id) ?? "").localeCompare(
+          categoryNameById.get(right.category_id) ?? "",
+        ) || left.nazwa.localeCompare(right.nazwa)
+      );
+    }
+
+    if (filters.sort === "location") {
+      const leftLocation = locationByItemId.get(left.id);
+      const rightLocation = locationByItemId.get(right.id);
+      const leftPath = [
+        leftLocation?.roomName,
+        leftLocation?.storageName,
+        leftLocation?.positionName,
+      ]
+        .filter(Boolean)
+        .join(" / ");
+      const rightPath = [
+        rightLocation?.roomName,
+        rightLocation?.storageName,
+        rightLocation?.positionName,
+      ]
+        .filter(Boolean)
+        .join(" / ");
+
+      return leftPath.localeCompare(rightPath) || left.nazwa.localeCompare(right.nazwa);
+    }
+
+    return (
+      right.created_at.localeCompare(left.created_at) ||
+      left.id.localeCompare(right.id)
+    );
+  });
 }

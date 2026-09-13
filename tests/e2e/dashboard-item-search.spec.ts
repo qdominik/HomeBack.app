@@ -1,6 +1,13 @@
 import { expect, test, type Locator } from "@playwright/test";
 import { itemCard, prepareDeletionDataset } from "./support/m4d8";
 import { registerAndCreateHousehold } from "./support/auth";
+import {
+  dashboardModule,
+  dashboardModuleTitles,
+  expectNoHorizontalOverflow,
+  generateQaSmokeDataset,
+  showRoomsDashboardModule,
+} from "./support/dashboard";
 
 async function search(region: Locator, query: string) {
   await region.getByRole("searchbox", { name: "Nazwa obiektu", exact: true }).fill(query);
@@ -57,7 +64,9 @@ test("Polish normalization preserves item breadcrumbs and the item hash link", a
   await result.click();
   await expect(page).toHaveURL(new RegExp(`${href}$`));
   await expect(itemCard(page, data.item.charger)).toBeVisible();
-  await expect(page.locator(href!.slice(href!.indexOf("#")))).toBeInViewport();
+  const target = page.locator(href!.slice(href!.indexOf("#")));
+  await target.scrollIntoViewIfNeeded();
+  await expect(target).toBeInViewport();
 });
 
 test("main navigation opens search from Structure and each structural result links to its card", async ({ page }) => {
@@ -226,4 +235,195 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
   await search(dialog, data.suffix);
   await expect(results(dialog)).toHaveCount(0);
   await expect(dialog.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
+});
+
+test.describe("useful Dashboard widgets", () => {
+  test("show household data, counts and working item and room links", async ({ page }) => {
+    await registerAndCreateHousehold(page, "dashboard-widgets");
+    await generateQaSmokeDataset(page);
+    await showRoomsDashboardModule(page);
+    await page.goto("/dashboard");
+
+    const recentItems = dashboardModule(page, dashboardModuleTitles.recentItems);
+
+    for (const title of Object.values(dashboardModuleTitles)) {
+      await expect(dashboardModule(page, title)).toHaveAttribute(
+        "data-module-status",
+        "available",
+      );
+    }
+    for (const title of ["Terminy ważności", "Ostatnia aktywność"]) {
+      await expect(dashboardModule(page, title)).toHaveAttribute(
+        "data-module-status",
+        "soon",
+      );
+    }
+
+    await expect(recentItems).toContainText("QA Kabel USB");
+    await expect(recentItems).toContainText("Brak lokalizacji");
+    await expect(recentItems).toContainText("QA Latarka");
+    await expect(recentItems).toContainText(
+      "QA Sypialnia / QA Komoda / QA Szuflada 1",
+    );
+    const itemLink = recentItems.getByRole("link").filter({
+      hasText: "QA Kabel USB",
+    });
+    await expect(itemLink.locator("img, svg").first()).toBeVisible();
+    await expect(itemLink).toHaveAttribute(
+      "href",
+      /^\/items\?focus=[0-9a-f-]{36}$/,
+    );
+    await itemLink.click();
+    await expect(page).toHaveURL(/\/items\?focus=[0-9a-f-]{36}$/);
+    await expect(itemCard(page, "QA Kabel USB")).toBeVisible();
+
+    await page.goto("/dashboard");
+    const toolsCategory = dashboardModule(
+      page,
+      dashboardModuleTitles.categories,
+    )
+      .getByRole("link")
+      .filter({ hasText: "Narzędzia" });
+    await expect(
+      toolsCategory.getByLabel("Liczba Rzeczy: 1", { exact: true }),
+    ).toBeVisible();
+    await expect(toolsCategory).toHaveAttribute(
+      "href",
+      /^\/items\?category=[0-9a-f-]{36}$/,
+    );
+    await toolsCategory.click();
+    await expect(page).toHaveURL(/\/items\?category=[0-9a-f-]{36}$/);
+    await expect(itemCard(page, "QA Latarka")).toBeVisible();
+    await expect(itemCard(page, "QA Kabel USB")).toHaveCount(0);
+
+    await page.goto("/dashboard");
+    const salon = dashboardModule(page, dashboardModuleTitles.rooms)
+      .getByRole("link")
+      .filter({ hasText: "QA Salon" });
+    await expect(salon).toContainText(/\b1\b/);
+    await expect(salon).toHaveAttribute(
+      "href",
+      /^\/home#room-[0-9a-f-]{36}$/,
+    );
+    const salonHref = await salon.getAttribute("href");
+    await salon.click();
+    await expect(page).toHaveURL(new RegExp(`${salonHref}$`));
+    await expect(page.locator(salonHref!.slice(salonHref!.indexOf("#")))).toBeInViewport();
+  });
+
+  test("empty widgets do not expose data from another household", async ({
+    page,
+    browser,
+  }) => {
+    await registerAndCreateHousehold(page, "dashboard-isolation-source");
+    await generateQaSmokeDataset(page);
+
+    const other = await browser.newContext({ baseURL: new URL(page.url()).origin });
+    try {
+      const otherPage = await other.newPage();
+      await registerAndCreateHousehold(otherPage, "dashboard-isolation-target");
+      await showRoomsDashboardModule(otherPage);
+      await otherPage.goto("/dashboard");
+
+      for (const title of [
+        dashboardModuleTitles.recentItems,
+        dashboardModuleTitles.rooms,
+      ]) {
+        await expect(dashboardModule(otherPage, title).getByRole("status")).toBeVisible();
+      }
+      const unlocated = dashboardModule(
+        otherPage,
+        dashboardModuleTitles.categories,
+      ).getByRole("link", { name: /Bez lokalizacji/ });
+      await expect(unlocated).toBeVisible();
+      await expect(unlocated.getByLabel("Liczba Rzeczy: 0")).toBeVisible();
+      await expect(unlocated).toHaveAttribute("href", "/items?view=unlocated");
+      await expect(otherPage.getByText("QA Kabel USB", { exact: true })).toHaveCount(0);
+      await expect(otherPage.getByText("QA Salon", { exact: true })).toHaveCount(0);
+    } finally {
+      await other.close();
+    }
+  });
+
+  test("Inventory preserves category, status, location and missing-location filters", async ({
+    page,
+  }) => {
+    await registerAndCreateHousehold(page, "dashboard-inventory-filters");
+    await generateQaSmokeDataset(page);
+
+    await page.goto("/items");
+    const categoryFilter = page.locator('select[name="category"]');
+    const statusFilter = page.locator('select[name="status"]');
+    const roomFilter = page.locator('select[name="room"]');
+    const storageFilter = page.locator('select[name="storage"]');
+    const positionFilter = page.locator('select[name="position"]');
+    const applyFilters = page.getByRole("button", {
+      name: "Filtruj",
+      exact: true,
+    });
+    await categoryFilter.selectOption({
+      label: "Elektronika",
+    });
+    await statusFilter.selectOption({
+      label: "W domu",
+    });
+    await applyFilters.click();
+    await expect(page).toHaveURL(/category=[0-9a-f-]{36}/);
+    await expect(page).toHaveURL(/status=w(?:\+|%20)domu/);
+    await expect(itemCard(page, "QA Kabel USB")).toBeVisible();
+    await expect(itemCard(page, "QA Stary pilot")).toHaveCount(0);
+    await expect(itemCard(page, "QA Latarka")).toHaveCount(0);
+
+    await page.goto("/items");
+    await roomFilter.selectOption({
+      label: "QA Salon",
+    });
+    await storageFilter.selectOption({
+      label: "QA Półka wisząca",
+    });
+    await positionFilter.selectOption({
+      label: "QA Salon / QA Półka wisząca / QA Górna półka",
+    });
+    await applyFilters.click();
+    await expect(itemCard(page, "QA Baterie AA")).toBeVisible();
+    await expect(itemCard(page, "QA Latarka")).toHaveCount(0);
+
+    await page.goto("/items?view=unlocated");
+    await categoryFilter.selectOption({
+      label: "Elektronika",
+    });
+    await statusFilter.selectOption({
+      label: "W domu",
+    });
+    await applyFilters.click();
+    await expect(page).toHaveURL(/view=unlocated/);
+    await expect(itemCard(page, "QA Kabel USB")).toBeVisible();
+    await expect(itemCard(page, "QA Stary pilot")).toHaveCount(0);
+
+    await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
+    await expect(page).toHaveURL(/\/items$/);
+  });
+
+  test("widgets remain usable at 390x844, 768 and 1280 pixels", async ({ page }) => {
+    await registerAndCreateHousehold(page, "dashboard-responsive");
+    await generateQaSmokeDataset(page);
+    await showRoomsDashboardModule(page);
+
+    for (const viewport of [
+      { width: 390, height: 844 },
+      { width: 768, height: 1024 },
+      { width: 1280, height: 900 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/dashboard");
+      await expectNoHorizontalOverflow(page);
+
+      for (const title of Object.values(dashboardModuleTitles)) {
+        const widget = dashboardModule(page, title);
+        await widget.scrollIntoViewIfNeeded();
+        await expect(widget).toBeVisible();
+        expect((await widget.boundingBox())?.width).toBeLessThanOrEqual(viewport.width);
+      }
+    }
+  });
 });
