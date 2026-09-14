@@ -10,6 +10,7 @@ import { resolveVisibleDashboardModules } from "@/lib/dashboard/dashboard-prefer
 import { filterDashboardModulesForRole } from "@/lib/dashboard/module-access";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
+import { uiTokens } from "@/lib/ui/tokens";
 import { loadDashboardWidgets } from "./widgets";
 
 export default async function DashboardPage() {
@@ -60,7 +61,7 @@ export default async function DashboardPage() {
       {registrations.length > 0 ? (
         <section
           aria-label={t.dashboard.title}
-          className="grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2"
+          className="grid min-w-0 gap-4 sm:gap-5 lg:grid-cols-2"
         >
           {registrations.map(({ definition, registration }) => (
             <DashboardModuleCard
@@ -83,7 +84,7 @@ export default async function DashboardPage() {
             {t.dashboard.allHiddenHint}
           </p>
           <Link
-            className={`${buttonClassName({ variant: "secondary" })} mt-5`}
+            className={`${buttonClassName({ variant: "secondary" })} ${uiTokens.focusRing} mt-5`}
             href={`${routes.settings}?tab=dashboard-personalization`}
           >
             {t.modules.settings.dashboardPersonalization}
