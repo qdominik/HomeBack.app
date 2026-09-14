@@ -62,8 +62,26 @@ test.describe("Dashboard widget regression", () => {
       await expect(dashboardModule(otherPage, dashboardModuleTitles.recentItems).getByRole("status")).toBeVisible();
       await expect(dashboardModule(otherPage, dashboardModuleTitles.rooms).getByRole("status")).toBeVisible();
       const unlocated = dashboardModule(otherPage, dashboardModuleTitles.categories)
-        .getByRole("link", { name: /Bez lokalizacji/ });
-      await expect(unlocated.getByLabel("Liczba Rzeczy: 0")).toBeVisible();
+        .getByRole("status");
+      await expect(unlocated).toContainText("Brak Rzeczy do podsumowania według kategorii.");
+      const recentItemsAction = dashboardModule(
+        otherPage,
+        dashboardModuleTitles.recentItems,
+      ).getByRole("link", { name: "Rzeczy", exact: true });
+      await expect(recentItemsAction).toHaveAttribute("href", "/items");
+      await recentItemsAction.focus();
+      await expect(recentItemsAction).toBeFocused();
+      expect(
+        await recentItemsAction.evaluate(
+          (element) => getComputedStyle(element).boxShadow !== "none",
+        ),
+      ).toBe(true);
+      await expect(dashboardModule(otherPage, dashboardModuleTitles.categories)
+        .getByRole("link", { name: "Rzeczy", exact: true }))
+        .toHaveAttribute("href", "/items");
+      await expect(dashboardModule(otherPage, dashboardModuleTitles.rooms)
+        .getByRole("link", { name: "Pomieszczenia", exact: true }))
+        .toHaveAttribute("href", "/home");
       await expect(otherPage.getByText("QA Kabel USB", { exact: true })).toHaveCount(0);
       await expect(otherPage.getByText("QA Salon", { exact: true })).toHaveCount(0);
     } finally {
@@ -78,13 +96,22 @@ test.describe("Dashboard widget regression", () => {
 
     for (const viewport of [
       { width: 390, height: 844 },
-      { width: 1280, height: 900 },
+      { width: 768, height: 844 },
+      { width: 1280, height: 844 },
     ]) {
       await page.setViewportSize(viewport);
       await page.goto("/dashboard");
       await expectNoHorizontalOverflow(page);
       for (const title of Object.values(dashboardModuleTitles)) {
         await expect(dashboardModule(page, title)).toBeVisible();
+      }
+      const recentItems = await dashboardModule(
+        page,
+        dashboardModuleTitles.recentItems,
+      ).boundingBox();
+      expect(recentItems).not.toBeNull();
+      if (viewport.width === 768) {
+        expect(recentItems?.width).toBeGreaterThan(650);
       }
     }
   });
