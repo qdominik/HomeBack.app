@@ -64,6 +64,9 @@ test("Items share normalized search and combine category and location filters", 
   await expect(page.getByLabel("Aktywne filtry")).toContainText(data.storageSpace.upperDrawer);
   await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
   await expect(page).toHaveURL(/\/items$/);
+  expect(new URL(page.url()).searchParams.has("category")).toBe(false);
+  await expect(category).toHaveValue("");
+  await expect(page.getByLabel("Aktywne filtry")).toHaveCount(0);
 
   await more.click();
   await page.locator('select[name="itemStatus"]').selectOption("archived");

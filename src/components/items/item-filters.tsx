@@ -59,9 +59,23 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
     filters.added ? { key: "added", label: t.modules.items.addedOptions[filters.added] } : null,
   ].filter((chip): chip is { key: string; label: string } => Boolean(chip));
 
+  const filterFormKey = JSON.stringify([
+    view,
+    filters.query,
+    filters.categoryId,
+    filters.categoryKey,
+    filters.roomId,
+    filters.storageId,
+    filters.positionId,
+    filters.status,
+    filters.added,
+    filters.dateFrom,
+    filters.dateTo,
+  ]);
+
   return (
     <div className="space-y-3">
-      <form action={routes.items} className="flex min-w-0 flex-col gap-2 xl:flex-row xl:items-end" method="get">
+      <form action={routes.items} className="flex min-w-0 flex-col gap-2 xl:flex-row xl:items-end" key={filterFormKey} method="get">
         {view !== "all" ? <input name="view" type="hidden" value={view} /> : null}
         <label className="relative min-w-0 flex-1">
           <span className="sr-only">{t.modules.items.search}</span>
