@@ -6,7 +6,7 @@ export default function DashboardLoading() {
   return (
     <div aria-live="polite" className="space-y-8">
       <div className="h-20 animate-pulse rounded-control bg-surface-muted" />
-      <section className="grid gap-4 sm:gap-5 md:grid-cols-2">
+      <section className="grid gap-4 sm:gap-5 lg:grid-cols-2">
         {loadingModules.map((module) => (
           <div
             className="min-h-44 animate-pulse rounded-control border border-line bg-surface p-5 shadow-card"

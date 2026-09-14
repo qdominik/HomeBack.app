@@ -3,9 +3,11 @@ import Link from "next/link";
 import { MapPinLineIcon } from "@phosphor-icons/react/dist/ssr/MapPinLine";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
+import { buttonClassName } from "@/components/ui/button";
 import type { DashboardWidgetData } from "@/lib/dashboard/dashboard-widgets";
 import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
+import { uiTokens } from "@/lib/ui/tokens";
 import {
   dashboardModuleDefinitions,
   type DashboardModuleDefinition,
@@ -38,23 +40,32 @@ export function SoonModuleBody() {
 }
 
 function WidgetMessage({
+  action,
   children,
   error = false,
 }: {
+  action?: { href: string; label: string };
   children: ReactNode;
   error?: boolean;
 }) {
   return (
-    <p
+    <div
       className={`mt-4 rounded-control border px-4 py-3 text-sm font-medium ${
         error
           ? "border-danger/30 bg-danger/5 text-danger"
           : "border-dashed border-line bg-surface-muted/60 text-center text-muted"
       }`}
-      role={error ? "alert" : "status"}
     >
-      {children}
-    </p>
+      <p role={error ? "alert" : "status"}>{children}</p>
+      {action ? (
+        <Link
+          className={`${buttonClassName({ variant: "secondary" })} ${uiTokens.focusRing} mt-3 w-full sm:w-auto`}
+          href={action.href}
+        >
+          {action.label}
+        </Link>
+      ) : null}
+    </div>
   );
 }
 
@@ -68,7 +79,11 @@ export function RecentItemsDashboardModule({ data }: { data: DashboardWidgetData
   }
 
   if (!data.recentItems.data.length) {
-    return <WidgetMessage>{t.dashboard.emptyRecentItems}</WidgetMessage>;
+    return (
+      <WidgetMessage action={{ href: routes.items, label: t.navigation.items }}>
+        {t.dashboard.emptyRecentItems}
+      </WidgetMessage>
+    );
   }
 
   return (
@@ -76,7 +91,7 @@ export function RecentItemsDashboardModule({ data }: { data: DashboardWidgetData
       {data.recentItems.data.map((item) => (
         <li key={item.id}>
           <Link
-            className="flex min-w-0 items-center gap-3 py-3 first:pt-0 last:pb-0 hover:text-primary-strong"
+            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-primary-strong ${uiTokens.focusRing} focus-visible:ring-offset-2`}
             href={`${routes.items}?focus=${item.id}`}
           >
             <ItemPhotoThumbnail
@@ -111,12 +126,20 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
     return <WidgetMessage error>{t.dashboard.widgetReadError}</WidgetMessage>;
   }
 
+  if (!data.categories.data.length && data.unlocatedItemCount.data === 0) {
+    return (
+      <WidgetMessage action={{ href: routes.items, label: t.navigation.items }}>
+        {t.dashboard.emptyCategoryCounts}
+      </WidgetMessage>
+    );
+  }
+
   return (
     <ul className="mt-4 grid min-w-0 gap-2 sm:grid-cols-2" data-widget-content="category-count">
       {data.categories.data.map((category) => (
         <li className="min-w-0" key={category.id}>
           <Link
-            className="flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
+            className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50 ${uiTokens.focusRing}`}
             href={`${routes.items}?category=${category.id}`}
           >
             <EntityIcon
@@ -140,7 +163,7 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
       ))}
       <li className="min-w-0">
         <Link
-          className="flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
+          className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50 ${uiTokens.focusRing}`}
           href={`${routes.items}?view=unlocated`}
         >
           <MapPinLineIcon
@@ -174,7 +197,11 @@ export function RoomsDashboardModule({ data }: { data: DashboardWidgetData }) {
   }
 
   if (!data.rooms.data.length) {
-    return <WidgetMessage>{t.dashboard.emptyRooms}</WidgetMessage>;
+    return (
+      <WidgetMessage action={{ href: routes.home, label: t.navigation.home }}>
+        {t.dashboard.emptyRooms}
+      </WidgetMessage>
+    );
   }
 
   return (
@@ -182,7 +209,7 @@ export function RoomsDashboardModule({ data }: { data: DashboardWidgetData }) {
       {data.rooms.data.map((room) => (
         <li className="min-w-0" key={room.id}>
           <Link
-            className="flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50"
+            className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50 ${uiTokens.focusRing}`}
             href={`${routes.home}#room-${room.id}`}
           >
             <EntityIcon
