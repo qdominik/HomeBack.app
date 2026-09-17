@@ -16,20 +16,21 @@ import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { appModuleDefinitions } from "@/lib/modules/module-registry";
 import { navigationKeys, isNavigationActive } from "@/lib/modules/navigation";
-import type { Database } from "@/types/database";
+import type { ProfileRole } from "@/lib/auth/profile-role";
 
 
 const iconButton = "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 const roleLabels = {
   admin: t.auth.roles.admin,
   dorosły: t.auth.roles.member,
+  domownik: t.auth.roles.member,
   dziecko: t.auth.roles.child,
   "gość": t.auth.roles.guest,
 };
 type AppShellProps = {
   children: ReactNode;
   householdName: string;
-  role: Database["public"]["Enums"]["profile_role"];
+  role: ProfileRole;
   userName: string;
   itemCreateOptions: ItemCreateOptions | null;
 };

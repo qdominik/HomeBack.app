@@ -26,6 +26,7 @@ import {
   ITEM_PHOTO_BUCKET,
   ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
 } from "@/lib/items/item-photo-storage";
+import { isAdultProfileRole } from "@/lib/auth/profile-role";
 import {
   filterItemsForFocus,
   filterItemsForView,
@@ -220,7 +221,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       if (
         !profile ||
         profile.status !== "aktywny" ||
-        (profile.rola !== "admin" && profile.rola !== "dorosły") ||
+        (profile.rola !== "admin" && !isAdultProfileRole(profile.rola)) ||
         !item.miniatura_url ||
         !isItemPhotoFinalPathForHousehold(
           item.miniatura_url,
@@ -275,7 +276,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   ];
   const isAdmin = profile?.rola === "admin" && profile.status === "aktywny";
   const canCopy = profile?.status === "aktywny" &&
-    (profile.rola === "admin" || profile.rola === "dorosły");
+    (profile.rola === "admin" || isAdultProfileRole(profile.rola));
   const hasReadError = Boolean(
     itemsResponse.error ||
       categoriesResponse.error ||

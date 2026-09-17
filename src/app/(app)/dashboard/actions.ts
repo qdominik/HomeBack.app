@@ -6,6 +6,7 @@ import { GLOBAL_SEARCH_LIMIT, parseGlobalSearchFilter, searchGlobalSources, type
 import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
 import { buildItemSearchLocationPath, DASHBOARD_ITEM_SEARCH_LIMIT, getItemNameSearchQuery, normalizeItemSearchQuery, normalizeItemSearchText, type DashboardItemSearchResponse } from "@/lib/items/item-search";
 import { isItemPhotoFinalPathForHousehold, ITEM_PHOTO_BUCKET, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS } from "@/lib/items/item-photo-storage";
+import { isAdultProfileRole } from "@/lib/auth/profile-role";
 
 export async function searchGlobalObjects(rawQuery: string, rawFilter: string = "all"): Promise<GlobalSearchResponse> {
   if (typeof rawQuery !== "string") return { kind: "error" };
@@ -23,7 +24,7 @@ export async function searchGlobalObjects(rawQuery: string, rawFilter: string = 
       if (result.type !== "item") return result;
       const item = items.get(result.id)!;
       let previewUrl: string | null = null;
-      if ((profile.rola === "admin" || profile.rola === "dorosły") && item.miniatura_url && isItemPhotoFinalPathForHousehold(item.miniatura_url, householdId)) {
+      if ((profile.rola === "admin" || isAdultProfileRole(profile.rola)) && item.miniatura_url && isItemPhotoFinalPathForHousehold(item.miniatura_url, householdId)) {
         const { data, error } = await supabase.storage.from(ITEM_PHOTO_BUCKET)
           .createSignedUrl(item.miniatura_url, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
         previewUrl = error ? null : data?.signedUrl ?? null;

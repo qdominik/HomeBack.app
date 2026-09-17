@@ -9,6 +9,7 @@ import {
   ITEM_PHOTO_BUCKET,
   ITEM_PHOTO_SIGNED_URL_TTL_SECONDS,
 } from "@/lib/items/item-photo-storage";
+import { isAdultProfileRole } from "@/lib/auth/profile-role";
 
 const orderColumn = "kolejno\u015b\u0107" as const;
 
@@ -101,7 +102,7 @@ export async function loadDashboardWidgets({
   });
   const canReadPhotos =
     profile.status === "aktywny" &&
-    (profile.rola === "admin" || profile.rola === "dorosły");
+    (profile.rola === "admin" || isAdultProfileRole(profile.rola));
   const recentItems = await Promise.all(
     content.recentItems.map(async (item) => {
       if (

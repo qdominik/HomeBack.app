@@ -118,6 +118,7 @@ test("modules without requiredRoles are visible to every role", () => {
 
   assert.equal(isDashboardModuleVisibleForRole(openModule, "admin"), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, "dorosły"), true);
+  assert.equal(isDashboardModuleVisibleForRole(openModule, "domownik"), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, "dziecko"), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, null), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, undefined), true);
@@ -137,6 +138,7 @@ test("role-restricted modules are hidden without an allowed role", () => {
 
   assert.equal(isDashboardModuleVisibleForRole(multiRole, "dziecko"), false);
   assert.equal(isDashboardModuleVisibleForRole(multiRole, "dorosły"), true);
+  assert.equal(isDashboardModuleVisibleForRole(multiRole, "domownik"), true);
 });
 
 test("role filter keeps registry order and drops restricted modules", () => {
