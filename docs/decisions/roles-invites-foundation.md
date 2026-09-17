@@ -64,6 +64,10 @@ email/status/creation-time columns are NULL. Children receive only their own row
 also with the administrative columns NULL. No account-authentication metadata is
 joined or exposed.
 
+Historical `log` rows with `typ_obiektu = 'PROFILE'` are administrator-only too:
+their JSON before/after payloads may contain peer emails and administrative account
+changes. Existing inventory/structure/category activity permissions are retained.
+
 Table-level profile UPDATE and DELETE grants are removed. Only `imie` and
 `avatar_url` updates remain available under the existing administrator RLS policy.
 Clients cannot modify role, household, status, identity or email, including an

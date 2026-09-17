@@ -14,6 +14,12 @@ using (id = auth.uid() or public.is_household_admin(household_id));
 revoke update, delete on public.profile from authenticated;
 grant update (imie, avatar_url) on public.profile to authenticated;
 
+-- Historical PROFILE log payloads can contain peer emails and account fields.
+-- Keep inventory/structure/category activity permissions unchanged.
+alter policy log_select_household on public.log
+using (household_id = public.current_household_id()
+  and (typ_obiektu <> 'PROFILE' or public.is_household_admin(household_id)));
+
 create function public.get_household_members()
 returns table (id uuid, imie text, avatar_url text, rola public.profile_role,
   email text, status public.profile_status, created_at timestamptz)

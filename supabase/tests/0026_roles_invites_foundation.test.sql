@@ -21,6 +21,9 @@ insert into public.profile(id,household_id,imie,email,rola,status)
    'aktywny' from auth.users u where u.id in (
    '91000000-0000-0000-0000-000000000001','91000000-0000-0000-0000-000000000002',
    '91000000-0000-0000-0000-000000000003','91000000-0000-0000-0000-000000000004');
+insert into public.log(household_id,profil_id,akcja,typ_obiektu,obiekt_id,zmiana_po)
+ values ('92000000-0000-0000-0000-000000000001','91000000-0000-0000-0000-000000000001',
+ 'EDYTOWANO','PROFILE','91000000-0000-0000-0000-000000000003','{"email":"adult@invites.test"}');
 
 -- Capture issuance without putting token values in TAP output or logs.
 create temp table issued(label text primary key, invitation_id uuid, token text, expires_at timestamptz);
@@ -29,6 +32,7 @@ set local role authenticated;
 set local "request.jwt.claims"='{"sub":"91000000-0000-0000-0000-000000000001","role":"authenticated"}';
 select is((select count(*)::int from public.get_household_members()),3,'admin sees own household members');
 select is((select count(*)::int from public.get_household_members() where email is not null),3,'admin sees management data');
+select is((select count(*)::int from public.log where typ_obiektu='PROFILE'),1,'admin can read historical profile activity');
 select is((select count(*)::int from public.profile where household_id='92000000-0000-0000-0000-000000000002'),0,'foreign profiles are isolated');
 select throws_ok($$update public.profile set rola='dorosły' where id=auth.uid()$$,'42501',null,'even admin cannot directly change own role');
 select throws_ok($$update public.profile set household_id='92000000-0000-0000-0000-000000000002' where id=auth.uid()$$,'42501',null,'even admin cannot move own membership');
@@ -71,6 +75,7 @@ select is((select count(*)::int from public.profile),1,'adult raw SELECT is limi
 select is((select count(*)::int from public.profile where id='91000000-0000-0000-0000-000000000001'),0,'adult cannot select peer email directly');
 select is((select count(*)::int from public.household_invitation),0,'adult cannot read invitations');
 select is((select count(*)::int from public.household_invitation_event),0,'adult cannot read administrative activity');
+select is((select count(*)::int from public.log where typ_obiektu='PROFILE'),0,'adult cannot recover peer email from historical profile audit');
 select throws_ok($$select public.create_household_invitation('x@invites.test','dziecko')$$,'P0001','ADMIN_REQUIRED','adult cannot invite');
 select throws_ok($$update public.profile set rola='admin' where id=auth.uid()$$,'42501',null,'adult cannot self-promote');
 select throws_ok($$select public.accept_household_invitation((select token from issued where label='second'),'Adult')$$,'P0001','PROFILE_ALREADY_EXISTS','existing member cannot accept another membership');
@@ -79,6 +84,7 @@ set local "request.jwt.claims"='{"sub":"91000000-0000-0000-0000-000000000004","r
 select is((select count(*)::int from public.get_household_members()),1,'child directory contains only self');
 select is((select id from public.get_household_members()),auth.uid(),'child sees own profile');
 select is((select count(*)::int from public.profile),1,'child raw SELECT contains only self');
+select is((select count(*)::int from public.log where typ_obiektu='PROFILE'),0,'child cannot read administrative profile activity');
 select throws_ok($$update public.profile set household_id='92000000-0000-0000-0000-000000000002' where id=auth.uid()$$,'42501',null,'child cannot move household');
 select throws_ok($$select public.create_household_invitation('x@invites.test','dziecko')$$,'P0001','ADMIN_REQUIRED','child cannot invite');
 
