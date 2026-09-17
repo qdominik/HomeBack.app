@@ -220,7 +220,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       if (
         !profile ||
         profile.status !== "aktywny" ||
-        (profile.rola !== "admin" && profile.rola !== "domownik") ||
+        (profile.rola !== "admin" && profile.rola !== "dorosły") ||
         !item.miniatura_url ||
         !isItemPhotoFinalPathForHousehold(
           item.miniatura_url,
@@ -275,7 +275,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   ];
   const isAdmin = profile?.rola === "admin" && profile.status === "aktywny";
   const canCopy = profile?.status === "aktywny" &&
-    (profile.rola === "admin" || profile.rola === "domownik");
+    (profile.rola === "admin" || profile.rola === "dorosły");
   const hasReadError = Boolean(
     itemsResponse.error ||
       categoriesResponse.error ||

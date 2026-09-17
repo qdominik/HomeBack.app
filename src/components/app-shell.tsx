@@ -22,7 +22,7 @@ import type { Database } from "@/types/database";
 const iconButton = "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 const roleLabels = {
   admin: t.auth.roles.admin,
-  domownik: t.auth.roles.member,
+  dorosły: t.auth.roles.member,
   dziecko: t.auth.roles.child,
   "gość": t.auth.roles.guest,
 };

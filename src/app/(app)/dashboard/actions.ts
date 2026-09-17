@@ -23,7 +23,7 @@ export async function searchGlobalObjects(rawQuery: string, rawFilter: string = 
       if (result.type !== "item") return result;
       const item = items.get(result.id)!;
       let previewUrl: string | null = null;
-      if ((profile.rola === "admin" || profile.rola === "domownik") && item.miniatura_url && isItemPhotoFinalPathForHousehold(item.miniatura_url, householdId)) {
+      if ((profile.rola === "admin" || profile.rola === "dorosły") && item.miniatura_url && isItemPhotoFinalPathForHousehold(item.miniatura_url, householdId)) {
         const { data, error } = await supabase.storage.from(ITEM_PHOTO_BUCKET)
           .createSignedUrl(item.miniatura_url, ITEM_PHOTO_SIGNED_URL_TTL_SECONDS);
         previewUrl = error ? null : data?.signedUrl ?? null;

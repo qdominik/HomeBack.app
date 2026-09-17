@@ -101,7 +101,7 @@ export async function loadDashboardWidgets({
   });
   const canReadPhotos =
     profile.status === "aktywny" &&
-    (profile.rola === "admin" || profile.rola === "domownik");
+    (profile.rola === "admin" || profile.rola === "dorosły");
   const recentItems = await Promise.all(
     content.recentItems.map(async (item) => {
       if (

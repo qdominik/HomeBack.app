@@ -119,7 +119,7 @@ values
     '25000000-0000-0000-0000-000000000001',
     'Member A',
     'm4a-member-a@example.test',
-    'domownik',
+    'dorosły',
     'aktywny'
   ),
   (

@@ -27,7 +27,7 @@ values
 insert into public.profile (id, household_id, imie, email, rola, status)
 values
   ('18000000-0000-0000-0000-000000000001', '28000000-0000-0000-0000-000000000001', 'Admin A', 'delete-admin-a@example.test', 'admin', 'aktywny'),
-  ('18000000-0000-0000-0000-000000000002', '28000000-0000-0000-0000-000000000001', 'Member A', 'delete-member-a@example.test', 'domownik', 'aktywny'),
+  ('18000000-0000-0000-0000-000000000002', '28000000-0000-0000-0000-000000000001', 'Member A', 'delete-member-a@example.test', 'dorosły', 'aktywny'),
   ('18000000-0000-0000-0000-000000000003', '28000000-0000-0000-0000-000000000001', 'Child A', 'delete-child-a@example.test', 'dziecko', 'aktywny'),
   ('18000000-0000-0000-0000-000000000004', '28000000-0000-0000-0000-000000000001', 'Guest A', 'delete-guest-a@example.test', 'gość', 'aktywny'),
   ('18000000-0000-0000-0000-000000000005', '28000000-0000-0000-0000-000000000002', 'Admin B', 'delete-admin-b@example.test', 'admin', 'aktywny'),

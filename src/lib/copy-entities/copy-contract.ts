@@ -78,7 +78,7 @@ export function defaultCopyName(sourceName: string) {
 
 export function canCopyEntity(kind: CopyEntityKind, role: string | null | undefined) {
   if (kind === "item") {
-    return role === "admin" || role === "domownik";
+    return role === "admin" || role === "dorosły";
   }
 
   return role === "admin";

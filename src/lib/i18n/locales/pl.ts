@@ -69,7 +69,7 @@ export const pl: Dictionary = {
     signedInAs: "Zalogowano jako",
     roles: {
       admin: "Administrator",
-      member: "Domownik",
+      member: "Dorosły",
       child: "Dziecko",
       guest: "Gość",
     },

@@ -117,7 +117,7 @@ test("modules without requiredRoles are visible to every role", () => {
   const openModule = { key: "recent-items" };
 
   assert.equal(isDashboardModuleVisibleForRole(openModule, "admin"), true);
-  assert.equal(isDashboardModuleVisibleForRole(openModule, "domownik"), true);
+  assert.equal(isDashboardModuleVisibleForRole(openModule, "dorosły"), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, "dziecko"), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, null), true);
   assert.equal(isDashboardModuleVisibleForRole(openModule, undefined), true);
@@ -127,16 +127,16 @@ test("role-restricted modules are hidden without an allowed role", () => {
   const adminOnly = { key: "secret", requiredRoles: ["admin" as const] };
 
   assert.equal(isDashboardModuleVisibleForRole(adminOnly, "admin"), true);
-  assert.equal(isDashboardModuleVisibleForRole(adminOnly, "domownik"), false);
+  assert.equal(isDashboardModuleVisibleForRole(adminOnly, "dorosły"), false);
   assert.equal(isDashboardModuleVisibleForRole(adminOnly, null), false);
 
   const multiRole = {
     key: "shared",
-    requiredRoles: ["admin" as const, "domownik" as const],
+    requiredRoles: ["admin" as const, "dorosły" as const],
   };
 
   assert.equal(isDashboardModuleVisibleForRole(multiRole, "dziecko"), false);
-  assert.equal(isDashboardModuleVisibleForRole(multiRole, "domownik"), true);
+  assert.equal(isDashboardModuleVisibleForRole(multiRole, "dorosły"), true);
 });
 
 test("role filter keeps registry order and drops restricted modules", () => {

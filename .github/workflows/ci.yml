@@ -72,6 +72,12 @@ jobs:
       - name: Run database tests
         run: npx supabase test db
 
+      - name: Verify populated role migration in isolated database
+        run: node scripts/prepare-invitation-test-db.mjs
+
+      - name: Verify real concurrent invitation transactions (pgTAP)
+        run: node scripts/test-invitation-concurrency.mjs
+
       - name: Capture Supabase status on failure
         if: failure()
         run: npx supabase status || true
