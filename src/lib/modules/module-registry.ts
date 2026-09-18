@@ -18,7 +18,7 @@ export const appModuleDefinitions: Record<AppModuleKey, AppModuleDefinition> = {
   dashboard: { key: "dashboard", status: "available" },
   items: { key: "items", status: "available" },
   home: { key: "home", status: "available" },
-  family: { key: "family", status: "soon" },
+  family: { key: "family", status: "available" },
   documents: { key: "documents", status: "soon" },
   categories: { key: "categories", status: "available" },
   settings: { key: "settings", status: "available" },
