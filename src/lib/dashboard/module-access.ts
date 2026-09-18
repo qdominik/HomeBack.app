@@ -24,7 +24,8 @@ export function isDashboardModuleVisibleForRole<
     return false;
   }
 
-  return required.includes(role);
+  return required.includes(role)
+    || (role === "domownik" && required.includes("dorosły"));
 }
 
 export function filterDashboardModulesForRole<

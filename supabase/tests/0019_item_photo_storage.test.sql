@@ -117,9 +117,9 @@ values
   (
     '11000000-0000-0000-0000-000000000002',
     '21000000-0000-0000-0000-000000000001',
-    'Domownik A',
+    'Dorosły A',
     'itemphoto-member-a@example.test',
-    'domownik',
+    'dorosły',
     'aktywny'
   ),
   (

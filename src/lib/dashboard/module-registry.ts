@@ -1,10 +1,10 @@
 import type { Dictionary } from "../i18n/types";
 import type { EntityIconKey } from "../icons/entity-icon-definitions";
-import type { Database } from "../../types/database";
+import type { ProfileRole } from "../auth/profile-role";
 
 export type DashboardModuleStatus = "available" | "soon";
 
-export type DashboardModuleRole = Database["public"]["Enums"]["profile_role"];
+export type DashboardModuleRole = ProfileRole;
 
 export type DashboardModuleCopyKey = keyof Dictionary["dashboardModules"];
 

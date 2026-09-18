@@ -38,7 +38,7 @@ values
 insert into public.profile (id, household_id, imie, email, rola, status)
 values
   ('17000000-0000-0000-0000-000000000001', '27000000-0000-0000-0000-000000000001', 'Admin A', 'm4d2-admin-a@example.test', 'admin', 'aktywny'),
-  ('17000000-0000-0000-0000-000000000002', '27000000-0000-0000-0000-000000000001', 'Member A', 'm4d2-member-a@example.test', 'domownik', 'aktywny'),
+  ('17000000-0000-0000-0000-000000000002', '27000000-0000-0000-0000-000000000001', 'Member A', 'm4d2-member-a@example.test', 'dorosły', 'aktywny'),
   ('17000000-0000-0000-0000-000000000003', '27000000-0000-0000-0000-000000000001', 'Child A', 'm4d2-child-a@example.test', 'dziecko', 'aktywny'),
   ('17000000-0000-0000-0000-000000000004', '27000000-0000-0000-0000-000000000002', 'Admin B', 'm4d2-admin-b@example.test', 'admin', 'aktywny'),
   ('17000000-0000-0000-0000-000000000006', '27000000-0000-0000-0000-000000000001', 'Inactive Admin A', 'm4d2-inactive-admin-a@example.test', 'admin', 'nieaktywny');

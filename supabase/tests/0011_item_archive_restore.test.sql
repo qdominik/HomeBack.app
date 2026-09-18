@@ -27,7 +27,7 @@ values
 insert into public.profile (id, household_id, imie, email, rola, status)
 values
   ('19000000-0000-0000-0000-000000000001', '29000000-0000-0000-0000-000000000001', 'Admin A', 'restore-admin-a@example.test', 'admin', 'aktywny'),
-  ('19000000-0000-0000-0000-000000000002', '29000000-0000-0000-0000-000000000001', 'Member A', 'restore-member-a@example.test', 'domownik', 'aktywny'),
+  ('19000000-0000-0000-0000-000000000002', '29000000-0000-0000-0000-000000000001', 'Member A', 'restore-member-a@example.test', 'dorosły', 'aktywny'),
   ('19000000-0000-0000-0000-000000000003', '29000000-0000-0000-0000-000000000001', 'Child A', 'restore-child-a@example.test', 'dziecko', 'aktywny'),
   ('19000000-0000-0000-0000-000000000004', '29000000-0000-0000-0000-000000000001', 'Guest A', 'restore-guest-a@example.test', 'gość', 'aktywny'),
   ('19000000-0000-0000-0000-000000000005', '29000000-0000-0000-0000-000000000002', 'Admin B', 'restore-admin-b@example.test', 'admin', 'aktywny'),

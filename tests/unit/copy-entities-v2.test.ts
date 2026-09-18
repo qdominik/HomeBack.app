@@ -74,11 +74,13 @@ test("copy names use the approved suffix and preserve trimmed source names", () 
 test("copy role policy permits only approved roles", () => {
   for (const kind of ["room", "furniture", "storage"] as const) {
     assert.equal(canCopyEntity(kind, "admin"), true);
+    assert.equal(canCopyEntity(kind, "dorosły"), false);
     assert.equal(canCopyEntity(kind, "domownik"), false);
     assert.equal(canCopyEntity(kind, "dziecko"), false);
   }
 
   assert.equal(canCopyEntity("item", "admin"), true);
+  assert.equal(canCopyEntity("item", "dorosły"), true);
   assert.equal(canCopyEntity("item", "domownik"), true);
   assert.equal(canCopyEntity("item", "dziecko"), false);
   assert.equal(canCopyEntity("item", null), false);
@@ -90,7 +92,7 @@ test("copy action visibility is wired to the approved UI roles", () => {
 
   assert.match(homePage, /const isAdmin = profile\?\.rola === "admin" && profile\.status === "aktywny"/);
   assert.match(homePage, /<RoomCard[\s\S]*?isAdmin=\{isAdmin\}/);
-  assert.match(itemsPage, /const canCopy = profile\?\.status === "aktywny" &&[\s\S]*?\(profile\.rola === "admin" \|\| profile\.rola === "domownik"\)/);
+  assert.match(itemsPage, /const canCopy = profile\?\.status === "aktywny" &&[\s\S]*?\(profile\.rola === "admin" \|\| isAdultProfileRole\(profile\.rola\)\)/);
   assert.match(itemsPage, /<ItemCard[\s\S]*?canCopy=\{canCopy\}/);
 
   for (const kind of ["room", "furniture", "storage", "item"] as const) {
