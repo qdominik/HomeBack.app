@@ -7,6 +7,16 @@ const requiredExampleKeys = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "APP_BASE_URL",
+  "HOUSEHOLD_INVITATIONS_ENABLED",
+  "SMTP_HOST",
+  "SMTP_PORT",
+  "SMTP_SECURE",
+  "SMTP_USER",
+  "SMTP_PASSWORD",
+  "SMTP_FROM",
+  "INVITATION_EMAIL_ALLOWLIST",
+  "INVITATION_EMAIL_TRANSPORT",
   "E2E_BASE_URL",
   "E2E_PASSWORD",
 ];
@@ -48,6 +58,7 @@ if (process.argv.includes("--example")) {
   const env = { ...readEnvFile(".env.local"), ...process.env };
   const environment = env.VERCEL_ENV ?? "local";
   const required = [
+    "APP_BASE_URL",
     "NEXT_PUBLIC_SITE_URL",
     "NEXT_PUBLIC_SUPABASE_URL",
   ];
