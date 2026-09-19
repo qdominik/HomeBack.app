@@ -16,6 +16,7 @@ export default defineConfig({
     "dashboard-widgets-regression.spec.ts",
     "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
+    "roles-invites.spec.ts",
   ],
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
