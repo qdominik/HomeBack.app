@@ -29,7 +29,11 @@ function confirmationURL(link: string) {
   return url.toString();
 }
 
-async function latestConfirmationLink(email: string) {
+async function latestMailpitLink(
+  email: string,
+  pattern: RegExp,
+  excludedMessageId?: string,
+) {
   const deadline = Date.now() + confirmationTimeout;
 
   while (Date.now() < deadline) {
@@ -38,27 +42,59 @@ async function latestConfirmationLink(email: string) {
 
     const inbox = await inboxResponse.json();
     const messages = (inbox.messages ?? []) as MailpitMessage[];
-    const message = messages.find((entry) =>
+    const candidates = messages.filter((entry) =>
+      entry.ID !== excludedMessageId &&
       String(entry.To?.[0]?.Address ?? entry.to ?? "").includes(email),
     );
 
-    if (message?.ID) {
+    for (const message of candidates) {
+      if (!message.ID) continue;
       const messageResponse = await fetch(
         `${mailpitAPIURL}/message/${message.ID}`,
       );
       expect(messageResponse.ok).toBeTruthy();
 
       const body = JSON.stringify(await messageResponse.json());
-      const link = body.match(/https?:\/\/[^"'<\s]+\/auth\/confirm\?[^"'<\s]+/)?.[0];
-
-      expect(link, "confirmation link").toBeTruthy();
-      return link!;
+      const link = body.match(pattern)?.[0];
+      if (link) return { id: message.ID, link };
     }
 
     await pause(250);
   }
 
-  throw new Error(`Confirmation e-mail for ${email} did not arrive in Mailpit.`);
+  throw new Error(`Expected e-mail link for ${email} did not arrive in Mailpit.`);
+}
+
+export async function latestConfirmationLink(email: string) {
+  return (
+    await latestMailpitLink(
+      email,
+      /https?:\/\/[^"'<\s]+\/auth\/confirm\?[^"'<\s]+/,
+    )
+  ).link;
+}
+
+export async function latestInvitationMessage(
+  email: string,
+  excludedMessageId?: string,
+) {
+  const message = await latestMailpitLink(
+    email,
+    /https?:\/\/[^"'<\s]+\/invite\/accept#token=[0-9a-f]{64}/,
+    excludedMessageId,
+  );
+  return {
+    id: message.id,
+    link: confirmationURL(message.link),
+  };
+}
+
+export async function confirmLatestEmail(page: Page, email: string) {
+  const response = await page.context().request.get(
+    confirmationURL(await latestConfirmationLink(email)),
+    { maxRedirects: 0 },
+  );
+  expect(response.status(), "email confirmation response").toBe(307);
 }
 
 export function newE2ECredentials(prefix: string): E2ECredentials {
@@ -83,11 +119,7 @@ export async function registerAndConfirmEmail(
   await page.getByRole("button", { name: /Utw/ }).click();
   await expect(page.getByRole("heading", { name: /Sprawd/ })).toBeVisible();
 
-  const response = await page.context().request.get(
-    confirmationURL(await latestConfirmationLink(credentials.email)),
-    { maxRedirects: 0 },
-  );
-  expect(response.status(), "email confirmation response").toBe(307);
+  await confirmLatestEmail(page, credentials.email);
 }
 
 export async function createHousehold(page: Page, credentials: E2ECredentials) {

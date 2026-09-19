@@ -38,9 +38,12 @@ export default defineConfig({
       ? `${npmCommand} run start -- --hostname 127.0.0.1 --port ${port}`
       : `${npmCommand} run dev -- --hostname 127.0.0.1 --port ${port}`,
     env: {
+      APP_BASE_URL: baseURL,
+      E2E_SMTP_MOCK: "true",
       NEXT_PUBLIC_SITE_URL: siteURL,
       HOUSEHOLD_INVITATIONS_ENABLED:
         process.env.HOUSEHOLD_INVITATIONS_ENABLED ?? "true",
+      INVITATION_EMAIL_TRANSPORT: "mailpit",
     },
     url: baseURL,
     reuseExistingServer: !process.env.CI,

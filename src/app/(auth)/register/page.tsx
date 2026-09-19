@@ -6,10 +6,13 @@ import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { createHousehold, register } from "../actions";
+import { safeAuthReturnPath } from "@/lib/auth/return-path";
 
 type RegisterPageProps = {
   searchParams: Promise<{
     error?: string;
+    email?: string;
+    next?: string;
     status?: string;
     step?: string;
   }>;
@@ -21,6 +24,7 @@ const errorMessages: Record<string, string> = {
   missing_fields: t.auth.errors.missingFields,
   password_too_short: t.auth.errors.passwordTooShort,
   signup_failed: t.auth.errors.signupFailed,
+  signup_configuration: "Rejestracja nie jest poprawnie skonfigurowana w tym środowisku.",
 };
 
 function AuthMessage({ message }: { message: string | null }) {
@@ -35,6 +39,7 @@ export default async function RegisterPage({
   searchParams,
 }: RegisterPageProps) {
   const params = await searchParams;
+  const next = safeAuthReturnPath(params.next);
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -47,8 +52,9 @@ export default async function RegisterPage({
       .maybeSingle();
 
     if (profile) {
-      redirect(routes.dashboard);
+      redirect(next ?? routes.dashboard);
     }
+    if (next) redirect(next);
   }
 
   const errorMessage = params.error
@@ -72,7 +78,7 @@ export default async function RegisterPage({
           </p>
           <Link
             className="mt-6 inline-flex h-10 items-center justify-center rounded-md border border-line px-4 text-sm font-semibold text-foreground hover:bg-surface-muted"
-            href={routes.login}
+            href={next ? `${routes.login}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.login}
           >
             {t.auth.backToLogin}
           </Link>
@@ -172,6 +178,7 @@ export default async function RegisterPage({
         <h1 className="mt-4 text-2xl font-semibold">{t.auth.registerTitle}</h1>
         <AuthMessage message={errorMessage} />
         <form action={register} className="mt-6 space-y-4">
+          {next ? <input name="next" type="hidden" value={next} /> : null}
           <label className="block text-sm font-medium">
             {t.auth.name}
             <input
@@ -186,6 +193,7 @@ export default async function RegisterPage({
             <input
               autoComplete="email"
               className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              defaultValue={params.email ?? ""}
               name="email"
               required
               type="email"
@@ -209,7 +217,7 @@ export default async function RegisterPage({
             {t.auth.createAccount}
           </button>
         </form>
-        <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={routes.login}>
+        <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={next ? `${routes.login}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.login}>
           {t.auth.signIn}
         </Link>
       </section>

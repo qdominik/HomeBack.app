@@ -1,7 +1,7 @@
 # Roles & Invites — dostarczanie zaproszeń przez SeoHost SMTP
 
-Data decyzji: 2026-09-19  
-Status: zatwierdzone przez właściciela projektu  
+Data decyzji: 2026-09-19
+Status: zatwierdzone przez właściciela projektu
 Zakres: Users & Roles / Auth / Security
 
 ## Decyzja
@@ -87,4 +87,3 @@ selektor należy potwierdzić w panelu SeoHost przed prawdziwą wysyłką.
 - https://seohost.pl/pomoc/konfiguracja-poczty-program-pocztowy
 - https://seohost.pl/pomoc/jakich-portow-uzywac-poczta-e-mail
 - https://seohost.pl/pomoc/uwierzytelnianie-emaili-spf-dkim-dmarc
-

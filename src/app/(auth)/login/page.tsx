@@ -6,9 +6,10 @@ import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { login } from "../actions";
+import { safeAuthReturnPath } from "@/lib/auth/return-path";
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ email?: string; error?: string; next?: string }>;
 };
 
 const errorMessages: Record<string, string> = {
@@ -19,10 +20,13 @@ const errorMessages: Record<string, string> = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const next = safeAuthReturnPath(params.next);
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
 
   if (claimsData?.claims?.sub) {
+    if (next) redirect(next);
     const { data: profile } = await supabase
       .from("profile")
       .select("id")
@@ -32,9 +36,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     redirect(profile ? routes.dashboard : `${routes.register}?step=household`);
   }
 
-  const { error } = await searchParams;
-  const errorMessage = error
-    ? (errorMessages[error] ?? t.auth.errors.unknown)
+  const errorMessage = params.error
+    ? (errorMessages[params.error] ?? t.auth.errors.unknown)
     : null;
 
   return (
@@ -52,11 +55,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </p>
         ) : null}
         <form action={login} className="mt-6 space-y-4">
+          {next ? <input name="next" type="hidden" value={next} /> : null}
           <label className="block text-sm font-medium">
             {t.auth.email}
             <input
               autoComplete="email"
               className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              defaultValue={params.email ?? ""}
               name="email"
               required
               type="email"
@@ -76,7 +81,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             {t.auth.signIn}
           </button>
         </form>
-        <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={routes.register}>
+        <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={next ? `${routes.register}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.register}>
           {t.auth.createAccount}
         </Link>
       </section>
