@@ -39,6 +39,8 @@ export default defineConfig({
       : `${npmCommand} run dev -- --hostname 127.0.0.1 --port ${port}`,
     env: {
       NEXT_PUBLIC_SITE_URL: siteURL,
+      HOUSEHOLD_INVITATIONS_ENABLED:
+        process.env.HOUSEHOLD_INVITATIONS_ENABLED ?? "true",
     },
     url: baseURL,
     reuseExistingServer: !process.env.CI,
