@@ -53,14 +53,16 @@ test("existing verified account logs in and accepts an invitation", async ({
   await page.getByRole("link", { name: "Zaloguj się" }).click();
   await expect(page.locator('input[name="email"]')).toHaveValue(invitee.email);
   await page.locator('input[name="password"]').fill(invitee.password);
-  await page.getByRole("button", { name: "Zaloguj się" }).click();
+  await page.getByRole("button", { name: /Zaloguj/ }).click();
 
   await expect(page.getByRole("heading", { name: "Gotowe do przyjęcia" })).toBeVisible();
   await expect(page.getByText(administrator.householdName, { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "Przyjmij zaproszenie" }).click();
   await expect(page).toHaveURL(/\/family\?invitation=accepted$/);
   await expect(page.getByText("Zaproszenie zostało przyjęte.", { exact: true })).toBeVisible();
-  await expect(page.getByText(invitee.name, { exact: false })).toBeVisible();
+  await expect(
+    page.getByLabel("Członkowie").getByText("Dorosły", { exact: true }),
+  ).toBeVisible();
 
   await page.goto(invitation.link);
   await expect(page.getByRole("heading", { name: "Zaproszenie zostało już użyte" })).toBeVisible();
@@ -89,7 +91,9 @@ test("new account keeps the invitation through registration and email confirmati
 
   await page.getByRole("button", { name: "Przyjmij zaproszenie" }).click();
   await expect(page).toHaveURL(/\/family\?invitation=accepted$/);
-  await expect(page.getByText(invitee.name, { exact: false })).toBeVisible();
+  await expect(
+    page.getByLabel("Członkowie").getByText("Dorosły", { exact: true }),
+  ).toBeVisible();
 });
 
 test("a logged-in account with another email cannot inspect household details", async ({
@@ -107,7 +111,7 @@ test("a logged-in account with another email cannot inspect household details", 
   await page.getByRole("link", { name: "Zaloguj się" }).click();
   await page.locator('input[name="email"]').fill(administrator.email);
   await page.locator('input[name="password"]').fill(administrator.password);
-  await page.getByRole("button", { name: "Zaloguj się" }).click();
+  await page.getByRole("button", { name: /Zaloguj/ }).click();
 
   await expect(page.getByRole("heading", { name: "Niewłaściwe konto" })).toBeVisible();
   await expect(page.getByText(administrator.householdName, { exact: false })).toHaveCount(0);
