@@ -100,9 +100,13 @@ export async function expireInvitation(email: string) {
   const supabase = createClient(supabaseURL, serviceRoleKey, {
     auth: { persistSession: false },
   });
+  const now = Date.now();
   const { data, error } = await supabase
     .from("household_invitation")
-    .update({ expires_at: new Date(Date.now() - 60_000).toISOString() })
+    .update({
+      created_at: new Date(now - 120_000).toISOString(),
+      expires_at: new Date(now - 60_000).toISOString(),
+    })
     .eq("email", email)
     .eq("status", "pending")
     .select("id");
