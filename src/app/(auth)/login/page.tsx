@@ -6,7 +6,10 @@ import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { login } from "../actions";
-import { safeAuthReturnPath } from "@/lib/auth/return-path";
+import {
+  invitationReturnPath,
+  safeAuthReturnPath,
+} from "@/lib/auth/return-path";
 
 type LoginPageProps = {
   searchParams: Promise<{ email?: string; error?: string; next?: string }>;
@@ -54,7 +57,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             {errorMessage}
           </p>
         ) : null}
-        <form action={login} className="mt-6 space-y-4">
+        <form
+          action={next === invitationReturnPath ? "/invite/login" : login}
+          className="mt-6 space-y-4"
+          method={next === invitationReturnPath ? "post" : undefined}
+        >
           {next ? <input name="next" type="hidden" value={next} /> : null}
           <label className="block text-sm font-medium">
             {t.auth.email}

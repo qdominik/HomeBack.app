@@ -205,6 +205,18 @@ test("auth return paths and invitation tokens reject open redirects and malforme
   assert.equal(isInvitationToken("c".repeat(63)), false);
 });
 
+test("invitation login preserves the path-scoped token through a real redirect", () => {
+  const loginPage = readFileSync("src/app/(auth)/login/page.tsx", "utf8");
+  const invitationLogin = readFileSync("src/app/invite/login/route.ts", "utf8");
+
+  assert.match(loginPage, /action=\{next === invitationReturnPath \? "\/invite\/login" : login\}/);
+  assert.match(loginPage, /method=\{next === invitationReturnPath \? "post" : undefined\}/);
+  assert.match(invitationLogin, /origin !== new URL\(baseUrl\)\.origin/);
+  assert.match(invitationLogin, /if \(!areHouseholdInvitationsEnabled\(\)\)/);
+  assert.match(invitationLogin, /NextResponse\.redirect\(new URL\(invitationReturnPath, baseUrl\), 303\)/);
+  assert.doesNotMatch(invitationLogin, /console\./);
+});
+
 test("critical diagnostic logs contain identifiers and classifications only", () => {
   const source = readFileSync("src/app/(app)/family/actions.ts", "utf8");
   const logs = [...source.matchAll(/console\.error\("invitation_delivery_compensation_failed", \{([\s\S]*?)\}\);/g)];
