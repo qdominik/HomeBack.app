@@ -134,6 +134,11 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$public_key" >> "$GITHUB_ENV"
           echo "E2E_LOCAL_SUPABASE_SERVICE_ROLE_KEY=$service_role_key" >> "$GITHUB_ENV"
 
+      - name: Grant expiration setup access in ephemeral E2E database
+        run: >-
+          npx supabase db query --local
+          "grant select, update on public.household_invitation to service_role;"
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
