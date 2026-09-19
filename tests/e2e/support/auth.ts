@@ -104,7 +104,7 @@ export async function expireInvitation(email: string) {
   const { data, error } = await supabase
     .from("household_invitation")
     .update({
-      created_at: new Date(now - 120_000).toISOString(),
+      created_at: new Date(now - 48 * 60 * 60 * 1_000 - 60_000).toISOString(),
       expires_at: new Date(now - 60_000).toISOString(),
     })
     .eq("email", email)
