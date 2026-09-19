@@ -695,6 +695,9 @@ fields: {
       invite: "Invite",
       empty: "No members to show",
       soonDescription: "People and role management will be available soon.",
+      household: "Household",
+      invitationPrepared: "The invitation has been prepared.",
+      emailDeliveryPending: "Email delivery will be enabled in the next stage.",
     },
     documents: {
       title: "Documents",

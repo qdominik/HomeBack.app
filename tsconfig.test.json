@@ -21,6 +21,7 @@
     "src/lib/confirm-delete.ts",
     "src/lib/icons/**/*.ts",
     "src/lib/items/**/*.ts",
+    "src/lib/people/**/*.ts",
     "src/lib/settings/**/*.ts",
     "src/lib/runtime/**/*.ts",
     "src/lib/templates/**/*.ts",

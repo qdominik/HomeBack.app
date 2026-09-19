@@ -17,7 +17,8 @@ for (const width of [390, 768, 1280]) {
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(toggle).toHaveAttribute("aria-controls", await menu.getAttribute("id") as string);
     await expect(menu).toBeVisible();
-    for (const name of ["Osoby", "Dokumenty"]) {
+    await expect(menu.getByRole("link", { name: "Osoby", exact: true })).toHaveAttribute("href", "/family");
+    for (const name of ["Dokumenty"]) {
       const soon = menu.getByRole("button", { name: `${name} Wkrótce` });
       await expect(soon).toHaveAttribute("aria-disabled", "true");
       await soon.click({ force: true });

@@ -597,6 +597,9 @@ export type Dictionary = {
       invite: string;
       empty: string;
       soonDescription: string;
+      household: string;
+      invitationPrepared: string;
+      emailDeliveryPending: string;
     };
     documents: {
       title: string;

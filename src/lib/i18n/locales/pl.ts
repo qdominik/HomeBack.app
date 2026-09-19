@@ -694,6 +694,9 @@ fields: {
       invite: "Zaproś",
       empty: "Brak członków do wyświetlenia",
       soonDescription: "Zarządzanie osobami i rolami będzie dostępne wkrótce.",
+      household: "Gospodarstwo",
+      invitationPrepared: "Zaproszenie zostało przygotowane.",
+      emailDeliveryPending: "Wysyłka e-mail zostanie uruchomiona w kolejnym etapie.",
     },
     documents: {
       title: "Dokumenty",
