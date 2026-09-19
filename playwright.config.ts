@@ -17,6 +17,7 @@ export default defineConfig({
     "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
     "roles-invites.spec.ts",
+    "roles-invites-disabled.spec.ts",
   ],
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),

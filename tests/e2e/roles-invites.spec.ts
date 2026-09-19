@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import {
   confirmLatestEmail,
   createHousehold,
+  expireInvitation,
   latestInvitationMessage,
   newE2ECredentials,
   registerAndConfirmEmail,
@@ -37,7 +38,7 @@ async function sendInvitation(page: Page, email: string) {
   return latestInvitationMessage(email);
 }
 
-test("existing verified account logs in and accepts an invitation", async ({
+test("existing verified account double-clicks and accepts an invitation once", async ({
   page,
 }) => {
   const invitee = newE2ECredentials("invite-existing");
@@ -57,7 +58,7 @@ test("existing verified account logs in and accepts an invitation", async ({
 
   await expect(page.getByRole("heading", { name: "Gotowe do przyjęcia" })).toBeVisible();
   await expect(page.getByText(administrator.householdName, { exact: false })).toBeVisible();
-  await page.getByRole("button", { name: "Przyjmij zaproszenie" }).click();
+  await page.getByRole("button", { name: "Przyjmij zaproszenie" }).dblclick();
   await expect(page).toHaveURL(/\/family\?invitation=accepted$/);
   await expect(page.getByRole("status")).toContainText("Zaproszenie zostało przyjęte.");
   await expect(
@@ -66,6 +67,18 @@ test("existing verified account logs in and accepts an invitation", async ({
 
   await page.goto(invitation.link);
   await expect(page.getByRole("heading", { name: "Zaproszenie zostało już użyte" })).toBeVisible();
+});
+
+test("expired invitation is rejected before account details are shown", async ({ page }) => {
+  const administrator = await createAdministrator(page, "invite-admin-expired");
+  const email = `invite-expired-${Date.now()}@example.test`;
+  const invitation = await sendInvitation(page, email);
+  await expireInvitation(email);
+  await signOut(page);
+
+  await page.goto(invitation.link);
+  await expect(page.getByRole("heading", { name: "Zaproszenie wygasło" })).toBeVisible();
+  await expect(page.getByText(administrator.householdName, { exact: false })).toHaveCount(0);
 });
 
 test("new account keeps the invitation through registration and email confirmation", async ({

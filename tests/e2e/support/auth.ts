@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 
 const appURL = `http://127.0.0.1:${process.env.E2E_PORT ?? "3001"}`;
 const mailpitAPIURL = "http://127.0.0.1:54324/api/v1";
@@ -87,6 +88,27 @@ export async function latestInvitationMessage(
     id: message.id,
     link: confirmationURL(message.link),
   };
+}
+
+export async function expireInvitation(email: string) {
+  const supabaseURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.E2E_LOCAL_SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseURL || !serviceRoleKey) {
+    throw new Error("Local Supabase service credentials are required for E2E setup.");
+  }
+
+  const supabase = createClient(supabaseURL, serviceRoleKey, {
+    auth: { persistSession: false },
+  });
+  const { data, error } = await supabase
+    .from("household_invitation")
+    .update({ expires_at: new Date(Date.now() - 60_000).toISOString() })
+    .eq("email", email)
+    .eq("status", "pending")
+    .select("id");
+
+  expect(error, "expire invitation setup").toBeNull();
+  expect(data, "one pending invitation to expire").toHaveLength(1);
 }
 
 export async function confirmLatestEmail(page: Page, email: string) {
