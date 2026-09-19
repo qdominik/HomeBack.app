@@ -59,7 +59,7 @@ test("existing verified account logs in and accepts an invitation", async ({
   await expect(page.getByText(administrator.householdName, { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "Przyjmij zaproszenie" }).click();
   await expect(page).toHaveURL(/\/family\?invitation=accepted$/);
-  await expect(page.getByText("Zaproszenie zostało przyjęte.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("status")).toContainText("Zaproszenie zostało przyjęte.");
   await expect(
     page.getByLabel("Członkowie").getByText("Dorosły", { exact: true }),
   ).toBeVisible();
