@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAppContext } from "@/lib/app-context";
 import { isInviteRole, normalizeInvitationEmail } from "@/lib/people/people";
+import { areHouseholdInvitationsEnabled } from "@/lib/people/invitations-enabled";
 import { routes } from "@/lib/routes";
 
 export type InvitationActionResult = { ok: true; message: "prepared" | "revoked" | "renewed" } | { ok: false; error: string };
@@ -22,6 +23,7 @@ async function administratorContext() {
 }
 
 export async function prepareInvitation(emailValue: string, roleValue: string): Promise<InvitationActionResult> {
+  if (!areHouseholdInvitationsEnabled()) return { ok: false, error: "not_allowed" };
   const email = normalizeInvitationEmail(emailValue);
   if (!email) return { ok: false, error: "invalid_email" };
   if (!isInviteRole(roleValue)) return { ok: false, error: "invalid_role" };
@@ -35,6 +37,7 @@ export async function prepareInvitation(emailValue: string, roleValue: string): 
 }
 
 export async function revokeInvitation(invitationId: string): Promise<InvitationActionResult> {
+  if (!areHouseholdInvitationsEnabled()) return { ok: false, error: "not_allowed" };
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(invitationId)) return { ok: false, error: "technical" };
   const context = await administratorContext();
   if (!context) return { ok: false, error: "not_allowed" };
@@ -45,6 +48,7 @@ export async function revokeInvitation(invitationId: string): Promise<Invitation
 }
 
 export async function renewInvitation(invitationId: string): Promise<InvitationActionResult> {
+  if (!areHouseholdInvitationsEnabled()) return { ok: false, error: "not_allowed" };
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(invitationId)) return { ok: false, error: "technical" };
   const context = await administratorContext();
   if (!context) return { ok: false, error: "not_allowed" };
