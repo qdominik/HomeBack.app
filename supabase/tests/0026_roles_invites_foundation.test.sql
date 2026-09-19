@@ -78,7 +78,7 @@ select is((select count(*)::int from public.household_invitation_event),0,'adult
 select is((select count(*)::int from public.log where typ_obiektu='PROFILE'),0,'adult cannot recover peer email from historical profile audit');
 select throws_ok($$select public.create_household_invitation('x@invites.test','dziecko')$$,'P0001','ADMIN_REQUIRED','adult cannot invite');
 select throws_ok($$update public.profile set rola='admin' where id=auth.uid()$$,'42501',null,'adult cannot self-promote');
-select throws_ok($$select public.accept_household_invitation((select token from issued where label='second'),'Adult')$$,'P0001','PROFILE_ALREADY_EXISTS','existing member cannot accept another membership');
+select throws_ok($$select public.accept_household_invitation((select token from issued where label='second'),'Adult')$$,'P0001','INVITATION_OTHER_HOUSEHOLD','existing member cannot move to another household');
 
 set local "request.jwt.claims"='{"sub":"91000000-0000-0000-0000-000000000004","role":"authenticated"}';
 select is((select count(*)::int from public.get_household_members()),1,'child directory contains only self');
@@ -121,7 +121,7 @@ select is((select status from public.household_invitation where id=(select invit
 drop trigger invitation_test_reject_audit on public.household_invitation_event;
 drop function public.invitation_test_reject_audit();
 set local role authenticated;
-select is(public.accept_household_invitation((select token from issued where label='join'),' Join '),'92000000-0000-0000-0000-000000000001'::uuid,'acceptance returns household');
+select is((select household_id from public.accept_household_invitation((select token from issued where label='join'),' Join ')),'92000000-0000-0000-0000-000000000001'::uuid,'acceptance returns household');
 select is((select rola::text from public.profile where id=auth.uid()),'dorosły','acceptance assigns requested role');
 select is((select imie from public.profile where id=auth.uid()),'Join','acceptance creates complete profile');
 select throws_ok($$select public.accept_household_invitation((select token from issued where label='join'),'Join')$$,'P0001','INVITATION_INVALID','token reuse rejected');
