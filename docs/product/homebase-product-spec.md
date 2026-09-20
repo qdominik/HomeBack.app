@@ -1129,6 +1129,30 @@ Realnie pierwsze 6–12 miesięcy to okres testowania, kosztów i niskich przych
 - [ ] Uzupełnienia MVP.
 - [ ] Publikacja v0.2 jako public beta.
 
+### Backlog techniczny
+
+#### Ujednolicić nadawcę wiadomości zakładania konta na noreply@homeback.app
+
+**Stan obecny:** wiadomości związane z zakładaniem konta przez administratora
+używają dotychczasowego adresu `noreplay@homeback.app`.
+
+**Stan docelowy:** podstawowym nadawcą wiadomości związanych z zakładaniem
+konta ma zostać `HomeBack <noreply@homeback.app>`.
+
+**Zakres przyszłego zadania:**
+
+- ustalić, czy wiadomości wysyła Supabase Auth, aplikacja czy oba mechanizmy;
+- zmienić konfigurację nadawcy z `noreplay@homeback.app` na
+  `noreply@homeback.app`;
+- sprawdzić szablony rejestracji i potwierdzania adresu;
+- wykonać test SPF/DKIM/DMARC i dostarczenia;
+- sprawdzić Preview przed zmianą Production;
+- nie usuwać starej skrzynki przed zakończeniem okresu przejściowego.
+
+**Kryterium ukończenia:** wszystkie wiadomości dotyczące zakładania konta są
+wysyłane jako `HomeBack <noreply@homeback.app>`, przechodzą SPF, DKIM i DMARC
+oraz zostały sprawdzone na Preview i Production.
+
 ### Metryki sukcesu MVP
 
 - aplikacja działa bez crashów,

@@ -1,15 +1,18 @@
 # Roles & Invites — dostarczanie zaproszeń przez SeoHost SMTP
 
 Data decyzji: 2026-09-19
+Ostatnia weryfikacja dostarczalności: 2026-09-20
 Status: zatwierdzone przez właściciela projektu
 Zakres: Users & Roles / Auth / Security
 
 ## Decyzja
 
 Zaproszenia HomeBack są wysyłane przez istniejącą, własną pocztę SMTP na
-SeoHost. Nadawcą jest `HomeBack <noreply@homeback.app>`. Skrzynka
-`noreply@homeback.app` już istnieje i jest używana przez przepływ zakładania
-konta obsługiwany przez Supabase Auth.
+SeoHost. Zatwierdzonym nadawcą jest `HomeBack <noreply@homeback.app>`.
+Skrzynka `noreply@homeback.app` istnieje i jest kontem SMTP używanym przez
+zaproszenia. Wiadomości zakładania konta pozostają poza zakresem tego PR:
+obecnie mogą używać historycznego adresu `noreplay@homeback.app`; ich
+ujednolicenie jest osobnym zadaniem backlogowym.
 
 Wybór wykorzystuje istniejącą infrastrukturę, nie dodaje kolejnego procesora
 danych ani płatnej usługi i zachowuje jeden spójny adres nadawcy. Aplikacja
@@ -37,10 +40,18 @@ Wymagane nazwy konfiguracji aplikacji:
 - `SMTP_FROM`
 - `APP_BASE_URL`
 - `INVITATION_EMAIL_ALLOWLIST` — wyłącznie po stronie serwera
+- `INVITATION_EMAIL_TRANSPORT`
+- `HOUSEHOLD_INVITATIONS_ENABLED`
 
 `SMTP_FROM` ma wartość `HomeBack <noreply@homeback.app>`. `APP_BASE_URL` jest
 jawnym, zaufanym adresem danego środowiska i jest jedyną podstawą linku
 zaproszenia. Nagłówek `Host` lub `Origin` żądania nie może budować tego linku.
+
+Zatwierdzona konfiguracja SMTP dla Preview to `h61.seohost.pl`, port `465`,
+implicit SSL/TLS oraz `SMTP_SECURE=true`. `INVITATION_EMAIL_ALLOWLIST` używa
+listy dokładnych adresów rozdzielonych przecinkami. `SMTP_PASSWORD` pozostaje
+sekretem w konfiguracji środowiska; nie może trafić do repozytorium,
+dokumentacji, logów ani raportów.
 
 ## Semantyka i ograniczenia SMTP
 
@@ -77,10 +88,17 @@ Surowy token istnieje tylko w linku i pamięci procesu lub krótkotrwałym cooki
 nie są logowane. Domena `homeback.app` musi mieć poprawne SPF, DKIM i DMARC przed
 prawdziwym testem Preview.
 
-Kontrola DNS z 2026-09-19 potwierdziła SPF przekierowany do
-`_spf-h61.microhost.pl` oraz DMARC `p=quarantine`. Nie znaleziono publicznego
-rekordu dla typowych selektorów DKIM (`default`, `mail`, `dkim`); właściwy
-selektor należy potwierdzić w panelu SeoHost przed prawdziwą wysyłką.
+Kontrola DNS i dostarczalności z 2026-09-20 potwierdziła SPF, DKIM i DMARC jako
+PASS dla domeny `homeback.app`. DKIM używa selektora `x` i rekordu
+`x._domainkey.homeback.app`. Prawdziwa wiadomość kontrolna od
+`noreply@homeback.app` została dostarczona do Gmaila w około sekundę, a
+połączenie z serwerem odbiorcy użyło TLS 1.3.
+
+Ta kontrola potwierdza konfigurację uwierzytelniania i dostarczenie wiadomości
+kontrolnej, lecz status aplikacyjny `accepted_by_smtp` nadal oznacza wyłącznie
+przyjęcie wiadomości przez serwer SeoHost. Automatyczna obsługa bounce i
+potwierdzonego delivery nie jest zaimplementowana i pozostaje długiem
+technicznym.
 
 ## Referencje
 
