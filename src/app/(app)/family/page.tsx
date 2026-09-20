@@ -4,7 +4,12 @@ import { getAppContext } from "@/lib/app-context";
 import { t } from "@/lib/i18n";
 import { areHouseholdInvitationsEnabled } from "@/lib/people/invitations-enabled";
 
-export default async function FamilyPage() {
+export default async function FamilyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ invitation?: string }>;
+}) {
+  const params = await searchParams;
   const { household, profile, supabase, userId } = await getAppContext();
   const isAdministrator = profile?.rola === "admin" && profile.status === "aktywny";
   const invitationsEnabled = areHouseholdInvitationsEnabled();
@@ -25,5 +30,5 @@ export default async function FamilyPage() {
       .order("created_at", { ascending: false });
     invitations = (data ?? []).map((invitation) => ({ id: invitation.id, email: invitation.email, role: invitation.target_role, status: invitation.status, createdAt: invitation.created_at, expiresAt: invitation.expires_at }));
   }
-  return <div className="space-y-8"><PageHeader description={household?.nazwa} title={t.modules.family.title} /><PeopleContent householdName={household?.nazwa ?? ""} invitations={invitations} invitationsEnabled={invitationsEnabled} isAdministrator={isAdministrator} loadError={Boolean(membersError)} members={members} /></div>;
+  return <div className="space-y-8"><PageHeader description={household?.nazwa} title={t.modules.family.title} />{params.invitation === "accepted" ? <p className="rounded-control border border-success/30 bg-success/10 p-4 text-sm" role="status">Zaproszenie zostało przyjęte. Twoje członkostwo i rola są widoczne poniżej.</p> : null}<PeopleContent householdName={household?.nazwa ?? ""} invitations={invitations} invitationsEnabled={invitationsEnabled} isAdministrator={isAdministrator} loadError={Boolean(membersError)} members={members} /></div>;
 }

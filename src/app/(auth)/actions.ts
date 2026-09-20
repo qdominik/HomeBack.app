@@ -1,7 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { safeAuthReturnPath } from "@/lib/auth/return-path";
+import { getAppBaseUrl, InvitationEmailConfigError } from "@/lib/email/config";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
@@ -18,46 +19,83 @@ function value(formData: FormData, key: string) {
   return typeof field === "string" ? field.trim() : "";
 }
 
-function redirectWithError(path: string, error: string): never {
-  redirect(`${path}?error=${encodeURIComponent(error)}`);
+function redirectWithError(
+  path: string,
+  error: string,
+  fields: { email?: string; next?: string | null } = {},
+): never {
+  const params = new URLSearchParams({ error });
+  if (fields.email) params.set("email", fields.email);
+  if (fields.next) params.set("next", fields.next);
+  redirect(`${path}?${params.toString()}`);
 }
 
 export async function login(formData: FormData) {
   const email = value(formData, "email");
   const password = value(formData, "password");
+  const next = safeAuthReturnPath(value(formData, "next"));
 
   if (!email || !password) {
-    redirectWithError(routes.login, "missing_fields");
+    redirectWithError(routes.login, "missing_fields", { email, next });
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirectWithError(routes.login, "invalid_credentials");
+    redirectWithError(routes.login, "invalid_credentials", { email, next });
   }
 
-  redirect(routes.dashboard);
+  redirect(next ?? routes.dashboard);
+}
+
+export async function resendConfirmation(formData: FormData) {
+  const email = value(formData, "email");
+  const next = safeAuthReturnPath(value(formData, "next"));
+  if (!email) redirectWithError(routes.login, "confirmation_resend_failed", { next });
+
+  let origin: string;
+  try {
+    origin = getAppBaseUrl();
+  } catch {
+    redirectWithError(routes.login, "confirmation_resend_failed", { next });
+  }
+  const confirmationUrl = new URL("/auth/confirm", origin);
+  if (next) confirmationUrl.searchParams.set("next", next);
+  const supabase = await createClient();
+  await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: confirmationUrl.toString() },
+  });
+  redirectWithError(routes.login, "confirmation_resend_sent", { email, next });
 }
 
 export async function register(formData: FormData) {
   const email = value(formData, "email");
   const password = value(formData, "password");
   const name = value(formData, "name");
+  const next = safeAuthReturnPath(value(formData, "next"));
 
   if (!email || !password || !name) {
-    redirectWithError(routes.register, "missing_fields");
+    redirectWithError(routes.register, "missing_fields", { email, next });
   }
 
   if (password.length < 8) {
-    redirectWithError(routes.register, "password_too_short");
+    redirectWithError(routes.register, "password_too_short", { email, next });
   }
 
-  const requestHeaders = await headers();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    requestHeaders.get("origin") ??
-    "http://127.0.0.1:3000";
+  let origin: string;
+  try {
+    origin = getAppBaseUrl();
+  } catch (error) {
+    if (error instanceof InvitationEmailConfigError) {
+      redirectWithError(routes.register, "signup_configuration", { email, next });
+    }
+    throw error;
+  }
+  const confirmationUrl = new URL("/auth/confirm", origin);
+  if (next) confirmationUrl.searchParams.set("next", next);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -65,20 +103,22 @@ export async function register(formData: FormData) {
     password,
     options: {
       data: { imie: name },
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: confirmationUrl.toString(),
     },
   });
 
   const signupResult = classifySignupResult({ data, error });
   if (signupResult === "existing_user") {
-    redirectWithError(routes.register, "email_already_registered");
+    redirectWithError(routes.register, "email_already_registered", { email, next });
   }
 
   if (signupResult === "signup_error") {
-    redirectWithError(routes.register, "signup_failed");
+    redirectWithError(routes.register, "signup_failed", { email, next });
   }
 
-  redirect(`${routes.register}?status=check_email`);
+  const params = new URLSearchParams({ email, status: "check_email" });
+  if (next) params.set("next", next);
+  redirect(`${routes.register}?${params.toString()}`);
 }
 
 export async function createHousehold(formData: FormData) {

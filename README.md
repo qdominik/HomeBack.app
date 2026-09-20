@@ -126,6 +126,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SITE_URL=
 NEXT_PUBLIC_DEV_ORIGIN=
 SUPABASE_SERVICE_ROLE_KEY=
+HOUSEHOLD_INVITATIONS_ENABLED=
+APP_BASE_URL=
+SMTP_HOST=
+SMTP_PORT=
+SMTP_SECURE=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=
+INVITATION_EMAIL_ALLOWLIST=
 ITEM_PHOTO_AI_PROVIDER=
 ITEM_PHOTO_AI_MODEL=
 GROQ_API_KEY=
@@ -140,6 +149,12 @@ separate hosted projects and explicit site URLs. The legacy anon key name is
 accepted only when it exactly matches the publishable key. The current local
 end-to-end suite creates isolated users in the local Supabase stack and does
 not require `E2E_PASSWORD`; hosted Preview smoke tests are not configured yet.
+
+Invitation delivery uses server-only SeoHost SMTP configuration. Preview must
+use an exact `INVITATION_EMAIL_ALLOWLIST`; Production invitations remain disabled
+until a separate rollout decision. `APP_BASE_URL`, never a request host header,
+is used to build invitation and authentication return links. Do not copy SMTP
+credentials from Supabase Auth into source files or documentation.
 
 Validate only the presence and shape of the current process environment with:
 

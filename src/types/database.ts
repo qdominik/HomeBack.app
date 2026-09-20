@@ -118,6 +118,33 @@ export type IssuedInvitationRow = {
   expires_at: string;
 };
 
+export type InvitationInspectionRow = {
+  state:
+    | "invalid"
+    | "used"
+    | "revoked"
+    | "expired"
+    | "login_required"
+    | "registration_required"
+    | "awaiting_verification"
+    | "wrong_email"
+    | "other_household"
+    | "ready"
+    | "already_member";
+  invitation_email: string | null;
+  account_exists: boolean;
+  household_name: string | null;
+  target_role: "dorosły" | "dziecko" | null;
+  suggested_name: string | null;
+  member_role: Database["public"]["Enums"]["profile_role"] | null;
+};
+
+export type InvitationAcceptanceRow = {
+  household_id: string;
+  outcome: "accepted" | "already_member";
+  role: Database["public"]["Enums"]["profile_role"];
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -133,8 +160,18 @@ export type Database = {
           invitation_id: string;
           household_id: string;
           profil_id: string;
-          event: "created" | "accepted" | "revoked";
-          reason: "manual" | "renewed" | "expired_replaced" | "alternative_accepted" | null;
+          event: "created" | "accepted" | "revoked" | "delivery_failed";
+          reason:
+            | "manual"
+            | "renewed"
+            | "expired_replaced"
+            | "alternative_accepted"
+            | "smtp_auth"
+            | "smtp_rate_limit"
+            | "smtp_rejected"
+            | "smtp_timeout"
+            | "smtp_transport"
+            | null;
           timestamp: string;
         };
         Insert: never;
@@ -577,9 +614,17 @@ export type Database = {
         Args: { p_invitation_id: string };
         Returns: undefined;
       };
+      compensate_household_invitation_delivery_failure: {
+        Args: { p_failure_class: string; p_invitation_id: string };
+        Returns: undefined;
+      };
+      inspect_household_invitation: {
+        Args: { p_token: string };
+        Returns: InvitationInspectionRow[];
+      };
       accept_household_invitation: {
         Args: { p_token: string; p_imie: string };
-        Returns: string;
+        Returns: InvitationAcceptanceRow[];
       };
       archive_item: {
         Args: { p_item_id: string };

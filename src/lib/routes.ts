@@ -8,6 +8,7 @@ export const routes = {
   settings: "/settings",
   login: "/login",
   register: "/register",
+  invitationAccept: "/invite/accept",
 } as const;
 
 export type AppRoute = (typeof routes)[keyof typeof routes];

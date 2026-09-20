@@ -1129,6 +1129,48 @@ Realnie pierwsze 6–12 miesięcy to okres testowania, kosztów i niskich przych
 - [ ] Uzupełnienia MVP.
 - [ ] Publikacja v0.2 jako public beta.
 
+### Backlog techniczny
+
+#### Ujednolicić nadawcę wiadomości zakładania konta na noreply@homeback.app
+
+**Stan obecny:** wiadomości związane z zakładaniem konta przez administratora
+używają dotychczasowego adresu `noreplay@homeback.app`.
+
+**Stan docelowy:** podstawowym nadawcą wiadomości związanych z zakładaniem
+konta ma zostać `HomeBack <noreply@homeback.app>`.
+
+**Zakres przyszłego zadania:**
+
+- ustalić, czy wiadomości wysyła Supabase Auth, aplikacja czy oba mechanizmy;
+- zmienić konfigurację nadawcy z `noreplay@homeback.app` na
+  `noreply@homeback.app`;
+- sprawdzić szablony rejestracji i potwierdzania adresu;
+- wykonać test SPF/DKIM/DMARC i dostarczenia;
+- sprawdzić Preview przed zmianą Production;
+- nie usuwać starej skrzynki przed zakończeniem okresu przejściowego.
+
+**Kryterium ukończenia:** wszystkie wiadomości dotyczące zakładania konta są
+wysyłane jako `HomeBack <noreply@homeback.app>`, przechodzą SPF, DKIM i DMARC
+oraz zostały sprawdzone na Preview i Production.
+
+#### Dostosować wiadomości potwierdzające Supabase Auth do marki HomeBack
+
+**Zakres przyszłego zadania:**
+
+- wiadomość jasno informuje, że potwierdzenie dotyczy konta HomeBack;
+- wskazuje, że techniczna obsługa uwierzytelnienia jest realizowana przez Supabase Auth;
+- docelowy nadawca: `HomeBack <noreply@homeback.app>`;
+- polska treść i temat, spójne logo oraz nazwa HomeBack;
+- poprawny callback dla Preview i Production;
+- brak tokenów i danych technicznych w widocznej treści;
+- test SPF, DKIM i DMARC oraz dostarczenia do Gmail, O2, Proton Mail i Outlook;
+- bezpieczne ponowienie wiadomości i aktualizacja informacji o prywatności, jeśli będzie potrzebna.
+
+**Kryterium ukończenia:** użytkownik rozumie, że wiadomość dotyczy utworzenia
+konta HomeBack, wiadomość nie wygląda jak niezwiązany e-mail od Supabase,
+nadawca i branding są spójne z zaproszeniem, link wraca do właściwego
+środowiska, a dostarczenie i uwierzytelnienie domeny zostały sprawdzone.
+
 ### Metryki sukcesu MVP
 
 - aplikacja działa bez crashów,
