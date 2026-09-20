@@ -212,6 +212,23 @@ test("Supabase callback errors take precedence over invitation state", () => {
   assert.equal(getConfirmationError(new URLSearchParams()), null);
 });
 
+test("Auth error recovery keeps the invitation process recoverable and removes terminal state", () => {
+  const confirmRoute = readFileSync("src/app/auth/confirm/route.ts", "utf8");
+  const capture = readFileSync("src/components/people/invitation-token-capture.tsx", "utf8");
+  const acceptPage = readFileSync("src/app/invite/accept/page.tsx", "utf8");
+  const sessionRoute = readFileSync("src/app/invite/session/route.ts", "utf8");
+  const actions = readFileSync("src/app/(auth)/actions.ts", "utf8");
+
+  assert.match(confirmRoute, /getConfirmationError\(request\.nextUrl\.searchParams\)/);
+  assert.doesNotMatch(confirmRoute, /getClaims\(\)/);
+  assert.match(confirmRoute, /routes\.login/);
+  assert.match(capture, /window\.history\.replaceState\(null, "", window\.location\.pathname\)/);
+  assert.match(acceptPage, /InvitationCookieCleanup/);
+  assert.match(sessionRoute, /export async function DELETE/);
+  assert.match(actions, /supabase\.auth\.resend\(/);
+  assert.doesNotMatch(actions, /create_household_invitation.*resend/);
+});
+
 test("invitation login preserves the path-scoped token through a real redirect", () => {
   const loginPage = readFileSync("src/app/(auth)/login/page.tsx", "utf8");
   const invitationLogin = readFileSync("src/app/invite/login/route.ts", "utf8");
