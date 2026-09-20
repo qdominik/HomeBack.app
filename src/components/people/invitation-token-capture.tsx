@@ -2,15 +2,28 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  consumeInvitationTokenFromUrlFragment,
+  discardInvitationTokenUrlFragment,
+} from "@/lib/people/invitation-url-fragment";
+
+export function InvitationUrlFragmentCleanup() {
+  useEffect(() => {
+    discardInvitationTokenUrlFragment(window.location, window.history);
+  }, []);
+
+  return null;
+}
 
 export function InvitationTokenCapture() {
   const router = useRouter();
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.hash.slice(1));
-    const token = params.get("token");
-    window.history.replaceState(null, "", window.location.pathname);
+    const token = consumeInvitationTokenFromUrlFragment(
+      window.location,
+      window.history,
+    );
 
     if (!token) {
       void Promise.resolve().then(() => setFailed(true));

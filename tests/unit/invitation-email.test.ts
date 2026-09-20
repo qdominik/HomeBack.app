@@ -24,6 +24,10 @@ import {
   type EmailTransport,
 } from "../../src/lib/email/transport";
 import { isInvitationToken } from "../../src/lib/people/invitation-session";
+import {
+  consumeInvitationTokenFromUrlFragment,
+  discardInvitationTokenUrlFragment,
+} from "../../src/lib/people/invitation-url-fragment";
 import { getConfirmationError } from "../../src/lib/auth/confirmation-error";
 
 const smtpEnv = {
@@ -222,11 +226,61 @@ test("Auth error recovery keeps the invitation process recoverable and removes t
   assert.match(confirmRoute, /getConfirmationError\(request\.nextUrl\.searchParams\)/);
   assert.doesNotMatch(confirmRoute, /getClaims\(\)/);
   assert.match(confirmRoute, /routes\.login/);
-  assert.match(capture, /window\.history\.replaceState\(null, "", window\.location\.pathname\)/);
+  assert.match(capture, /consumeInvitationTokenFromUrlFragment/);
+  assert.match(capture, /discardInvitationTokenUrlFragment/);
+  assert.match(acceptPage, /InvitationUrlFragmentCleanup/);
   assert.match(acceptPage, /InvitationCookieCleanup/);
   assert.match(sessionRoute, /export async function DELETE/);
   assert.match(actions, /supabase\.auth\.resend\(/);
   assert.doesNotMatch(actions, /create_household_invitation.*resend/);
+});
+
+test("invitation token fragment is removed with replaceState for every acceptance outcome", () => {
+  const token = "d".repeat(64);
+  const outcomes = [
+    "pending",
+    "accepted",
+    "expired",
+    "revoked",
+    "invalid",
+    "capture_error",
+    "disabled",
+    "wrong_account",
+  ];
+
+  for (const outcome of outcomes) {
+    const calls: unknown[][] = [];
+    const location = {
+      hash: `#token=${token}`,
+      pathname: "/invite/accept",
+    };
+    const history = {
+      replaceState(...args: unknown[]) {
+        calls.push(args);
+        location.hash = "";
+      },
+    };
+
+    const captured = outcome === "pending"
+      ? consumeInvitationTokenFromUrlFragment(location, history)
+      : (discardInvitationTokenUrlFragment(location, history), null);
+
+    if (outcome === "pending") assert.equal(captured, token);
+    assert.deepEqual(calls, [[null, "", "/invite/accept"]], outcome);
+    assert.equal(location.hash, "", outcome);
+  }
+});
+
+test("invitation token cleanup does not push history, write storage, log, or move token into query", () => {
+  const source = readFileSync("src/components/people/invitation-token-capture.tsx", "utf8");
+  const helper = readFileSync("src/lib/people/invitation-url-fragment.ts", "utf8");
+  const combined = `${source}\n${helper}`;
+
+  assert.match(combined, /history\.replaceState\(null, "", location\.pathname\)/);
+  assert.doesNotMatch(combined, /pushState/);
+  assert.doesNotMatch(combined, /localStorage|sessionStorage/);
+  assert.doesNotMatch(combined, /console\./);
+  assert.doesNotMatch(combined, /searchParams\.set\("token"|new URLSearchParams\(\{\s*token/);
 });
 
 test("invitation login preserves the path-scoped token through a real redirect", () => {

@@ -10,6 +10,7 @@ test("disabled flag blocks invitation token capture and session creation", async
   await expect(
     page.getByRole("heading", { name: "Zaproszenia są obecnie wyłączone" }),
   ).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
   await expect
     .poll(async () =>
       (await page.context().cookies()).some(

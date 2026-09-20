@@ -51,6 +51,7 @@ test("existing verified account double-clicks and accepts an invitation once", a
 
   await page.goto(invitation.link);
   await expect(page.getByRole("heading", { name: "Wymagane logowanie" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
   await page.getByRole("link", { name: "Zaloguj się" }).click();
   await expect(page.locator('input[name="email"]')).toHaveValue(invitee.email);
   await page.locator('input[name="password"]').fill(invitee.password);
@@ -67,6 +68,7 @@ test("existing verified account double-clicks and accepts an invitation once", a
 
   await page.goto(invitation.link);
   await expect(page.getByRole("heading", { name: "Zaproszenie zostało już użyte" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
 });
 
 test("expired invitation is rejected before account details are shown", async ({ page }) => {
@@ -78,6 +80,7 @@ test("expired invitation is rejected before account details are shown", async ({
 
   await page.goto(invitation.link);
   await expect(page.getByRole("heading", { name: "Zaproszenie wygasło" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
   await expect(page.getByText(administrator.householdName, { exact: false })).toHaveCount(0);
 });
 
@@ -91,6 +94,7 @@ test("new account keeps the invitation through registration and email confirmati
 
   await page.goto(invitation.link);
   await expect(page.getByRole("heading", { name: "Utwórz konto HomeBack" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
   await page.getByRole("link", { name: "Zarejestruj się" }).click();
   await expect(page.locator('input[name="email"]')).toHaveValue(invitee.email);
   await page.locator('input[name="name"]').fill(invitee.name);
@@ -127,6 +131,7 @@ test("a logged-in account with another email cannot inspect household details", 
   await page.getByRole("button", { name: /Zaloguj/ }).click();
 
   await expect(page.getByRole("heading", { name: "Niewłaściwe konto" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
   await expect(page.getByText(administrator.householdName, { exact: false })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Wyloguj się" })).toBeVisible();
 });
@@ -151,6 +156,7 @@ test("renewal rotates the one-time link and revocation uses in-app confirmation"
 
   await page.goto(oldInvitation.link);
   await expect(page.getByRole("heading", { name: "Zaproszenie zostało odwołane" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
 
   await page.goto("/family");
   const pendingInvitation = page
@@ -173,4 +179,5 @@ test("renewal rotates the one-time link and revocation uses in-app confirmation"
 
   await page.goto(renewedInvitation.link);
   await expect(page.getByRole("heading", { name: "Zaproszenie zostało odwołane" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invite\/accept$/);
 });

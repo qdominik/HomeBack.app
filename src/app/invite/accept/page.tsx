@@ -3,7 +3,10 @@ import { cookies } from "next/headers";
 import { AppHeader } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
 import { InvitationAcceptForm } from "@/components/people/invitation-accept-form";
-import { InvitationTokenCapture } from "@/components/people/invitation-token-capture";
+import {
+  InvitationTokenCapture,
+  InvitationUrlFragmentCleanup,
+} from "@/components/people/invitation-token-capture";
 import { InvitationCookieCleanup } from "@/components/people/invitation-cookie-cleanup";
 import { invitationReturnPath } from "@/lib/auth/return-path";
 import {
@@ -47,6 +50,7 @@ export default async function InvitationAcceptPage() {
 
   let content;
   let authenticated = false;
+  let capturesUrlFragment = false;
   if (!areHouseholdInvitationsEnabled()) {
     content = (
       <StateMessage
@@ -55,6 +59,7 @@ export default async function InvitationAcceptPage() {
       />
     );
   } else if (!isInvitationToken(token)) {
+    capturesUrlFragment = true;
     content = <InvitationTokenCapture />;
   } else {
     const supabase = await createClient();
@@ -156,6 +161,7 @@ export default async function InvitationAcceptPage() {
           <div className="mb-4 flex justify-center">
             <BrandLogo className="w-44 sm:w-52" priority variant="vertical" />
           </div>
+          {capturesUrlFragment ? null : <InvitationUrlFragmentCleanup />}
           {content}
         </section>
       </main>
