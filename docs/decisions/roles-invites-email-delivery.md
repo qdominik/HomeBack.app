@@ -100,6 +100,18 @@ przyjęcie wiadomości przez serwer SeoHost. Automatyczna obsługa bounce i
 potwierdzonego delivery nie jest zaimplementowana i pozostaje długiem
 technicznym.
 
+## Runbook: kontrola redirectu zaproszeń (Preview)
+
+Przed każdym testem zaproszenia sprawdź zgodność trzech wartości: `APP_BASE_URL`
+aktywnego deploymentu Vercel, Supabase Auth **Site URL** oraz Supabase Auth
+**Redirect URLs**. Lista musi zawierać dokładny callback
+`<APP_BASE_URL>/auth/confirm`.
+
+Nie używaj starego aliasu deploymentu jako Site URL. Preferuj dokładny callback
+zamiast wildcardu, gdy adres Preview jest znany. Po zmianie odczytaj konfigurację
+ponownie i potwierdź, że `Confirm email` pozostaje włączone. Nie zapisuj w
+raporcie tokenów, kodów, cookies ani sekretów.
+
 ## Referencje
 
 - https://seohost.pl/pomoc/konfiguracja-poczty-program-pocztowy
