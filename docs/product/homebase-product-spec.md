@@ -1153,6 +1153,24 @@ konta ma zostać `HomeBack <noreply@homeback.app>`.
 wysyłane jako `HomeBack <noreply@homeback.app>`, przechodzą SPF, DKIM i DMARC
 oraz zostały sprawdzone na Preview i Production.
 
+#### Dostosować wiadomości potwierdzające Supabase Auth do marki HomeBack
+
+**Zakres przyszłego zadania:**
+
+- wiadomość jasno informuje, że potwierdzenie dotyczy konta HomeBack;
+- wskazuje, że techniczna obsługa uwierzytelnienia jest realizowana przez Supabase Auth;
+- docelowy nadawca: `HomeBack <noreply@homeback.app>`;
+- polska treść i temat, spójne logo oraz nazwa HomeBack;
+- poprawny callback dla Preview i Production;
+- brak tokenów i danych technicznych w widocznej treści;
+- test SPF, DKIM i DMARC oraz dostarczenia do Gmail, O2, Proton Mail i Outlook;
+- bezpieczne ponowienie wiadomości i aktualizacja informacji o prywatności, jeśli będzie potrzebna.
+
+**Kryterium ukończenia:** użytkownik rozumie, że wiadomość dotyczy utworzenia
+konta HomeBack, wiadomość nie wygląda jak niezwiązany e-mail od Supabase,
+nadawca i branding są spójne z zaproszeniem, link wraca do właściwego
+środowiska, a dostarczenie i uwierzytelnienie domeny zostały sprawdzone.
+
 ### Metryki sukcesu MVP
 
 - aplikacja działa bez crashów,

@@ -40,3 +40,16 @@ export async function POST(request: NextRequest) {
   response.headers.set("Cache-Control", "no-store");
   return response;
 }
+
+export async function DELETE() {
+  const response = NextResponse.json({ ok: true });
+  response.cookies.set(invitationCookieName, "", {
+    httpOnly: true,
+    maxAge: 0,
+    path: "/invite",
+    sameSite: "lax",
+    secure: process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production",
+  });
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}

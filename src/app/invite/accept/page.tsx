@@ -4,6 +4,7 @@ import { AppHeader } from "@/components/app-shell";
 import { BrandLogo } from "@/components/brand-logo";
 import { InvitationAcceptForm } from "@/components/people/invitation-accept-form";
 import { InvitationTokenCapture } from "@/components/people/invitation-token-capture";
+import { InvitationCookieCleanup } from "@/components/people/invitation-cookie-cleanup";
 import { invitationReturnPath } from "@/lib/auth/return-path";
 import {
   invitationCookieName,
@@ -130,6 +131,12 @@ export default async function InvitationAcceptPage() {
       const [title, description] = messages[inspection.state] ?? ["Błąd techniczny", "Nie udało się kontynuować przyjmowania zaproszenia."];
       content = (
         <div>
+          {[
+            "expired",
+            "invalid",
+            "revoked",
+            "used",
+          ].includes(inspection.state) ? <InvitationCookieCleanup /> : null}
           <StateMessage description={description} title={title} />
           {authenticated && ["wrong_email", "other_household"].includes(inspection.state) ? (
             <form action="/auth/signout" className="mt-5 text-center" method="post">

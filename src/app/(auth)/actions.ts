@@ -49,6 +49,28 @@ export async function login(formData: FormData) {
   redirect(next ?? routes.dashboard);
 }
 
+export async function resendConfirmation(formData: FormData) {
+  const email = value(formData, "email");
+  const next = safeAuthReturnPath(value(formData, "next"));
+  if (!email) redirectWithError(routes.login, "confirmation_resend_failed", { next });
+
+  let origin: string;
+  try {
+    origin = getAppBaseUrl();
+  } catch {
+    redirectWithError(routes.login, "confirmation_resend_failed", { next });
+  }
+  const confirmationUrl = new URL("/auth/confirm", origin);
+  if (next) confirmationUrl.searchParams.set("next", next);
+  const supabase = await createClient();
+  await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: confirmationUrl.toString() },
+  });
+  redirectWithError(routes.login, "confirmation_resend_sent", { email, next });
+}
+
 export async function register(formData: FormData) {
   const email = value(formData, "email");
   const password = value(formData, "password");

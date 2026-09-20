@@ -24,6 +24,7 @@ import {
   type EmailTransport,
 } from "../../src/lib/email/transport";
 import { isInvitationToken } from "../../src/lib/people/invitation-session";
+import { getConfirmationError } from "../../src/lib/auth/confirmation-error";
 
 const smtpEnv = {
   APP_BASE_URL: "https://preview.homeback.app",
@@ -205,6 +206,12 @@ test("auth return paths and invitation tokens reject open redirects and malforme
   assert.equal(isInvitationToken("c".repeat(63)), false);
 });
 
+test("Supabase callback errors take precedence over invitation state", () => {
+  assert.equal(getConfirmationError(new URLSearchParams("error=access_denied&error_code=otp_expired")), "confirmation_expired");
+  assert.equal(getConfirmationError(new URLSearchParams("error=access_denied")), "confirmation_failed");
+  assert.equal(getConfirmationError(new URLSearchParams()), null);
+});
+
 test("invitation login preserves the path-scoped token through a real redirect", () => {
   const loginPage = readFileSync("src/app/(auth)/login/page.tsx", "utf8");
   const invitationLogin = readFileSync("src/app/invite/login/route.ts", "utf8");
@@ -215,6 +222,8 @@ test("invitation login preserves the path-scoped token through a real redirect",
   assert.match(invitationLogin, /if \(!areHouseholdInvitationsEnabled\(\)\)/);
   assert.match(invitationLogin, /NextResponse\.redirect\(new URL\(invitationReturnPath, baseUrl\), 303\)/);
   assert.doesNotMatch(invitationLogin, /console\./);
+  assert.match(loginPage, /claimsData\?\.claims\?\.sub && !params\.error/);
+  assert.match(loginPage, /resendConfirmation/);
 });
 
 test("critical diagnostic logs contain identifiers and classifications only", () => {

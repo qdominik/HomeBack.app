@@ -26,6 +26,17 @@ test("member loading remains independent from invitation availability", () => {
   assert.equal(page.indexOf('supabase.rpc("get_household_members")') < page.indexOf("if (isAdministrator && invitationsEnabled)"), true);
 });
 
+test("terminal invitation states clear the browser cookie without exposing the token", () => {
+  const page = readFileSync("src/app/invite/accept/page.tsx", "utf8");
+  const route = readFileSync("src/app/invite/session/route.ts", "utf8");
+  assert.match(page, /InvitationCookieCleanup/);
+  assert.match(page, /expired/);
+  assert.match(page, /revoked/);
+  assert.match(page, /used/);
+  assert.match(route, /export async function DELETE/);
+  assert.doesNotMatch(route, /console\./);
+});
+
 test("the kill switch also blocks token capture, inspection and acceptance", () => {
   const sessionRoute = readFileSync("src/app/invite/session/route.ts", "utf8");
   const acceptPage = readFileSync("src/app/invite/accept/page.tsx", "utf8");
