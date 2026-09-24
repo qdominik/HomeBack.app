@@ -27,6 +27,8 @@ import {
 } from "@/lib/items/item-photo-storage";
 import {
   analyzeItemPhoto,
+  createItemPhotoAnalysisRequestId,
+  logItemPhotoAnalysisDiagnostic,
   type ItemPhotoAiErrorCode,
   type ItemPhotoAnalysisSuggestion,
 } from "@/lib/items/item-photo-ai";
@@ -557,10 +559,22 @@ async function createItemPhotoAnalysisImageUrl(
   supabase: SupabaseClient,
   storagePath: string,
   mimeType: ItemPhotoAllowedMimeType,
+  diagnostics: { requestId: string; sizeBytes: number },
 ) {
+  const startedAt = Date.now();
   const { data, error } = await createItemPhotoPreviewUrl(supabase, storagePath);
 
   if (error || !data?.signedUrl) {
+    logItemPhotoAnalysisDiagnostic({
+      requestId: diagnostics.requestId,
+      stage: "signed_url_fetch",
+      provider: "groq",
+      mimeType,
+      sizeBytes: diagnostics.sizeBytes,
+      durationMs: Date.now() - startedAt,
+      classification: "storage_fetch_failed",
+      retry: false,
+    });
     return { ok: false as const, code: "preview_url_failed" as const };
   }
 
@@ -568,16 +582,48 @@ async function createItemPhotoAnalysisImageUrl(
     const response = await fetch(data.signedUrl, { cache: "no-store" });
 
     if (!response.ok) {
+      logItemPhotoAnalysisDiagnostic({
+        requestId: diagnostics.requestId,
+        stage: "image_validation",
+        provider: "groq",
+        mimeType,
+        sizeBytes: diagnostics.sizeBytes,
+        durationMs: Date.now() - startedAt,
+        httpStatus: response.status,
+        classification: "storage_fetch_failed",
+        retry: false,
+      });
       return { ok: false as const, code: "preview_url_failed" as const };
     }
 
     const bytes = Buffer.from(await response.arrayBuffer());
 
-    return {
+    const result = {
       ok: true as const,
       imageUrl: `data:${mimeType};base64,${bytes.toString("base64")}`,
     };
+    logItemPhotoAnalysisDiagnostic({
+      requestId: diagnostics.requestId,
+      stage: "image_encoding",
+      provider: "groq",
+      mimeType,
+      sizeBytes: diagnostics.sizeBytes,
+      durationMs: Date.now() - startedAt,
+      retry: false,
+    });
+    return result;
   } catch {
+    logItemPhotoAnalysisDiagnostic({
+      requestId: diagnostics.requestId,
+      stage: "signed_url_fetch",
+      provider: "groq",
+      mimeType,
+      sizeBytes: diagnostics.sizeBytes,
+      durationMs: Date.now() - startedAt,
+      classification: "storage_fetch_failed",
+      exceptionName: "FetchError",
+      retry: false,
+    });
     return { ok: false as const, code: "preview_url_failed" as const };
   }
 }
@@ -690,6 +736,8 @@ export async function analyzeItemPhotoDraft(
     return { ok: false, code: "invalid_photo_input" };
   }
 
+  const requestId = createItemPhotoAnalysisRequestId();
+
   const supabase = await createClient();
   const context = await getActiveAdminContext(supabase);
 
@@ -705,6 +753,7 @@ export async function analyzeItemPhotoDraft(
     supabase,
     input.storagePath,
     input.mimeType,
+    { requestId, sizeBytes: input.sizeBytes },
   );
 
   if (!imageUrl.ok) {
@@ -722,6 +771,7 @@ export async function analyzeItemPhotoDraft(
 
   const result = await analyzeItemPhoto({
     ...input,
+    requestId,
     imageUrl: imageUrl.imageUrl,
     categories: categories.map((category) => ({
       id: category.id,

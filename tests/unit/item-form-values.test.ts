@@ -652,11 +652,11 @@ test("Groq item photo provider rejects invalid JSON with a controlled error", as
 
   assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
     ok: false,
-    code: "invalid_model_response",
+    code: "response_not_json",
   });
 });
 
-test("Groq item photo provider falls back when JSON response format is unavailable", async () => {
+test("Groq item photo provider does not retry permanent provider errors", async () => {
   const requestBodies: string[] = [];
   const provider = createGroqItemPhotoAiProvider(
     {
@@ -667,23 +667,122 @@ test("Groq item photo provider falls back when JSON response format is unavailab
     async (_url, init) => {
       requestBodies.push(String(init?.body));
 
-      return requestBodies.length === 1
-        ? new Response(null, { status: 400 })
-        : new Response(
-            JSON.stringify({
-              choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS_SUGGESTION) } }],
-            }),
-            { status: 200 },
-          );
+      return new Response(null, { status: 400 });
     },
   );
 
   assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
-    ok: true,
-    data: VALID_ANALYSIS_SUGGESTION,
+    ok: false,
+    code: "provider_invalid_request",
   });
   assert.match(requestBodies[0] ?? "", /response_format/);
-  assert.doesNotMatch(requestBodies[1] ?? "", /response_format/);
+  assert.equal(requestBodies.length, 1);
+});
+
+test("Groq item photo provider classifies permanent HTTP errors without retry", async () => {
+  const cases = [
+    [401, "provider_unauthorized"],
+    [403, "provider_forbidden"],
+    [404, "provider_model_not_found"],
+    [413, "image_too_large"],
+    [422, "provider_invalid_request"],
+  ] as const;
+
+  for (const [status, code] of cases) {
+    let calls = 0;
+    const provider = createGroqItemPhotoAiProvider(
+      { provider: "groq", groqApiKey: "secret", model: "owner-selected-vision-model" },
+      async () => {
+        calls += 1;
+        return new Response(null, { status });
+      },
+    );
+
+    assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), { ok: false, code });
+    assert.equal(calls, 1);
+  }
+});
+
+test("Groq item photo provider retries rate limits, server failures, and network errors once", async () => {
+  for (const firstResponse of [429, 500] as const) {
+    let calls = 0;
+    const provider = createGroqItemPhotoAiProvider(
+      { provider: "groq", groqApiKey: "secret", model: "owner-selected-vision-model" },
+      async () => {
+        calls += 1;
+        return calls === 1
+          ? new Response(null, { status: firstResponse })
+          : new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS_SUGGESTION) } }] }));
+      },
+      { sleep: async () => {} },
+    );
+
+    assert.equal((await provider.analyze(VALID_ANALYSIS_INPUT)).ok, true);
+    assert.equal(calls, 2);
+  }
+
+  let calls = 0;
+  const networkProvider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "secret", model: "owner-selected-vision-model" },
+    async () => {
+      calls += 1;
+      if (calls === 1) throw new Error("network unavailable");
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS_SUGGESTION) } }] }));
+    },
+    { sleep: async () => {} },
+  );
+
+  assert.equal((await networkProvider.analyze(VALID_ANALYSIS_INPUT)).ok, true);
+  assert.equal(calls, 2);
+});
+
+test("Groq item photo provider records safe diagnostics and preserves the request id", async () => {
+  const events: Array<Record<string, unknown>> = [];
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "secret-do-not-log", model: "owner-selected-vision-model" },
+    async () => new Response(JSON.stringify({ choices: [{ message: { content: "not-json" } }] })),
+    { logDiagnostic: (event) => events.push(event) },
+  );
+
+  const result = await provider.analyze({ ...VALID_ANALYSIS_INPUT, requestId: "diagnostic-request-id" });
+  assert.deepEqual(result, { ok: false, code: "response_not_json" });
+  assert.equal(events.every((event) => event.requestId === "diagnostic-request-id"), true);
+  assert.equal(events.some((event) => event.stage === "provider_response" && event.httpStatus === 200), true);
+  assert.equal(JSON.stringify(events).includes("secret-do-not-log"), false);
+  assert.equal(JSON.stringify(events).includes("storage.example.test"), false);
+  assert.equal(JSON.stringify(events).includes("not-json"), false);
+});
+
+test("Groq item photo provider classifies timeouts and retries once", async () => {
+  let calls = 0;
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "secret", model: "owner-selected-vision-model" },
+    async () => {
+      calls += 1;
+      const error = new Error("request timed out");
+      error.name = "TimeoutError";
+      throw error;
+    },
+    { sleep: async () => {} },
+  );
+
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: false,
+    code: "provider_timeout",
+  });
+  assert.equal(calls, 2);
+});
+
+test("Groq item photo provider distinguishes schema validation from JSON parsing", async () => {
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "secret", model: "owner-selected-vision-model" },
+    async () => new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({}) } }] })),
+  );
+
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), {
+    ok: false,
+    code: "response_schema_invalid",
+  });
 });
 
 test("item photo AI analysis helper returns configuration errors without calling Groq", async () => {

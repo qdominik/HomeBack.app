@@ -16,6 +16,16 @@ export type {
 export { parseItemPhotoAiConfig, requireGroqAnalysisConfig } from "./config";
 export type { ItemPhotoAiConfig } from "./config";
 export { buildItemPhotoAnalysisPrompt } from "./prompt";
+export {
+  createItemPhotoAnalysisRequestId,
+  logItemPhotoAnalysisDiagnostic,
+} from "./diagnostics";
+export type {
+  ItemPhotoAnalysisDiagnosticEvent,
+  ItemPhotoAnalysisDiagnosticLogger,
+  ItemPhotoAnalysisDiagnosticStage,
+  ItemPhotoAnalysisErrorClassification,
+} from "./diagnostics";
 export { getItemPhotoAiProvider };
 export type { ItemPhotoAiProvider } from "./provider";
 export { createGroqItemPhotoAiProvider } from "./providers/groq";
