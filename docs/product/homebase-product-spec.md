@@ -1,10 +1,10 @@
 # HomeBack.app — dokument koncepcji produktu dla vibecodingu
 
-**Wersja:** v0.2  
+**Wersja:** v0.3
 **Status:** dokument roboczy do implementacji MVP + zasady pracy AI  
 **Typ produktu:** responsywna aplikacja webowa; PWA/offline pozostaje celem osobnej decyzji implementacyjnej
 **Backend:** Supabase + PostgreSQL  
-**Data opracowania:** 2026-07-08  
+**Data opracowania:** 2026-09-14
 
 ---
 
@@ -19,6 +19,7 @@
 7. [Funkcjonalność MVP v0.1](#7-funkcjonalność-mvp-v01)
 8. [Moduł Sejf — przyszłość](#8-moduł-sejf--przyszłość)
 9. [Roadmap i fazy rozwoju](#9-roadmap-i-fazy-rozwoju)
+   - [Następny etap produktowy: Roles & Invites](#następny-etap-produktowy-roles--invites)
 10. [Integracje](#10-integracje)
 11. [Bezpieczeństwo i prywatność](#11-bezpieczeństwo-i-prywatność)
 12. [Plan biznesowy](#12-plan-biznesowy)
@@ -948,6 +949,118 @@ Timeline:
 - 2FA/SSO,
 - marketplace szablonów.
 
+### Następny etap produktowy: Roles & Invites
+
+#### Zakres etapu
+
+Kolejny etap produktowy obejmuje:
+
+- listę członków gospodarstwa,
+- zaproszenie przez e-mail,
+- role: administrator, domownik i dziecko,
+- zmianę roli i usunięcie członka,
+- ochronę przed usunięciem lub degradacją ostatniego administratora,
+- podstawowe RLS dla tych ról.
+
+Rola gościa pozostaje w ogólnej specyfikacji jako funkcja późniejsza i nie
+należy do zakresu tego etapu.
+
+#### Werdykt z audytu zewnętrznego
+
+Pełny pakiet P0 z zewnętrznego audytu nie jest bramką przed etapem
+„Roles & Invites”. Paginacja rzeczy, FTS, serwerowe filtry, agregacje
+Dashboardu, pipeline miniatur i pełne Realtime pozostają istotnymi zadaniami,
+ale nie powinny opóźniać etapu wieloużytkownikowości.
+
+Przed rozpoczęciem interfejsu „Roles & Invites” trzeba natomiast ustalić i
+wdrożyć fundament członkostwa, zaproszeń, atomowych operacji administracyjnych
+oraz RLS.
+
+Audyt jest snapshotem stanu z 2026-09-13 i nie może być traktowany jako
+aktualny backlog 1:1. Moduły `recent-items`, `category-count` i `rooms` są już
+dostępne, dlatego stwierdzenie audytu, że wszystkie moduły Dashboardu mają
+status `soon`, jest nieaktualne.
+
+#### Zatwierdzona kolejność działań
+
+1. Decision record: model członkostwa i zaproszeń, ograniczenie do jednego
+   gospodarstwa oraz macierz ról.
+2. Migracja modelu zaproszeń i atomowe RPC zarządzające członkostwem.
+3. Uszczelnienie dostępu do tabeli `profile` oraz współbieżnej ochrony
+   ostatniego administratora.
+4. Aktualizacja RLS dla ról `admin`, `domownik` i `dziecko`.
+5. Testy pgTAP oraz pełna regresja istniejącego pakietu testów.
+6. Konfiguracja i test przepływu e-mail na Preview: SMTP, Site URL, redirect,
+   wygaśnięcie i jednorazowość zaproszenia.
+7. Implementacja UI: aktywni członkowie, oczekujące zaproszenia,
+   zapraszanie, ponowienie/cofnięcie zaproszenia, zmiana roli i usunięcie
+   członka.
+8. Po odbiorze Roles & Invites: Realtime, avatary i historia aktywności.
+
+#### Bramka przed implementacją
+
+**[WYMAGA DECYZJI]** Przed rozpoczęciem punktu 1 nie przesądza się:
+
+- czy `profile` pozostaje jednocześnie profilem i członkostwem,
+- czy powstaje osobna tabela `household_member`,
+- dokładnego schematu tabeli zaproszeń,
+- mechanizmu wysyłania wiadomości,
+- ostatecznych uprawnień domownika,
+- sposobu blokowania współbieżnych operacji na administratorach.
+
+Obowiązujące ograniczenie MVP: `multi-household` pozostaje poza zakresem.
+
+#### Minimalne wymagania bezpieczeństwa
+
+Poniższe wymagania należy uwzględnić w późniejszej decyzji i implementacji;
+nie stanowią jeszcze finalnego projektu rozwiązania:
+
+- token zaproszenia nie może być przechowywany w bazie jako jawna wartość,
+- zaproszenie musi mieć termin ważności i być jednorazowe,
+- adres e-mail musi być normalizowany,
+- akceptujący użytkownik musi mieć zweryfikowany adres zgodny z zaproszeniem,
+- operacje zmiany roli i usuwania członka mają działać przez kontrolowane,
+  atomowe RPC,
+- klient nie może sam deklarować swojej roli,
+- operacje muszą respektować `household_id`,
+- bezpośredni `UPDATE/DELETE profile` nie może umożliwiać obejścia reguł RPC,
+- ochrona ostatniego administratora musi być odporna na dwie równoległe
+  operacje,
+- service-role key nie może trafić do klienta,
+- należy przewidzieć limit zaproszeń i ponowień,
+- kody błędów powinny być stabilne i mapowane na komunikaty UI,
+- akceptacja zaproszenia powinna być idempotentna.
+
+#### Macierz ról — status roboczy
+
+Poniższa macierz jest punktem wyjścia do analizy, a nie finalną decyzją:
+
+| Rola | Roboczy zakres |
+|---|---|
+| administrator | pełne zarządzanie gospodarstwem, strukturą, rzeczami, członkami i rolami |
+| domownik | odczyt gospodarstwa oraz dodawanie, edycja i przenoszenie rzeczy; bez zarządzania rolami i trwałego usuwania struktury |
+| dziecko | odczyt rzeczy z kategorii oznaczonych jako dostępne dla dzieci; bez dostępu do plików i bez operacji administracyjnych |
+
+**[WYMAGA DECYZJI]** Pozostają: archiwizowanie i usuwanie rzeczy przez
+domownika, edycja struktury domu przez domownika, zakres danych profilu
+widocznych dla dziecka oraz przyszłe operacje zapisu wykonywane przez dziecko.
+
+#### Klasyfikacja pozostałych zaleceń audytu
+
+| Zalecenie | Kolejność |
+|---|---|
+| paginacja rzeczy | po Roles & Invites |
+| FTS i wyszukiwanie serwerowe | po etapie lub równolegle, nie jako bramka |
+| filtry i sortowanie server-side | po etapie |
+| agregacje Dashboardu | po etapie |
+| miniatury i batch signed URLs | po etapie |
+| Realtime | bezpośrednio po Roles & Invites |
+| avatary | po podstawowym etapie, chyba że właściciel rozszerzy jego zakres |
+| optimistic UI i ogólne wersjonowanie | później; idempotency zaproszeń obowiązuje teraz |
+| Zod | można zastosować lokalnie w nowym module, bez przebudowy całej aplikacji |
+| feed aktywności | UI później; zdarzenia bezpieczeństwa związane z członkostwem warto rejestrować od początku |
+| PWA/offline, dark mode i motion | bez związku z bramką Roles & Invites |
+
 ---
 
 ## 10. Integracje
@@ -1568,5 +1681,6 @@ HomeBack to aplikacja, która:
 
 | Wersja | Data | Zmiany |
 |---|---|---|
+| 0.3 | 2026-09-14 | Dodano wnioski z audytu oraz kolejność przygotowania i realizacji etapu Roles & Invites |
 | 0.2 | 2026-07-08 | Dodano guardrails dla AI, krótki prompt vibecodingowy i rekomendowaną strukturę plików |
 | 0.1 | 2026-07-08 | Dokument koncepcji produktu przygotowany do vibecodingu |
