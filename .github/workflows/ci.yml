@@ -112,6 +112,7 @@ jobs:
         run: |
           api_url=""
           public_key=""
+          service_role_key=""
           while IFS='=' read -r key value; do
             value="${value%\"}"
             value="${value#\"}"
@@ -119,21 +120,36 @@ jobs:
               API_URL) api_url="$value" ;;
               PUBLISHABLE_KEY) public_key="$value" ;;
               ANON_KEY) if [ -z "$public_key" ]; then public_key="$value"; fi ;;
+              SERVICE_ROLE_KEY) service_role_key="$value" ;;
+              SECRET_KEY) if [ -z "$service_role_key" ]; then service_role_key="$value"; fi ;;
             esac
           done < <(npx supabase status -o env)
 
           test -n "$api_url"
           test -n "$public_key"
+          test -n "$service_role_key"
           echo "NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3001" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_DEV_ORIGIN=http://127.0.0.1:3001" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_SUPABASE_URL=$api_url" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$public_key" >> "$GITHUB_ENV"
+          echo "E2E_LOCAL_SUPABASE_SERVICE_ROLE_KEY=$service_role_key" >> "$GITHUB_ENV"
+
+      - name: Grant expiration setup access in ephemeral E2E database
+        run: >-
+          npx supabase db query --local
+          "grant select, update on public.household_invitation to service_role;"
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E
         run: npm run test:e2e
+
+      - name: Verify invitations kill switch in browser
+        env:
+          E2E_PORT: "3002"
+          HOUSEHOLD_INVITATIONS_ENABLED: "false"
+        run: npm run test:e2e -- tests/e2e/roles-invites-disabled.spec.ts
 
       - name: Capture Supabase status on failure
         if: failure()
