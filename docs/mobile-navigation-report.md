@@ -36,13 +36,15 @@ Lupa otwiera istniejący dialog `GlobalSearch`. Otwarcie ustawia fokus w polu wy
 - `npm run check:env -- --example`: PASS.
 - `npm audit`: 0 podatności.
 - `git diff --check`: PASS.
-- `npm run test:e2e`: nie uruchomiono lokalnie, ponieważ lokalny Supabase nie był dostępny. Zgodnie z `AGENTS.md` nie uruchamiano ani nie resetowano usług. Świeży wynik E2E ma zostać potwierdzony przez CI po pushu, gdzie workflow uruchamia efemeryczny Supabase.
+- `npm run test:e2e`: lokalnie nie uruchomiono, ponieważ lokalny Supabase nie był dostępny. Zgodnie z `AGENTS.md` nie uruchamiano ani nie resetowano usług.
+- CI `36333874723`, `E2E (local)`: 39 PASS / 3 SKIP / 0 FLAKY / 0 FAIL dla 42 scenariuszy; osobny scenariusz kill-switch: 1 PASS.
+- CI `36333874723`, `App` i `Database (pgTAP)`: PASS.
 
 Historyczny wynik 24 PASS / 2 SKIP z 2026-09-07 nie jest przedstawiany jako aktualny wynik.
 
 ## Preview
 
-Przed pushem aktualizacji alias PR `https://homeback-app-git-ui-mobile-navigation-menu-qdominiks-projects.vercel.app` wskazywał stary deployment SHA `75df2a5` z 2026-09-07. Vercel raportował `Ready`, a `/login` odpowiadał HTTP 200. Nowy Preview wymaga pushu merge commita i ponownej weryfikacji statusu.
+Po pushu commita `c36bb5a` Vercel raportuje `Ready` dla aliasu PR `https://homeback-app-git-ui-mobile-navigation-menu-qdominiks-projects.vercel.app`, a `/login` odpowiada HTTP 200. Preview należy jeszcze sprawdzić ręcznie na fizycznym telefonie i desktopie według poniższej listy.
 
 ## Ręczna lista kontrolna
 
