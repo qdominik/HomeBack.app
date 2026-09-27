@@ -16,6 +16,8 @@ Przed aktualizacją GitHub raportował `mergeable: CONFLICTING` i `mergeStateSta
 
 Do brancha scalono aktualny `main`. We wszystkich pięciu konfliktach zachowano wersje z `main`, ponieważ są one bezpośrednimi nadzbiorami funkcji z PR #60: zawierają tę samą nawigację oraz późniejsze zmiany dotyczące szybkiego dodawania Rzeczy, modułu Osoby, zamykania wyszukiwarki przez tło, ról i rozszerzonych testów. Po rozwiązaniu konfliktów wynik kodu aplikacji jest identyczny z `main`; różnicą pozostaje ten raport. Nie zmieniono logiki wyszukiwarki, schematu bazy, RLS ani akcji serwerowych.
 
+Pierwszy przebieg CI po scaleniu wykrył jeden flaky retry w teście desktopowym nawigacji: po zmianie URL na `/login` test mógł jeszcze kliknąć hamburger poprzedniego, zalogowanego nagłówka. Test czeka teraz na widoczny nagłówek `Logowanie` przed sprawdzeniem menu gościa. Jest to wyłącznie synchronizacja testu; zachowanie aplikacji nie zostało zmienione.
+
 GitHub raportował również `REVIEW_REQUIRED`. Jest to osobny warunek ochrony brancha i nie był przyczyną konfliktowego stanu merge.
 
 ## Aktualne zachowanie nawigacji
