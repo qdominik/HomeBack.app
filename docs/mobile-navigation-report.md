@@ -1,56 +1,61 @@
-# Raport zespołu A — uproszczenie nawigacji
+# Raport zespołu A — nawigacja mobilna (PR #60)
 
 Branch: `ui/mobile-navigation-menu`.
-Baza: aktualny `origin/main`, `b140967` (sprawdzony przez `git fetch origin main`).
-Worktree: `C:/Users/qdomi/AppData/Local/Temp/homeback-mobile-navigation`.
+PR: <https://github.com/qdominik/HomeBack.app/pull/60>.
+Baza po aktualizacji: `origin/main` (`fe8dfc2`, sprawdzony 2026-09-27 przez `git fetch` i `git ls-remote`).
 
-## Zmiana
+## Stan aktualizacji
 
-Wspólny nagłówek ma klikalne logo prowadzące bezpośrednio do `/dashboard`, lupę oraz hamburger na mobile i desktopie. Menu rozwija się pod nagłówkiem po prawej stronie. Zamyka je ponowne kliknięcie, kliknięcie poza menu, Escape, przejście fokusu poza menu i wybór aktywnego linku. Escape przywraca fokus na hamburger. Przycisk ma etykietę PL/EN, `aria-expanded` i `aria-controls`; aktywna trasa otrzymuje `aria-current="page"` i wyróżnienie kolorem.
+Przed aktualizacją GitHub raportował `mergeable: CONFLICTING` i `mergeStateStatus: DIRTY`. Branch był 55 commitów za `main` i 1 commit przed nim. Rzeczywiste konflikty występowały w:
 
-Kolejność: Dashboard, Rzeczy, Pomieszczenia, Osoby, Dokumenty, Kategorie, Ustawienia, a na końcu Wyloguj lub Zaloguj odpowiednio do sesji. Osoby i Dokumenty pozostają nieaktywnymi przyciskami z oznaczeniem Wkrótce. Nie powstały nowe trasy.
+- `src/components/app-shell.tsx`,
+- `src/lib/i18n/locales/en.ts`,
+- `src/lib/i18n/locales/pl.ts`,
+- `src/lib/i18n/types.ts`,
+- `tests/e2e/mobile-navigation.spec.ts` (konflikt add/add).
 
-Dane konta przeniesiono do panelu menu. Ten sam nagłówek dodano do istniejących ekranów logowania i rejestracji, aby obsłużyć pozycję Zaloguj dla gościa. Formularze autoryzacji zachowują obecną logikę.
+Do brancha scalono aktualny `main`. We wszystkich pięciu konfliktach zachowano wersje z `main`, ponieważ są one bezpośrednimi nadzbiorami funkcji z PR #60: zawierają tę samą nawigację oraz późniejsze zmiany dotyczące szybkiego dodawania Rzeczy, modułu Osoby, zamykania wyszukiwarki przez tło, ról i rozszerzonych testów. Po rozwiązaniu konfliktów wynik kodu aplikacji jest identyczny z `main`; różnicą pozostaje ten raport. Nie zmieniono logiki wyszukiwarki, schematu bazy, RLS ani akcji serwerowych.
 
-## Wyszukiwanie
+GitHub raportował również `REVIEW_REQUIRED`. Jest to osobny warunek ochrony brancha i nie był przyczyną konfliktowego stanu merge.
 
-Lupa otwiera istniejący natywny dialog z tym samym komponentem `GlobalSearch` z `src/components/dashboard/item-search.tsx`. Nie zmieniono jego implementacji, akcji serwerowych, rankingu, normalizacji, filtrów, miniatur, breadcrumbów ani linków wyników. Otwarcie ustawia fokus w polu; zamknięcie przyciskiem tekstowym, ikoną X lub Escape przywraca fokus na lupę. Wybranie wyniku zamyka dialog. Panel zachowuje dotychczasowy układ i style; dodano ikonę zamknięcia i powiązanie ARIA.
+## Aktualne zachowanie nawigacji
 
-## Pliki
+Wspólny nagłówek ma logo prowadzące do `/dashboard`, lupę, przycisk szybkiego dodawania Rzeczy dla zalogowanej osoby oraz hamburger na telefonie i desktopie. Menu pokazuje aktywną trasę przez `aria-current="page"`, zamyka się po ponownym użyciu przycisku, kliknięciu poza panelem, naciśnięciu Escape, opuszczeniu fokusem lub wyborze aktywnego linku. Escape przywraca fokus na hamburger.
 
-- `src/components/app-shell.tsx` — wspólny nagłówek, menu i integracja dialogu.
-- `src/lib/modules/navigation.ts` — kolejność menu i rozpoznawanie aktywnej trasy.
-- `src/lib/i18n/types.ts` — kontrakt etykiet menu.
-- `src/lib/i18n/locales/pl.ts` — etykiety polskie.
-- `src/lib/i18n/locales/en.ts` — etykiety angielskie.
-- `src/app/(auth)/login/page.tsx` — wspólny nagłówek.
-- `src/app/(auth)/register/page.tsx` — wspólny nagłówek.
-- `tests/unit/dashboard-module-registry.test.ts` — kolejność, granice dopasowania tras, etykiety.
-- `tests/e2e/mobile-navigation.spec.ts` — nowe scenariusze menu i dialogu dla sesji i gościa.
-- `tests/e2e/auth-regression.spec.ts` — otwarcie menu przed sprawdzaniem danych konta i wylogowaniem.
-- `tests/e2e/dashboard-item-search.spec.ts` — selektor lupy w nagłówku.
-- `tests/e2e/m4d8-location-lifecycle.spec.ts` — otwarcie menu przed wylogowaniem.
-- `playwright.config.ts` — dołączenie nowych scenariuszy.
-- `docs/mobile-navigation-report.md` — niniejszy raport.
+Kolejność menu pozostaje zgodna z rejestrem modułów. `Osoby` są obecnie działającym linkiem do `/family`; `Dokumenty` pozostają nieaktywną pozycją z oznaczeniem `Wkrótce`. Dla sesji dostępne jest `Wyloguj`, a dla gościa `Zaloguj`.
 
-## Walidacja
+Lupa otwiera istniejący dialog `GlobalSearch`. Otwarcie ustawia fokus w polu wyszukiwania; zamknięcie przyciskiem tekstowym, ikoną, Escape lub kliknięciem tła przywraca fokus na lupę. Nie zmieniono rankingu, normalizacji, filtrów, miniatur, breadcrumbów ani linków wyników.
 
-- `npm run test:logic`: 307/307 poprawnych.
-- `npm run lint`: poprawnie.
-- `npm run build`: poprawnie, wraz ze sprawdzeniem TypeScript.
-- `npm run test:e2e`: 24 zaliczone, 2 pominięte, 0 błędów (26 scenariuszy, 1,8 min).
-- `git diff --check`: poprawnie.
+## Świeża walidacja lokalna po aktualizacji
 
-E2E uruchomiono z `NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3001`, zgodnie z portem serwera Playwright. Istniejący lokalny Supabase i Mailpit były dostępne; nie uruchamiano ani nie resetowano usług.
+- `npm run test:logic`: 359/359 PASS.
+- `npm run lint`: PASS (kod wyjścia 0); pozostaje 1 istniejące ostrzeżenie `no-unused-vars` w `src/lib/items/item-photo-ai/providers/groq.ts`, poza zakresem nawigacji.
+- `npm run build`: PASS, wraz z TypeScript i generowaniem 20 stron.
+- `npm run check:env -- --example`: PASS.
+- `npm audit`: 0 podatności.
+- `git diff --check`: PASS.
+- `npm run test:e2e`: nie uruchomiono lokalnie, ponieważ lokalny Supabase nie był dostępny. Zgodnie z `AGENTS.md` nie uruchamiano ani nie resetowano usług. Świeży wynik E2E ma zostać potwierdzony przez CI po pushu, gdzie workflow uruchamia efemeryczny Supabase.
 
-Interfejs sprawdzono automatycznie przy 390×844, 768×844 i 1280×844. Testy mierzą szerokość panelu i nagłówka, brak poziomego scrolla, rozdzielenie logo i ikon, przejścia między sekcjami, oznaczenia Wkrótce, obsługę Escape, kliknięcia poza menu, fokus wyszukiwarki i wszystkie sposoby jej zamknięcia. Przejrzano również zrzuty menu dla wszystkich trzech szerokości. Zrzuty są zapisywane w ignorowanym `test-results/`.
+Historyczny wynik 24 PASS / 2 SKIP z 2026-09-07 nie jest przedstawiany jako aktualny wynik.
 
-## Zgodność i ograniczenia
+## Preview
 
-Zmiana mieści się w MVP. Brak zmian zależności, schematu, danych produkcyjnych, RLS, akcji serwerowych i routingu. Istniejące testy izolacji gospodarstw oraz wyszukiwania czterech typów zachowano.
+Przed pushem aktualizacji alias PR `https://homeback-app-git-ui-mobile-navigation-menu-qdominiks-projects.vercel.app` wskazywał stary deployment SHA `75df2a5` z 2026-09-07. Vercel raportował `Ready`, a `/login` odpowiadał HTTP 200. Nowy Preview wymaga pushu merge commita i ponownej weryfikacji statusu.
 
-Dwa istniejące scenariusze uprawnień domownika i dziecka są pomijane przez testy, ponieważ projekt nie ma zatwierdzonych fixture tych ról. Nie zmieniano ich statusu.
+## Ręczna lista kontrolna
 
-Początkowy build wymagał zastąpienia dowiązania `node_modules` lokalną kopią istniejących zależności, ponieważ Turbopack nie obsługuje dowiązania poza root projektu. Test runner wymagał uruchomienia poza sandboxem z powodu blokady tworzenia procesów (`EPERM`). Pierwsze przebiegi wykryły dwa stare sprawdzenia widoczności nazwy gospodarstwa przed otwarciem menu; testy zostały dostosowane. W logach dev sporadycznie pojawia się `The destination stream closed early` przy nawigacji, bez niepowodzenia scenariuszy menu.
+Telefon (zalecane 390×844):
 
-Właściciel zaakceptował funkcjonalność i zlecił przygotowanie commita oraz PR do main. Przed commitem ponownie zaliczono testy logiki (307/307), lint, build i git diff --check. Wynik E2E powyżej pochodzi z pełnego przebiegu implementacyjnego; dwa pominięcia dotyczą istniejącego braku fixture ról. Oryginalny katalog roboczy i zastane w nim zmiany pozostawiono bez zmian. Merge i tag nie są częścią tej operacji.
+1. Na `/login` sprawdzić, że logo prowadzi do `/dashboard`, a menu zawiera `Zaloguj`.
+2. Po zalogowaniu otworzyć hamburger, przejść kolejno do Dashboardu, Rzeczy, Pomieszczeń, Osób, Kategorii i Ustawień; sprawdzić aktywną sekcję oraz brak poziomego przewijania.
+3. Potwierdzić, że `Dokumenty — Wkrótce` nie nawigują i nie zamykają menu.
+4. Zamknąć menu ponownym kliknięciem hamburgera, kliknięciem poza panelem, Escape i przejściem fokusu poza menu; po Escape fokus ma wrócić na hamburger.
+5. Otworzyć lupę, potwierdzić fokus w polu, wykonać wyszukiwanie i otworzyć wynik; zamknąć dialog tekstowym przyciskiem, ikoną X, Escape i kliknięciem tła, każdorazowo sprawdzając powrót fokusu na lupę.
+6. Wylogować się z menu i potwierdzić powrót do ekranu logowania.
+
+Desktop (zalecane 1280×844):
+
+1. Powtórzyć nawigację logo → `/dashboard`, aktywną sekcję, `Dokumenty — Wkrótce` oraz `Zaloguj`/`Wyloguj`.
+2. Sprawdzić położenie panelu względem prawej strony nagłówka, kolejność elementów i brak kolizji logo, szybkiego dodawania, lupy i hamburgera.
+3. Przejść po kontrolkach klawiaturą; sprawdzić widoczny fokus, Escape oraz powrót fokusu po zamknięciu menu i wyszukiwarki.
+4. Sprawdzić wyszukiwarkę z dłuższymi wynikami i przewijaniem dialogu oraz wszystkie cztery sposoby zamknięcia.

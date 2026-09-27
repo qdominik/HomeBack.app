@@ -6,7 +6,6 @@ import type {
 } from "@/components/home/home-types";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { CreateRoomPanel } from "@/components/home/create-room-panel";
-import { HomeSearch } from "@/components/home/home-search";
 import { RoomCard } from "@/components/home/room-card";
 import { Alert } from "@/components/ui/alert";
 import { activeLocale, t } from "@/lib/i18n";
@@ -14,17 +13,11 @@ import {
   resolveEntityActionLabel,
   resolveEntityLabels,
 } from "@/lib/i18n/entity-labels";
-import {
-  filterHomeStructure,
-  parseHomeSearchParams,
-} from "@/lib/home/home-search";
 import { getAppContext } from "@/lib/app-context";
 
 type HomeStructurePageProps = {
   searchParams: Promise<{
     error?: string;
-    q?: string;
-    scope?: string;
     status?: string;
   }>;
 };
@@ -112,7 +105,6 @@ export default async function HomeStructurePage({
   searchParams,
 }: HomeStructurePageProps) {
   const params = await searchParams;
-  const search = parseHomeSearchParams(params);
   const { household, profile, supabase } = await getAppContext();
 
   const [roomsResponse, locationsResponse] = await Promise.all([
@@ -186,24 +178,6 @@ export default async function HomeStructurePage({
     label: location.nazwa,
     roomId: location.room_id,
   }));
-  const filteredRooms = filterHomeStructure(rooms, search) as RoomWithLocations[];
-  const filteredLocationCount = filteredRooms.reduce(
-    (total, room) => total + room.locations.length,
-    0,
-  );
-  const filteredPositionCount = filteredRooms.reduce(
-    (total, room) =>
-      total +
-      room.locations.reduce(
-        (locationTotal, location) =>
-          locationTotal + location.positions.length,
-        0,
-      ),
-    0,
-  );
-  const roomStatValue = search.query ? filteredRooms.length : rooms.length;
-  const locationStatValue = search.query ? filteredLocationCount : locationCount;
-  const positionStatValue = search.query ? filteredPositionCount : positionCount;
   const errorMessage = params.error
     ? (errorMessages[params.error] ?? t.modules.home.errors.unknown)
     : null;
@@ -236,17 +210,17 @@ export default async function HomeStructurePage({
                 <CompactHomeStat
                   icon="room"
                   label={entityLabels.room.plural}
-                  value={roomStatValue}
+                  value={rooms.length}
                 />
                 <CompactHomeStat
                   icon="storage"
                   label={entityLabels.storage.plural}
-                  value={locationStatValue}
+                  value={locationCount}
                 />
                 <CompactHomeStat
                   icon="position"
                   label={entityLabels.position.plural}
-                  value={positionStatValue}
+                  value={positionCount}
                 />
               </section>
             </CreateRoomPanel>
@@ -259,25 +233,23 @@ export default async function HomeStructurePage({
                 <CompactHomeStat
                   icon="room"
                   label={entityLabels.room.plural}
-                  value={roomStatValue}
+                  value={rooms.length}
                 />
                 <CompactHomeStat
                   icon="storage"
                   label={entityLabels.storage.plural}
-                  value={locationStatValue}
+                  value={locationCount}
                 />
                 <CompactHomeStat
                   icon="position"
                   label={entityLabels.position.plural}
-                  value={positionStatValue}
+                  value={positionCount}
                 />
               </section>
             </div>
           )}
         </div>
       </header>
-
-      <HomeSearch search={search} />
 
       {!isAdmin ? <Alert variant="info">{t.modules.home.readOnly}</Alert> : null}
       {errorMessage ? (
@@ -288,8 +260,8 @@ export default async function HomeStructurePage({
       {statusMessage ? <Alert variant="success">{statusMessage}</Alert> : null}
 
       <section className="space-y-5">
-        {filteredRooms.length ? (
-          filteredRooms.map((room) => (
+        {rooms.length ? (
+          rooms.map((room) => (
             <RoomCard
               furnitureOptions={copyFurnitureOptions}
               isAdmin={isAdmin}
@@ -298,8 +270,6 @@ export default async function HomeStructurePage({
               roomOptions={copyRoomOptions}
             />
           ))
-        ) : search.query ? (
-          <EmptyState icon={<EntityIcon group="generic" iconKey="generic" size={28} />} text={t.modules.home.search.noResults} />
         ) : (
           <EmptyState icon={<EntityIcon group="room" iconKey="room" size={28} />} text={t.modules.home.empty} />
         )}

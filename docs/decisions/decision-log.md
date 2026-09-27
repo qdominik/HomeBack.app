@@ -4,6 +4,10 @@ Kazda decyzja, ktora rozszerza, doprecyzowuje albo zamyka zakres produktowy lub 
 
 | Data | Decyzja | Powod | Wplyw na MVP | Status | Zatwierdzil |
 |---|---|---|---|---|---|
+| 2026-09-24 | **BACKLOG — alerty awarii integracji Groq:** przygotowac w niezaleznym PR trwaly zapis stanu zdrowia integracji albo dedykowany monitoring, progi alertow, deduplikacje i okres wyciszenia, adres administratora z konfiguracji, osobny kanal wysylki niezalezny od zaproszen oraz bezpieczne komunikaty. Pokryc testami alert dla `provider_model_not_found` / HTTP 404, deduplikacje, ograniczenie lawiny dla HTTP 500 i timeout, brak danych wrazliwych, pola provider/model/klasyfikacja/czas/request ID oraz recovery. | Zaleznosc: PR #85 i potwierdzenie poprawnego modelu oraz klucza Groq. Kanal alertow wymaga osobnej decyzji. SMTP zaproszen i aktywacja zaproszen w Production pozostaja wylaczone. | Zadanie nie jest czescia PR #85; bez zmian kodu, Production, SMTP i automatycznego przelaczania modelu. | BACKLOG | Wlasciciel projektu |
+| 2026-09-19 | Wysyłać zaproszenia Roles & Invites przez istniejącą skrzynkę SeoHost SMTP jako `HomeBack <noreply@homeback.app>`, z osobnymi zakresami Preview/Production i Production wyłączonym do osobnej decyzji. | Wykorzystanie istniejącej infrastruktury bez nowego procesora i płatnej usługi; spójny nadawca z przepływem zakładania konta. | Dodaje serwerowy transport SMTP i pełny przepływ przyjęcia w module Users & Roles. Sekrety poza repo; delivery/bounce bez obsługiwanego mechanizmu SeoHost pozostaje długiem. | Zatwierdzone do implementacji | Właściciel projektu |
+| 2026-09-13 | Usunac wyszukiwarke z modulu Pomieszczenia. Pomieszczenia, Meble i Schowki pozostaja wyszukiwane przez wyszukiwarke globalna. Modul Rzeczy korzysta ze wspolnego mechanizmu normalizacji i rankingu globalnego wyszukiwania oraz udostepnia filtry: Kategoria, Pomieszczenie, Mebel, Schowek, Status i Czas dodania. Wyszukiwarka ikon pozostaje odrebnym mechanizmem. | Zamkniecie zakresu ujednolicenia wyszukiwarek po PR #78 i utrzymanie jednego kontraktu wyszukiwania encji bez dublowania logiki w module Pomieszczenia. | Zgodne z modulami Inventory i Structure MVP. Bez zmian schematu, migracji, danych, RLS i routingu. | Wykonane w PR #78 | Wlasciciel projektu |
+| 2026-09-11 | Zaktualizowac Next/eslint-config-next do 16.3.4, Sharp do >=0.35.4 i js-yaml do >=4.3.2 w osobnym branchu security/dependency-updates-2026-09. Usunac stary override Sharp: upstream wymaga ^0.35.4; zgodnosc potwierdzona audytem, buildem i runtime. | Zamkniecie aktualnych advisory critical/high na polecenie wlasciciela. | Utrzymanie MVP; bez zmian danych, RLS, Supabase, UI i Production. Plan i wyniki: dependency-security-updates-2026-09.md. | Wykonane lokalnie — walidacja PASS, oczekuje na review | Wlasciciel projektu |
 | 2026-08-19 | Dodac nullable pole `ikona` do `storage_location_l2` i `storage_location_l3` oraz zachowac te wartosci w kopiowaniu L2/L3. | Wlasciciel zatwierdzil etap 1 rozszerzenia ikon o Meble i Schowki; wymagany jest zapis stabilnego identyfikatora bez zmiany relacji ani dostepu. | Zgodne z modulem Dom / Structure. Migracje 0019 i 0020, typy bazy, formularze, server actions i istniejace RPC; bez zmian RLS, `household_id` i nowych encji. | Wykonane lokalnie — oczekuje na review | Wlasciciel projektu |
 | 2026-08-02 | Preview Vercel URL zostal wskazany: `https://homeback-app-git-preview-supabase-hos-0c79a6-qdominiks-projects.vercel.app`; wlasciciel potwierdzil, ze preview ma podlaczona Supabase. Project/ref, region, retencja, Auth/CORS/cookies/Storage i smoke evidence pozostaja do weryfikacji. | Doprecyzowanie istniejacego kontraktu preview na podstawie faktycznego deployu Vercel. | Bez zmian funkcji MVP, bazy, RLS, migracji, tras i runtime. | Czesciowo wykonane | Wlasciciel projektu |
 | 2026-08-02 | Preview deployment contract 2026-08-02: zdefiniowano minimalne warunki preview dla aplikacji `my.homeback.app`, w tym osobny URL, izolowany Supabase, brak danych produkcyjnych, Auth redirects, cookies, CORS, Storage, CI i smoke test. | Zamkniecie wymagan przed uruchomieniem preview bez zmiany hosted services ani kodu aplikacji. | Bez zmian funkcji MVP, bazy, RLS, migracji, tras i runtime. Konkretne URL/ref/retencja pozostaja `[TO DECIDE]`. | Przygotowane | Codex |
@@ -88,3 +92,62 @@ Kazda decyzja, ktora rozszerza, doprecyzowuje albo zamyka zakres produktowy lub 
 
 | 2026-07-18 | Naprawić regresję rejestracji dla nowych adresów e-mail. | session === null może wystąpić przy prawidłowym signupie wymagającym potwierdzenia e-maila; klasyfikacja używa jawnych błędów oraz kontrolowanego identities = []. | Bez zmian bazy, migracji, RLS, RPC i formularza. | Wykonane | Codex |
 | 2026-09-06 | Wdrożyć globalne wyszukiwanie nazw Rzeczy, Pomieszczeń, Mebli i Schowków, domyślny filtr Wszystko oraz panel Wyszukiwarka w głównej nawigacji i na Dashboardzie. | Właściciel zlecił implementację w bieżącym zadaniu. Ranking: zgodność dokładna, prefiks, fragment, normalizacja; remisy: typ, nazwa, id. | Rozszerzenie wyszukiwania istniejących encji Inventory i Structure. Bez nowych tras, zależności, migracji lub zmian RLS. Rzeczy: `/items#item-{id}`; struktura: istniejące `/home` z kotwicami `room-`, `furniture-`, `storage-`. Odczyty tylko w bieżącym gospodarstwie. | Zatwierdzone do implementacji | Właściciel projektu |
+| 2026-09-08 | PR #61 uwzględnia wszystkie zapisane przypisania item_location: poprawne główne ma pierwszeństwo; bez niego wybierany jest poprawny schowek o najmniejszym UUID. Brak poprawnego przypisania oznacza Brak lokalizacji. | Nie pomijać istniejących dodatkowych lokalizacji w wyszukiwarce. | Bez zmian schematu, migracji, RLS, formularza i zapisu rzeczy. Pełna ścieżka musi należeć do gospodarstwa. | Zatwierdzone | Właściciel projektu |
+| 2026-09-08 | Bezpośrednie przypisanie rzeczy do L1/L2 pozostaje poza PR #61. Obecny item_location wymaga L3, a zapis rzeczy nie utrwala wyboru samego L1/L2. | Nie symulować niezapisywanych danych ani nie maskować ograniczenia modelu. | Osobne zadanie po zamknięciu PR #61: decyzja, wpływ na model, migracja i kompatybilność starych danych, akcje zapisu, formularz, loadery/breadcrumb, RLS i testy migracji/logiki/E2E. Nie implementować teraz. | Odłożone poza PR #61 | Właściciel projektu |
+
+
+## 2026-09-08 — Bezpośrednie lokalizacje rzeczy L1/L2/L3 (Zespół A)
+
+Status: zatwierdzone do implementacji przez właściciela w zadaniu po PR #61; odbiór migracji i UI przed commitem.
+
+Problem: wymagany `item_location.storage_location_l3_id` pomijał wybór samego pomieszczenia lub mebla.
+Pozostaje jedna tabela przypisań. Dodajemy nullable `room_id` → `room(id)` oraz
+`storage_location_l2_id` → `storage_location_l2(id)` (istniejąca techniczna nazwa mebla),
+a `storage_location_l3_id` staje się nullable. CHECK `num_nonnulls(...) = 1` wymaga
+jednego celu. L1 zapisuje wyłącznie room_id, L2 wyłącznie storage_location_l2_id,
+L3 wyłącznie storage_location_l3_id. Rodzice i breadcrumb wynikają z aktualnej struktury.
+Brak lokalizacji pozostaje brakiem rekordu; nie tworzymy pustych przypisań.
+
+Migracja `0023_item_location_l1_l2.sql` nie aktualizuje ani nie usuwa istniejących
+rekordów L3, identyfikatorów, notatek, dat ani flag głównych. Zachowujemy wiele przypisań
+oraz indeks najwyżej jednej głównej lokalizacji. RPC blokuje rzecz na czas zapisu,
+ponowny zapis tego samego celu zachowuje rekord; istniejące dodatkowe przypisanie celu
+jest promowane zamiast duplikowane. Zmiana/wyczyszczenie dotyczy głównego przypisania,
+jak dotychczas; inne dodatkowe przypisania pozostają. Gdy ich nie ma, wyczyszczenie
+pozostawia rzecz bez lokalizacji. Odczyt preferuje główne poprawne przypisanie,
+następnie najmniejszy UUID celu (remis: poziom, id przypisania).
+
+FK zachowują NO ACTION: usuwanie struktury z przypisaniami wymaga istniejącego
+rozwiązania zależności. Podsumowania, odpinanie i przenoszenie obejmują L1/L2
+oraz potomków, aktywne i archiwalne rzeczy. Nie kasujemy rzeczy przy usuwaniu struktury.
+RLS INSERT/UPDATE item_location musi dopuścić każdy z trzech celów tylko przez
+strukturę aktywnego gospodarstwa; SELECT/DELETE i polityki struktury pozostają.
+RPC security invoker zachowuje kontrolę administratora i household_id.
+
+Formularz zachowuje trzy opcjonalne selektory i układ mobile; zapisuje najgłębszy
+wybór, odtwarza rodziców po otwarciu i zeruje dzieci przy zmianie rodzica.
+Lista, widok Bez lokalizacji i globalne wyszukiwanie korzystają z poprawnych
+przypisań wszystkich poziomów. Ranking, miniatury, linki i nazwy użytkownika pozostają.
+
+Odrzucono: trzy tabele (powielona logika i trudniejsza kontrola głównego przypisania),
+redundantnych rodziców (ryzyko niespójności), puste rekordy (zmiana dotychczasowego
+wzorca), kaskadowe usuwanie (cicha utrata przypisania), nowe zależności i routing.
+
+Zakres MVP: Inventory, Structure, Dashboard. Pliki: nowa migracja i pgTAP,
+src/types/database.ts, akcje i strona items, item-options, formularz i karta,
+load-sources/search, lokalne słowniki, testy logiki i E2E. Ryzyko: pominięcie L1/L2
+w operacjach poddrzewa; testujemy liczniki, odpinanie, przenoszenie i usuwanie.
+Walidacja: pełne migracje/baza/RLS na lokalnym Supabase, test:logic, lint, build,
+test:e2e, git diff --check. Bez resetowania usług i bez wdrożenia produkcyjnego.
+Rollback wymaga osobnej decyzji: najpierw jawnie przenieść/odpiąć nowe L1/L2,
+dopiero przy braku takich rekordów przywrócić stare funkcje/polityki oraz NOT NULL
+L3 i usunąć nowe kolumny; nigdy nie kasować nowych przypisań automatycznie.
+
+
+Doprecyzowanie liczników: rzecz z bezpośrednim i zagnieżdżonym przypisaniem w tym
+samym poddrzewie jest liczona raz jako bezpośrednia; licznik zagnieżdżonych pomija
+już policzone bezpośrednio rzeczy. Liczba przypisań nadal obejmuje wszystkie linki.
+Zachowuje to kontrakt direct + nested = total bez podwójnego liczenia rzeczy.
+Istniejący dialog kopiowania rzeczy nadal ma dotychczasowy kontrakt celu L3 albo
+bez lokalizacji; odtwarza rodziców źródła L1/L2, ale rozszerzenie kopiowania na nowe
+cele nie jest częścią formularza dodawania/edycji objętego tym zadaniem.

@@ -170,8 +170,6 @@ function validateLocationDependencySummary(
   switch (summary.entityType) {
     case "room":
       if (
-        summary.activeDirectItemsCount !== 0 ||
-        summary.archivedDirectItemsCount !== 0 ||
         summary.requiresSubtreeDeletion !==
           (summary.storageCount > 0 || summary.positionCount > 0) ||
         summary.canDeleteImmediately !==
@@ -187,8 +185,6 @@ function validateLocationDependencySummary(
     case "storage":
       if (
         summary.storageCount !== 0 ||
-        summary.activeDirectItemsCount !== 0 ||
-        summary.archivedDirectItemsCount !== 0 ||
         summary.requiresSubtreeDeletion !== (summary.positionCount > 0) ||
         summary.canDeleteImmediately !==
           (

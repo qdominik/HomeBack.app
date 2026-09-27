@@ -1,3 +1,4 @@
+import { buildItemLocationAssignments, buildItemLocationSelectorOptions, type ItemLocationTarget } from "../items/item-options";
 import { getItemNameSearchQuery, normalizeItemSearchText } from "../items/item-search";
 import { routes } from "../routes";
 
@@ -26,7 +27,7 @@ export type SearchSources = {
   rooms: (Named & { household_id: string })[];
   furniture: (Named & { room_id: string })[];
   storage: (Named & { storage_location_l2_id: string })[];
-  locations: { item_id: string; storage_location_l3_id: string; czy_glowna: boolean }[];
+  locations: (ItemLocationTarget & { id?: string; item_id: string; czy_glowna: boolean })[];
 };
 
 export function parseGlobalSearchFilter(value: unknown): GlobalSearchFilter {
@@ -50,7 +51,10 @@ export function searchGlobalSources(sources: SearchSources, householdId: string,
   const rooms = new Map(sources.rooms.filter((room) => room.household_id === householdId).map((room) => [room.id, room]));
   const furniture = new Map(sources.furniture.filter((entry) => rooms.has(entry.room_id)).map((entry) => [entry.id, entry]));
   const storage = new Map(sources.storage.filter((entry) => furniture.has(entry.storage_location_l2_id)).map((entry) => [entry.id, entry]));
-  const locations = new Map(sources.locations.filter((entry) => entry.czy_glowna && storage.has(entry.storage_location_l3_id)).map((entry) => [entry.item_id, entry.storage_location_l3_id]));
+  const locations = buildItemLocationAssignments(buildItemLocationSelectorOptions({
+    rooms: [...rooms.values()], storageLocations: [...furniture.values()],
+    positions: [...storage.values()].map((entry) => ({ ...entry, kod_lokalizacji: "" })),
+  }), sources.locations);
   const roomPath = (roomId: string) => [rooms.get(roomId)!.nazwa];
   const furniturePath = (id: string) => {
     const entry = furniture.get(id)!;
@@ -64,7 +68,7 @@ export function searchGlobalSources(sources: SearchSources, householdId: string,
     ...sources.items.filter((item) => item.household_id === householdId && item.status !== "archiwalne").map((item): GlobalSearchResult => ({
       id: item.id, type: "item", name: item.nazwa, icon: item.ikona,
       href: `${routes.items}#item-${item.id}`,
-      breadcrumb: locations.has(item.id) ? storagePath(locations.get(item.id)!) : [],
+      breadcrumb: locations.has(item.id) ? [locations.get(item.id)!.roomName, locations.get(item.id)!.storageName, locations.get(item.id)!.positionName].filter(Boolean) : [],
     })),
     ...Array.from(rooms.values(), (room): GlobalSearchResult => ({
       id: room.id, type: "room", name: room.nazwa, icon: room.ikona,

@@ -27,7 +27,7 @@ values
 insert into public.profile (id, household_id, imie, email, rola, status)
 values
   ('1a000000-0000-0000-0000-000000000001', '2a000000-0000-0000-0000-000000000001', 'Test Gen Admin A', 'tgen-admin-a@example.test', 'admin', 'aktywny'),
-  ('1a000000-0000-0000-0000-000000000002', '2a000000-0000-0000-0000-000000000001', 'Test Gen Member', 'tgen-member-a@example.test', 'domownik', 'aktywny'),
+  ('1a000000-0000-0000-0000-000000000002', '2a000000-0000-0000-0000-000000000001', 'Test Gen Member', 'tgen-member-a@example.test', 'dorosły', 'aktywny'),
   ('1a000000-0000-0000-0000-000000000003', '2a000000-0000-0000-0000-000000000001', 'Test Gen Child', 'tgen-child-a@example.test', 'dziecko', 'aktywny'),
   ('1a000000-0000-0000-0000-000000000004', '2a000000-0000-0000-0000-000000000001', 'Test Gen Guest', 'tgen-guest-a@example.test', 'gość', 'aktywny'),
   ('1a000000-0000-0000-0000-000000000005', '2a000000-0000-0000-0000-000000000002', 'Test Gen Admin B', 'tgen-admin-b@example.test', 'admin', 'aktywny'),

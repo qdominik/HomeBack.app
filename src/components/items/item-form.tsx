@@ -49,6 +49,8 @@ type ItemFormProps = {
   locationOptions: ItemLocationSelectorOptions;
   photo?: ItemPhotoPersistedState | null;
   selectedPositionId?: string | null;
+  selectedStorageId?: string | null;
+  selectedRoomId?: string | null;
   submitLabel: string;
 };
 
@@ -104,13 +106,23 @@ const photoAnalysisErrorMessages: Record<ItemPhotoAnalysisError, string> = {
   admin_required: t.modules.items.photo.errors.adminRequired,
   categories_unavailable: t.modules.items.photo.errors.categoriesUnavailable,
   invalid_model_response: t.modules.items.photo.errors.analysisFailed,
+  image_too_large: t.modules.items.photo.errors.analysisFailed,
   invalid_photo_input: t.modules.items.photo.errors.invalidPhotoInput,
   invalid_storage_path: t.modules.items.photo.errors.invalidStoragePath,
   missing_api_key: t.modules.items.photo.errors.aiNotConfigured,
   missing_model: t.modules.items.photo.errors.aiNotConfigured,
   preview_url_failed: t.modules.items.photo.errors.previewUrlFailed,
   provider_not_implemented: t.modules.items.photo.errors.analysisFailed,
+  provider_forbidden: t.modules.items.photo.errors.analysisFailed,
+  provider_invalid_request: t.modules.items.photo.errors.analysisFailed,
+  provider_model_not_found: t.modules.items.photo.errors.analysisFailed,
   provider_request_failed: t.modules.items.photo.errors.analysisFailed,
+  provider_rate_limited: t.modules.items.photo.errors.analysisFailed,
+  provider_server_error: t.modules.items.photo.errors.analysisFailed,
+  provider_timeout: t.modules.items.photo.errors.analysisFailed,
+  provider_unauthorized: t.modules.items.photo.errors.analysisFailed,
+  response_not_json: t.modules.items.photo.errors.analysisFailed,
+  response_schema_invalid: t.modules.items.photo.errors.analysisFailed,
   unsupported_provider: t.modules.items.photo.errors.aiNotConfigured,
 };
 
@@ -123,6 +135,8 @@ export function ItemForm({
   locationOptions,
   photo = null,
   selectedPositionId,
+  selectedStorageId,
+  selectedRoomId,
   submitLabel,
 }: ItemFormProps) {
   const isCompact = layout === "compact";
@@ -158,10 +172,14 @@ export function ItemForm({
   const locationFieldProps = getItemLocationFieldProps(
     locationOptions,
     selectedPositionId,
+    selectedStorageId,
+    selectedRoomId,
   );
   const locationFieldKey = getItemLocationFieldKey(
     item?.id,
     selectedPositionId,
+    selectedStorageId,
+    selectedRoomId,
   );
   const systemCategories = availableCategories.filter(
     (category) => category.isSystem,
@@ -427,7 +445,7 @@ export function ItemForm({
   return (
     <form
       action={action}
-      className={isCompact ? "grid gap-3 sm:grid-cols-2" : "space-y-3"}
+      className={isCompact ? "grid min-w-0 max-w-full gap-3 sm:grid-cols-2" : "min-w-0 max-w-full space-y-3"}
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
       {photoDraft ? (
@@ -471,10 +489,10 @@ export function ItemForm({
           value={itemDescription}
         />
       </label>
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label className={`block min-w-0 max-w-full text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.itemType}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
           name="typ"
           onChange={(event) =>
             setItemType(event.currentTarget.value as ItemType)
@@ -515,10 +533,10 @@ export function ItemForm({
           value={itemUnit}
         />
       </label>
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label className={`block min-w-0 max-w-full text-sm font-medium ${halfWidthClass}`}>
         {t.modules.items.category}
         <select
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
           name="category_id"
           onChange={(event) => selectCategory(event.currentTarget.value)}
           required
@@ -671,7 +689,7 @@ export function ItemForm({
           </p>
         ) : null}
       </section>
-      <div className={fullWidthClass}>
+      <div className={`min-w-0 max-w-full ${fullWidthClass}`}>
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>
       <ItemSubmitButton

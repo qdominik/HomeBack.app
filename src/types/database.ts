@@ -86,9 +86,98 @@ export type RoomDeleteResolutionDatabaseRow = {
   removed_source_link_count: number;
 };
 
+export type HouseholdInvitationRow = {
+  id: string;
+  household_id: string;
+  email: string;
+  target_role: "dorosły" | "dziecko";
+  status: "pending" | "accepted" | "revoked";
+  token_hash: string;
+  created_by: string;
+  created_at: string;
+  expires_at: string;
+  accepted_by: string | null;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  replaces_id: string | null;
+};
+
+export type HouseholdMemberRow = {
+  id: string;
+  imie: string;
+  avatar_url: string | null;
+  rola: Database["public"]["Enums"]["profile_role"];
+  email: string | null;
+  status: Database["public"]["Enums"]["profile_status"] | null;
+  created_at: string | null;
+};
+
+export type IssuedInvitationRow = {
+  invitation_id: string;
+  token: string;
+  expires_at: string;
+};
+
+export type InvitationInspectionRow = {
+  state:
+    | "invalid"
+    | "used"
+    | "revoked"
+    | "expired"
+    | "login_required"
+    | "registration_required"
+    | "awaiting_verification"
+    | "wrong_email"
+    | "other_household"
+    | "ready"
+    | "already_member";
+  invitation_email: string | null;
+  account_exists: boolean;
+  household_name: string | null;
+  target_role: "dorosły" | "dziecko" | null;
+  suggested_name: string | null;
+  member_role: Database["public"]["Enums"]["profile_role"] | null;
+};
+
+export type InvitationAcceptanceRow = {
+  household_id: string;
+  outcome: "accepted" | "already_member";
+  role: Database["public"]["Enums"]["profile_role"];
+};
+
 export type Database = {
   public: {
     Tables: {
+      household_invitation: {
+        Row: HouseholdInvitationRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      household_invitation_event: {
+        Row: {
+          id: string;
+          invitation_id: string;
+          household_id: string;
+          profil_id: string;
+          event: "created" | "accepted" | "revoked" | "delivery_failed";
+          reason:
+            | "manual"
+            | "renewed"
+            | "expired_replaced"
+            | "alternative_accepted"
+            | "smtp_auth"
+            | "smtp_rate_limit"
+            | "smtp_rejected"
+            | "smtp_timeout"
+            | "smtp_transport"
+            | null;
+          timestamp: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
       category: {
         Row: {
           id: string;
@@ -264,7 +353,9 @@ export type Database = {
         Row: {
           id: string;
           item_id: string;
-          storage_location_l3_id: string;
+          storage_location_l3_id: string | null;
+          room_id: string | null;
+          storage_location_l2_id: string | null;
           czy_glowna: boolean;
           notatka: string | null;
           created_at: string;
@@ -273,7 +364,9 @@ export type Database = {
         Insert: {
           id?: string;
           item_id: string;
-          storage_location_l3_id: string;
+          storage_location_l3_id?: string | null;
+          room_id?: string | null;
+          storage_location_l2_id?: string | null;
           czy_glowna: boolean;
           notatka?: string | null;
           created_at?: string;
@@ -282,7 +375,9 @@ export type Database = {
         Update: {
           id?: string;
           item_id?: string;
-          storage_location_l3_id?: string;
+          storage_location_l3_id?: string | null;
+          room_id?: string | null;
+          storage_location_l2_id?: string | null;
           czy_glowna?: boolean;
           notatka?: string | null;
           created_at?: string;
@@ -503,6 +598,34 @@ export type Database = {
     };
     Views: Record<never, never>;
     Functions: {
+      get_household_members: {
+        Args: Record<PropertyKey, never>;
+        Returns: HouseholdMemberRow[];
+      };
+      create_household_invitation: {
+        Args: { p_email: string; p_target_role: "dorosły" | "dziecko" };
+        Returns: IssuedInvitationRow[];
+      };
+      renew_household_invitation: {
+        Args: { p_invitation_id: string };
+        Returns: IssuedInvitationRow[];
+      };
+      revoke_household_invitation: {
+        Args: { p_invitation_id: string };
+        Returns: undefined;
+      };
+      compensate_household_invitation_delivery_failure: {
+        Args: { p_failure_class: string; p_invitation_id: string };
+        Returns: undefined;
+      };
+      inspect_household_invitation: {
+        Args: { p_token: string };
+        Returns: InvitationInspectionRow[];
+      };
+      accept_household_invitation: {
+        Args: { p_token: string; p_imie: string };
+        Returns: InvitationAcceptanceRow[];
+      };
       archive_item: {
         Args: { p_item_id: string };
         Returns: string;
@@ -658,6 +781,8 @@ export type Database = {
         Args: {
           p_item_id: string;
           p_storage_location_l3_id?: string | null;
+          p_storage_location_l2_id?: string | null;
+          p_room_id?: string | null;
         };
         Returns: undefined;
       };
@@ -674,7 +799,7 @@ export type Database = {
         | "USUNIĘTO"
         | "ZMIENIONO_ILOŚĆ";
       log_object_type: "ITEM" | "ROOM" | "CATEGORY" | "PROFILE";
-      profile_role: "admin" | "domownik" | "dziecko" | "gość";
+      profile_role: "admin" | "dorosły" | "dziecko" | "gość";
       profile_status: "aktywny" | "zaproszony" | "nieaktywny";
     };
     CompositeTypes: Record<never, never>;

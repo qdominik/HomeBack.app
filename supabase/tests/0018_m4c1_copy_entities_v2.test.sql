@@ -26,10 +26,10 @@ values
 insert into public.profile (id, household_id, imie, email, rola, status)
 values
   ('18000000-0000-4000-8000-000000000001', '28000000-0000-4000-8000-000000000001', 'Admin A', 'm4c1-admin-a@example.test', 'admin', 'aktywny'),
-  ('18000000-0000-4000-8000-000000000002', '28000000-0000-4000-8000-000000000001', 'Member A', 'm4c1-member-a@example.test', 'domownik', 'aktywny'),
+  ('18000000-0000-4000-8000-000000000002', '28000000-0000-4000-8000-000000000001', 'Member A', 'm4c1-member-a@example.test', 'dorosły', 'aktywny'),
   ('18000000-0000-4000-8000-000000000003', '28000000-0000-4000-8000-000000000001', 'Child A', 'm4c1-child-a@example.test', 'dziecko', 'aktywny'),
   ('18000000-0000-4000-8000-000000000004', '28000000-0000-4000-8000-000000000002', 'Admin B', 'm4c1-admin-b@example.test', 'admin', 'aktywny'),
-  ('18000000-0000-4000-8000-000000000006', '28000000-0000-4000-8000-000000000001', 'Inactive owner', 'm4c1-inactive-owner@example.test', 'domownik', 'nieaktywny');
+  ('18000000-0000-4000-8000-000000000006', '28000000-0000-4000-8000-000000000001', 'Inactive owner', 'm4c1-inactive-owner@example.test', 'dorosły', 'nieaktywny');
 
 insert into public.category (id, household_id, nazwa, czy_systemowa, widoczna_dla_dzieci)
 values

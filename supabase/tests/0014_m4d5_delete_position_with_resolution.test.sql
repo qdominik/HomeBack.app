@@ -27,7 +27,7 @@ values
 insert into public.profile (id, household_id, imie, email, rola, status)
 values
   ('1c000000-0000-0000-0000-000000000001', '2c000000-0000-0000-0000-000000000001', 'Admin A', 'm4d5-admin-a@example.test', 'admin', 'aktywny'),
-  ('1c000000-0000-0000-0000-000000000002', '2c000000-0000-0000-0000-000000000001', 'Member', 'm4d5-member@example.test', 'domownik', 'aktywny'),
+  ('1c000000-0000-0000-0000-000000000002', '2c000000-0000-0000-0000-000000000001', 'Member', 'm4d5-member@example.test', 'dorosły', 'aktywny'),
   ('1c000000-0000-0000-0000-000000000003', '2c000000-0000-0000-0000-000000000001', 'Child', 'm4d5-child@example.test', 'dziecko', 'aktywny'),
   ('1c000000-0000-0000-0000-000000000004', '2c000000-0000-0000-0000-000000000001', 'Guest', 'm4d5-guest@example.test', U&'go\015B\0107'::public.profile_role, 'aktywny'),
   ('1c000000-0000-0000-0000-000000000005', '2c000000-0000-0000-0000-000000000002', 'Admin B', 'm4d5-admin-b@example.test', 'admin', 'aktywny'),

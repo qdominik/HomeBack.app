@@ -202,12 +202,12 @@ select is(
 select throws_ok(
   $$
     update public.profile
-    set rola = 'domownik'
+    set rola = 'dorosły'
     where id = '10000000-0000-0000-0000-000000000001'
   $$,
-  'P0001',
-  'LAST_ADMIN_REQUIRED',
-  'last active admin cannot be demoted'
+  '42501',
+  null,
+  'direct role changes are denied'
 );
 
 select throws_ok(
@@ -215,9 +215,9 @@ select throws_ok(
     delete from public.profile
     where id = '10000000-0000-0000-0000-000000000001'
   $$,
-  'P0001',
-  'LAST_ADMIN_REQUIRED',
-  'last active admin cannot be deleted'
+  '42501',
+  null,
+  'direct membership deletion is denied'
 );
 
 select is(

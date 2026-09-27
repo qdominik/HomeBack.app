@@ -119,7 +119,7 @@ values
     '23000000-0000-0000-0000-000000000001',
     'Member A',
     'm31-member-a@example.test',
-    'domownik',
+    'dorosły',
     'aktywny'
   ),
   (
@@ -380,7 +380,7 @@ select throws_ok(
     insert into public.room (household_id, nazwa, typ, "kolejność")
     values (
       '23000000-0000-0000-0000-000000000001',
-      'Pokoj domownika',
+      'Pokoj doroslego',
       'Biuro',
       3
     )
@@ -400,7 +400,7 @@ select throws_ok(
     )
     values (
       '23000000-0000-0000-0000-000000000001',
-      'Domownik Sport',
+      'Dorosły Sport',
       false,
       true
     )

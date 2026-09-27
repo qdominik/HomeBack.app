@@ -14,7 +14,8 @@ function results(region: Locator) {
 test("global search defaults to all, finds four types and applies every type filter", async ({ page }) => {
   const data = await prepareDeletionDataset(page, "global-types");
   await page.goto("/dashboard");
-  const region = page.getByRole("region", { name: "Wyszukiwarka", exact: true });
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const region = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
   await expect(region.getByRole("button", { name: "Wszystko", exact: true })).toHaveAttribute("aria-pressed", "true");
   await search(region, data.suffix);
   const list = results(region);
@@ -44,10 +45,12 @@ test("global search defaults to all, finds four types and applies every type fil
 test("Polish normalization preserves item breadcrumbs and the item hash link", async ({ page }) => {
   const data = await prepareDeletionDataset(page, "global-item");
   await page.goto("/dashboard");
-  const region = page.getByRole("region", { name: "Wyszukiwarka", exact: true });
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const region = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
   await search(region, "ladowarka");
   const result = results(region).getByRole("link").filter({ hasText: data.item.charger });
   await expect(result).toContainText("Rzecz");
+  await expect(result).not.toContainText("Brak lokalizacji");
   await expect(result).toContainText(`${data.room.salon} → ${data.furniture.chest} → ${data.storageSpace.upperDrawer}`);
   const href = await result.getAttribute("href");
   expect(href).toMatch(/^\/items#item-[0-9a-f-]+$/);
@@ -131,11 +134,96 @@ test("global search never returns another household's items or structure", async
   try {
     const otherPage = await other.newPage();
     await registerAndCreateHousehold(otherPage, "global-isolation-target");
-    const region = otherPage.getByRole("region", { name: "Wyszukiwarka", exact: true });
+    await otherPage.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+    const region = otherPage.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
     await search(region, data.suffix);
     await expect(region.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
     await expect(results(region)).toHaveCount(0);
   } finally {
     await other.close();
   }
+});
+
+
+test("an item without a persisted location displays Brak lokalizacji", async ({ page }) => {
+  await registerAndCreateHousehold(page, "search-unlocated");
+  await page.getByRole("banner").getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const form = page.getByRole("dialog", { name: "Dodaj przedmiot", exact: true });
+  await form.locator('input[name="nazwa"]').fill("Rzecz bez przypisania");
+  await form.getByRole("button", { name: "Utwórz rzecz", exact: true }).click();
+  await expect(page).toHaveURL(/status=item_created/);
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
+  await search(dialog, "Rzecz bez przypisania");
+  await expect(results(dialog).getByRole("link").filter({ hasText: "Rzecz bez przypisania" })).toContainText("Brak lokalizacji");
+});
+
+
+test("direct L1/L2/L3 and empty locations persist in the mobile form and global search", async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const data = await prepareDeletionDataset(page, "direct-location");
+  const names: string[] = [];
+  for (const level of [1, 2, 3, 0]) {
+    const name = `Direct level ${level} ${data.suffix}`;
+    names.push(name);
+    await page.goto("/items");
+    await page.locator("main details").first().locator("summary").first().click();
+    const form = page.locator("form").filter({ has: page.getByRole("button", { name: "Utwórz rzecz", exact: true }) });
+    await form.locator('[name="nazwa"]').fill(name);
+    if (level >= 1) await form.locator('[name="room_id"]').selectOption({ label: data.room.salon });
+    if (level >= 2) await form.locator('[name="storage_location_l2_id"]').selectOption({ label: data.furniture.chest });
+    if (level >= 3) await form.locator('[name="storage_location_l3_id"]').selectOption({ label: data.storageSpace.upperDrawer });
+    await form.getByRole("button", { name: "Utwórz rzecz", exact: true }).click();
+    await expect(page).toHaveURL(/status=item_created/);
+    await page.reload();
+    const card = itemCard(page, name);
+    await card.getByText("Edytuj rzecz", { exact: true }).click();
+    const edit = card.locator("details form");
+    for (const [field, label, selected] of [
+      ["room_id", data.room.salon, level >= 1],
+      ["storage_location_l2_id", data.furniture.chest, level >= 2],
+      ["storage_location_l3_id", data.storageSpace.upperDrawer, level >= 3],
+    ] as const) {
+      if (selected) await expect(edit.locator(`[name="${field}"] option:checked`)).toHaveText(label);
+      else await expect(edit.locator(`[name="${field}"]`)).toHaveValue("");
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    if (level === 2) await card.screenshot({ path: test.info().outputPath("mobile-furniture-location.png") });
+    await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
+    await search(dialog, name);
+    const result = results(dialog).getByRole("link").filter({ hasText: name });
+    const path = [data.room.salon, data.furniture.chest, data.storageSpace.upperDrawer].slice(0, level).join(" → ");
+    await expect(result).toContainText(path || "Brak lokalizacji");
+    if (level) await expect(result).not.toContainText("Brak lokalizacji");
+    await page.keyboard.press("Escape");
+  }
+  // Exercise edits, including parent reset, against the real server and database.
+  for (const level of [2, 3, 1, 0]) {
+    await page.goto("/items");
+    const card = itemCard(page, names[0]);
+    await card.getByText("Edytuj rzecz", { exact: true }).click();
+    const edit = card.locator("details form");
+    await edit.locator('[name="room_id"]').selectOption("");
+    if (level >= 1) await edit.locator('[name="room_id"]').selectOption({ label: data.room.salon });
+    if (level >= 2) await edit.locator('[name="storage_location_l2_id"]').selectOption({ label: data.furniture.chest });
+    if (level >= 3) await edit.locator('[name="storage_location_l3_id"]').selectOption({ label: data.storageSpace.upperDrawer });
+    await edit.getByRole("button", { name: "Zapisz zmiany", exact: true }).click();
+    await expect(page).toHaveURL(/status=item_updated/);
+    await page.reload();
+    const path = [data.room.salon, data.furniture.chest, data.storageSpace.upperDrawer].slice(0, level).join(" / ");
+    await expect(itemCard(page, names[0])).toContainText(path || "Brak przypisanej lokalizacji");
+  }
+  await page.goto("/items?view=unlocated");
+  await expect(itemCard(page, names[0])).toBeVisible();
+  await expect(itemCard(page, names[1])).toHaveCount(0);
+  // A fresh household cannot see any of the four location variants.
+  await page.context().clearCookies();
+  await registerAndCreateHousehold(page, "direct-location-foreign");
+  await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
+  await search(dialog, data.suffix);
+  await expect(results(dialog)).toHaveCount(0);
+  await expect(dialog.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
 });

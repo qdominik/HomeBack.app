@@ -1,10 +1,10 @@
 import type { Dictionary } from "../i18n/types";
 import type { EntityIconKey } from "../icons/entity-icon-definitions";
-import type { Database } from "../../types/database";
+import type { ProfileRole } from "../auth/profile-role";
 
 export type DashboardModuleStatus = "available" | "soon";
 
-export type DashboardModuleRole = Database["public"]["Enums"]["profile_role"];
+export type DashboardModuleRole = ProfileRole;
 
 export type DashboardModuleCopyKey = keyof Dictionary["dashboardModules"];
 
@@ -38,7 +38,7 @@ export type DashboardModuleDefinition = {
 export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   {
     key: "recent-items",
-    status: "soon",
+    status: "available",
     titleKey: "recentItems",
     descriptionKey: "recentItems",
     icon: "package",
@@ -54,7 +54,7 @@ export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   },
   {
     key: "category-count",
-    status: "soon",
+    status: "available",
     titleKey: "categoryCount",
     descriptionKey: "categoryCount",
     icon: "cube",
@@ -70,11 +70,11 @@ export const dashboardModuleDefinitions: DashboardModuleDefinition[] = [
   },
   {
     key: "rooms",
-    status: "soon",
+    status: "available",
     titleKey: "rooms",
     descriptionKey: "rooms",
     icon: "room",
-    defaultVisible: false,
+    defaultVisible: true,
   },
   {
     key: "documents",

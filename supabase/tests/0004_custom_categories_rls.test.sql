@@ -117,9 +117,9 @@ values
   (
     '12000000-0000-0000-0000-000000000002',
     '22000000-0000-0000-0000-000000000101',
-    'Domownik A',
+    'Dorosły A',
     'm3-member-a@example.test',
-    'domownik',
+    'dorosły',
     'aktywny'
   ),
   (
@@ -250,7 +250,7 @@ select throws_ok(
     )
     values (
       '22000000-0000-0000-0000-000000000101',
-      'Domownik sport',
+      'Dorosły sport',
       false,
       true
     )

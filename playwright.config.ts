@@ -4,6 +4,7 @@ const port = process.env.E2E_PORT ?? "3001";
 const baseURL = `http://127.0.0.1:${port}`;
 const siteURL = process.env.NEXT_PUBLIC_SITE_URL ?? baseURL;
 const productionBundle = process.env.E2E_PRODUCTION_BUNDLE === "1";
+const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -11,8 +12,12 @@ export default defineConfig({
     "auth-regression.spec.ts",
     "mobile-navigation.spec.ts",
     "dashboard-item-search.spec.ts",
+    "item-search-filters.spec.ts",
+    "dashboard-widgets-regression.spec.ts",
     "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
+    "roles-invites.spec.ts",
+    "roles-invites-disabled.spec.ts",
   ],
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
@@ -31,10 +36,15 @@ export default defineConfig({
   },
   webServer: {
     command: productionBundle
-      ? `npm.cmd run start -- --hostname 127.0.0.1 --port ${port}`
-      : `npm.cmd run dev -- --hostname 127.0.0.1 --port ${port}`,
+      ? `${npmCommand} run start -- --hostname 127.0.0.1 --port ${port}`
+      : `${npmCommand} run dev -- --hostname 127.0.0.1 --port ${port}`,
     env: {
+      APP_BASE_URL: baseURL,
+      E2E_SMTP_MOCK: "true",
       NEXT_PUBLIC_SITE_URL: siteURL,
+      HOUSEHOLD_INVITATIONS_ENABLED:
+        process.env.HOUSEHOLD_INVITATIONS_ENABLED ?? "true",
+      INVITATION_EMAIL_TRANSPORT: "mailpit",
     },
     url: baseURL,
     reuseExistingServer: !process.env.CI,

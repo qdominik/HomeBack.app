@@ -25,6 +25,7 @@ export const pl: Dictionary = {
     tagline: "Wszystko o Twoim domu w jednym miejscu",
   },
   navigation: {
+    closeAddItem: "Zamknij dodawanie przedmiotu",
     openMenu: "Otwórz menu",
     closeMenu: "Zamknij menu",
     main: "Główna nawigacja",
@@ -68,7 +69,7 @@ export const pl: Dictionary = {
     signedInAs: "Zalogowano jako",
     roles: {
       admin: "Administrator",
-      member: "Domownik",
+      member: "Dorosły",
       child: "Dziecko",
       guest: "Gość",
     },
@@ -90,6 +91,12 @@ export const pl: Dictionary = {
     greeting: "Dzień dobry",
     addItem: "Dodaj przedmiot",
     empty: "Brak danych",
+    emptyCategoryCounts: "Brak Rzeczy do podsumowania według kategorii.",
+    emptyRecentItems: "Nie dodano jeszcze żadnych Rzeczy.",
+    emptyRooms: "Nie dodano jeszcze żadnych Pomieszczeń.",
+    itemCount: "Liczba Rzeczy: {count}",
+    unlocatedItems: "Bez lokalizacji",
+    widgetReadError: "Nie udało się odczytać danych modułu.",
     allHidden: "Wszystkie moduły Dashboardu są ukryte.",
     allHiddenHint:
       "Możesz przywrócić moduły w Ustawieniach, w sekcji Personalizacja Dashboardu.",
@@ -110,8 +117,8 @@ export const pl: Dictionary = {
   },
   dashboardModules: {
     recentItems: {
-      title: "Ostatnio dodane",
-      description: "Podgląd ostatnio dodanych rzeczy pojawi się tutaj.",
+      title: "Ostatnie Rzeczy",
+      description: "Ostatnio dodane lub zmodyfikowane Rzeczy.",
     },
     expiringItems: {
       title: "Terminy ważności",
@@ -119,7 +126,7 @@ export const pl: Dictionary = {
     },
     categoryCount: {
       title: "Rzeczy według kategorii",
-      description: "Podsumowanie kategorii pojawi się tutaj.",
+      description: "Liczba aktywnych Rzeczy w poszczególnych kategoriach.",
     },
     activity: {
       title: "Ostatnia aktywność",
@@ -127,7 +134,7 @@ export const pl: Dictionary = {
     },
     rooms: {
       title: "Pomieszczenia",
-      description: "Skrót struktury domu z liczbą rzeczy pojawi się tutaj.",
+      description: "Skróty do Pomieszczeń wraz z liczbą Rzeczy.",
     },
     documents: {
       title: "Dokumenty",
@@ -208,7 +215,7 @@ export const pl: Dictionary = {
       selectRoom: "Wybierz pomieszczenie",
       selectStorage: "Wybierz Mebel",
       selectPosition: "Wybierz Schowek",
-      locationHelp: "Wybierz Schowek, aby przypisa\u0107 lokalizacj\u0119.",
+      locationHelp: "Wybierz Pomieszczenie, opcjonalnie Mebel i Schowek. Pusty wybór Pomieszczenia usuwa główne przypisanie.",
       categoryUnavailable: "Kategoria niedostępna",
       systemCategories: "Kategorie systemowe",
       customCategories: "Kategorie własne",
@@ -348,7 +355,7 @@ export const pl: Dictionary = {
         itemRestored: "Rzecz została przywrócona.",
       },
       search: "Szukaj",
-      searchPlaceholder: "Nazwa, opis lub kod lokalizacji",
+      searchPlaceholder: "Wyszukaj rzecz...",
       category: "Kategoria",
       room: "Pomieszczenie",
       storage: "Mebel",
@@ -357,6 +364,24 @@ export const pl: Dictionary = {
       sort: "Sortuj",
       filter: "Filtruj",
       clearFilters: "Wyczyść filtry",
+      activeFilters: "Aktywne filtry",
+      moreFilters: "Więcej filtrów",
+      addedTime: "Czas dodania",
+      anyTime: "Dowolny czas",
+      dateFrom: "Od",
+      dateTo: "Do",
+      filterStatuses: {
+        active: "Aktywne",
+        archived: "Zarchiwizowane",
+        all: "Wszystkie",
+      },
+      addedOptions: {
+        today: "Dzisiaj",
+        "7d": "Ostatnie 7 dni",
+        "30d": "Ostatnie 30 dni",
+        "3m": "Ostatnie 3 miesiące",
+        custom: "Własny zakres dat",
+      },
       allCategories: "Wszystkie kategorie",
       allRooms: "Wszystkie pomieszczenia",
       allStorageLocations: "Wszystkie Meble",
@@ -394,21 +419,6 @@ export const pl: Dictionary = {
       empty: "Dodaj pierwsze pomieszczenie",
       noLocations: "Brak Mebli",
       noPositions: "Brak Schowk\u00f3w",
-      search: {
-        label: "Szukaj w domu",
-        placeholder: "Pomieszczenie, Mebel, Schowek lub kod",
-        scope: "Zakres",
-        clear: "Wyczyść",
-        submit: "Szukaj",
-        noResults:
-          "Nie znaleziono Pomieszcze\u0144, Mebli ani Schowk\u00f3w pasuj\u0105cych do wyszukiwania.",
-        scopes: {
-          all: "Wszystko",
-          rooms: "Pomieszczenia",
-          storage: "Meble",
-          positions: "Schowki",
-        },
-      },
       iconPicker: {
         change: "Zmień ikonę",
         close: "Zamknij",
@@ -684,6 +694,9 @@ fields: {
       invite: "Zaproś",
       empty: "Brak członków do wyświetlenia",
       soonDescription: "Zarządzanie osobami i rolami będzie dostępne wkrótce.",
+      household: "Gospodarstwo",
+      invitationPrepared: "Zaproszenie zostało przygotowane.",
+      emailDeliveryPending: "Wysyłka e-mail zostanie uruchomiona w kolejnym etapie.",
     },
     documents: {
       title: "Dokumenty",

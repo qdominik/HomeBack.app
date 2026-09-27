@@ -103,7 +103,7 @@ export function ItemCard({
   photoPreviewUrl,
 }: ItemCardProps) {
   const locationPath = location
-    ? [location.roomName, location.storageName, location.positionName].join(
+    ? [location.roomName, location.storageName, location.positionName].filter(Boolean).join(
         " / ",
       )
     : null;
@@ -249,6 +249,8 @@ export function ItemCard({
                 locationOptions={editLocationProps.locationOptions}
                 photo={photo}
                 selectedPositionId={editLocationProps.selectedPositionId}
+                selectedStorageId={editLocationProps.selectedStorageId}
+                selectedRoomId={editLocationProps.selectedRoomId}
                 submitLabel={t.modules.items.saveChanges}
               />
             </div>

@@ -28,6 +28,7 @@ export type Dictionary = {
     tagline: string;
   };
   navigation: {
+    closeAddItem: string;
     openMenu: string;
     closeMenu: string;
     main: string;
@@ -90,6 +91,12 @@ export type Dictionary = {
     greeting: string;
     addItem: string;
     empty: string;
+    emptyCategoryCounts: string;
+    emptyRecentItems: string;
+    emptyRooms: string;
+    itemCount: string;
+    unlocatedItems: string;
+    widgetReadError: string;
     allHidden: string;
     allHiddenHint: string;
     itemSearch: {
@@ -328,6 +335,24 @@ export type Dictionary = {
       sort: string;
       filter: string;
       clearFilters: string;
+      activeFilters: string;
+      moreFilters: string;
+      addedTime: string;
+      anyTime: string;
+      dateFrom: string;
+      dateTo: string;
+      filterStatuses: {
+        active: string;
+        archived: string;
+        all: string;
+      };
+      addedOptions: {
+        today: string;
+        "7d": string;
+        "30d": string;
+        "3m": string;
+        custom: string;
+      };
       allCategories: string;
       allRooms: string;
       allStorageLocations: string;
@@ -365,20 +390,6 @@ export type Dictionary = {
       empty: string;
       noLocations: string;
       noPositions: string;
-      search: {
-        label: string;
-        placeholder: string;
-        scope: string;
-        clear: string;
-        submit: string;
-        noResults: string;
-        scopes: {
-          all: string;
-          rooms: string;
-          storage: string;
-          positions: string;
-        };
-      };
       entityActions: {
         add: string;
         create: string;
@@ -586,6 +597,9 @@ export type Dictionary = {
       invite: string;
       empty: string;
       soonDescription: string;
+      household: string;
+      invitationPrepared: string;
+      emailDeliveryPending: string;
     };
     documents: {
       title: string;

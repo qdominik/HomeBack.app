@@ -117,9 +117,9 @@ values
   (
     '11000000-0000-0000-0000-000000000002',
     '21000000-0000-0000-0000-000000000001',
-    'Domownik A',
+    'Dorosły A',
     'm2-member-a@example.test',
-    'domownik',
+    'dorosły',
     'aktywny'
   ),
   (
@@ -515,7 +515,7 @@ select throws_ok(
     )
     values (
       '21000000-0000-0000-0000-000000000001',
-      'Pokoj domownika',
+      'Pokoj doroslego',
       'Biuro',
       3
     )
@@ -535,7 +535,7 @@ select throws_ok(
     )
     values (
       '22000000-0000-0000-0000-000000000001',
-      'Domownik lozko',
+      'Dorosły lozko',
       'Łóżko rozkładane',
       3
     )

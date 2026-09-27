@@ -65,7 +65,8 @@ Security is treated as a product requirement, not an afterthought.
 - Private user files must be stored in non-public buckets.
 - AI-assisted flows must not write data without user review and confirmation.
 - Production and preview environments should use separate configuration where needed.
-- Before making the repository public, GitHub Secret Scanning, Push Protection, CodeQL, dependency review, and branch protection should be enabled where available.
+- The public repository has GitHub Secret Scanning and Push Protection enabled.
+- `main` requires a pull request, review, resolved conversations, and the configured CI checks before merge; the current exception for the sole administrator is documented in the operations report.
 
 ## Repository Structure
 
@@ -125,10 +126,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SITE_URL=
 NEXT_PUBLIC_DEV_ORIGIN=
 SUPABASE_SERVICE_ROLE_KEY=
+HOUSEHOLD_INVITATIONS_ENABLED=
+APP_BASE_URL=
+SMTP_HOST=
+SMTP_PORT=
+SMTP_SECURE=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=
+INVITATION_EMAIL_ALLOWLIST=
 ITEM_PHOTO_AI_PROVIDER=
 ITEM_PHOTO_AI_MODEL=
 GROQ_API_KEY=
-NEXT_PUBLIC_DEV_ORIGIN=
 E2E_BASE_URL=
 E2E_PASSWORD=
 ```
@@ -137,8 +146,15 @@ Use `.env.local` for local development. Do not commit environment files.
 `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_DEV_ORIGIN` must be absolute URLs. Local
 development uses the local Supabase project; Vercel Preview and Production use
 separate hosted projects and explicit site URLs. The legacy anon key name is
-accepted only when it exactly matches the publishable key. `E2E_PASSWORD` is
-required by local end-to-end tests.
+accepted only when it exactly matches the publishable key. The current local
+end-to-end suite creates isolated users in the local Supabase stack and does
+not require `E2E_PASSWORD`; hosted Preview smoke tests are not configured yet.
+
+Invitation delivery uses server-only SeoHost SMTP configuration. Preview must
+use an exact `INVITATION_EMAIL_ALLOWLIST`; Production invitations remain disabled
+until a separate rollout decision. `APP_BASE_URL`, never a request host header,
+is used to build invitation and authentication return links. Do not copy SMTP
+credentials from Supabase Auth into source files or documentation.
 
 Validate only the presence and shape of the current process environment with:
 
@@ -174,6 +190,9 @@ Migration rules:
 - RLS policies must be validated locally before hosted deployment.
 - Hosted Supabase can be used for integration testing, but it should not replace local migration validation.
 - User data access must always be scoped by `household_id`.
+- Out-of-order migrations must be analyzed and applied individually; never use
+  `db push --include-all` as a shortcut. The current `0018` Preview/Production
+  decision and safe procedure are recorded in the priority 1 operations report.
 
 ## Testing
 
@@ -210,6 +229,10 @@ npm run build
 
 Exact scripts may evolve with the project. Check `package.json` for the current command list.
 
+GitHub CI exposes three stable checks: `App` (including `npm audit`),
+`Database (pgTAP)`, and `E2E (local)`. Database and E2E jobs use independent,
+ephemeral local Supabase stacks and receive no hosted environment secrets.
+
 ## Deployment
 
 The application is designed for deployment on Vercel with Supabase as the hosted backend.
@@ -229,6 +252,9 @@ The deployment contract, Vercel scope checklist, Supabase redirect policy and
 the current limitation that no new staging project may be created without owner
 approval are documented in
 [`docs/ops/vercel-environment-contract.md`](docs/ops/vercel-environment-contract.md).
+The current Local/Preview/Production matrix, migration `0018` decision, CI
+scope, GitHub security state and non-destructive cleanup candidates are in
+[`docs/ops/priority-1-completion-2026-09-12.md`](docs/ops/priority-1-completion-2026-09-12.md).
 
 ## Project Status
 

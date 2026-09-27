@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ItemCreateDialog } from "@/components/items/item-create-dialog";
+import type { ItemCreateOptions } from "@/lib/server/item-create-options";
 import { ListIcon } from "@phosphor-icons/react/dist/ssr/List";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
@@ -14,12 +16,13 @@ import { t } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { appModuleDefinitions } from "@/lib/modules/module-registry";
 import { navigationKeys, isNavigationActive } from "@/lib/modules/navigation";
-import type { Database } from "@/types/database";
+import type { ProfileRole } from "@/lib/auth/profile-role";
 
 
 const iconButton = "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 const roleLabels = {
   admin: t.auth.roles.admin,
+  dorosły: t.auth.roles.member,
   domownik: t.auth.roles.member,
   dziecko: t.auth.roles.child,
   "gość": t.auth.roles.guest,
@@ -27,8 +30,9 @@ const roleLabels = {
 type AppShellProps = {
   children: ReactNode;
   householdName: string;
-  role: Database["public"]["Enums"]["profile_role"];
+  role: ProfileRole;
   userName: string;
+  itemCreateOptions: ItemCreateOptions | null;
 };
 
 export function AppHeader({ authenticated = false, account }: { authenticated?: boolean; account?: Omit<AppShellProps, "children"> }) {
@@ -38,6 +42,7 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const searchDialog = useRef<HTMLDialogElement>(null);
   const searchTrigger = useRef<HTMLButtonElement>(null);
+  const searchBackdropPress = useRef(false);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -60,11 +65,12 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
 
   return <>
     <header className="relative z-20 border-b border-line bg-surface shadow-card">
-      <div className="mx-auto flex w-full max-w-content items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-24 w-full max-w-content sm:h-28 items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
         <Link aria-label={t.app.name} className="block min-w-0 p-1 focus-visible:outline-2 focus-visible:outline-primary" href={routes.dashboard} onClick={() => setMenuOpen(false)}>
           <BrandLogo className="w-52 max-w-full sm:w-64" priority variant="horizontal" />
         </Link>
         <div className="flex shrink-0 items-center gap-2">
+          {account?.itemCreateOptions ? <ItemCreateDialog options={account.itemCreateOptions} /> : null}
           <button aria-label={t.globalSearch.title} aria-haspopup="dialog" aria-controls="global-search-dialog" className={`${iconButton} hover:bg-surface-muted`} ref={searchTrigger} type="button" onClick={() => {
             setMenuOpen(false);
             searchDialog.current?.showModal();
@@ -103,7 +109,21 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
         </div>
       </div>
     </header>
-    <dialog aria-label={t.globalSearch.title} id="global-search-dialog" className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-control border border-line bg-surface p-3 text-foreground shadow-card backdrop:bg-black/40 sm:p-5" onClose={() => searchTrigger.current?.focus()} ref={searchDialog}>
+    <dialog
+      onPointerDown={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        searchBackdropPress.current = event.target === event.currentTarget &&
+          (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom);
+      }}
+      onClick={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        if (searchBackdropPress.current && event.target === event.currentTarget &&
+          (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) {
+          searchDialog.current?.close();
+        }
+        searchBackdropPress.current = false;
+      }}
+      aria-label={t.globalSearch.title} id="global-search-dialog" className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-control border border-line bg-surface p-3 text-foreground shadow-card backdrop:bg-black/40 sm:p-5" onClose={() => searchTrigger.current?.focus()} ref={searchDialog}>
       <div className="mb-3 flex justify-end gap-2">
         <button className={buttonClassName({ variant: "secondary" })} onClick={() => searchDialog.current?.close()} type="button">{t.globalSearch.close}</button>
         <button aria-label={t.globalSearch.close} className={`${iconButton} hover:bg-surface-muted`} onClick={() => searchDialog.current?.close()} type="button"><XIcon aria-hidden="true" size={22} /></button>

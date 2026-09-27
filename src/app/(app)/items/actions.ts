@@ -1,5 +1,7 @@
 "use server";
 
+import { getItemLocationTarget, type ItemLocationSelection, type ItemLocationTarget } from "@/lib/items/item-options";
+
 import { revalidatePath } from "next/cache";
 import { createCustomCategoryForActiveAdmin } from "@/lib/categories/create-custom-category";
 import { redirect } from "next/navigation";
@@ -25,6 +27,8 @@ import {
 } from "@/lib/items/item-photo-storage";
 import {
   analyzeItemPhoto,
+  createItemPhotoAnalysisRequestId,
+  logItemPhotoAnalysisDiagnostic,
   type ItemPhotoAiErrorCode,
   type ItemPhotoAnalysisSuggestion,
 } from "@/lib/items/item-photo-ai";
@@ -555,10 +559,22 @@ async function createItemPhotoAnalysisImageUrl(
   supabase: SupabaseClient,
   storagePath: string,
   mimeType: ItemPhotoAllowedMimeType,
+  diagnostics: { requestId: string; sizeBytes: number },
 ) {
+  const startedAt = Date.now();
   const { data, error } = await createItemPhotoPreviewUrl(supabase, storagePath);
 
   if (error || !data?.signedUrl) {
+    logItemPhotoAnalysisDiagnostic({
+      requestId: diagnostics.requestId,
+      stage: "signed_url_fetch",
+      provider: "groq",
+      mimeType,
+      sizeBytes: diagnostics.sizeBytes,
+      durationMs: Date.now() - startedAt,
+      classification: "storage_fetch_failed",
+      retry: false,
+    });
     return { ok: false as const, code: "preview_url_failed" as const };
   }
 
@@ -566,16 +582,48 @@ async function createItemPhotoAnalysisImageUrl(
     const response = await fetch(data.signedUrl, { cache: "no-store" });
 
     if (!response.ok) {
+      logItemPhotoAnalysisDiagnostic({
+        requestId: diagnostics.requestId,
+        stage: "image_validation",
+        provider: "groq",
+        mimeType,
+        sizeBytes: diagnostics.sizeBytes,
+        durationMs: Date.now() - startedAt,
+        httpStatus: response.status,
+        classification: "storage_fetch_failed",
+        retry: false,
+      });
       return { ok: false as const, code: "preview_url_failed" as const };
     }
 
     const bytes = Buffer.from(await response.arrayBuffer());
 
-    return {
+    const result = {
       ok: true as const,
       imageUrl: `data:${mimeType};base64,${bytes.toString("base64")}`,
     };
+    logItemPhotoAnalysisDiagnostic({
+      requestId: diagnostics.requestId,
+      stage: "image_encoding",
+      provider: "groq",
+      mimeType,
+      sizeBytes: diagnostics.sizeBytes,
+      durationMs: Date.now() - startedAt,
+      retry: false,
+    });
+    return result;
   } catch {
+    logItemPhotoAnalysisDiagnostic({
+      requestId: diagnostics.requestId,
+      stage: "signed_url_fetch",
+      provider: "groq",
+      mimeType,
+      sizeBytes: diagnostics.sizeBytes,
+      durationMs: Date.now() - startedAt,
+      classification: "storage_fetch_failed",
+      exceptionName: "FetchError",
+      retry: false,
+    });
     return { ok: false as const, code: "preview_url_failed" as const };
   }
 }
@@ -688,6 +736,8 @@ export async function analyzeItemPhotoDraft(
     return { ok: false, code: "invalid_photo_input" };
   }
 
+  const requestId = createItemPhotoAnalysisRequestId();
+
   const supabase = await createClient();
   const context = await getActiveAdminContext(supabase);
 
@@ -703,6 +753,7 @@ export async function analyzeItemPhotoDraft(
     supabase,
     input.storagePath,
     input.mimeType,
+    { requestId, sizeBytes: input.sizeBytes },
   );
 
   if (!imageUrl.ok) {
@@ -720,6 +771,7 @@ export async function analyzeItemPhotoDraft(
 
   const result = await analyzeItemPhoto({
     ...input,
+    requestId,
     imageUrl: imageUrl.imageUrl,
     categories: categories.map((category) => ({
       id: category.id,
@@ -772,46 +824,31 @@ async function validateCategory(
   return category.id;
 }
 
-async function validatePosition(
+async function validateLocation(
   supabase: SupabaseClient,
   householdId: string,
-  positionId: string,
-) {
-  if (!positionId) {
-    return null;
+  selection: ItemLocationSelection,
+): Promise<ItemLocationTarget> {
+  let storageId = selection.storageId;
+  let roomId = selection.roomId;
+  if (selection.positionId) {
+    const { data, error } = await supabase.from("storage_location_l3")
+      .select("id, storage_location_l2_id").eq("id", selection.positionId).maybeSingle();
+    if (error || !data || (storageId && storageId !== data.storage_location_l2_id)) redirectWithError("invalid_location");
+    storageId = data.storage_location_l2_id;
   }
-
-  const { data: position, error: positionError } = await supabase
-    .from("storage_location_l3")
-    .select("id, storage_location_l2_id")
-    .eq("id", positionId)
-    .maybeSingle();
-
-  if (positionError || !position) {
-    redirectWithError("invalid_location");
+  if (storageId) {
+    const { data, error } = await supabase.from("storage_location_l2")
+      .select("id, room_id").eq("id", storageId).maybeSingle();
+    if (error || !data || (roomId && roomId !== data.room_id)) redirectWithError("invalid_location");
+    roomId = data.room_id;
   }
-
-  const { data: storageLocation, error: storageError } = await supabase
-    .from("storage_location_l2")
-    .select("id, room_id")
-    .eq("id", position.storage_location_l2_id)
-    .maybeSingle();
-
-  if (storageError || !storageLocation) {
-    redirectWithError("invalid_location");
+  if (roomId) {
+    const { data, error } = await supabase.from("room").select("id")
+      .eq("id", roomId).eq("household_id", householdId).maybeSingle();
+    if (error || !data) redirectWithError("invalid_location");
   }
-
-  const { data: room, error: roomError } = await supabase
-    .from("room")
-    .select("id, household_id")
-    .eq("id", storageLocation.room_id)
-    .maybeSingle();
-
-  if (roomError || !room || room.household_id !== householdId) {
-    redirectWithError("invalid_location");
-  }
-
-  return position.id;
+  return getItemLocationTarget({ ...selection, storageId, roomId });
 }
 
 async function getActiveItem(
@@ -836,11 +873,13 @@ async function getActiveItem(
 async function setPrimaryLocation(
   supabase: SupabaseClient,
   itemId: string,
-  positionId: string | null,
+  location: ItemLocationTarget,
 ) {
   const { error } = await supabase.rpc("set_item_primary_location", {
     p_item_id: itemId,
-    p_storage_location_l3_id: positionId,
+    p_storage_location_l3_id: location.storage_location_l3_id,
+    p_storage_location_l2_id: location.storage_location_l2_id ?? null,
+    p_room_id: location.room_id ?? null,
   });
 
   if (error) {
@@ -874,6 +913,8 @@ function parseItemPayload(formData: FormData) {
     nazwa,
     opis: nullableField(formData, "opis"),
     positionId: field(formData, "storage_location_l3_id"),
+    storageId: field(formData, "storage_location_l2_id"),
+    roomId: field(formData, "room_id"),
     typ: itemType,
   };
 }
@@ -906,10 +947,10 @@ export async function createItem(formData: FormData) {
     profile.household_id,
     payload.categoryId,
   );
-  const positionId = await validatePosition(
+  const location = await validateLocation(
     supabase,
     profile.household_id,
-    payload.positionId,
+    payload,
   );
 
   const { data: item, error } = await supabase
@@ -952,9 +993,7 @@ export async function createItem(formData: FormData) {
     }
   }
 
-  if (positionId) {
-    await setPrimaryLocation(supabase, item.id, positionId);
-  }
+  await setPrimaryLocation(supabase, item.id, location);
 
   revalidatePath(routes.items);
   redirectWithStatus("item_created");
@@ -994,10 +1033,10 @@ export async function updateItem(formData: FormData) {
     profile.household_id,
     payload.categoryId,
   );
-  const positionId = await validatePosition(
+  const location = await validateLocation(
     supabase,
     profile.household_id,
-    payload.positionId,
+    payload,
   );
 
   if (photoDraft) {
@@ -1045,7 +1084,7 @@ export async function updateItem(formData: FormData) {
     redirectWithError("action_failed");
   }
 
-  await setPrimaryLocation(supabase, data.id, positionId);
+  await setPrimaryLocation(supabase, data.id, location);
 
   revalidatePath(routes.items);
   redirectWithStatus("item_updated");

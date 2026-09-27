@@ -44,7 +44,7 @@ export function CopyItemDialog({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(() => defaultCopyName(itemName));
   const [selection, setSelection] = useState(() =>
-    getInitialItemLocationSelection(locationOptions, location?.id),
+    getInitialItemLocationSelection(locationOptions, location?.positionName ? location.id : null, location?.storageId, location?.roomId),
   );
   const [withoutLocation, setWithoutLocation] = useState(!location);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,7 +75,7 @@ export function CopyItemDialog({
 
   function resetForm() {
     setName(defaultCopyName(itemName));
-    setSelection(getInitialItemLocationSelection(locationOptions, location?.id));
+    setSelection(getInitialItemLocationSelection(locationOptions, location?.positionName ? location.id : null, location?.storageId, location?.roomId));
     setWithoutLocation(!location);
   }
 
