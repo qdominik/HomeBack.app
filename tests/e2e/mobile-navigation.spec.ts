@@ -119,6 +119,7 @@ for (const width of [390, 768, 1280]) {
     await toggle.click();
     await menu.getByRole("button", { name: "Wyloguj", exact: true }).click();
     await expect(page).toHaveURL(/\/login$/);
+    await expect(page.getByRole("heading", { name: "Logowanie", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Otwórz menu" }).click();
     await expect(menu.getByRole("link", { name: "Zaloguj", exact: true })).toHaveAttribute("href", "/login");
     await expect(menu.getByRole("button", { name: "Wyloguj" })).toHaveCount(0);
