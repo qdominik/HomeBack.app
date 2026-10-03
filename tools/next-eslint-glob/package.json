@@ -1,0 +1,15 @@
+{
+  "name": "@homeback/next-eslint-glob",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Directory globSync adapter for Next ESLint's getRootDirs only",
+  "type": "module",
+  "main": "index.mjs",
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "dependencies": {
+    "picomatch": "4.0.7",
+    "tinyglobby": "0.2.17"
+  }
+}
