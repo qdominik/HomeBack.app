@@ -25,19 +25,20 @@ The historical `/home` search no longer exists after unified search. It is inten
 
 Input and Select forward all native props including name, controlled/uncontrolled values, handlers, required, disabled, ref and ARIA. The unstyled escape hatch retains the existing specialized filter geometry. Field supplies a matching control ID/label plus descriptions and error references; generated IDs are unique and absent messages do not create dangling references. ControlGroup is a native fieldset/legend, including native disabled behavior.
 
-Control styles were extracted without a palette redesign. Controls have a minimum 44px height and min-width 0; invalid controls keep their error border on hover and an error focus ring. Read-only and disabled controls use the muted surface. Motion preferences remain respected.
+Control styles were extracted without a palette redesign. Controls have a minimum 44px height and min-width 0; invalid controls keep their error border on hover and an error focus ring. An explicit focus outline override preserves the original single focus ring after CSS extraction. Read-only and disabled controls use the muted surface. Motion preferences remain respected.
 
 ## Current verification
 
 - `npm ci`: PASS from the current security lockfile; no dependency added.
 - `npm audit`: PASS, 0 vulnerabilities.
 - `npm run check:env` and `--example`: PASS.
-- `npm run test:logic`: PASS, 367 compiled tests plus the separate glob adapter regression tests. Includes 8 UI contract tests for native prop/ref forwarding and Field associations.
+- `npm run test:logic`: PASS, 367 compiled tests plus 12 glob adapter regression tests (379 total). Includes 8 UI contract tests for native prop/ref forwarding and Field associations.
 - `npm run lint`: PASS, 0 errors. Existing unused-type warning in `src/lib/items/item-photo-ai/providers/groq.ts` remains outside scope.
 - `npm run build`: PASS, Next 16.3.8 including TypeScript.
 - `npx tsc --noEmit`: PASS.
 - `git diff --check`: PASS.
 - E2E test discovery: PASS. Added a specific integration test for native keyboard search/select, URL reset, descriptions of server errors and 390px/1440px geometry. CI retains six UI screenshots as `ui-foundation-screenshots`.
+- Local Chromium primitive fixture: PASS at 390px and 1000px, using the actual production CSS and rendered Input/Select/Field/ControlGroup. Verified typing, Tab, ArrowDown, disabled fieldset, error hover border, 44px minimum controls, single visible focus ring and no horizontal overflow. Both screenshots were visually inspected. This fixture does not validate authenticated application data flows.
 
 Local configuration contains only the existing local public Supabase URL/key and app URLs for `http://127.0.0.1:3101`. It is ignored; no AI/SMTP secrets were copied. The production bundle starts on that exact port. Local runtime is Node 24.19.0/npm 12.0.2; CI uses the pinned project runtime.
 

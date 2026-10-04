@@ -20,6 +20,7 @@
 }
 
 .ui-control:focus {
+  outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 16%, transparent);
 }
