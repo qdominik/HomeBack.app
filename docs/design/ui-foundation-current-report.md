@@ -46,7 +46,7 @@ Supabase API (54321) and Mailpit (54324) were unavailable. No Docker/Supabase st
 
 ## Owner Preview checks
 
-1. Desktop and phone: open the shared search dialog, type a query, submit with Enter, change object type and clear; check visible keyboard focus and Escape returning focus to the trigger.
+1. Desktop and phone: open the shared search dialog, type a query, submit with Enter, change object type and clear; check visible keyboard focus. In the native search input the first Escape clears text; the next closes the dialog and returns focus to the trigger.
 2. Items: choose category/room/furniture and extra filters, set a custom date range, then clear. Verify that controls and results reset together and the mobile page does not overflow.
 3. Save a disposable item and edit its location/name; verify persisted values after reload and the resulting search result. Confirm normal role restrictions still apply.
 4. Check loading and controlled error messages, label activation, disabled controls and focus visibility. Preview uses its own test household; do not use production data.

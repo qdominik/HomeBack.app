@@ -56,7 +56,12 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
     expect((await globalSearch.getAttribute("aria-describedby"))?.split(" ")).toContain(errorId);
     await dialog.screenshot({ path: `test-results/ui-foundation/search-error-${name}.png` });
     await page.unroute("**/items");
+    // A native search input consumes the first Escape to clear its value.
+    await globalSearch.press("Escape");
+    await expect(globalSearch).toHaveValue("");
     await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true })).toBeFocused();
   }
 });
 
