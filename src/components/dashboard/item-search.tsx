@@ -7,6 +7,9 @@ import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { searchGlobalObjects } from "@/app/(app)/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Field } from "@/components/ui/field";
+import { FormActions } from "@/components/ui/form-actions";
+import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
@@ -47,18 +50,17 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
     : query ? copy.ready : copy.initial;
 
   return (
-    <section aria-labelledby={`${id}-title`} className="rounded-md border border-line bg-surface p-4 shadow-card sm:p-5">
+    <Section aria-labelledby={`${id}-title`}>
       <h2 className="text-lg font-semibold text-foreground" id={`${id}-title`}>{copy.title}</h2>
       <form className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(event) => { event.preventDefault(); submitSearch(); }}>
-        <label className="ui-label min-w-0 flex-1" htmlFor={`${id}-input`}>
-          <span>{copy.label}</span>
-          <Input aria-describedby={`${id}-status`} className="mt-2" id={`${id}-input`} maxLength={100}
-            onChange={(event) => changeQuery(event.currentTarget.value)} placeholder={copy.placeholder} type="search" value={query} />
-        </label>
-        <div className="flex gap-2 sm:shrink-0">
+        <Field className="flex-1" describedBy={`${id}-status${!isPending && response?.kind === "error" ? ` ${id}-error` : ""}`} id={`${id}-input`} label={copy.label}>
+          {(controlProps) => <Input {...controlProps} maxLength={100}
+            onChange={(event) => changeQuery(event.currentTarget.value)} placeholder={copy.placeholder} type="search" value={query} />}
+        </Field>
+        <FormActions className="sm:shrink-0">
           {query ? <button aria-label={copy.clear} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-line bg-surface text-muted hover:border-primary focus-visible:outline-2 focus-visible:outline-primary" onClick={() => changeQuery("")} type="button"><XIcon aria-hidden="true" size={18} /></button> : null}
           <Button className="flex-1 sm:flex-none" disabled={isPending} type="submit"><MagnifyingGlassIcon aria-hidden="true" size={18} />{copy.submit}</Button>
-        </div>
+        </FormActions>
       </form>
       <div aria-label={copy.filter} className="mt-3 flex flex-wrap gap-2" role="group">
         {GLOBAL_SEARCH_FILTERS.map((value) => <button aria-pressed={filter === value} className={`min-h-11 rounded-control border px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${filter === value ? "border-primary-hover bg-primary text-white" : "border-line bg-surface text-foreground hover:border-primary"}`} key={value} type="button" onClick={() => {
@@ -68,7 +70,7 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
         }}>{copy.filters[value]}</button>)}
       </div>
       <p aria-live="polite" className="mt-4 text-sm text-muted" id={`${id}-status`} role="status">{statusMessage}</p>
-      {!isPending && response?.kind === "error" ? <p className="mt-2 text-sm text-danger" role="alert">{copy.error}</p> : null}
+      {!isPending && response?.kind === "error" ? <p className="mt-2 text-sm text-danger" id={`${id}-error`} role="alert">{copy.error}</p> : null}
       {results.length ? <ul aria-label={copy.results} className="mt-4 divide-y divide-line border-y border-line">
         {results.map((result) => <li key={`${result.type}-${result.id}`}>
           <Link className="block rounded-md py-3 outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-primary" href={result.href} onClick={onNavigate}>
@@ -85,7 +87,7 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
         </li>)}
       </ul> : null}
       {!isPending && response?.kind === "success" && response.total > results.length ? <p className="mt-3 text-sm text-muted">{copy.limited}</p> : null}
-    </section>
+    </Section>
   );
 }
 
