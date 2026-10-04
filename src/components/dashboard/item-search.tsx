@@ -6,6 +6,7 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGl
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { searchGlobalObjects } from "@/app/(app)/dashboard/actions";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { EntityIcon } from "@/components/icons/entity-icon";
 import { ItemPhotoThumbnail } from "@/components/items/item-photo-thumbnail";
@@ -51,7 +52,7 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
       <form className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(event) => { event.preventDefault(); submitSearch(); }}>
         <label className="ui-label min-w-0 flex-1" htmlFor={`${id}-input`}>
           <span>{copy.label}</span>
-          <input aria-describedby={`${id}-status`} className="ui-control mt-2" id={`${id}-input`} maxLength={100}
+          <Input aria-describedby={`${id}-status`} className="mt-2" id={`${id}-input`} maxLength={100}
             onChange={(event) => changeQuery(event.currentTarget.value)} placeholder={copy.placeholder} type="search" value={query} />
         </label>
         <div className="flex gap-2 sm:shrink-0">

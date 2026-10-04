@@ -95,6 +95,14 @@ textarea:disabled {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 16%, transparent);
 }
 
+.ui-control[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.ui-control[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 16%, transparent);
+}
+
 .ui-control[readonly] {
   background: var(--surface-muted);
 }

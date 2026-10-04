@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FunnelIcon } from "@phosphor-icons/react/dist/ssr/Funnel";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { t } from "@/lib/i18n";
 import type { ItemFilters } from "@/lib/items/item-search-params";
 import { routes } from "@/lib/routes";
@@ -80,7 +82,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
         <label className="relative min-w-0 flex-1">
           <span className="sr-only">{t.modules.items.search}</span>
           <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-          <input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" defaultValue={filters.query} name="q" placeholder={t.modules.items.searchPlaceholder} type="search" />
+          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" defaultValue={filters.query} name="q" placeholder={t.modules.items.searchPlaceholder} type="search" unstyled />
         </label>
         <button className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" type="submit">
           <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
@@ -97,34 +99,34 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
           <div className="mt-2 grid gap-3 rounded-control border border-line bg-surface p-4 shadow-card xl:absolute xl:right-0 xl:top-full xl:z-20 xl:w-80">
             <label className="ui-label">
               <span>{t.modules.items.position}</span>
-              <select className="ui-control mt-1" defaultValue={filters.positionId ?? ""} name="position" onChange={(event) => update("position", event.currentTarget.value)}>
+              <Select className="mt-1" defaultValue={filters.positionId ?? ""} name="position" onChange={(event) => update("position", event.currentTarget.value)}>
                 <option value="">{t.modules.items.allPositions}</option>
                 {positions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
-              </select>
+              </Select>
             </label>
             <label className="ui-label">
               <span>{t.modules.items.status}</span>
-              <select className="ui-control mt-1" defaultValue={filters.status} name="itemStatus" onChange={(event) => update("itemStatus", event.currentTarget.value)}>
+              <Select className="mt-1" defaultValue={filters.status} name="itemStatus" onChange={(event) => update("itemStatus", event.currentTarget.value)}>
                 <option value="active">{t.modules.items.filterStatuses.active}</option>
                 <option value="archived">{t.modules.items.filterStatuses.archived}</option>
                 <option value="all">{t.modules.items.filterStatuses.all}</option>
-              </select>
+              </Select>
             </label>
             <label className="ui-label">
               <span>{t.modules.items.addedTime}</span>
-              <select className="ui-control mt-1" defaultValue={filters.added ?? ""} name="added" onChange={(event) => update("added", event.currentTarget.value)}>
+              <Select className="mt-1" defaultValue={filters.added ?? ""} name="added" onChange={(event) => update("added", event.currentTarget.value)}>
                 <option value="">{t.modules.items.anyTime}</option>
                 <option value="today">{t.modules.items.addedOptions.today}</option>
                 <option value="7d">{t.modules.items.addedOptions["7d"]}</option>
                 <option value="30d">{t.modules.items.addedOptions["30d"]}</option>
                 <option value="3m">{t.modules.items.addedOptions["3m"]}</option>
                 <option value="custom">{t.modules.items.addedOptions.custom}</option>
-              </select>
+              </Select>
             </label>
             {filters.added === "custom" ? (
               <div className="grid grid-cols-2 gap-2">
-                <label className="ui-label"><span>{t.modules.items.dateFrom}</span><input className="ui-control mt-1" defaultValue={filters.dateFrom ?? ""} name="from" onChange={(event) => update("from", event.currentTarget.value)} type="date" /></label>
-                <label className="ui-label"><span>{t.modules.items.dateTo}</span><input className="ui-control mt-1" defaultValue={filters.dateTo ?? ""} name="to" onChange={(event) => update("to", event.currentTarget.value)} type="date" /></label>
+                <label className="ui-label"><span>{t.modules.items.dateFrom}</span><Input className="mt-1" defaultValue={filters.dateFrom ?? ""} name="from" onChange={(event) => update("from", event.currentTarget.value)} type="date" /></label>
+                <label className="ui-label"><span>{t.modules.items.dateTo}</span><Input className="mt-1" defaultValue={filters.dateTo ?? ""} name="to" onChange={(event) => update("to", event.currentTarget.value)} type="date" /></label>
               </div>
             ) : null}
           </div>
@@ -148,10 +150,10 @@ function FilterSelect({ label, name, onChange, options, value }: { label: string
   return (
     <label className="min-w-0 xl:w-36 xl:shrink-0">
       <span className="sr-only">{label}</span>
-      <select aria-label={label} className={`${selectClassName} w-full`} defaultValue={value} name={name} onChange={(event) => onChange(name, event.currentTarget.value)}>
+      <Select aria-label={label} className={`${selectClassName} w-full`} defaultValue={value} name={name} onChange={(event) => onChange(name, event.currentTarget.value)} unstyled>
         <option value="">{label}</option>
         {options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
-      </select>
+      </Select>
     </label>
   );
 }
