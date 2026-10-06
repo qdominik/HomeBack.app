@@ -211,19 +211,29 @@ test("Date changes compose while pending and presets remove both bounds", async 
   await page.goto("/items?added=custom");
   const more = page.locator("summary").filter({ hasText: "Więcej filtrów" });
   await more.click();
+  const from = page.getByLabel("Od", { exact: true });
+  const to = page.getByLabel("Do", { exact: true });
+  let expectedFrom = "";
+  let expectedTo = "";
   const held = await holdNextItemsNavigation(page);
   try {
-    await page.getByLabel("Od", { exact: true }).fill("2000-01-01");
+    // Real keyboard edits exercise native change events. Date fill alone can
+    // update the DOM value without triggering React's tracked onChange.
+    await from.fill("2000-01-01");
+    await from.press("ArrowUp");
+    expectedFrom = await from.inputValue();
     await held.ready;
-    await page.getByLabel("Do", { exact: true }).fill("2099-12-31");
-    await expectParams(page, { added: "custom", from: "2000-01-01", to: "2099-12-31" });
+    await to.fill("2099-12-01");
+    await to.press("ArrowUp");
+    expectedTo = await to.inputValue();
+    await expectParams(page, { added: "custom", from: expectedFrom, to: expectedTo });
   } finally {
     await held.release();
   }
   await page.reload();
   await more.click();
-  await expect(page.getByLabel("Od", { exact: true })).toHaveValue("2000-01-01");
-  await expect(page.getByLabel("Do", { exact: true })).toHaveValue("2099-12-31");
+  await expect(from).toHaveValue(expectedFrom);
+  await expect(to).toHaveValue(expectedTo);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await page.locator('select[name="added"]').selectOption("7d");
   await expectParams(page, { added: "7d", from: null, to: null });
