@@ -2,6 +2,69 @@ import { expect, test } from "@playwright/test";
 import { itemCard, prepareDeletionDataset } from "./support/m4d8";
 import { registerAndCreateHousehold } from "./support/auth";
 
+test("UI foundation retains native keyboard filtering and responsive search fields", async ({ page }) => {
+  await registerAndCreateHousehold(page, "ui-foundation");
+  await page.goto("/items");
+  const search = page.getByRole("searchbox", { name: "Szukaj", exact: true });
+  const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
+  await search.focus();
+  await expect(search).toBeFocused();
+  await search.pressSequentially("latarka");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/q=latarka/);
+  await expect(search).toHaveValue("latarka");
+  await category.focus();
+  await category.press("Home");
+  await category.press("ArrowDown");
+  await expect(page).toHaveURL(/category=/);
+  await expect(category).not.toHaveValue("");
+  await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
+  await expect(search).toHaveValue("");
+  await expect(category).toHaveValue("");
+
+  for (const [name, viewport] of [
+    ["desktop", { width: 1440, height: 1000 }],
+    ["mobile", { width: 390, height: 844 }],
+  ] as const) {
+    await page.setViewportSize(viewport);
+    await page.locator("summary").filter({ hasText: "Więcej filtrów" }).click();
+    await expect(page.getByRole("combobox", { name: "Czas dodania", exact: true })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `test-results/ui-foundation/filters-${name}.png`, fullPage: true });
+    await page.locator("summary").filter({ hasText: "Więcej filtrów" }).click();
+    await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
+    const globalSearch = dialog.getByRole("searchbox", { name: "Nazwa obiektu", exact: true });
+    await globalSearch.fill("latarka");
+    await globalSearch.press("Enter");
+    await expect(dialog.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
+    await globalSearch.focus();
+    await expect(globalSearch).toBeFocused();
+    await expect(globalSearch).toHaveCSS("outline-style", "none");
+    await expect.poll(() => globalSearch.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("3px");
+    expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    await dialog.screenshot({ path: `test-results/ui-foundation/search-${name}.png` });
+    await page.route("**/items", async (route) => {
+      if (route.request().method() === "POST" && route.request().headers()["next-action"]) await route.fulfill({ status: 500, body: "Search unavailable" });
+      else await route.continue();
+    });
+    await globalSearch.press("Enter");
+    const error = dialog.getByRole("alert");
+    await expect(error).toHaveText("Nie udało się wyszukać obiektów. Spróbuj ponownie.");
+    const errorId = await error.getAttribute("id");
+    expect(errorId).toBeTruthy();
+    expect((await globalSearch.getAttribute("aria-describedby"))?.split(" ")).toContain(errorId);
+    await dialog.screenshot({ path: `test-results/ui-foundation/search-error-${name}.png` });
+    await page.unroute("**/items");
+    // A native search input consumes the first Escape to clear its value.
+    await globalSearch.press("Escape");
+    await expect(globalSearch).toHaveValue("");
+    await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true })).toBeFocused();
+  }
+});
+
 test("Items share normalized search and combine category and location filters", async ({ page }) => {
   test.setTimeout(120_000);
   const data = await prepareDeletionDataset(page, "item-filters");
@@ -41,7 +104,10 @@ test("Items share normalized search and combine category and location filters", 
   await search.fill("");
   await searchButton.click();
   await expect(page).toHaveURL(/category=/);
-  expect(new URL(page.url()).searchParams.get("q")).toBe("");
+  // category is already present in the previous URL; wait for the submitted
+  // query itself after the client-side navigation rather than matching that
+  // unchanged parameter and reading the old URL synchronously.
+  await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("");
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await room.selectOption({ label: data.room.salon });

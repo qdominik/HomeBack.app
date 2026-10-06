@@ -1,9 +1,8 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithRef } from "react";
 
 type BadgeTone = "neutral" | "primary" | "success" | "warning" | "danger" | "info";
 
-type BadgeProps = {
-  children: ReactNode;
+type BadgeProps = ComponentPropsWithRef<"span"> & {
   tone?: BadgeTone;
 };
 
@@ -16,10 +15,11 @@ const toneClasses: Record<BadgeTone, string> = {
   info: "bg-info/10 text-info",
 };
 
-export function Badge({ children, tone = "neutral" }: BadgeProps) {
+export function Badge({ children, className, tone = "neutral", ...props }: BadgeProps) {
   return (
     <span
-      className={`inline-flex min-h-7 items-center rounded-control px-2 text-xs font-semibold ${toneClasses[tone]}`}
+      {...props}
+      className={[`inline-flex min-h-7 items-center rounded-control px-2 text-xs font-semibold ${toneClasses[tone]}`, className].filter(Boolean).join(" ")}
     >
       {children}
     </span>
