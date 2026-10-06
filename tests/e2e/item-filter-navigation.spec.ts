@@ -213,17 +213,17 @@ test("Date changes compose while pending and presets remove both bounds", async 
   await more.click();
   const held = await holdNextItemsNavigation(page);
   try {
-    await page.getByRole("textbox", { name: "Od", exact: true }).fill("2000-01-01");
+    await page.getByLabel("Od", { exact: true }).fill("2000-01-01");
     await held.ready;
-    await page.getByRole("textbox", { name: "Do", exact: true }).fill("2099-12-31");
+    await page.getByLabel("Do", { exact: true }).fill("2099-12-31");
     await expectParams(page, { added: "custom", from: "2000-01-01", to: "2099-12-31" });
   } finally {
     await held.release();
   }
   await page.reload();
   await more.click();
-  await expect(page.getByRole("textbox", { name: "Od", exact: true })).toHaveValue("2000-01-01");
-  await expect(page.getByRole("textbox", { name: "Do", exact: true })).toHaveValue("2099-12-31");
+  await expect(page.getByLabel("Od", { exact: true })).toHaveValue("2000-01-01");
+  await expect(page.getByLabel("Do", { exact: true })).toHaveValue("2099-12-31");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await page.locator('select[name="added"]').selectOption("7d");
   await expectParams(page, { added: "7d", from: null, to: null });
