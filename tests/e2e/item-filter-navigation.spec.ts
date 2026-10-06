@@ -95,7 +95,9 @@ for (const [viewportName, viewport] of [
         await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
         await expect(page.getByLabel("Aktywne filtry")).toContainText(data.room.salon);
         await expect(itemCard(page, data.item.charger)).toBeVisible();
-        await expect(itemCard(page, data.item.remote)).toHaveCount(0);
+        // Both electronics share Salon; Album is the different-category
+        // control. Kuchnia in this existing fixture is deliberately empty.
+        await expect(itemCard(page, data.item.remote)).toBeVisible();
         await expect(itemCard(page, data.item.album)).toHaveCount(0);
       }
     });
@@ -123,7 +125,8 @@ test("Latest repeated filter choice survives a pending navigation", async ({ pag
   await expectParams(page, { category: categoryId, room: roomId });
   await expect(page.locator('select[name="room"]')).toHaveValue(roomId);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
-  await expect(itemCard(page, data.item.remote)).toHaveCount(0);
+  await expect(itemCard(page, data.item.remote)).toBeVisible();
+  await expect(itemCard(page, data.item.album)).toHaveCount(0);
 });
 
 test("Reset during a pending navigation does not restore older filters", async ({ page }) => {
@@ -172,7 +175,7 @@ test("Removing a chip retains the other pending filter", async ({ page }) => {
   await expect(page.locator('select[name="room"]')).toHaveValue(roomId);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await expect(itemCard(page, data.item.album)).toBeVisible();
-  await expect(itemCard(page, data.item.remote)).toHaveCount(0);
+  await expect(itemCard(page, data.item.remote)).toBeVisible();
 });
 
 test("Search submission retains pending choices and native empty-query semantics", async ({ page }) => {
@@ -264,12 +267,13 @@ test("Back and Forward override a pending filter without stale restoration", asy
   await expect(page.locator('select[name="category"]')).toHaveValue("");
   await expect(itemCard(page, data.item.album)).toBeVisible();
   await page.goForward();
-  await expectParams(page, { q: "Ładowarka USB-C", category: null });
+  // Native GET submission retains an explicitly empty category parameter.
+  await expectParams(page, { q: "Ładowarka USB-C", category: "" });
   await expect(search).toHaveValue("Ładowarka USB-C");
   await expect(page.locator('select[name="category"]')).toHaveValue("");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await expect(itemCard(page, data.item.album)).toHaveCount(0);
   await page.reload();
-  await expectParams(page, { q: "Ładowarka USB-C", category: null });
+  await expectParams(page, { q: "Ładowarka USB-C", category: "" });
   await expect(search).toHaveValue("Ładowarka USB-C");
 });

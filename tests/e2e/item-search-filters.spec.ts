@@ -104,7 +104,10 @@ test("Items share normalized search and combine category and location filters", 
   await search.fill("");
   await searchButton.click();
   await expect(page).toHaveURL(/category=/);
-  expect(new URL(page.url()).searchParams.get("q")).toBe("");
+  // category is already present in the previous URL; wait for the submitted
+  // query itself after the client-side navigation rather than matching that
+  // unchanged parameter and reading the old URL synchronously.
+  await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("");
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
   await room.selectOption({ label: data.room.salon });
