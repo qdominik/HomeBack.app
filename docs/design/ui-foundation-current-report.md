@@ -52,3 +52,14 @@ Supabase API (54321) and Mailpit (54324) were unavailable. No Docker/Supabase st
 4. Check loading and controlled error messages, label activation, disabled controls and focus visibility. Preview uses its own test household; do not use production data.
 
 No merge or manual Production deployment is authorized or performed.
+
+## Items filter synchronization follow-up — 2026-10-06
+
+PR #89 now also fixes the pre-existing loss of filters during overlapping
+navigation. The follow-up changes URL synchronization, reset/chip/submit/history
+handling, and adds deterministic response-barrier E2E coverage. Native controls,
+parameter rules and server authorization remain intact. Compatible transitive
+dependency patches restore the unchanged audit gate after two new advisories.
+See `docs/design/item-filter-navigation-report.md`; this supersedes the original
+statement that URL synchronization is unchanged. Final acceptance is tied to
+the new SHA, CI and Preview rather than the historical results above.

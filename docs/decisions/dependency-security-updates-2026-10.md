@@ -102,7 +102,32 @@ Końcowy wynik CI i bezpośredni link do pipeline zostaną podane w opisie PR.
 
 Nie merguje się tego PR ani nie wykonuje ręcznego wdrożenia Production.
 
-## Źródła
+## Uzupełnienie PR #89 — 2026-10-06
+
+Ponowny audit na niezmienionym lockfile SHA 1b79797 wykazał dwa nowo
+opublikowane advisory high. Job App w pipeline 37497594988 zatrzymał się na
+istniejącej bramce npm audit, niezależnie od testu synchronizacji filtrów.
+
+Celowane `npm update sharp source-map-js --package-lock-only --ignore-scripts`
+aktualizuje wyłącznie istniejące zależności przechodnie:
+
+- sharp 0.35.4 → 0.35.5, z odpowiadającymi binariami @img/sharp-* oraz
+  @img/sharp-libvips-* 1.3.3 → 1.3.4;
+- source-map-js 1.2.1 → 1.2.2.
+
+Zakresy odczytano z zainstalowanych pakietów: Next 16.3.8 dopuszcza sharp
+`^0.35.4`, PostCSS dopuszcza source-map-js `^1.2.1`. Są to zgodne patche,
+bez wymuszonego override, downgrade, nowej zależności, zmiany package.json,
+progów audytu ani konfiguracji środowiska. Stary accept-risk dotyczył innego
+advisory i niezgodnego zakresu Next 16.2; nie jest podstawą do pominięcia tych
+nowych podatności. Npm audit po aktualizacji lockfile: 0 podatności.
+
+Źródła bieżących advisory:
+
+- https://github.com/advisories/GHSA-wq5f-xc86-pv6w — sharp, patched 0.35.5;
+- https://github.com/advisories/GHSA-68fv-2mgg-jv7q — source-map-js.
+
+## Dotychczasowe źródła
 
 - [Next RCE advisory](https://github.com/advisories/GHSA-vcvr-r3jv-pc5j)
 - [braces advisory, brak poprawki](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
