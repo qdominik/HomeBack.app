@@ -12,10 +12,10 @@ function isItemsNavigation(request: Request) {
 // commit until the test explicitly releases it after the newer user action.
 async function holdNextItemsNavigation(page: Page) {
   let release!: () => void;
-  let reached!: () => void;
+  let reached!: (request: Request) => void;
   let finished!: () => void;
   const barrier = new Promise<void>((resolve) => { release = resolve; });
-  const ready = new Promise<void>((resolve) => { reached = resolve; });
+  const ready = new Promise<Request>((resolve) => { reached = resolve; });
   const done = new Promise<void>((resolve) => { finished = resolve; });
   let captured = false;
   const handler = async (route: Route) => {
@@ -26,7 +26,7 @@ async function holdNextItemsNavigation(page: Page) {
     captured = true;
     try {
       const response = await route.fetch();
-      reached();
+      reached(route.request());
       await barrier;
       await route.fulfill({ response });
     } catch (error) {
@@ -70,11 +70,17 @@ for (const [viewportName, viewport] of [
       const roomId = await optionId(page, "room", data.room.salon);
       const category = page.locator('select[name="category"]');
       const room = page.locator('select[name="room"]');
+      expect(await category.inputValue(), "category starts empty before the tested actions").toBe("");
+      expect(await room.inputValue(), "room starts empty before the tested actions").toBe("");
       const held = await holdNextItemsNavigation(page);
       try {
         if (order === "category-room") await category.selectOption(categoryId);
         else await room.selectOption(roomId);
-        await held.ready;
+        const firstRequest = await held.ready;
+        const firstField = order === "category-room" ? "category" : "room";
+        const firstValue = order === "category-room" ? categoryId : roomId;
+        expect(new URL(firstRequest.url()).searchParams.get(firstField), "barrier captured the first tested action").toBe(firstValue);
+        expect(await (order === "category-room" ? category : room).inputValue(), "first selection is present before the next action").toBe(firstValue);
         // Assert while the first response is still withheld, then allow the
         // newer response to commit before releasing the obsolete response.
         const nextRequest = page.waitForRequest(isItemsNavigation);
@@ -111,10 +117,17 @@ test("Latest repeated filter choice survives a pending navigation", async ({ pag
   const categoryId = await optionId(page, "category", "Elektronika");
   const roomId = await optionId(page, "room", data.room.salon);
   const kitchenId = await optionId(page, "room", data.room.kitchen);
+  const category = page.locator('select[name="category"]');
+  expect(await category.inputValue(), "category starts empty before the tested action").toBe("");
   const held = await holdNextItemsNavigation(page);
   try {
-    await page.locator('select[name="category"]').selectOption(categoryId);
-    await held.ready;
+    await category.selectOption(categoryId);
+    const firstRequest = await held.ready;
+    await test.step("Category is selected while its response is still withheld", async () => {
+      expect(new URL(firstRequest.url()).searchParams.get("category"), "held request belongs to the category action").toBe(categoryId);
+      expect(await category.inputValue(), "category DOM value before the rapid room choices").toBe(categoryId);
+      expect(await page.getByLabel("Aktywne filtry").textContent(), "React rendered the category before the rapid room choices").toContain("Elektronika");
+    });
     await page.locator('select[name="room"]').selectOption(kitchenId);
     await page.locator('select[name="room"]').selectOption(roomId);
     await expectParams(page, { category: categoryId, room: roomId });

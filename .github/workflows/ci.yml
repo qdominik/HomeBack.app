@@ -128,6 +128,8 @@ jobs:
           test -n "$api_url"
           test -n "$public_key"
           test -n "$service_role_key"
+          echo "::add-mask::$public_key"
+          echo "::add-mask::$service_role_key"
           echo "NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3001" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_DEV_ORIGIN=http://127.0.0.1:3001" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_SUPABASE_URL=$api_url" >> "$GITHUB_ENV"
@@ -142,8 +144,28 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Verify diagnostic redaction
+        run: node --test tests/e2e/support/sanitize-diagnostics.test.mjs
+
       - name: Run E2E
+        id: e2e_main
         run: npm run test:e2e
+
+      # Playwright clears test-results on the next invocation. Preserve first
+      # failures (including flakes in a successful job) before the kill switch.
+      - name: Sanitize E2E diagnostics
+        id: diagnostics_main
+        if: always() && steps.e2e_main.outcome != 'skipped'
+        run: node tests/e2e/support/sanitize-diagnostics.mjs main
+
+      - name: Upload sanitized E2E diagnostics
+        if: always() && steps.diagnostics_main.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-main-diagnostics
+          path: test-results/safe-diagnostics/main/
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Upload UI foundation screenshots
         if: always()
@@ -155,24 +177,24 @@ jobs:
           retention-days: 7
 
       - name: Verify invitations kill switch in browser
+        id: e2e_kill_switch
         env:
           E2E_PORT: "3002"
           HOUSEHOLD_INVITATIONS_ENABLED: "false"
         run: npm run test:e2e -- tests/e2e/roles-invites-disabled.spec.ts
 
-      - name: Capture Supabase status on failure
-        if: failure()
-        run: |
-          mkdir -p test-results
-          npx supabase status > test-results/supabase-status.txt 2>&1 || true
+      - name: Sanitize kill-switch diagnostics
+        id: diagnostics_kill_switch
+        if: always() && steps.e2e_kill_switch.outcome != 'skipped'
+        run: node tests/e2e/support/sanitize-diagnostics.mjs kill-switch
 
-      - name: Upload E2E diagnostics
-        if: failure()
+      - name: Upload sanitized kill-switch diagnostics
+        if: always() && steps.diagnostics_kill_switch.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-local-diagnostics
-          path: test-results/
-          if-no-files-found: ignore
+          name: e2e-kill-switch-diagnostics
+          path: test-results/safe-diagnostics/kill-switch/
+          if-no-files-found: error
           retention-days: 7
 
       - name: Stop ephemeral Supabase
