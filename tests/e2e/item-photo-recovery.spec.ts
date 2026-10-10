@@ -71,6 +71,7 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await queue(page, "upload", { reject: true, gate: "upload" }); await selectPhoto(page);
       await expect(page.locator('input[type="file"]')).toBeDisabled();
       await expect(page.getByRole("button", { name: "Zapisz fixture" })).toBeDisabled();
+      await expect.poll(async () => (await calls(page, "upload")).length).toBe(1);
       await page.evaluate(() => window.photoHarness.release("upload"));
       await expect(page.getByText(messages.upload, { exact: true })).toBeVisible();
       await ready(page); await retained(page);
