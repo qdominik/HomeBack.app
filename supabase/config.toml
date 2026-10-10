@@ -18,10 +18,11 @@ extra_search_path = ["public", "extensions"]
 max_rows = 1000
 # Controls whether new tables, views, sequences and functions created in the `public` schema by
 # `postgres` are reachable through the Data API roles (`anon`, `authenticated`, `service_role`)
-# without explicit GRANTs. When unset, new entities are NOT auto-exposed, matching the new cloud
-# default. Set to `true` to keep the legacy behaviour of auto-exposing new entities; this is
-# deprecated and the field is removed on 2026-10-30 once the always-revoked behaviour is permanent.
-# auto_expose_new_tables = true
+# without explicit GRANTs. Pin false to preserve this project's opt-in API contract:
+# CLI 2.120.0 treats an unset flag as legacy automatic grants, unlike the Go bootstrap.
+# Explicit true enables legacy automatic grants. The CLI documents removal of this
+# deprecated field on 2026-10-30 once always-revoked behaviour becomes permanent.
+auto_expose_new_tables = false
 
 [api.tls]
 # Enable HTTPS endpoints locally using a self-signed certificate.
