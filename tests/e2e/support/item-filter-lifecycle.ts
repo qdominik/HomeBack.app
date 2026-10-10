@@ -10,10 +10,13 @@ export const lifecycleIds = {
   salon: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
 };
 
-// Bundle the installed React runtime and the real filter component/parsers.
+// Bundle Next's browser React runtime and the real filter component/parsers.
 // Only navigation transport, Link and decorative icons are substituted. The
 // unresolved router promise models a navigation whose response is withheld.
-export function itemFilterLifecycleBundle() {
+export function itemFilterLifecycleBundle({ strictEffects = false, firstFilter = "category" }: {
+  strictEffects?: boolean;
+  firstFilter?: "category" | "room";
+} = {}) {
   const modules = new Map<string, string>();
   for (const [name, packageName, filename] of [
     ["react", "react", "react.development.js"],
@@ -22,8 +25,9 @@ export function itemFilterLifecycleBundle() {
     ["react/jsx-runtime", "react", "react-jsx-runtime.development.js"],
     ["scheduler", "scheduler", "scheduler.development.js"],
   ]) {
-    const directory = dirname(installedRequire.resolve(`${packageName}/package.json`));
-    modules.set(name, readFileSync(resolve(directory, "cjs", filename), "utf8"));
+    const directory = dirname(installedRequire.resolve(`next/dist/compiled/${packageName}/package.json`));
+    modules.set(name, readFileSync(resolve(directory, "cjs", filename), "utf8")
+      .replaceAll("next/dist/compiled/", ""));
   }
   function projectModule(id: string): string {
     if (modules.has(id)) return id;
@@ -61,9 +65,24 @@ export function itemFilterLifecycleBundle() {
     const ReactDOM = require("react-dom");
     const ReactDOMClient = require("react-dom/client");
     const Context = React.createContext(null);
+    const layoutStates = [];
+    let mountReconciliation = null;
+    const useLayoutEffect = React.useLayoutEffect;
+    // Observe the component's real committed callback, forwarding to React's
+    // actual hook. Explicit replay tests an old closure after a newer commit.
+    React.useLayoutEffect = (create, dependencies) => {
+      if (!create.toString().includes("intendedSearch.current")) return useLayoutEffect(create, dependencies);
+      return useLayoutEffect(() => {
+        mountReconciliation ??= create;
+        layoutStates.push({ search: dependencies[0], pending: dependencies[1] });
+        return create();
+      }, dependencies);
+    };
     const requests = [];
     const responses = [];
     const ids = ${JSON.stringify(lifecycleIds)};
+    const strictEffects = ${JSON.stringify(strictEffects)};
+    const firstFilter = ${JSON.stringify(firstFilter)};
     const { parseItemSearchParams } = require("src/lib/items/item-search-params");
     const { parseItemView } = require("src/lib/items/item-view-filter");
     const { routes } = require("src/lib/routes");
@@ -94,9 +113,17 @@ export function itemFilterLifecycleBundle() {
       }, []);
       // A real change event during the commit deliberately precedes mount's
       // passive effect. No DOM-only select or artificial hook implementation.
-      React.useLayoutEffect(() => { choose("category", ids.category); }, []);
+      const didChoose = React.useRef(false);
+      React.useLayoutEffect(() => {
+        if (!didChoose.current) {
+          didChoose.current = true;
+          choose(firstFilter, firstFilter === "category" ? ids.category : ids.kitchen);
+        }
+      }, []);
       window.filterLifecycle = {
         requests,
+        layoutStates,
+        replayMountReconciliation() { mountReconciliation(); },
         release(index) { responses[index](); },
         external(search, history = false) {
           window.history.replaceState(null, "", search ? routes.items + "?" + search : routes.items);
@@ -117,6 +144,8 @@ export function itemFilterLifecycleBundle() {
         positions: [], storageLocations: [], filters: parseItemSearchParams(params), view: parseItemView(params),
       });
     }
-    ReactDOM.flushSync(() => ReactDOMClient.createRoot(document.getElementById("root")).render(React.createElement(App)));
+    ReactDOM.flushSync(() => ReactDOMClient.createRoot(document.getElementById("root")).render(
+      strictEffects ? React.createElement(React.StrictMode, null, React.createElement(App)) : React.createElement(App)
+    ));
   })();`;
 }
