@@ -380,12 +380,14 @@ test("item photo draft actions do not accept household id from the client", () =
 
 test("item form submits only draft metadata and does not expose persistent photo fields", () => {
   const form = readFileSync("src/components/items/item-form.tsx", "utf8");
+  const draftFlow = readFileSync("src/lib/items/item-photo/draft-flow.ts", "utf8");
   const uploadStart = form.indexOf("function uploadSelectedPhoto");
   const analysisStart = form.indexOf("function applyPhotoSuggestions");
   const uploadSelectedPhoto = form.slice(uploadStart, analysisStart);
 
   assert.match(form, /uploadItemPhotoDraft/);
-  assert.match(form, /prepareItemPhotoForUpload/);
+  assert.match(form, /replaceItemPhotoDraft/);
+  assert.match(draftFlow, /prepareItemPhotoForUpload/);
   assert.match(form, /cleanupItemPhotoDraft/);
   assert.match(form, /type="file"/);
   assert.match(form, /accept="image\/jpeg,image\/webp"/);
@@ -400,10 +402,11 @@ test("item form submits only draft metadata and does not expose persistent photo
   assert.match(form, /preparing/);
   assert.match(form, /compression_failed/);
   assert.match(form, /file_too_large_after_compression/);
-  assert.match(uploadSelectedPhoto, /prepareItemPhotoForUpload\(selectedFile\)/);
-  assert.match(uploadSelectedPhoto, /formData\.set\("photo", preparedPhoto\.file\)/);
+  assert.match(uploadSelectedPhoto, /file: selectedFile/);
+  assert.match(uploadSelectedPhoto, /formData\.set\("photo", file\)/);
+  assert.match(draftFlow, /input\.upload\(prepared\.file\)/);
   assert.doesNotMatch(uploadSelectedPhoto, /formData\.set\("photo", selectedFile\)/);
-  assert.ok(uploadSelectedPhoto.indexOf("prepareItemPhotoForUpload") < uploadSelectedPhoto.indexOf("uploadItemPhotoDraft"));
+  assert.ok(draftFlow.indexOf("if (!prepared.ok)") < draftFlow.indexOf("input.upload(prepared.file)"));
   assert.match(uploadSelectedPhoto, /setPhotoFeedback\(t\.modules\.items\.photo\.preparing\)/);
 });
 
@@ -413,12 +416,12 @@ test("item photo preparation failure keeps form state local and avoids redirect 
   const analysisStart = form.indexOf("function applyPhotoSuggestions");
   const uploadSelectedPhoto = form.slice(uploadStart, analysisStart);
 
-  assert.match(uploadSelectedPhoto, /if \(!preparedPhoto\.ok\)/);
+  assert.match(uploadSelectedPhoto, /if \(outcome\.status === "failed"\)/);
   assert.match(uploadSelectedPhoto, /setPhotoFeedback\(/);
   assert.match(uploadSelectedPhoto, /clearPhotoInput\(\)/);
   assert.doesNotMatch(uploadSelectedPhoto, /redirect\(/);
   assert.doesNotMatch(uploadSelectedPhoto, /revalidatePath/);
-  assert.match(uploadSelectedPhoto, /if \(!preparedPhoto\.ok\) \{[\s\S]*?return;/);
+  assert.match(uploadSelectedPhoto, /if \(outcome\.status === "failed"\) \{[\s\S]*?return;/);
 });
 
 test("item photo upload maps Storage failures to a controlled result", () => {
@@ -427,9 +430,11 @@ test("item photo upload maps Storage failures to a controlled result", () => {
   const uploadEnd = actions.indexOf("export async function createItem", uploadStart);
   const uploadAction = actions.slice(uploadStart, uploadEnd);
 
-  assert.match(uploadAction, /if \(uploadError\)/);
-  assert.match(uploadAction, /code: "upload_failed"/);
-  assert.match(uploadAction, /previewError/);
+  assert.match(uploadAction, /uploadItemPhotoWithPreview\(/);
+  assert.match(uploadAction, /if \(!upload\.ok\) return upload/);
+  assert.match(uploadAction, /upsert: false/);
+  assert.match(uploadAction, /preview: \(\) => createItemPhotoPreviewUrl\(supabase, path\)/);
+  assert.match(uploadAction, /removeUploaded: \(\) => supabase\.storage\.from\(ITEM_PHOTO_BUCKET\)\.remove\(\[path\]\)/);
 });
 
 test("item photo draft changes invalidate old analysis state and requests", () => {
@@ -453,7 +458,8 @@ test("item photo draft changes invalidate old analysis state and requests", () =
   assert.match(removePhotoDraft, /photoMutationRunIdRef\.current/);
   assert.match(removePhotoDraft, /setPhotoFeedback\(t\.modules\.items\.photo\.errors\.cleanupFailed\)/);
   assert.match(uploadSelectedPhoto, /resetPhotoAnalysisState\(\)/);
-  assert.match(uploadSelectedPhoto, /setPhotoDraft\(null\)/);
+  assert.doesNotMatch(uploadSelectedPhoto, /setPhotoDraft\(null\)/);
+  assert.match(uploadSelectedPhoto, /isCurrent: \(\) => mutationRunId === photoMutationRunIdRef\.current/);
   assert.match(uploadSelectedPhoto, /photoMutationRunIdRef\.current/);
   assert.match(uploadSelectedPhoto, /setPhotoDraft\(\{/);
   assert.match(applyPhotoSuggestions, /const analyzedDraft = photoDraft/);
@@ -850,7 +856,7 @@ test("item photo analysis action and form keep the draft household-scoped", () =
 
   assert.match(form, /analyzeItemPhotoDraft/);
   assert.match(form, /fillFromPhoto/);
-  assert.match(form, /setItemName\(suggestion\.nazwa\)/);
+  assert.match(form, /setItemName\(\(currentName\) => resolveItemPhotoSuggestionName\(/);
   assert.match(form, /setItemDescription\(suggestion\.opis\)/);
   assert.match(form, /setSelectedCategoryId|selectCategory\(suggestion\.categoryId\)/);
   assert.match(analysisAction, /getActiveAdminContext\(supabase\)/);

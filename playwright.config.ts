@@ -9,6 +9,7 @@ const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 export default defineConfig({
   testDir: "./tests/e2e",
   testMatch: [
+    "item-photo-recovery.spec.ts",
     "auth-regression.spec.ts",
     "mobile-navigation.spec.ts",
     "dashboard-item-search.spec.ts",
