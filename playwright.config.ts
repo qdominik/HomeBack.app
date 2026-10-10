@@ -14,6 +14,7 @@ export default defineConfig({
     "dashboard-item-search.spec.ts",
     "item-search-filters.spec.ts",
     "item-filter-navigation.spec.ts",
+    "item-filter-lifecycle.spec.ts",
     "dashboard-widgets-regression.spec.ts",
     "icon-catalog-locales.spec.ts",
     "m4d8-location-lifecycle.spec.ts",
@@ -24,7 +25,9 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: process.env.CI ? "github" : "list",
+  reporter: process.env.CI
+    ? [["github"], ["json", { outputFile: "test-results/e2e-results.json" }]]
+    : "list",
   timeout: 60_000,
   expect: {
     timeout: 10_000,

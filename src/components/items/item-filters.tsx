@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useOptimistic, useRef, useState, useTransition, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useOptimistic, useRef, useState, useTransition, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FunnelIcon } from "@phosphor-icons/react/dist/ssr/Funnel";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
@@ -38,7 +38,9 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   // An intermediate route must not become the base of the next user choice.
   // Next's navigation queue discards superseded responses; reconcile only when
   // the latest transition has settled, including external same-page links.
-  useEffect(() => {
+  // Reconcile during commit: a delayed passive effect from an earlier render
+  // could otherwise overwrite an intent already recorded by a change event.
+  useLayoutEffect(() => {
     if (!isPending) intendedSearch.current = committedSearch;
   }, [committedSearch, isPending]);
 
