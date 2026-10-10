@@ -18,15 +18,21 @@ import {
 } from "@/app/(app)/items/actions";
 import { resolveInitialItemCategoryId } from "@/lib/categories/category-selection";
 import { t } from "@/lib/i18n";
+import { settleItemFormAction } from "@/lib/items/item-form-action";
+import {
+  isItemPhotoWeakSuggestion,
+  resolveItemPhotoSuggestionName,
+} from "@/lib/items/item-photo-ai/apply-suggestion";
 import {
   ITEM_TYPES,
   type ItemType,
   showsItemQuantity,
 } from "@/lib/items/item-form-values";
+import type { ItemPhotoPreparationError } from "@/lib/items/item-photo/compress-image";
 import {
-  prepareItemPhotoForUpload,
-  type ItemPhotoPreparationError,
-} from "@/lib/items/item-photo/compress-image";
+  cleanupOwnedItemPhotoDraft,
+  replaceItemPhotoDraft,
+} from "@/lib/items/item-photo/draft-flow";
 import {
   getItemLocationFieldKey,
   getItemLocationFieldProps,
@@ -164,6 +170,7 @@ export function ItemForm({
   const [isPhotoPending, startPhotoTransition] = useTransition();
   const [isPhotoAnalysisPending, startPhotoAnalysisTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const itemNameEditRevisionRef = useRef(0);
   const photoAnalysisRunIdRef = useRef(0);
   const photoMutationRunIdRef = useRef(0);
   const initialQuantity = item?.ilosc ?? 1;
@@ -209,7 +216,10 @@ export function ItemForm({
     }
 
     startQuickCategoryTransition(async () => {
-      const result = await createQuickCustomCategory(submittedName);
+      const result = await settleItemFormAction(
+        () => createQuickCustomCategory(submittedName),
+        { status: "action_failed" },
+      );
 
       if (result.status === "created" || result.status === "existing") {
         setAvailableCategories((currentCategories) =>
@@ -262,9 +272,9 @@ export function ItemForm({
   }
 
   async function cleanupDraft(storagePath: string) {
-    const result = await cleanupItemPhotoDraft({ storagePath });
-
-    return result.ok;
+    return cleanupOwnedItemPhotoDraft(storagePath, (path) =>
+      cleanupItemPhotoDraft({ storagePath: path }),
+    );
   }
 
   function removePhotoDraft() {
@@ -272,13 +282,6 @@ export function ItemForm({
     const mutationRunId = photoMutationRunIdRef.current + 1;
     photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
-    setPhotoDraft(null);
-    setPhotoPreviewFailed(false);
-    if (item && photo && !removePersistedPhoto) {
-      setPersistedPhoto(photo);
-    }
-    clearPhotoInput();
-
     if (!currentDraft) {
       return;
     }
@@ -294,35 +297,23 @@ export function ItemForm({
         setPhotoFeedback(t.modules.items.photo.errors.cleanupFailed);
         return;
       }
+      setPhotoDraft(null);
+      setPhotoPreviewFailed(false);
+      if (item && photo && !removePersistedPhoto) {
+        setPersistedPhoto(photo);
+      }
+      clearPhotoInput();
     });
   }
 
   function removeCurrentPhoto() {
-    const currentDraft = photoDraft;
-    const mutationRunId = photoMutationRunIdRef.current + 1;
-    photoMutationRunIdRef.current = mutationRunId;
+    photoMutationRunIdRef.current += 1;
     resetPhotoAnalysisState();
     setPhotoDraft(null);
     setPhotoPreviewFailed(false);
     setPersistedPhoto(null);
     setRemovePersistedPhoto(true);
     clearPhotoInput();
-
-    if (!currentDraft) {
-      return;
-    }
-
-    startPhotoTransition(async () => {
-      const cleaned = await cleanupDraft(currentDraft.storagePath);
-
-      if (mutationRunId !== photoMutationRunIdRef.current) {
-        return;
-      }
-
-      if (!cleaned) {
-        setPhotoFeedback(t.modules.items.photo.errors.cleanupFailed);
-      }
-    });
   }
 
   function uploadSelectedPhoto(event: ChangeEvent<HTMLInputElement>) {
@@ -336,54 +327,39 @@ export function ItemForm({
     const mutationRunId = photoMutationRunIdRef.current + 1;
     photoMutationRunIdRef.current = mutationRunId;
     resetPhotoAnalysisState();
-    setPhotoDraft(null);
     setPhotoFeedback(t.modules.items.photo.preparing);
 
     startPhotoTransition(async () => {
-      if (previousDraft) {
-        await cleanupDraft(previousDraft.storagePath);
-      }
+      const outcome = await replaceItemPhotoDraft({
+        file: selectedFile,
+        previousStoragePath: previousDraft?.storagePath,
+        isCurrent: () => mutationRunId === photoMutationRunIdRef.current,
+        onUploading: () => setPhotoFeedback(t.modules.items.photo.uploading),
+        cleanup: (storagePath) => cleanupItemPhotoDraft({ storagePath }),
+        upload: (file) => {
+          const formData = new FormData();
+          formData.set("photo", file);
+          return uploadItemPhotoDraft(formData);
+        },
+      });
 
-      if (mutationRunId !== photoMutationRunIdRef.current) {
+      if (outcome.status === "stale") {
         return;
       }
 
-      const preparedPhoto = await prepareItemPhotoForUpload(selectedFile);
-
-      if (mutationRunId !== photoMutationRunIdRef.current) {
-        return;
-      }
-
-      if (!preparedPhoto.ok) {
+      if (outcome.status === "failed") {
         setPhotoFeedback(
-          photoErrorMessages[preparedPhoto.code] ??
+          photoErrorMessages[outcome.code as ItemPhotoDraftError] ??
             t.modules.items.photo.errors.unknown,
         );
         clearPhotoInput();
         return;
       }
 
-      setPhotoFeedback(t.modules.items.photo.uploading);
-      const formData = new FormData();
-      formData.set("photo", preparedPhoto.file);
-
-      const result = await uploadItemPhotoDraft(formData);
-
-      if (mutationRunId !== photoMutationRunIdRef.current) {
-        return;
-      }
-
-      if (!result.ok) {
-        setPhotoFeedback(
-          photoErrorMessages[result.code] ?? t.modules.items.photo.errors.unknown,
-        );
-        clearPhotoInput();
-        return;
-      }
-
+      const result = outcome.upload;
       setPhotoDraft({
         draftId: result.draftId,
-        filename: preparedPhoto.file.name,
+        filename: outcome.file.name,
         mimeType: result.file.mimeType,
         previewUrl: result.previewUrl,
         sizeBytes: result.file.sizeBytes,
@@ -392,7 +368,9 @@ export function ItemForm({
       setPersistedPhoto(null);
       setRemovePersistedPhoto(false);
       setPhotoPreviewFailed(false);
-      setPhotoFeedback(t.modules.items.photo.ready);
+      setPhotoFeedback(outcome.cleanupFailed
+        ? t.modules.items.photo.errors.replacementCleanupFailed
+        : t.modules.items.photo.ready);
     });
   }
 
@@ -404,14 +382,18 @@ export function ItemForm({
     }
 
     const analysisRunId = photoAnalysisRunIdRef.current + 1;
+    const nameEditRevision = itemNameEditRevisionRef.current;
     photoAnalysisRunIdRef.current = analysisRunId;
     setPhotoFeedback(null);
     startPhotoAnalysisTransition(async () => {
-      const result = await analyzeItemPhotoDraft({
-        storagePath: analyzedDraft.storagePath,
-        mimeType: analyzedDraft.mimeType,
-        sizeBytes: analyzedDraft.sizeBytes,
-      });
+      const result = await settleItemFormAction<ItemPhotoAnalysisActionResult>(
+        () => analyzeItemPhotoDraft({
+          storagePath: analyzedDraft.storagePath,
+          mimeType: analyzedDraft.mimeType,
+          sizeBytes: analyzedDraft.sizeBytes,
+        }),
+        { ok: false, code: "provider_request_failed" },
+      );
 
       if (analysisRunId !== photoAnalysisRunIdRef.current) {
         return;
@@ -427,7 +409,11 @@ export function ItemForm({
 
       const { suggestion } = result;
 
-      if (suggestion.nazwa !== null) setItemName(suggestion.nazwa);
+      setItemName((currentName) => resolveItemPhotoSuggestionName(
+        currentName,
+        suggestion,
+        nameEditRevision !== itemNameEditRevisionRef.current,
+      ));
       if (suggestion.opis !== null) setItemDescription(suggestion.opis);
       if (suggestion.categoryId !== null) selectCategory(suggestion.categoryId);
       if (suggestion.typ !== null) setItemType(suggestion.typ);
@@ -437,7 +423,9 @@ export function ItemForm({
       if (suggestion.jednostka !== null) setItemUnit(suggestion.jednostka);
 
       setPhotoFeedback(
-        suggestion.userMessage ?? t.modules.items.photo.suggestionsApplied,
+        suggestion.userMessage ?? (isItemPhotoWeakSuggestion(suggestion)
+          ? t.modules.items.photo.noConfidentMatch
+          : t.modules.items.photo.suggestionsApplied),
       );
     });
   }
@@ -474,7 +462,10 @@ export function ItemForm({
         {t.modules.items.name}
         <input
           className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
-          onChange={(event) => setItemName(event.currentTarget.value)}
+          onChange={(event) => {
+            itemNameEditRevisionRef.current += 1;
+            setItemName(event.currentTarget.value);
+          }}
           name="nazwa"
           required
           value={itemName}
