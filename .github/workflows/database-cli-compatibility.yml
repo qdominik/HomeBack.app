@@ -1,0 +1,42 @@
+name: Database CLI compatibility
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    paths:
+      - supabase/migrations/**
+      - supabase/tests/**
+      - .github/workflows/database-cli-compatibility.yml
+
+jobs:
+  database:
+    name: Database CLI ${{ matrix.cli }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        cli: [2.109.1, 2.120.0]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Install exact compatibility CLI
+        run: npm install --no-save --package-lock=false supabase@${{ matrix.cli }}
+      - run: npx supabase --version
+      - name: Start disposable runner database
+        run: npx supabase start
+      - name: Full pgTAP without retries
+        run: npx supabase test db
+      - name: Populated role migration
+        run: node scripts/prepare-invitation-test-db.mjs
+      - name: Concurrent invitation transactions
+        run: node scripts/test-invitation-concurrency.mjs
+      - name: Stop disposable runner stack
+        if: always()
+        run: npx supabase stop --no-backup

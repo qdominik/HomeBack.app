@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = extensions, public, auth;
 
-select plan(64);
+select plan(67);
 
 insert into auth.users (
   instance_id,
@@ -205,6 +205,14 @@ select is((select count(*) from public.item_location), 4::bigint, 'summary calls
 
 reset role;
 set local "request.jwt.claims" = '{}';
+
+-- Check the real anonymous database role, independently of the body-level
+-- AUTH_REQUIRED check above (which deliberately runs as authenticated).
+set local role anon;
+select throws_ok($$ select * from public.get_room_location_dependency_summary('47000000-0000-0000-0000-000000000001') $$, '42501', 'permission denied for function get_room_location_dependency_summary', 'anon cannot invoke the room summary');
+select throws_ok($$ select * from public.get_storage_location_l2_dependency_summary('57000000-0000-0000-0000-000000000001') $$, '42501', 'permission denied for function get_storage_location_l2_dependency_summary', 'anon cannot invoke the L2 summary');
+select throws_ok($$ select * from public.get_storage_location_l3_dependency_summary('67000000-0000-0000-0000-000000000001') $$, '42501', 'permission denied for function get_storage_location_l3_dependency_summary', 'anon cannot invoke the L3 summary');
+reset role;
 
 select * from finish();
 rollback;
