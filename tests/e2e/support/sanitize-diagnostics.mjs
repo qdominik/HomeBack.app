@@ -10,7 +10,42 @@ const require = createRequire(import.meta.url);
 const { yauzl, yazl } = require(join(dirname(require.resolve("playwright-core/package.json")), "lib/utilsBundle.js"));
 const MAX_ENTRY = 32 * 1024 * 1024;
 const sensitive = /password|passwd|secret|token|cookie|authorization|api[_-]?key|credential/i;
-const limitations = "Only action timing and request URL/status metadata are published. DOM, sources, console, bodies, credentials, screenshots, video and binary resources are omitted.";
+const limitations = "Only action timing, request URL/status metadata, allowlisted navigation flags and filter UUID/state diagnostics are published. DOM, sources, console, bodies, credentials, screenshots, video and binary resources are omitted.";
+
+function navigationHeaders(headers = []) {
+  const result = [];
+  for (const header of headers) {
+    const name = String(header.name).toLowerCase();
+    if (name === "rsc" && header.value === "1") result.push({ name, value: "1" });
+    if (name === "next-router-prefetch" && ["1", "2", "3"].includes(header.value)) result.push({ name, value: header.value });
+    if (name === "next-router-segment-prefetch") result.push({ name, value: "[PRESENT]" });
+  }
+  return result;
+}
+
+export function sanitizeFilterNavigation(input) {
+  if (!Array.isArray(input) || input.length > 100) throw new Error("Invalid filter diagnostic structure");
+  const uuid = (value) => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) ? value : null;
+  const filters = (value) => value && typeof value === "object" ? { category: uuid(value.category), room: uuid(value.room) } : null;
+  return input.filter((event) => ["request", "before-first", "before-second"].includes(event?.phase)).map((event) => ({
+    phase: event.phase,
+    time: Number.isFinite(event.time) ? event.time : null,
+    category: uuid(event.category), room: uuid(event.room),
+    ...(event.phase === "request" ? { rsc: event.rsc === true, segment: event.segment === true, navigation: event.navigation === true,
+      prefetch: ["1", "2", "3"].includes(event.prefetch) ? event.prefetch : null } : {
+      mounted: event.mounted === true, firstChip: event.firstChip === true,
+      pending: typeof event.pending === "boolean" ? event.pending : null,
+      intended: filters(event.intended), optimistic: filters(event.optimistic), base: filters(event.base),
+    }),
+  }));
+}
+
+function filterAttachments(attachments = []) {
+  return attachments.filter((attachment) => attachment.name === "filter-navigation" && attachment.contentType === "application/json" && typeof attachment.body === "string").flatMap((attachment) => {
+    if (attachment.body.length > 128 * 1024) throw new Error("Filter diagnostics exceed size limit");
+    return sanitizeFilterNavigation(JSON.parse(Buffer.from(attachment.body, "base64").toString("utf8")));
+  });
+}
 
 export function redactor(env = process.env) {
   const values = ["Password123!", ...Object.entries(env).filter(([name]) => sensitive.test(name) || /(?:publishable|anon|service_role).*key/i.test(name)).map(([, value]) => value)]
@@ -69,7 +104,7 @@ export function sanitizeEvent(event, redact) {
       if (!snapshot?.request || !snapshot.response) throw new Error("Invalid network trace metadata");
       return { type: event.type, snapshot: {
         ...pick(snapshot, ["_frameref", "_monotonicTime", "pageref", "startedDateTime", "time"], redact),
-        request: { ...pick(snapshot.request, ["method", "httpVersion"], redact), url: safeURL(snapshot.request.url, redact), cookies: [], headers: [], queryString: [], headersSize: -1, bodySize: -1 },
+        request: { ...pick(snapshot.request, ["method", "httpVersion"], redact), url: safeURL(snapshot.request.url, redact), cookies: [], headers: navigationHeaders(snapshot.request.headers), queryString: [], headersSize: -1, bodySize: -1 },
         response: { ...pick(snapshot.response, ["status", "httpVersion"], redact), statusText: "", cookies: [], headers: [], content: { size: 0, mimeType: "text/plain" }, redirectURL: snapshot.response.redirectURL ? safeURL(snapshot.response.redirectURL, redact) : "", headersSize: -1, bodySize: -1 },
         cache: {}, timings: pick(snapshot.timings ?? {}, ["blocked", "dns", "connect", "send", "wait", "receive", "ssl"], redact),
       } };
@@ -132,6 +167,7 @@ export function summarize(report, redact, traceNames = new Map()) {
       for (const spec of suite.specs ?? []) for (const test of spec.tests ?? []) {
         tests.push({ title: redact([...title, spec.title].join(" > ")), file: redact(spec.file), line: spec.line, project: redact(test.projectName), outcome: test.status,
           attempts: (test.results ?? []).map((result) => ({ retry: result.retry, status: result.status, duration: result.duration, errors: (result.errors ?? []).length,
+            filterNavigation: filterAttachments(result.attachments),
             traces: (result.attachments ?? []).filter((attachment) => attachment.name === "trace" && typeof attachment.path === "string").map((attachment) => traceNames.get(resolve(attachment.path))).filter(Boolean) })) });
       }
       walk(suite.suites, title);

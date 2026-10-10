@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 import { dirname } from "node:path";
-import { publishDiagnostics, readZip, redactor, sanitizeTrace, summarize, writeZip } from "./sanitize-diagnostics.mjs";
+import { publishDiagnostics, readZip, redactor, sanitizeTrace, sanitizeFilterNavigation, sanitizeEvent, summarize, writeZip } from "./sanitize-diagnostics.mjs";
 
 const secrets = ["Password123!", "env-secret-key", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature", "unknown-password", "unknown-cookie", "unknown-token"];
 const require = createRequire(import.meta.url);
@@ -74,6 +74,28 @@ test("redacts known env values, encoded secrets, JWT, bearer and credential fiel
   const redact = redactor({ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: secrets[1] });
   const text = redact(`${secrets[1]} ${encodeURIComponent(secrets[0])} ${secrets[2]} Bearer some-other-key password=arbitrary api_key=value`);
   for (const secret of [...secrets.slice(0, 3), "some-other-key", "arbitrary", "api_key=value"]) assert.equal(text.includes(secret), false);
+});
+
+test("filter diagnostics allow UUIDs/flags but never unknown strings, React props or credential headers", () => {
+  const id = "2ac8d485-f08a-4f10-a9c1-4d9694eb9b63";
+  const diagnostic = sanitizeFilterNavigation([{ phase: "before-second", time: 10, category: id, room: secrets[1], mounted: true, firstChip: true, pending: true,
+    intended: { category: id, room: null, password: secrets[0] }, optimistic: { category: id }, base: { room: secrets[1] }, props: secrets },
+  { phase: "request", category: id, rsc: true, prefetch: secrets[2], headers: secrets }, { phase: secrets[3] }]);
+  assert.equal(diagnostic.length, 2);
+  assert.equal(diagnostic[0].intended.category, id);
+  assert.equal(diagnostic[0].room, null);
+  assert.equal(diagnostic[1].prefetch, null);
+  for (const secret of secrets) assert.equal(JSON.stringify(diagnostic).includes(secret), false);
+  const resource = structuredClone(network);
+  resource.snapshot.request.headers.push({ name: "RSC", value: "1" }, { name: "Next-Router-Prefetch", value: "2" }, { name: "next-router-segment-prefetch", value: secrets[1] });
+  assert.deepEqual(sanitizeEvent(resource, redactor({})).snapshot.request.headers, [{ name: "rsc", value: "1" }, { name: "next-router-prefetch", value: "2" }, { name: "next-router-segment-prefetch", value: "[PRESENT]" }]);
+  const attached = structuredClone(report);
+  attached.suites[0].specs[0].tests[0].results[0].attachments = [{ name: "filter-navigation", contentType: "application/json", body: Buffer.from(JSON.stringify(diagnostic)).toString("base64") },
+    { name: "raw", contentType: "application/json", body: Buffer.from(JSON.stringify(secrets)).toString("base64") }];
+  const summary = summarize(attached, redactor({}));
+  assert.deepEqual(summary.tests[0].attempts[0].filterNavigation, diagnostic);
+  for (const secret of secrets) assert.equal(JSON.stringify(summary).includes(secret), false);
+  assert.throws(() => sanitizeFilterNavigation({ password: secrets[0] }));
 });
 
 test("summary distinguishes successful retry from first pass and skipped tests", () => {

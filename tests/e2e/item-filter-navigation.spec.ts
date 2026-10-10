@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 import { itemCard, prepareDeletionDataset } from "./support/m4d8";
+import { filterNavigationDiagnostics } from "./support/filter-navigation-diagnostics";
 
 function isItemsNavigation(request: Request) {
   return request.method() === "GET"
@@ -41,7 +42,7 @@ async function holdNextItemsNavigation(page: Page) {
     ready,
     async release() {
       release();
-      await done;
+      if (captured) await done;
       await page.unroute("**/items?**", handler);
     },
   };
@@ -61,7 +62,7 @@ for (const [viewportName, viewport] of [
   ["mobile", { width: 390, height: 844 }],
 ] as const) {
   for (const order of ["category-room", "room-category"] as const) {
-    test(`Delayed item navigation preserves both rapid filters (${viewportName}, ${order})`, async ({ page }) => {
+    test(`Delayed item navigation preserves both rapid filters (${viewportName}, ${order})`, async ({ page }, testInfo) => {
       test.setTimeout(120_000);
       await page.setViewportSize(viewport);
       const data = await prepareDeletionDataset(page, `filter-race-${viewportName}-${order}`);
@@ -70,17 +71,19 @@ for (const [viewportName, viewport] of [
       const roomId = await optionId(page, "room", data.room.salon);
       const category = page.locator('select[name="category"]');
       const room = page.locator('select[name="room"]');
-      expect(await category.inputValue(), "category starts empty before the tested actions").toBe("");
+      const diagnostics = filterNavigationDiagnostics(page, testInfo);
+      const firstField = order === "category-room" ? "category" : "room";
+      const firstLabel = order === "category-room" ? "Elektronika" : data.room.salon;
+      expect(await diagnostics.selection("before-first", "category", firstLabel), "category starts empty before the tested actions").toBe("");
       expect(await room.inputValue(), "room starts empty before the tested actions").toBe("");
       const held = await holdNextItemsNavigation(page);
       try {
         if (order === "category-room") await category.selectOption(categoryId);
         else await room.selectOption(roomId);
         const firstRequest = await held.ready;
-        const firstField = order === "category-room" ? "category" : "room";
         const firstValue = order === "category-room" ? categoryId : roomId;
         expect(new URL(firstRequest.url()).searchParams.get(firstField), "barrier captured the first tested action").toBe(firstValue);
-        expect(await (order === "category-room" ? category : room).inputValue(), "first selection is present before the next action").toBe(firstValue);
+        expect(await diagnostics.selection("before-second", firstField, firstLabel), "first selection is present before the next action").toBe(firstValue);
         // Assert while the first response is still withheld, then allow the
         // newer response to commit before releasing the obsolete response.
         const nextRequest = page.waitForRequest(isItemsNavigation);
@@ -91,7 +94,7 @@ for (const [viewportName, viewport] of [
         expect(requested.get("room")).toBe(roomId);
         await expectParams(page, { category: categoryId, room: roomId });
       } finally {
-        await held.release();
+        try { await held.release(); } finally { await diagnostics.publish(); }
       }
       for (const reload of [false, true]) {
         if (reload) await page.reload();
