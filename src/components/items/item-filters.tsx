@@ -33,6 +33,8 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   const [isPending, startTransition] = useTransition();
   const [optimisticSearch, setOptimisticSearch] = useOptimistic(committedSearch);
   const intendedSearch = useRef(committedSearch);
+  const [intentRevision, setIntentRevision] = useState(0);
+  const latestIntentRevision = useRef(0);
   const moreFilters = useRef<HTMLDetailsElement>(null);
 
   // An intermediate route must not become the base of the next user choice.
@@ -41,14 +43,21 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   // Reconcile during commit: a delayed passive effect from an earlier render
   // could otherwise overwrite an intent already recorded by a change event.
   useLayoutEffect(() => {
+    // Strict Effects and a revealed tree can replay an older layout closure.
+    // Only a render including the latest user intent may reconcile that intent.
+    if (intentRevision !== latestIntentRevision.current) return;
     if (!isPending) intendedSearch.current = committedSearch;
-  }, [committedSearch, isPending]);
+  }, [committedSearch, isPending, intentRevision]);
 
   useEffect(() => {
     function restoreHistory() {
       const search = new URLSearchParams(window.location.search).toString();
       intendedSearch.current = search;
-      startTransition(() => setOptimisticSearch(search));
+      const revision = ++latestIntentRevision.current;
+      startTransition(() => {
+        setIntentRevision(revision);
+        setOptimisticSearch(search);
+      });
     }
     window.addEventListener("popstate", restoreHistory);
     return () => window.removeEventListener("popstate", restoreHistory);
@@ -73,7 +82,10 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
 
   function navigate(search: string, history: "push" | "replace" = "replace") {
     intendedSearch.current = search;
+    const revision = ++latestIntentRevision.current;
     startTransition(() => {
+      // Commit this snapshot with navigation, not in an urgent old-URL render.
+      setIntentRevision(revision);
       setOptimisticSearch(search);
       const href = search ? `${routes.items}?${search}` : routes.items;
       router[history](href, { scroll: false });
