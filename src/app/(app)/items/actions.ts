@@ -47,6 +47,7 @@ import {
 } from "@/lib/items/permanent-item-deletion";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
+import { uploadItemPhotoWithPreview } from "@/lib/items/item-photo/upload-with-preview";
 import type { Database } from "@/types/database";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
@@ -672,26 +673,16 @@ export async function uploadItemPhotoDraft(
     filename: fileValidation.file.name,
     householdId: context.householdId,
   });
-  const { error: uploadError } = await supabase.storage
-    .from(ITEM_PHOTO_BUCKET)
-    .upload(path, fileValidation.file, {
-      contentType: fileValidation.mimeType,
-      upsert: false,
-    });
-
-  if (uploadError) {
-    return { ok: false, code: "upload_failed" };
-  }
-
-  const { data, error: previewError } = await createItemPhotoPreviewUrl(
-    supabase,
-    path,
-  );
-
-  if (previewError || !data?.signedUrl) {
-    await supabase.storage.from(ITEM_PHOTO_BUCKET).remove([path]);
-    return { ok: false, code: "preview_url_failed" };
-  }
+  const upload = await uploadItemPhotoWithPreview({
+    upload: () => supabase.storage.from(ITEM_PHOTO_BUCKET)
+      .upload(path, fileValidation.file, {
+        contentType: fileValidation.mimeType,
+        upsert: false,
+      }),
+    preview: () => createItemPhotoPreviewUrl(supabase, path),
+    removeUploaded: () => supabase.storage.from(ITEM_PHOTO_BUCKET).remove([path]),
+  });
+  if (!upload.ok) return upload;
 
   return {
     ok: true,
@@ -700,7 +691,7 @@ export async function uploadItemPhotoDraft(
       mimeType: fileValidation.mimeType,
       sizeBytes: fileValidation.sizeBytes,
     },
-    previewUrl: data.signedUrl,
+    previewUrl: upload.previewUrl,
     storagePath: path,
   };
 }

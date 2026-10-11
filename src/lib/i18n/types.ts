@@ -210,6 +210,7 @@ export type Dictionary = {
         analyzing: string;
         fillFromPhoto: string;
         suggestionsApplied: string;
+        noConfidentMatch: string;
         remove: string;
         removing: string;
         ready: string;
@@ -224,6 +225,7 @@ export type Dictionary = {
           uploadFailed: string;
           previewUrlFailed: string;
           cleanupFailed: string;
+          replacementCleanupFailed: string;
           aiNotConfigured: string;
           analysisFailed: string;
           categoriesUnavailable: string;
