@@ -10,7 +10,8 @@ insert into auth.users(id, email, email_confirmed_at) values
  ('91000000-0000-0000-0000-000000000004','child@invites.test',now()),
  ('91000000-0000-0000-0000-000000000005','join@invites.test',now()),
  ('91000000-0000-0000-0000-000000000006','unverified@invites.test',null),
- ('91000000-0000-0000-0000-000000000007','other@invites.test',now());
+ ('91000000-0000-0000-0000-000000000007','other@invites.test',now()),
+ ('91000000-0000-0000-0000-000000000008','renew@invites.test',now());
 insert into public.household(id,nazwa,typ) values
  ('92000000-0000-0000-0000-000000000001','Invites A','dom'),
  ('92000000-0000-0000-0000-000000000002','Invites B','dom');
@@ -58,8 +59,42 @@ select is((select status from public.household_invitation where id=(select invit
 select is((select replaces_id from public.household_invitation where id=(select invitation_id from issued where label='renew-new')),(select invitation_id from issued where label='renew'),'renewal links predecessor');
 select is((select count(*)::int from public.household_invitation_event where invitation_id=(select invitation_id from issued where label='renew') and event='revoked' and reason='renewed'),1,'renewal retains history');
 select ok((select token from issued where label='renew')<>(select token from issued where label='renew-new'),'renewal rotates token');
+
+-- Reuse the pending synthetic invitation and its verified, matching recipient.
+-- Snapshot all other invitations and their audit before either RPC runs.
+select is((select status from public.household_invitation where id=(select invitation_id from issued where label='renew-new')),'pending','manual revocation starts with a pending invitation');
+reset role;
+create temp table manual_revoke_others_before as
+ select
+  (select coalesce(jsonb_agg(to_jsonb(i) order by i.id),'[]'::jsonb)
+   from public.household_invitation i
+   where i.id<>(select invitation_id from issued where label='renew-new')) as invitations,
+  (select coalesce(jsonb_agg(to_jsonb(e) order by e.id),'[]'::jsonb)
+   from public.household_invitation_event e
+   where e.invitation_id<>(select invitation_id from issued where label='renew-new')) as events;
+set local role authenticated;
 select lives_ok($$select public.revoke_household_invitation((select invitation_id from issued where label='renew-new'))$$,'administrator can revoke own invitation');
 
+set local "request.jwt.claims"='{"sub":"91000000-0000-0000-0000-000000000008","role":"authenticated"}';
+select throws_ok($$select public.accept_household_invitation((select token from issued where label='renew-new'),'Revoked recipient')$$,'P0001','INVITATION_INVALID','matching verified recipient cannot accept a manually revoked invitation');
+reset role;
+select is((select status from public.household_invitation where id=(select invitation_id from issued where label='renew-new')),'revoked','failed acceptance preserves manual revocation');
+select ok((select revoked_at is not null and accepted_by is null and accepted_at is null from public.household_invitation where id=(select invitation_id from issued where label='renew-new')),'manually revoked invitation has no acceptance metadata');
+select is((select count(*)::int from public.household_invitation_event where invitation_id=(select invitation_id from issued where label='renew-new') and event='revoked' and reason='manual'),1,'manual revocation creates exactly one manual audit event');
+select is((select count(*)::int from public.household_invitation_event where invitation_id=(select invitation_id from issued where label='renew-new') and event='accepted'),0,'rejected manually revoked invitation creates no accepted event');
+select is((select count(*)::int from public.profile where id='91000000-0000-0000-0000-000000000008'),0,'rejected manually revoked invitation creates no recipient profile or membership');
+select ok(
+ (select invitations from manual_revoke_others_before) =
+ (select coalesce(jsonb_agg(to_jsonb(i) order by i.id),'[]'::jsonb)
+  from public.household_invitation i
+  where i.id<>(select invitation_id from issued where label='renew-new'))
+ and (select events from manual_revoke_others_before) =
+ (select coalesce(jsonb_agg(to_jsonb(e) order by e.id),'[]'::jsonb)
+  from public.household_invitation_event e
+  where e.invitation_id<>(select invitation_id from issued where label='renew-new')),
+ 'manual revocation and rejected acceptance leave other invitations and audit unchanged');
+
+set local role authenticated;
 set local "request.jwt.claims"='{"sub":"91000000-0000-0000-0000-000000000002","role":"authenticated"}';
 select throws_ok($$select public.revoke_household_invitation((select invitation_id from issued where label='join'))$$,'P0001','INVITATION_NOT_FOUND','foreign revocation denied');
 select throws_ok($$select public.renew_household_invitation((select invitation_id from issued where label='join'))$$,'P0001','INVITATION_NOT_FOUND','foreign renewal denied');
