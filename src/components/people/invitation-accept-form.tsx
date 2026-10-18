@@ -23,7 +23,7 @@ export function InvitationAcceptForm({
         Imię
         <input
           autoComplete="given-name"
-          className="mt-2 h-11 w-full rounded-md border border-line px-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="mt-2 h-11 w-full rounded-md border border-line px-3 outline-none focus:border-primary focus:not-focus-visible:ring-2 focus:not-focus-visible:ring-primary/20"
           defaultValue={suggestedName}
           disabled={pending}
           name="name"

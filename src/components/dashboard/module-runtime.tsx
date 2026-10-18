@@ -91,7 +91,7 @@ export function RecentItemsDashboardModule({ data }: { data: DashboardWidgetData
       {data.recentItems.data.map((item) => (
         <li key={item.id}>
           <Link
-            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-primary-strong ${uiTokens.focusRing} focus-visible:ring-offset-2`}
+            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-primary-strong ${uiTokens.focusRing}`}
             href={`${routes.items}?focus=${item.id}`}
           >
             <ItemPhotoThumbnail
