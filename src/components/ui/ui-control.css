@@ -20,8 +20,11 @@
 }
 
 .ui-control:focus {
-  outline: none;
   border-color: var(--primary);
+}
+
+.ui-control:focus:not(:focus-visible) {
+  outline: none;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 16%, transparent);
 }
 
@@ -29,7 +32,7 @@
   border-color: var(--danger);
 }
 
-.ui-control[aria-invalid="true"]:focus {
+.ui-control[aria-invalid="true"]:focus:not(:focus-visible) {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 16%, transparent);
 }
 

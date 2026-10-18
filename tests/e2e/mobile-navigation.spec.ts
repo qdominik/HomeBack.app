@@ -1,6 +1,55 @@
 import { expect, test } from "@playwright/test";
+import { buttonClassName } from "../../src/components/ui/button";
+import { uiTokens } from "../../src/lib/ui/tokens";
 import { registerAndCreateHousehold } from "./support/auth";
 import { itemCard } from "./support/m4d8";
+
+test("keyboard focus has one visible outline, including invalid controls", async ({ page }, testInfo) => {
+  await page.goto("/login");
+  const stylesheets = await page.locator('link[rel="stylesheet"]').evaluateAll(
+    links => links.map(link => (link as HTMLLinkElement).href),
+  );
+  expect(stylesheets.length).toBeGreaterThan(0);
+  const css = await Promise.all(stylesheets.map(async href => {
+    const response = await page.request.get(href);
+    expect(response.ok()).toBe(true);
+    return response.text();
+  }));
+  const markup = `<main class="p-6 space-y-6">
+    <label for="invalid-focus">Invalid field</label>
+    <input id="invalid-focus" class="ui-control" aria-invalid="true" aria-errormessage="invalid-focus-error" aria-describedby="invalid-focus-error" value="invalid">
+    <p id="invalid-focus-error" role="alert">Check this value</p>
+    <input class="ui-control" aria-label="Valid field">
+    <a href="#result" class="${uiTokens.focusRing}">Dashboard result</a>
+    <button class="${buttonClassName()}" type="button">Search</button>
+  </main>`;
+  // Exercise the real compiled app CSS, including the error-state cascade.
+  const fixture = `<!doctype html><html><head><style>${css.join("\n")}</style></head><body>${markup}</body></html>`;
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("about:blank");
+    await page.setContent(fixture);
+    const controls = [page.getByLabel("Invalid field", { exact: true }), page.getByLabel("Valid field", { exact: true }),
+      page.getByRole("link", { name: "Dashboard result" }), page.getByRole("button", { name: "Search" })];
+    for (const control of controls) {
+      await page.keyboard.press("Tab");
+      await expect(control).toBeFocused();
+      await expect(control).toHaveCSS("outline-style", "solid");
+      await expect(control).toHaveCSS("outline-width", "2px");
+      await expect(control).toHaveCSS("outline-offset", "2px");
+      await expect(control).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+      await expect(control).toHaveCSS("box-shadow", "none");
+      if (control === controls[0]) {
+        await expect(control).toHaveCSS("border-color", "rgb(231, 76, 60)");
+        await page.screenshot({ path: testInfo.outputPath(`focus-invalid-${width}.png`) });
+      }
+    }
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveAttribute("aria-errormessage", "invalid-focus-error");
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveCSS("border-color", "rgb(231, 76, 60)");
+    await expect(page.getByRole("alert")).toHaveText("Check this value");
+  }
+});
 
 for (const width of [390, 768, 1280]) {
   test(`header and menu work at ${width}px`, async ({ page }) => {
