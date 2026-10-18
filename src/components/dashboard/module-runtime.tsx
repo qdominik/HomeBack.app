@@ -32,7 +32,7 @@ export type DashboardModuleRegistration = {
 export function SoonModuleBody() {
   return (
     <div className="mt-auto pt-4">
-      <p className="rounded-control border border-dashed border-line bg-surface-muted/60 px-4 py-3 text-center text-sm font-medium text-muted">
+      <p className="text-sm font-medium text-muted">
         {t.status.soonDescription}
       </p>
     </div>
