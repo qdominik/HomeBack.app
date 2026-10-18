@@ -190,7 +190,7 @@ export default async function HomeStructurePage({
       <header className="border-b border-line pb-6">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end xl:justify-between">
           <div className="min-w-0">
-            <h1 className="text-[2rem] font-bold leading-tight text-foreground sm:text-[2.5rem]">
+            <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
               {structureRootName}
             </h1>
             <p className="mt-2 max-w-2xl text-base leading-7 text-muted">
