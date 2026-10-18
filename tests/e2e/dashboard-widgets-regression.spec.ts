@@ -71,11 +71,11 @@ test.describe("Dashboard widget regression", () => {
       await expect(recentItemsAction).toHaveAttribute("href", "/items");
       await recentItemsAction.focus();
       await expect(recentItemsAction).toBeFocused();
-      expect(
-        await recentItemsAction.evaluate(
-          (element) => getComputedStyle(element).boxShadow !== "none",
-        ),
-      ).toBe(true);
+      await expect(recentItemsAction).toHaveCSS("outline-style", "solid");
+      await expect(recentItemsAction).toHaveCSS("outline-width", "2px");
+      await expect(recentItemsAction).toHaveCSS("outline-offset", "2px");
+      await expect(recentItemsAction).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+      await expect(recentItemsAction).toHaveCSS("box-shadow", "none");
       await expect(dashboardModule(otherPage, dashboardModuleTitles.categories)
         .getByRole("link", { name: "Rzeczy", exact: true }))
         .toHaveAttribute("href", "/items");

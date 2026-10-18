@@ -40,8 +40,11 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
     await expect(dialog.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
     await globalSearch.focus();
     await expect(globalSearch).toBeFocused();
-    await expect(globalSearch).toHaveCSS("outline-style", "none");
-    await expect.poll(() => globalSearch.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("3px");
+    await expect(globalSearch).toHaveCSS("outline-style", "solid");
+    await expect(globalSearch).toHaveCSS("outline-width", "2px");
+    await expect(globalSearch).toHaveCSS("outline-offset", "2px");
+    await expect(globalSearch).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+    await expect(globalSearch).toHaveCSS("box-shadow", "none");
     expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     await dialog.screenshot({ path: `test-results/ui-foundation/search-${name}.png` });
     await page.route("**/items", async (route) => {
