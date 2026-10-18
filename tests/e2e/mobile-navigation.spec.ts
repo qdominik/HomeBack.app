@@ -1,6 +1,145 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import ts from "typescript";
+import { buttonClassName } from "../../src/components/ui/button";
+import { uiTokens } from "../../src/lib/ui/tokens";
 import { registerAndCreateHousehold } from "./support/auth";
 import { itemCard } from "./support/m4d8";
+
+// Read static class expressions from the actual components rather than copying
+// their classes into a fixture that could silently diverge from the application.
+function componentClasses(file: string, tagOrVariable: string, attribute?: string): string[] {
+  const source = ts.createSourceFile(file, readFileSync(resolve(__dirname, "../../src", file), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  function strings(node: ts.Node): string[] {
+    if (ts.isStringLiteral(node)) return [node.text];
+    if (ts.isJsxExpression(node) && node.expression) return strings(node.expression);
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+      return strings(node.left).flatMap(left => strings(node.right).map(right => left + right));
+    }
+    if (ts.isConditionalExpression(node)) return [...strings(node.whenTrue), ...strings(node.whenFalse)];
+    throw new Error(`Expected a static class expression in ${file}`);
+  }
+  const result: string[] = [];
+  function visit(node: ts.Node) {
+    if (ts.isVariableDeclaration(node) && node.name.getText(source) === tagOrVariable && node.initializer) result.push(...strings(node.initializer));
+    if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && node.tagName.getText(source) === tagOrVariable) {
+      const attributes = node.attributes.properties.filter(ts.isJsxAttribute);
+      if (!attribute || attributes.some(entry => entry.name.getText(source) === attribute)) {
+        const className = attributes.find(entry => entry.name.getText(source) === "className");
+        if (className?.initializer) result.push(...strings(className.initializer));
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(source);
+  expect(result.length, `class expression for ${tagOrVariable} in ${file}`).toBeGreaterThan(0);
+  return result;
+}
+
+test("personalization, icon picker and invitation fields have one keyboard indicator", async ({ page }, testInfo) => {
+  await page.goto("/login");
+  const stylesheets = await page.locator('link[rel="stylesheet"]').evaluateAll(links => links.map(link => (link as HTMLLinkElement).href));
+  expect(stylesheets.length).toBeGreaterThan(0);
+  const css = await Promise.all(stylesheets.map(async href => {
+    const response = await page.request.get(href);
+    expect(response.ok()).toBe(true);
+    return response.text();
+  }));
+  const toggle = componentClasses("app/(app)/settings/dashboard-personalization-content.tsx", "moduleToggleClassName")[0];
+  const trigger = componentClasses("components/icons/entity-icon-picker.tsx", "button", "aria-controls")[0];
+  const [selectedIcon, otherIcon] = componentClasses("components/icons/entity-icon-picker.tsx", "button", "title");
+  const email = componentClasses("components/people/people-content.tsx", "input")[0];
+  const role = componentClasses("components/people/people-content.tsx", "select")[0];
+  const name = componentClasses("components/people/invitation-accept-form.tsx", "input")[0];
+  // Isolated controls have no form actions or event handlers. Tab cannot send or
+  // accept an invitation, save preferences, or change an icon in the application.
+  const fixture = `<!doctype html><html><head><style>${css.join("\n")}</style></head><body><main class="p-6 max-w-lg grid grid-cols-2 gap-6">
+    <input aria-label="Hidden module" type="checkbox" class="relative ${toggle}">
+    <input aria-label="Visible module" type="checkbox" checked class="relative ${toggle}">
+    <button type="button" class="${trigger}">Icon picker</button>
+    <button type="button" aria-pressed="true" class="${selectedIcon}">Selected icon</button>
+    <button type="button" aria-pressed="false" class="${otherIcon}">Other icon</button>
+    <input aria-label="Invitation email" type="email" class="${email}">
+    <select aria-label="Invitation role" class="${role}"><option>Adult</option></select>
+    <input aria-label="Invitation name" class="${name}">
+  </main></body></html>`;
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("about:blank");
+    await page.setContent(fixture);
+    for (const control of await page.locator("input, button, select").all()) {
+      await page.keyboard.press("Tab");
+      await expect(control).toBeFocused();
+      await expect(control).toHaveCSS("outline-style", "solid");
+      await expect(control).toHaveCSS("outline-width", "2px");
+      await expect(control).toHaveCSS("outline-offset", "2px");
+      await expect(control).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+      await expect(control).toHaveCSS("box-shadow", "none");
+    }
+    await expect(page.getByLabel("Visible module", { exact: true })).toBeChecked();
+    await expect(page.getByLabel("Hidden module", { exact: true })).not.toBeChecked();
+    await expect(page.getByRole("button", { name: "Selected icon", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "Selected icon", exact: true })).toHaveCSS("border-color", "rgb(27, 111, 77)");
+    await page.getByRole("button", { name: "Icon picker", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Icon picker", exact: true })).toHaveCSS("border-color", "rgb(27, 111, 77)");
+    const roleControl = page.getByLabel("Invitation role", { exact: true });
+    await roleControl.click();
+    await expect(roleControl).toHaveCSS("border-color", "rgb(27, 111, 77)");
+    if (!await roleControl.evaluate(element => element.matches(":focus-visible"))) {
+      await expect(roleControl).not.toHaveCSS("box-shadow", "none");
+    }
+    await page.keyboard.press("Escape");
+    await page.screenshot({ path: testInfo.outputPath(`focus-review-${width}.png`), fullPage: true });
+  }
+});
+
+test("keyboard focus has one visible outline, including invalid controls", async ({ page }, testInfo) => {
+  await page.goto("/login");
+  const stylesheets = await page.locator('link[rel="stylesheet"]').evaluateAll(
+    links => links.map(link => (link as HTMLLinkElement).href),
+  );
+  expect(stylesheets.length).toBeGreaterThan(0);
+  const css = await Promise.all(stylesheets.map(async href => {
+    const response = await page.request.get(href);
+    expect(response.ok()).toBe(true);
+    return response.text();
+  }));
+  const markup = `<main class="p-6 space-y-6">
+    <label for="invalid-focus">Invalid field</label>
+    <input id="invalid-focus" class="ui-control" aria-invalid="true" aria-errormessage="invalid-focus-error" aria-describedby="invalid-focus-error" value="invalid">
+    <p id="invalid-focus-error" role="alert">Check this value</p>
+    <input class="ui-control" aria-label="Valid field">
+    <a href="#result" class="${uiTokens.focusRing}">Dashboard result</a>
+    <button class="${buttonClassName()}" type="button">Search</button>
+  </main>`;
+  // Exercise the real compiled app CSS, including the error-state cascade.
+  const fixture = `<!doctype html><html><head><style>${css.join("\n")}</style></head><body>${markup}</body></html>`;
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("about:blank");
+    await page.setContent(fixture);
+    const controls = [page.getByLabel("Invalid field", { exact: true }), page.getByLabel("Valid field", { exact: true }),
+      page.getByRole("link", { name: "Dashboard result" }), page.getByRole("button", { name: "Search" })];
+    for (const control of controls) {
+      await page.keyboard.press("Tab");
+      await expect(control).toBeFocused();
+      await expect(control).toHaveCSS("outline-style", "solid");
+      await expect(control).toHaveCSS("outline-width", "2px");
+      await expect(control).toHaveCSS("outline-offset", "2px");
+      await expect(control).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+      await expect(control).toHaveCSS("box-shadow", "none");
+      if (control === controls[0]) {
+        await expect(control).toHaveCSS("border-color", "rgb(231, 76, 60)");
+        await page.screenshot({ path: testInfo.outputPath(`focus-invalid-${width}.png`) });
+      }
+    }
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveAttribute("aria-errormessage", "invalid-focus-error");
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveCSS("border-color", "rgb(231, 76, 60)");
+    await expect(page.getByRole("alert")).toHaveText("Check this value");
+  }
+});
 
 for (const width of [390, 768, 1280]) {
   test(`header and menu work at ${width}px`, async ({ page }) => {

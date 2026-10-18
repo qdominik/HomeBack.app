@@ -24,7 +24,7 @@ type ItemFiltersProps = {
   view: string;
 };
 
-const selectClassName = "h-11 min-w-0 rounded-control border border-line bg-surface px-3 text-sm font-medium text-foreground outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20";
+const selectClassName = "h-11 min-w-0 rounded-control border border-line bg-surface px-3 text-sm font-medium text-foreground outline-none focus:border-primary";
 
 export function ItemFilters({ categories, filters, positions, rooms, storageLocations, view }: ItemFiltersProps) {
   const router = useRouter();
@@ -157,7 +157,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
         <label className="relative min-w-0 flex-1">
           <span className="sr-only">{t.modules.items.search}</span>
           <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
+          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
         </label>
         <button className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" type="submit">
           <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
