@@ -306,7 +306,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {isAdmin ? (
         <details className="space-y-4">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-line pb-6 [&::-webkit-details-marker]:hidden">
-            <h1 className="text-2xl font-semibold tracking-normal text-foreground">
+            <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground sm:text-3xl">
               {t.modules.items.title}
             </h1>
             <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-strong">
@@ -320,7 +320,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         </details>
       ) : (
         <header className="border-b border-line pb-6">
-          <h1 className="text-2xl font-semibold tracking-normal text-foreground">
+          <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground sm:text-3xl">
             {t.modules.items.title}
           </h1>
         </header>

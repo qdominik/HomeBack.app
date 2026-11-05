@@ -617,6 +617,7 @@ test("Groq item photo provider reports missing model only for analysis", async (
 
 test("Groq item photo provider sends the signed URL and validates JSON", async () => {
   let request: RequestInit | undefined;
+  let endpoint: unknown;
   const provider = createGroqItemPhotoAiProvider(
     {
       provider: "groq",
@@ -624,6 +625,7 @@ test("Groq item photo provider sends the signed URL and validates JSON", async (
       model: "owner-selected-vision-model",
     },
     async (_url, init) => {
+      endpoint = _url;
       request = init;
       return new Response(
         JSON.stringify({
@@ -640,6 +642,119 @@ test("Groq item photo provider sends the signed URL and validates JSON", async (
   });
   assert.match(String(request?.body), /storage\.example\.test\/signed-item-photo/);
   assert.match(String(request?.body), /response_format/);
+  assert.equal(endpoint, "https://api.groq.com/openai/v1/chat/completions");
+  assert.equal(new Headers(request?.headers).get("authorization"), "Bearer secret");
+  assert.equal(new Headers(request?.headers).get("content-type"), "application/json");
+  const body = JSON.parse(String(request?.body));
+  assert.equal(body.model, "owner-selected-vision-model");
+  assert.equal(body.temperature, 0);
+  assert.deepEqual(body.response_format, { type: "json_object" });
+  assert.equal(request?.cache, "no-store");
+  assert.equal(request?.redirect, "error");
+  assert.ok(request?.signal instanceof AbortSignal);
+});
+
+test("Groq accepts inline images without changing the vision request contract", async () => {
+  const imageUrl = "data:image/webp;base64,dGVzdA==";
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "test-only", model: "owner-selected-vision-model" },
+    async (_url, init) => {
+      const body = JSON.parse(String(init?.body));
+      assert.deepEqual(body.messages[0].content[1], { type: "image_url", image_url: { url: imageUrl } });
+      assert.match(body.messages[0].content[0].text, /JSON/);
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS_SUGGESTION) } }] }));
+    },
+    { logDiagnostic: () => {} },
+  );
+  assert.equal((await provider.analyze({ ...VALID_ANALYSIS_INPUT, imageUrl })).ok, true);
+});
+
+test("Groq respects Retry-After seconds and bounds retries without retrying early", async () => {
+  for (const [header, expectedDelay] of [
+    ["2", 2000], ["0.5", 500], ["0", 0], ["5", 5000],
+    [null, 250], ["invalid", 250], ["-1", 250], ["6", null], ["9".repeat(400), null],
+  ] as const) {
+    let calls = 0;
+    const delays: number[] = [];
+    const provider = createGroqItemPhotoAiProvider(
+      { provider: "groq", groqApiKey: "test-only", model: "owner-selected-vision-model" },
+      async () => {
+        calls += 1;
+        return new Response("do-not-log-provider-body", {
+          status: 429,
+          headers: header === null ? {} : { "retry-after": header },
+        });
+      },
+      { sleep: async (ms) => { delays.push(ms); }, logDiagnostic: () => {} },
+    );
+    assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), { ok: false, code: "provider_rate_limited" });
+    assert.equal(calls, expectedDelay === null ? 1 : 2);
+    assert.deepEqual(delays, expectedDelay === null ? [] : [expectedDelay]);
+  }
+});
+
+test("Groq aborts stalled requests and uses a fresh timeout signal for its single retry", async () => {
+  const signals: AbortSignal[] = [];
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "test-only", model: "owner-selected-vision-model" },
+    async (_url, init) => {
+      const signal = init?.signal;
+      assert.ok(signal instanceof AbortSignal);
+      signals.push(signal);
+      return new Promise<Response>((_resolve, reject) => {
+        const guard = setTimeout(() => reject(new Error("timeout signal did not abort")), 1000);
+        signal.addEventListener("abort", () => {
+          clearTimeout(guard);
+          reject(signal.reason);
+        }, { once: true });
+      });
+    },
+    { requestTimeoutMs: 5, sleep: async () => {}, logDiagnostic: () => {} },
+  );
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), { ok: false, code: "provider_timeout" });
+  assert.equal(signals.length, 2);
+  assert.notEqual(signals[0], signals[1]);
+  assert.equal(signals.every((signal) => signal.aborted), true);
+});
+
+test("Groq classifies a timeout while reading the response body", async () => {
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "test-only", model: "owner-selected-vision-model" },
+    async () => {
+      return new Response(new ReadableStream({
+        start(controller) {
+          controller.error(new DOMException("private-body", "TimeoutError"));
+        },
+      }));
+    },
+    { logDiagnostic: () => {} },
+  );
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), { ok: false, code: "provider_timeout" });
+});
+
+test("Groq diagnostics exclude arbitrary exception names and response header data", async () => {
+  const events: Array<Record<string, unknown>> = [];
+  let calls = 0;
+  const provider = createGroqItemPhotoAiProvider(
+    { provider: "groq", groqApiKey: "private-key", model: "owner-selected-vision-model" },
+    async () => {
+      calls += 1;
+      if (calls === 1) {
+        const error = new Error("private-prompt-and-password");
+        error.name = "private-prompt-and-password";
+        throw error;
+      }
+      return new Response("private-response", {
+        status: 500,
+        headers: { "content-type": "application/json; private-user-data=private-header" },
+      });
+    },
+    { logDiagnostic: (event) => events.push(event), sleep: async () => {} },
+  );
+  assert.deepEqual(await provider.analyze(VALID_ANALYSIS_INPUT), { ok: false, code: "provider_server_error" });
+  assert.doesNotMatch(JSON.stringify(events), /private-|storage\.example|signed-item-photo|Categories:/);
+  assert.ok(events.some((event) => event.exceptionName === "UnknownError"));
+  assert.ok(events.some((event) => event.responseContentType === "application/json"));
 });
 
 test("Groq item photo provider rejects invalid JSON with a controlled error", async () => {

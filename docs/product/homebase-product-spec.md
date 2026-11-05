@@ -253,6 +253,30 @@ Wieloużytkownikowość, role i zaproszenia.
 - profil użytkownika: imię, avatar,
 - ostatnia aktywność w widoku administratora.
 
+#### Stan implementacji ról i zaproszeń — 2026-10-12
+
+Na main `77313919c50b743fe58252dace643fc7d8cc58d1` są fundament bazy,
+lista członków, tworzenie/ponowienie/odwołanie zaproszenia, SMTP i przyjęcie
+zaproszenia ([#84](https://github.com/qdominik/HomeBack.app/pull/84),
+[#86](https://github.com/qdominik/HomeBack.app/pull/86),
+[#87](https://github.com/qdominik/HomeBack.app/pull/87)). Kontrakty:
+[fundament](../decisions/roles-invites-foundation.md) i
+[dostarczanie](../decisions/roles-invites-email-delivery.md).
+Role techniczne to `admin`, `dorosły`, `dziecko`; jeden użytkownik pozostaje
+w jednym gospodarstwie. Gość i multi-household pozostają poza tym zakresem.
+
+Zmiana roli i usunięcie członka nie są dostępne w obecnym UI/RPC.
+Wymagają osobnej decyzji, atomowych operacji i testów współbieżnej ochrony
+ostatniego administratora; nie należy deklarować ich jako zakończonych.
+[PR #83](https://github.com/qdominik/HomeBack.app/pull/83) jest historycznym
+planem, a nie bieżącą bramką ani finalną macierzą uprawnień.
+Jego pozostałe propozycje — paginacja, FTS/filtry serwerowe, agregacje Dashboardu,
+miniatury/batch signed URLs, Realtime, avatary, feed aktywności, optimistic UI
+i wersjonowanie — wymagają aktualnego pomiaru problemu i osobnej decyzji o
+kolejności. Nie zatwierdzamy dawnej hierarchii P0 ani obowiązkowego wdrożenia
+Zod. PWA/offline, dark mode i motion nie są warunkami działania zaproszeń.
+Opis implementacji nie potwierdza rollout ani aktywacji w Production.
+
 ---
 
 ### Moduł 4: Dashboard — Home Screen
@@ -1130,6 +1154,66 @@ Realnie pierwsze 6–12 miesięcy to okres testowania, kosztów i niskich przych
 - [ ] Publikacja v0.2 jako public beta.
 
 ### Backlog techniczny
+
+#### TOOL-TS7 — zaplanować migrację TypeScript 5.9.3 do gałęzi 7
+
+**Status:** BACKLOG, migracja opcjonalna; źródło
+[#68](https://github.com/qdominik/HomeBack.app/pull/68), head
+`dd219eed58359d858d8f14d469e6d73399375273`.
+Audyt niezmienionego lockfile main z 2026-10-12 zgłasza 0 podatności;
+nie znaleziono konkretnej potrzeby funkcjonalnej lub bezpieczeństwa wymagającej
+TS7 teraz. Nie jest to gwarancja braku przyszłych advisory.
+
+**Warunki rozpoczęcia:** osobna decyzja z mierzalną korzyścią albo nowym
+advisory/brakiem wsparcia oraz potwierdzone wsparcie Next i typescript-eslint.
+Next 16.3.8 korzysta z JS API kompilatora; samo szerokie peer dependency nie
+potwierdza zgodności. Obecny typescript-eslint 8.63.0 deklaruje TS `<6.1.0`.
+
+**Zakres:** zinwentaryzować konfiguracje i użycia JS API, zaplanować przejście
+CommonJS testów z `moduleResolution: node` bez zmiany ich semantyki, ocenić
+nowe domyślne opcje TS6/7, plugin Next, build, edytor oraz fixture'y Playwright
+używające `transpileModule`, `JsxEmit` i `ScriptTarget`. Native TS7 nie udostępnia
+stabilnego API programistycznego. W
+[CI ocenionego SHA](https://github.com/qdominik/HomeBack.app/actions/runs/38280343688)
+App kończy się TS5108, a E2E błędami brakujących `ReactJSX`/`ES2020`.
+Nie są to problemy do usunięcia przez skip, wyłączenie typecheck lub rerun.
+
+**Odbiór:** spójny manifest/lockfile i udokumentowane wszystkie kopie TS oraz
+peer dependencies; zachowany runtime, reguły modułów i asercje; testy logiki,
+lint, jawny typecheck, build, audit oraz pełne wymagane CI finalnego SHA,
+w tym regresje zdjęć/nawigacji i kill-switch. Porównać wyniki i czas z baseline;
+bez nowych pominięć lub obchodzenia kontroli.
+Źródła: [TypeScript 7](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/),
+[wsparcie typescript-eslint](https://typescript-eslint.io/users/dependency-versions/).
+
+#### TOOL-ESLINT10 — usunąć brak wsparcia ESLint 9
+
+**Status:** PILNE PLANOWANIE, implementacja osobno; otwarty
+[#98](https://github.com/qdominik/HomeBack.app/pull/98), head
+`8fc1df6d7c548a734324273581e62aa62d57f45e`.
+ESLint 9 jest EOL od 2026-08-06 według
+[oficjalnej polityki](https://eslint.org/version-support/).
+Nie odkładamy aktualizacji jako pozbawionej uzasadnienia i nie deklarujemy
+konkretnej CVE: aktualny audit main wynosi 0.
+
+**Warunki rozpoczęcia i zakres:** uzgodnić zgodny zestaw Next/eslint-config-next,
+pluginów React, import, jsx-a11y, hooks i typescript-eslint; obecne React 7.37.5,
+import 2.32.0 oraz jsx-a11y 6.10.2 deklarują peer ESLint do 9.
+Node projektu 24.18.0 spełnia zakres ESLint 10
+`^20.19.0 || ^22.13.0 || >=24`. Istnieje już flat config; ocenić nowe wyszukiwanie
+konfiguracji, reguły, JSX scope i usunięte API `context`/`SourceCode` zgodnie z
+[przewodnikiem migracji](https://eslint.org/docs/latest/use/migrate-to-10.0.0).
+Zachować lokalny adapter `tools/next-eslint-glob` i jego regresje.
+W [CI ocenionego SHA](https://github.com/qdominik/HomeBack.app/actions/runs/38280353165)
+lint pada na `react/display-name`: `contextOrFilename.getFilename` nie jest
+funkcją. Zagnieżdżenie pluginu w lockfile i peer Next `eslint >=9` nie naprawiają
+tego błędu; Database/E2E PASS nie zastępują App.
+
+**Odbiór:** pełny lint z dotychczasowymi regułami, bez poszerzania ignorowanych
+plików, wyłączania reguł lub obejścia peer dependencies; deterministyczne
+`npm ci`, testy logiki (w tym adaptera glob), typecheck, build, audit i wymagane
+CI finalnego SHA. Wyjaśnić wszystkie dodatkowe kopie ESLint i zmiany lockfile.
+Nie wymagać TS7 jako części tej migracji ani zmieniać runtime lub Dependabota.
 
 #### Ujednolicić nadawcę wiadomości zakładania konta na noreply@homeback.app
 

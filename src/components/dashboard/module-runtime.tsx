@@ -32,7 +32,7 @@ export type DashboardModuleRegistration = {
 export function SoonModuleBody() {
   return (
     <div className="mt-auto pt-4">
-      <p className="rounded-control border border-dashed border-line bg-surface-muted/60 px-4 py-3 text-center text-sm font-medium text-muted">
+      <p className="text-sm font-medium text-muted">
         {t.status.soonDescription}
       </p>
     </div>
@@ -91,7 +91,7 @@ export function RecentItemsDashboardModule({ data }: { data: DashboardWidgetData
       {data.recentItems.data.map((item) => (
         <li key={item.id}>
           <Link
-            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-primary-strong ${uiTokens.focusRing} focus-visible:ring-offset-2`}
+            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-primary-strong ${uiTokens.focusRing}`}
             href={`${routes.items}?focus=${item.id}`}
           >
             <ItemPhotoThumbnail

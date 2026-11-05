@@ -6,7 +6,6 @@ import {
   createItemPhotoAnalysisRequestId,
   logItemPhotoAnalysisDiagnostic,
   type ItemPhotoAnalysisDiagnosticLogger,
-  type ItemPhotoAnalysisErrorClassification,
 } from "../diagnostics";
 
 type GroqChatCompletionResponse = {
@@ -20,10 +19,13 @@ type GroqChatCompletionResponse = {
 const GROQ_CHAT_COMPLETIONS_URL =
   "https://api.groq.com/openai/v1/chat/completions";
 const TRANSIENT_RETRY_DELAY_MS = 250;
+const REQUEST_TIMEOUT_MS = 30_000;
+const MAX_RETRY_DELAY_MS = 5_000;
 
 type GroqProviderDependencies = {
   logDiagnostic?: ItemPhotoAnalysisDiagnosticLogger;
   sleep?: (ms: number) => Promise<void>;
+  requestTimeoutMs?: number;
 };
 
 function createGroqRequestBody(
@@ -99,8 +101,30 @@ function shouldRetry(status: number) {
   return status === 429 || status >= 500;
 }
 
+function getRetryDelay(response: Response) {
+  const value = response.headers.get("retry-after");
+  // Groq documents Retry-After in seconds. Never retry earlier than requested.
+  if (value !== null && /^\d+(?:\.\d+)?$/.test(value.trim())) {
+    const delay = Number(value) * 1000;
+    return delay > MAX_RETRY_DELAY_MS ? null : delay;
+  }
+  return TRANSIENT_RETRY_DELAY_MS;
+}
+
 function getExceptionName(error: unknown) {
-  return error instanceof Error ? error.name : "UnknownError";
+  if (!(error instanceof Error)) return "UnknownError";
+  return ["AbortError", "TimeoutError", "TypeError", "Error"].includes(error.name)
+    ? error.name
+    : "UnknownError";
+}
+
+function getResponseContentType(response: Response) {
+  const value = response.headers.get("content-type");
+  if (value === null) return null;
+  const mediaType = value.split(";", 1)[0].trim().toLowerCase();
+  return ["application/json", "text/plain", "text/html"].includes(mediaType)
+    ? mediaType
+    : "unknown";
 }
 
 function getExceptionError(error: unknown) {
@@ -184,11 +208,14 @@ export function createGroqItemPhotoAiProvider(
 
         try {
           response = await fetchImplementation(GROQ_CHAT_COMPLETIONS_URL, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${ready.data.apiKey}`,
-            "Content-Type": "application/json",
-          },
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${ready.data.apiKey}`,
+              "Content-Type": "application/json",
+            },
+            signal: AbortSignal.timeout(dependencies.requestTimeoutMs ?? REQUEST_TIMEOUT_MS),
+            cache: "no-store",
+            redirect: "error",
             body: JSON.stringify(createGroqRequestBody(input, ready.data.model)),
           });
         } catch (error) {
@@ -224,16 +251,19 @@ export function createGroqItemPhotoAiProvider(
           sizeBytes: input.sizeBytes,
           durationMs: Date.now() - requestStartedAt,
           httpStatus: response.status,
-          responseContentType: response.headers.get("content-type"),
+          responseContentType: getResponseContentType(response),
           classification: failure?.classification,
           retry,
         });
 
-        if (response.ok || !shouldRetry(response.status) || retry) {
+        if (!response.ok) await response.body?.cancel().catch(() => {});
+
+        const retryDelay = getRetryDelay(response);
+        if (response.ok || !shouldRetry(response.status) || retry || retryDelay === null) {
           break;
         }
 
-        await sleep(TRANSIENT_RETRY_DELAY_MS);
+        await sleep(retryDelay);
       }
 
       if (!response?.ok) {
@@ -244,7 +274,9 @@ export function createGroqItemPhotoAiProvider(
 
       try {
         payload = await response.json();
-      } catch {
+      } catch (error) {
+        const failure = getExceptionError(error);
+        const timedOut = failure.code === "provider_timeout";
         logDiagnostic({
           requestId,
           stage: "response_parse",
@@ -252,10 +284,11 @@ export function createGroqItemPhotoAiProvider(
           model: ready.data.model,
           mimeType: input.mimeType,
           sizeBytes: input.sizeBytes,
-          classification: "response_not_json",
+          classification: timedOut ? "provider_timeout" : "response_not_json",
+          exceptionName: failure.exceptionName,
           retry: false,
         });
-        return { ok: false, code: "response_not_json" };
+        return { ok: false, code: timedOut ? "provider_timeout" : "response_not_json" };
       }
 
       const content = getGroqResponseContent(payload);

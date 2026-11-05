@@ -143,6 +143,9 @@ E2E_PASSWORD=
 ```
 
 Use `.env.local` for local development. Do not commit environment files.
+Groq photo analysis uses server-only configuration and an owner-selected vision
+model. See the [Groq integration audit and configuration notes](docs/ops/groq-integration-audit-2026-10-25.md)
+for the verified API contract, model availability caveats, retry policy and safe validation.
 `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_DEV_ORIGIN` must be absolute URLs. Local
 development uses the local Supabase project; Vercel Preview and Production use
 separate hosted projects and explicit site URLs. The legacy anon key name is
