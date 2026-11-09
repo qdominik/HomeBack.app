@@ -40,6 +40,9 @@
     "fast-glob": "file:tools/next-eslint-glob"
   },
   "overrides": {
+    "@typescript-eslint/typescript-estree@8.63.0": {
+      "minimatch": "11.0.5"
+    },
     "@next/eslint-plugin-next": {
       "fast-glob": "$fast-glob"
     }
