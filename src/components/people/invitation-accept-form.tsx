@@ -39,7 +39,7 @@ export function InvitationAcceptForm({
         </p>
       ) : null}
       <button
-        className="h-11 w-full rounded-md bg-primary px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="h-11 w-full rounded-md bg-primary px-4 text-sm font-semibold text-on-primary disabled:cursor-not-allowed disabled:opacity-60"
         disabled={pending}
         type="submit"
       >

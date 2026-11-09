@@ -1,0 +1,345 @@
+{
+  "source": "Saved computed styles from the real component board, 30.10.2026; not a fresh browser run or full WCAG audit",
+  "textPairs": 39,
+  "borderPairs": 9,
+  "minimumText": 4.966,
+  "minimumBorder": 3.708,
+  "results": [
+    {
+      "palette": "Ciepłe światło",
+      "role": "body",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 12.157
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "muted",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 6.114
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "note",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 6.114
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "primary",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.526
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "secondary",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 12.157
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "danger",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.024
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "input",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 12.157
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "placeholder",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 6.114
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "success-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.763
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "warning-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 8.944
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "danger-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.379
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "info-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.284
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "panel-description",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.573
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "warm-name",
+      "kind": "border",
+      "required": 3,
+      "ratio": 3.708
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "warm-place",
+      "kind": "border",
+      "required": 3,
+      "ratio": 3.708
+    },
+    {
+      "palette": "Ciepłe światło",
+      "role": "warm-error",
+      "kind": "border",
+      "required": 3,
+      "ratio": 6.863
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "body",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 12.405
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "muted",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 6.238
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "note",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 6.238
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "primary",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.526
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "secondary",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 12.405
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "danger",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.024
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "input",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 12.405
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "placeholder",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 6.238
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "success-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.414
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "warning-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 8.39
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "danger-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.034
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "info-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 4.966
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "panel-description",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 5.211
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "cool-name",
+      "kind": "border",
+      "required": 3,
+      "ratio": 3.783
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "cool-place",
+      "kind": "border",
+      "required": 3,
+      "ratio": 3.783
+    },
+    {
+      "palette": "Światło dnia",
+      "role": "cool-error",
+      "kind": "border",
+      "required": 3,
+      "ratio": 7.003
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "body",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 11.996
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "muted",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 8.075
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "note",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 8.075
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "primary",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 9.84
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "secondary",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 11.996
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "danger",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 9.408
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "input",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 11.996
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "placeholder",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 8.075
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "success-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.73
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "warning-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 9.39
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "danger-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.129
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "info-badge",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 7.72
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "panel-description",
+      "kind": "text",
+      "required": 4.5,
+      "ratio": 9.074
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "dark-name",
+      "kind": "border",
+      "required": 3,
+      "ratio": 4.781
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "dark-place",
+      "kind": "border",
+      "required": 3,
+      "ratio": 4.781
+    },
+    {
+      "palette": "Wieczorny spokój",
+      "role": "dark-error",
+      "kind": "border",
+      "required": 3,
+      "ratio": 7.815
+    }
+  ]
+}

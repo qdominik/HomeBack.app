@@ -84,7 +84,7 @@ export default async function InvitationAcceptPage() {
             description={`Zaproszenie jest przypisane do ${inspection.invitation_email}. Zaloguj się na to konto, aby kontynuować.`}
             title="Wymagane logowanie"
           />
-          <Link className="mt-6 inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-white" href={authLink(routes.login, inspection.invitation_email)}>
+          <Link className="mt-6 inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-on-primary" href={authLink(routes.login, inspection.invitation_email)}>
             Zaloguj się
           </Link>
         </div>
@@ -96,7 +96,7 @@ export default async function InvitationAcceptPage() {
             description={`Utwórz konto dla ${inspection.invitation_email}, potwierdź adres e-mail i wróć do zaproszenia.`}
             title="Utwórz konto HomeBack"
           />
-          <Link className="mt-6 inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-white" href={authLink(routes.register, inspection.invitation_email)}>
+          <Link className="mt-6 inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-on-primary" href={authLink(routes.register, inspection.invitation_email)}>
             Zarejestruj się
           </Link>
         </div>

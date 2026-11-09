@@ -1,0 +1,77 @@
+{
+  "tool": "fonttools 4.60.2 / WOFF2",
+  "unicodeRanges": "U+0000-024F,U+02B0-02FF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F,U+2C60-2C7F,U+A720-A7FF,U+FEFF,U+FFFD",
+  "fallback": "Other scripts use the system fallback; names and data are never translated.",
+  "fonts": [
+    {
+      "file": "src/assets/fonts/inter-latin-ext-variable.woff2",
+      "source": "docs/design/ui00/reference/assets/inter.ttf",
+      "sourceSha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "sha256": "f2c625ec85d78cb9078a105dbbebe83fd3fc1dd1a0d2360ee2d29b0b6104a9dd",
+      "bytes": 200700,
+      "axes": [
+        {
+          "tag": "opsz",
+          "min": 14.0,
+          "max": 32.0
+        },
+        {
+          "tag": "wght",
+          "min": 100.0,
+          "max": 900.0
+        }
+      ],
+      "polishGlyphs": true,
+      "fixedAxes": {}
+    },
+    {
+      "file": "src/assets/fonts/fraunces-latin-ext-variable.woff2",
+      "source": "docs/design/ui00/reference/assets/fraunces.ttf",
+      "sourceSha256": "177ff6c0f14e5550a3c624247cd1189611d4eb65d000b14944c63d967958abbb",
+      "sha256": "432a9b1f4b9ddfcacfd97a69021c66e9d702883e0a9b52bc0662bc38f181d800",
+      "bytes": 105792,
+      "axes": [
+        {
+          "tag": "opsz",
+          "min": 9.0,
+          "max": 144.0
+        },
+        {
+          "tag": "wght",
+          "min": 100.0,
+          "max": 900.0
+        }
+      ],
+      "polishGlyphs": true,
+      "fixedAxes": {
+        "SOFT": 0.0,
+        "WONK": 1.0
+      }
+    },
+    {
+      "file": "src/assets/fonts/fraunces-latin-ext-italic-variable.woff2",
+      "source": "docs/design/ui00/reference/assets/fraunces-italic.ttf",
+      "sourceSha256": "b24448c43702fac4ee856781d461a0dfba8d8e594b6e8e190234b75fed2c0e01",
+      "sha256": "c45541efd318d67093c40bf2154a8910e5a9b0399141afcfccbf8f5081797ea8",
+      "bytes": 125260,
+      "axes": [
+        {
+          "tag": "opsz",
+          "min": 9.0,
+          "max": 144.0
+        },
+        {
+          "tag": "wght",
+          "min": 100.0,
+          "max": 900.0
+        }
+      ],
+      "polishGlyphs": true,
+      "fixedAxes": {
+        "SOFT": 0.0,
+        "WONK": 1.0
+      }
+    }
+  ],
+  "totalBytes": 431752
+}

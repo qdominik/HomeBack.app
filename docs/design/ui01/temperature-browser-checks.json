@@ -1,0 +1,3240 @@
+{
+  "date": "2026-10-30",
+  "scope": "Documentation proposals only; real production components; manual time preview; no live clock or application preferences",
+  "states": [
+    {
+      "name": "noon",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 255)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 255)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 255)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgb(247, 247, 244)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 255)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 255)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 255)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgb(245, 245, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 247)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 247)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 247)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgb(248, 244, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(247, 247, 244)",
+          "id": "subtle",
+          "k": "5200 K",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(245, 245, 242)",
+          "id": "distinct",
+          "k": "5200 K",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(248, 244, 233)",
+          "id": "warm-range",
+          "k": "4500 K",
+          "surface": "rgb(255, 253, 247)",
+          "theme": "light"
+        }
+      ],
+      "phase": "Południe · najjaśniejsza, najbardziej neutralna biel",
+      "time": "13:00"
+    },
+    {
+      "name": "evening",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 248, 236)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 248, 236)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 248, 236)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 248, 236)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 248, 236)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 248, 236)",
+            "rgb(244, 232, 214)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 244, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 245, 227)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 245, 227)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 245, 227)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 245, 227)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 245, 227)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 245, 227)",
+            "rgb(239, 223, 197)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(244, 232, 214)",
+          "id": "subtle",
+          "k": "3600 K",
+          "surface": "rgb(255, 248, 236)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(238, 219, 189)",
+          "id": "distinct",
+          "k": "2800 K",
+          "surface": "rgb(255, 244, 223)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(239, 223, 197)",
+          "id": "warm-range",
+          "k": "2700 K",
+          "surface": "rgb(255, 245, 227)",
+          "theme": "light"
+        }
+      ],
+      "phase": "Wieczór · cieplejsza biel powierzchni",
+      "time": "18:00"
+    },
+    {
+      "name": "night",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(162, 223, 187)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(18, 43, 41)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(130, 162, 147)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(162, 223, 187)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(18, 43, 41)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(130, 162, 147)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(162, 223, 187)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(18, 43, 41)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(130, 162, 147)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(18, 43, 41)",
+          "id": "subtle",
+          "k": "2300 K",
+          "surface": "rgb(25, 52, 49)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(18, 43, 41)",
+          "id": "distinct",
+          "k": "2300 K",
+          "surface": "rgb(25, 52, 49)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(18, 43, 41)",
+          "id": "warm-range",
+          "k": "2300 K",
+          "surface": "rgb(25, 52, 49)",
+          "theme": "dark"
+        }
+      ],
+      "phase": "Noc · zaakceptowany ciemny motyw",
+      "time": "23:00"
+    },
+    {
+      "name": "dawn",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 251, 242)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 251, 242)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 251, 242)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 251, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 251, 242)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 251, 242)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 246, 229)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 247, 233)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 247, 233)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 247, 233)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 247, 233)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 247, 233)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 247, 233)",
+            "rgb(243, 228, 207)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(247, 239, 223)",
+          "id": "subtle",
+          "k": "3300 K",
+          "surface": "rgb(255, 251, 242)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(244, 228, 203)",
+          "id": "distinct",
+          "k": "2500 K",
+          "surface": "rgb(255, 246, 229)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(243, 228, 207)",
+          "id": "warm-range",
+          "k": "2500 K",
+          "surface": "rgb(255, 247, 233)",
+          "theme": "light"
+        }
+      ],
+      "phase": "Świt · cieplejsza biel powierzchni",
+      "time": "05:45"
+    },
+    {
+      "name": "morning",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 247)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 247)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 247)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgb(247, 242, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 251, 242)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 251, 242)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 251, 242)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 251, 242)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 251, 242)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 251, 242)",
+            "rgb(246, 237, 220)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 250, 240)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 250, 240)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 250, 240)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 250, 240)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 250, 240)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 250, 240)",
+            "rgb(247, 239, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(247, 242, 231)",
+          "id": "subtle",
+          "k": "4300 K",
+          "surface": "rgb(255, 253, 247)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(246, 237, 220)",
+          "id": "distinct",
+          "k": "3700 K",
+          "surface": "rgb(255, 251, 242)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(247, 239, 223)",
+          "id": "warm-range",
+          "k": "3500 K",
+          "surface": "rgb(255, 250, 240)",
+          "theme": "light"
+        }
+      ],
+      "phase": "Rano · cieplejsza biel powierzchni",
+      "time": "08:00"
+    },
+    {
+      "name": "intermediate-keyboard",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 254)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 254)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 255, 254)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 254)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 254)",
+            "rgb(247, 246, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 254, 253)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 254, 253)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 254, 253)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 255, 255)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 254, 253)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 254, 253)",
+            "rgb(245, 244, 239)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 246)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 246)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 253, 246)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 247)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 246)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 253, 246)",
+            "rgb(248, 243, 231)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(247, 246, 243)",
+          "id": "subtle",
+          "k": "5100 K",
+          "surface": "rgb(255, 255, 254)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(245, 244, 239)",
+          "id": "distinct",
+          "k": "5100 K",
+          "surface": "rgb(255, 254, 253)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(248, 243, 231)",
+          "id": "warm-range",
+          "k": "4400 K",
+          "surface": "rgb(255, 253, 246)",
+          "theme": "light"
+        }
+      ],
+      "phase": "Południe · najjaśniejsza, najbardziej neutralna biel",
+      "time": "13:15"
+    },
+    {
+      "name": "midnight-keyboard",
+      "contrast": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(250, 251, 251)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "option": "subtle",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "subtle",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(250, 251, 251)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "option": "distinct",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "distinct",
+          "role": "input-border"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(250, 249, 243)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "option": "warm-range",
+          "role": "current-phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.968627 0.937255 0.886275)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "option": "warm-range",
+          "role": "input-border"
+        }
+      ],
+      "panels": [
+        {
+          "background": "rgb(18, 43, 41)",
+          "id": "subtle",
+          "k": "2300 K",
+          "surface": "rgb(25, 52, 49)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(18, 43, 41)",
+          "id": "distinct",
+          "k": "2300 K",
+          "surface": "rgb(25, 52, 49)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(18, 43, 41)",
+          "id": "warm-range",
+          "k": "2300 K",
+          "surface": "rgb(25, 52, 49)",
+          "theme": "dark"
+        }
+      ],
+      "phase": "Noc · zaakceptowany ciemny motyw",
+      "time": "00:00"
+    }
+  ],
+  "views": [
+    {
+      "name": "desktop",
+      "requested": {
+        "width": 1440,
+        "height": 900
+      },
+      "clientWidth": 1425,
+      "fonts": "loaded",
+      "height": 900,
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    {
+      "name": "tablet",
+      "requested": {
+        "width": 834,
+        "height": 1112
+      },
+      "clientWidth": 819,
+      "fonts": "loaded",
+      "height": 1112,
+      "scrollWidth": 819,
+      "width": 834
+    },
+    {
+      "name": "phone",
+      "requested": {
+        "width": 390,
+        "height": 844
+      },
+      "clientWidth": 375,
+      "fonts": "loaded",
+      "height": 844,
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "name": "small-phone",
+      "requested": {
+        "width": 320,
+        "height": 844
+      },
+      "clientWidth": 305,
+      "fonts": "loaded",
+      "height": 844,
+      "scrollWidth": 305,
+      "width": 320
+    }
+  ],
+  "interactions": [
+    {
+      "name": "draft-preserved-after-time-change",
+      "actual": "Latarka — próba szkicu",
+      "expected": "Latarka — próba szkicu"
+    }
+  ],
+  "contrastSummary": {
+    "textPairs": 168,
+    "borderPairs": 21,
+    "minimumText": 5.191,
+    "minimumBorder": 3.452
+  }
+}

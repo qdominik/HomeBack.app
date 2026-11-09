@@ -1,0 +1,869 @@
+{
+  "date": "2026-10-30",
+  "source": "IAB browser; production components and compiled Next CSS",
+  "contrast": [
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "body"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "muted"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "note"
+    },
+    {
+      "backgrounds": [
+        "rgb(13, 95, 71)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(255, 253, 248)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "primary"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "secondary"
+    },
+    {
+      "backgrounds": [
+        "rgb(155, 53, 45)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(255, 253, 248)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "danger"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "input"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "placeholder"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.433112 -0.0817717 0.0184836 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(13, 95, 71)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "success-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.467874 0.0341342 0.0725155 / 0.15)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "warning-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.475665 0.121716 0.0645215 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(155, 53, 45)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "danger-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.46303 -0.0406449 -0.0765789 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(37, 94, 133)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "info-badge"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Ciepłe światło",
+      "role": "panel-description"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(113, 135, 121)",
+      "kind": "border",
+      "palette": "Ciepłe światło",
+      "role": "warm-name"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(113, 135, 121)",
+      "kind": "border",
+      "palette": "Ciepłe światło",
+      "role": "warm-place"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 1 0.980392 0.941176)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(155, 53, 45)",
+      "kind": "border",
+      "palette": "Ciepłe światło",
+      "role": "warm-error"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "body"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "muted"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "note"
+    },
+    {
+      "backgrounds": [
+        "rgb(13, 95, 71)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(255, 253, 248)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "primary"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "secondary"
+    },
+    {
+      "backgrounds": [
+        "rgb(155, 53, 45)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(255, 253, 248)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "danger"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "input"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "placeholder"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.433112 -0.0817717 0.0184836 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(13, 95, 71)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "success-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.467874 0.0341342 0.0725155 / 0.15)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(30, 56, 46)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "warning-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.475665 0.121716 0.0645215 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(155, 53, 45)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "danger-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.46303 -0.0406449 -0.0765789 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(37, 94, 133)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "info-badge"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(80, 100, 87)",
+      "kind": "text",
+      "palette": "Światło dnia",
+      "role": "panel-description"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(113, 135, 121)",
+      "kind": "border",
+      "palette": "Światło dnia",
+      "role": "cool-name"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(113, 135, 121)",
+      "kind": "border",
+      "palette": "Światło dnia",
+      "role": "cool-place"
+    },
+    {
+      "backgrounds": [
+        "color(srgb 0.984314 0.992157 1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.862745 0.917647 0.984314)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(155, 53, 45)",
+      "kind": "border",
+      "palette": "Światło dnia",
+      "role": "cool-error"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(243, 244, 232)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "body"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(184, 207, 193)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "muted"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(184, 207, 193)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "note"
+    },
+    {
+      "backgrounds": [
+        "rgb(162, 223, 187)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(18, 43, 41)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "primary"
+    },
+    {
+      "backgrounds": [
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(243, 244, 232)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "secondary"
+    },
+    {
+      "backgrounds": [
+        "rgb(255, 180, 165)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(53, 26, 21)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "danger"
+    },
+    {
+      "backgrounds": [
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(243, 244, 232)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "input"
+    },
+    {
+      "backgrounds": [
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(184, 207, 193)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "placeholder"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.852313 -0.0742479 0.0296201 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(162, 223, 187)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "success-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.866595 0.0129538 0.0848339 / 0.15)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(243, 244, 232)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "warning-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.836914 0.0772686 0.0476178 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(255, 180, 165)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "danger-badge"
+    },
+    {
+      "backgrounds": [
+        "oklab(0.858641 -0.0268219 -0.0483428 / 0.1)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(177, 214, 242)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "info-badge"
+    },
+    {
+      "backgrounds": [
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(184, 207, 193)",
+      "kind": "text",
+      "palette": "Wieczorny spokój",
+      "role": "panel-description"
+    },
+    {
+      "backgrounds": [
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(130, 162, 147)",
+      "kind": "border",
+      "palette": "Wieczorny spokój",
+      "role": "dark-name"
+    },
+    {
+      "backgrounds": [
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(130, 162, 147)",
+      "kind": "border",
+      "palette": "Wieczorny spokój",
+      "role": "dark-place"
+    },
+    {
+      "backgrounds": [
+        "rgb(25, 52, 49)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(0, 0, 0, 0)",
+        "rgb(18, 43, 41)",
+        "rgba(0, 0, 0, 0)",
+        "color(srgb 0.968627 0.937255 0.886275)",
+        "rgba(0, 0, 0, 0)"
+      ],
+      "color": "rgb(255, 180, 165)",
+      "kind": "border",
+      "palette": "Wieczorny spokój",
+      "role": "dark-error"
+    }
+  ],
+  "views": [
+    {
+      "name": "login-tablet",
+      "requested": {
+        "width": 834,
+        "height": 1112
+      },
+      "clientWidth": 819,
+      "fonts": "loaded",
+      "height": 1112,
+      "scrollWidth": 819,
+      "width": 834,
+      "evidenceRevision": "104e784",
+      "scope": "Original anonymous login check; not repeated for the board-only copy and inactive daylight palette correction"
+    },
+    {
+      "name": "login-phone",
+      "requested": {
+        "width": 390,
+        "height": 844
+      },
+      "clientWidth": 375,
+      "fonts": "loaded",
+      "height": 844,
+      "scrollWidth": 375,
+      "width": 390,
+      "evidenceRevision": "104e784",
+      "scope": "Original anonymous login check; not repeated for the board-only copy and inactive daylight palette correction"
+    },
+    {
+      "name": "login-desktop",
+      "requested": {
+        "width": 1440,
+        "height": 900
+      },
+      "clientWidth": 1425,
+      "fonts": "loaded",
+      "height": 900,
+      "scrollWidth": 1425,
+      "width": 1440,
+      "evidenceRevision": "104e784",
+      "scope": "Original anonymous login check; not repeated for the board-only copy and inactive daylight palette correction"
+    },
+    {
+      "name": "foundation-desktop",
+      "requested": {
+        "width": 1440,
+        "height": 900
+      },
+      "clientWidth": 1425,
+      "fonts": "loaded",
+      "height": 900,
+      "scrollWidth": 1425,
+      "width": 1440,
+      "fullPage": true,
+      "evidenceRevision": "Owner correction 2026-10-30"
+    },
+    {
+      "name": "foundation-tablet",
+      "requested": {
+        "width": 834,
+        "height": 1112
+      },
+      "clientWidth": 819,
+      "fonts": "loaded",
+      "height": 1112,
+      "scrollWidth": 819,
+      "width": 834,
+      "fullPage": false,
+      "evidenceRevision": "Owner correction 2026-10-30"
+    },
+    {
+      "name": "foundation-phone",
+      "requested": {
+        "width": 390,
+        "height": 844
+      },
+      "clientWidth": 375,
+      "fonts": "loaded",
+      "height": 844,
+      "scrollWidth": 375,
+      "width": 390,
+      "fullPage": false,
+      "evidenceRevision": "Owner correction 2026-10-30"
+    },
+    {
+      "name": "foundation-small-phone",
+      "requested": {
+        "width": 320,
+        "height": 844
+      },
+      "clientWidth": 305,
+      "fonts": "loaded",
+      "height": 844,
+      "scrollWidth": 305,
+      "width": 320,
+      "fullPage": false,
+      "evidenceRevision": "Owner correction 2026-10-30"
+    }
+  ],
+  "interactions": [
+    {
+      "name": "native-select",
+      "actual": "",
+      "expected": ""
+    },
+    {
+      "name": "dark-keyboard-focus",
+      "actual": {
+        "id": "dark-place",
+        "outline": "solid",
+        "visible": true,
+        "width": "1.6px"
+      },
+      "expected": "dark-place, visible outline"
+    },
+    {
+      "name": "native-disabled-and-errors",
+      "actual": [
+        {
+          "descriptionExists": true,
+          "disabled": true,
+          "invalid": "warm-error-error"
+        },
+        {
+          "descriptionExists": true,
+          "disabled": true,
+          "invalid": "cool-error-error"
+        },
+        {
+          "descriptionExists": true,
+          "disabled": true,
+          "invalid": "dark-error-error"
+        }
+      ],
+      "expected": "3 disabled inputs and 3 connected error descriptions"
+    }
+  ],
+  "revision": "Owner correction: concrete copy and blue daylight proposal, 2026-10-30",
+  "interactionEvidenceRevision": "104e784"
+}

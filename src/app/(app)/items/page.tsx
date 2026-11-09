@@ -309,7 +309,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground sm:text-3xl">
               {t.modules.items.title}
             </h1>
-            <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-strong">
+            <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong">
               <PlusIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.items.addItem}
             </span>
@@ -354,7 +354,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             <Link
               className={`inline-flex items-center rounded-md border px-3 py-2 text-sm font-semibold ${
                 currentView === link.view
-                  ? "border-primary bg-primary text-white"
+                  ? "border-primary bg-primary text-on-primary"
                   : "border-line bg-surface text-primary-strong hover:border-primary/60"
               }`}
               href={link.href}

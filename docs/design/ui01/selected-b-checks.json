@@ -1,0 +1,789 @@
+{
+  "date": "2026-10-30",
+  "selection": "B · Wyraźna zmiana",
+  "scope": "Approved production CSS presets and documentation preview; no automatic app clock",
+  "states": [
+    {
+      "background": "rgb(244, 228, 203)",
+      "inlineBackground": "",
+      "pairs": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "oklab(0.999994 0.0000455678 0.0000200868)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "role": "phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 246, 229)",
+            "rgb(244, 228, 203)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "role": "input-border"
+        }
+      ],
+      "surface": "rgb(255, 246, 229)",
+      "theme": "light",
+      "time": "05:45",
+      "tone": "dawn",
+      "expected": {
+        "background": [
+          244,
+          228,
+          203
+        ],
+        "surface": [
+          255,
+          246,
+          229
+        ]
+      }
+    },
+    {
+      "background": "color(srgb 0.964706 0.929412 0.862745)",
+      "inlineBackground": "",
+      "pairs": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 1 0.984314 0.94902)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 1 0.984314 0.94902)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 1 0.984314 0.94902)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "oklab(0.975611 0.00283673 0.0242161)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "color(srgb 1 0.984314 0.94902)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "role": "phase"
+        },
+        {
+          "backgrounds": [
+            "color(srgb 1 0.984314 0.94902)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "role": "input-border"
+        }
+      ],
+      "surface": "color(srgb 1 0.984314 0.94902)",
+      "theme": "light",
+      "time": "08:00",
+      "tone": "default",
+      "expected": {
+        "background": [
+          246,
+          237,
+          220
+        ],
+        "surface": [
+          255,
+          251,
+          242
+        ]
+      }
+    },
+    {
+      "background": "color(srgb 0.960784 0.960784 0.94902)",
+      "inlineBackground": "",
+      "pairs": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 1 1 1)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 1 1 1)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 1 1 1)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "oklab(0.988699 0.000742584 0.0126008)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "color(srgb 1 1 1)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "role": "phase"
+        },
+        {
+          "backgrounds": [
+            "color(srgb 1 1 1)",
+            "color(srgb 0.960784 0.960784 0.94902)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "role": "input-border"
+        }
+      ],
+      "surface": "color(srgb 1 1 1)",
+      "theme": "light",
+      "time": "13:00",
+      "tone": "cool",
+      "expected": {
+        "background": [
+          245,
+          245,
+          242
+        ],
+        "surface": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    {
+      "background": "rgb(238, 219, 189)",
+      "inlineBackground": "",
+      "pairs": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(80, 100, 87)",
+          "kind": "text",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "oklab(0.999994 0.0000455678 0.0000200868)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(70, 94, 83)",
+          "kind": "text",
+          "role": "phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 244, 223)",
+            "rgb(238, 219, 189)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "role": "input-border"
+        }
+      ],
+      "surface": "rgb(255, 244, 223)",
+      "theme": "light",
+      "time": "18:00",
+      "tone": "evening",
+      "expected": {
+        "background": [
+          238,
+          219,
+          189
+        ],
+        "surface": [
+          255,
+          244,
+          223
+        ]
+      }
+    },
+    {
+      "background": "rgb(18, 43, 41)",
+      "inlineBackground": "",
+      "pairs": [
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "role": "body"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "role": "muted"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(184, 207, 193)",
+          "kind": "text",
+          "role": "note"
+        },
+        {
+          "backgrounds": [
+            "rgb(13, 95, 71)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(255, 253, 248)",
+          "kind": "text",
+          "role": "primary"
+        },
+        {
+          "backgrounds": [
+            "rgb(255, 244, 223)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(30, 56, 46)",
+          "kind": "text",
+          "role": "secondary"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "role": "label"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(243, 244, 232)",
+          "kind": "text",
+          "role": "input"
+        },
+        {
+          "backgrounds": [
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(195, 212, 200)",
+          "kind": "text",
+          "role": "phase"
+        },
+        {
+          "backgrounds": [
+            "rgb(25, 52, 49)",
+            "rgb(18, 43, 41)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "rgba(0, 0, 0, 0)",
+            "color(srgb 0.964706 0.929412 0.862745)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          "color": "rgb(113, 135, 121)",
+          "kind": "border",
+          "role": "input-border"
+        }
+      ],
+      "surface": "rgb(25, 52, 49)",
+      "theme": "dark",
+      "time": "23:00",
+      "tone": "default",
+      "expected": {
+        "background": [
+          18,
+          43,
+          41
+        ],
+        "surface": [
+          25,
+          52,
+          49
+        ]
+      }
+    }
+  ],
+  "intermediate": {
+    "background": "rgb(245, 244, 239)",
+    "time": "13:15",
+    "tone": null
+  },
+  "contrast": {
+    "textPairs": 40,
+    "borderPairs": 5,
+    "minimumText": 5.191142329725187,
+    "minimumBorder": 3.4522738419018335
+  },
+  "restoredPreviousPreviewHour": true
+}

@@ -26,7 +26,7 @@ export function ItemCreateDialog({ options }: { options: ItemCreateOptions }) {
       aria-haspopup="dialog"
       aria-controls="add-item-dialog"
       id="add-item-trigger"
-      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-primary bg-primary text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-primary bg-primary text-on-primary hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       onClick={() => setOpen(true)}
       ref={trigger}
       type="button"
