@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { AppHeader } from "@/components/app-shell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -67,18 +69,18 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         ) : null}
         {claimsData?.claims?.sub && params.error ? (
           <form action="/auth/signout" className="mt-3" method="post">
-            <button className="h-10 w-full rounded-md border border-line text-sm font-semibold text-foreground hover:bg-surface-muted" type="submit">
+            <Button className="w-full" variant="secondary" type="submit">
               Wyloguj się i spróbuj ponownie
-            </button>
+            </Button>
           </form>
         ) : null}
         {params.error === "confirmation_expired" && params.email ? (
           <form action={resendConfirmation} className="mt-3" method="post">
             <input name="email" type="hidden" value={params.email} />
             {next ? <input name="next" type="hidden" value={next} /> : null}
-            <button className="h-10 w-full rounded-md border border-line text-sm font-semibold text-foreground hover:bg-surface-muted" type="submit">
+            <Button className="w-full" variant="secondary" type="submit">
               Wyślij ponownie potwierdzenie
-            </button>
+            </Button>
           </form>
         ) : null}
         <form
@@ -87,30 +89,30 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           method={next === invitationReturnPath ? "post" : undefined}
         >
           {next ? <input name="next" type="hidden" value={next} /> : null}
-          <label className="block text-sm font-medium">
+          <label className="ui-label">
             {t.auth.email}
-            <input
+            <Input
               autoComplete="email"
-              className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              className="mt-2"
               defaultValue={params.email ?? ""}
               name="email"
               required
               type="email"
             />
           </label>
-          <label className="block text-sm font-medium">
+          <label className="ui-label">
             {t.auth.password}
-            <input
+            <Input
               autoComplete="current-password"
-              className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              className="mt-2"
               name="password"
               required
               type="password"
             />
           </label>
-          <button className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary" type="submit">
+          <Button className="w-full" type="submit">
             {t.auth.signIn}
-          </button>
+          </Button>
         </form>
         <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={next ? `${routes.register}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.register}>
           {t.auth.createAccount}

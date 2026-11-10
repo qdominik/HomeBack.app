@@ -1,5 +1,6 @@
 "use client";
 
+import { Dialog } from "@/components/ui/dialog";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -17,7 +18,6 @@ import { routes } from "@/lib/routes";
 import { appModuleDefinitions } from "@/lib/modules/module-registry";
 import { navigationKeys, isNavigationActive } from "@/lib/modules/navigation";
 import type { ProfileRole } from "@/lib/auth/profile-role";
-
 
 const iconButton = "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 const roleLabels = {
@@ -109,7 +109,7 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
         </div>
       </div>
     </header>
-    <dialog
+    <Dialog
       onPointerDown={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         searchBackdropPress.current = event.target === event.currentTarget &&
@@ -123,13 +123,13 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
         }
         searchBackdropPress.current = false;
       }}
-      aria-label={t.globalSearch.title} id="global-search-dialog" className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-control border border-line bg-surface p-3 text-foreground shadow-card backdrop:bg-black/40 sm:p-5" onClose={() => searchTrigger.current?.focus()} ref={searchDialog}>
+      aria-label={t.globalSearch.title} id="global-search-dialog" size="wide" className="ui-dialog-body" onClose={() => searchTrigger.current?.focus()} ref={searchDialog}>
       <div className="mb-3 flex justify-end gap-2">
         <button className={buttonClassName({ variant: "secondary" })} onClick={() => searchDialog.current?.close()} type="button">{t.globalSearch.close}</button>
         <button aria-label={t.globalSearch.close} className={`${iconButton} hover:bg-surface-muted`} onClick={() => searchDialog.current?.close()} type="button"><XIcon aria-hidden="true" size={22} /></button>
       </div>
       <GlobalSearch onNavigate={() => searchDialog.current?.close()} />
-    </dialog>
+    </Dialog>
   </>;
 }
 

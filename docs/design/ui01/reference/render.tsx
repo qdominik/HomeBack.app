@@ -14,6 +14,7 @@ import { Badge } from "../../../../src/components/ui/badge";
 import { StatCard } from "../../../../src/components/ui/stat-card";
 import { uiTokens } from "../../../../src/lib/ui/tokens";
 import { renderTemperatureOptions } from "./render-temperature";
+import { renderComponents } from "../../ui02/render";
 
 const root = process.cwd();
 const output = join(root, "docs/design/ui01/reference");
@@ -95,6 +96,7 @@ async function main() {
   </main></body></html>;
   await writeFile(join(output, "foundation.html"), "<!doctype html>" + renderToStaticMarkup(document) + "\n");
   await renderTemperatureOptions(output, variables);
+  await renderComponents(output, variables);
   await writeFile(join(output, "build-info.json"), JSON.stringify({ cssFiles: files.map(file => file.slice(root.length + 1)), fontClasses: variables, fontAssets: [...assets], source: "Production components + compiled Next CSS; no application API" }, null, 2) + "\n");
   console.log(JSON.stringify({ output: resolve(output), cssFiles: files.length, fonts: assets.size }));
 }

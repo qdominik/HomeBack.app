@@ -1,5 +1,7 @@
 "use client";
 
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
 import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
@@ -70,8 +72,8 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
       {room ? <input name="room_id" type="hidden" value={room.id} /> : null}
       <label className="ui-label">
         {t.modules.home.fields.roomName}
-        <input
-          className="ui-control mt-2"
+        <Input
+          className="mt-2"
           defaultValue={room?.nazwa}
           name="nazwa"
           onChange={(event) => handleNameChange(event.currentTarget.value)}
@@ -100,8 +102,8 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
       />
       <label className="ui-label sm:max-w-32">
         {t.modules.home.fields.order}
-        <input
-          className="ui-control mt-2"
+        <Input
+          className="mt-2"
           defaultValue={room?.[orderColumn]}
           min="0"
           name="kolejnosc"
@@ -110,8 +112,8 @@ export function RoomForm({ action, room, submitLabel }: RoomFormProps) {
       </label>
       <label className="ui-label">
         {t.modules.home.fields.description}
-        <textarea
-          className="ui-control ui-textarea mt-2"
+        <Textarea
+          className="mt-2"
           defaultValue={room?.opis ?? ""}
           name="opis"
         />

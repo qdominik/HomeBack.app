@@ -1,5 +1,9 @@
 "use client";
 
+import { Button, buttonClassName } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -458,10 +462,10 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
-      <label className={`block text-sm font-medium ${fullWidthClass}`}>
+      <label className={`ui-label ${fullWidthClass}`}>
         {t.modules.items.name}
-        <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+        <Input
+          className="mt-2"
           onChange={(event) => {
             itemNameEditRevisionRef.current += 1;
             setItemName(event.currentTarget.value);
@@ -471,19 +475,19 @@ export function ItemForm({
           value={itemName}
         />
       </label>
-      <label className={`block text-sm font-medium ${fullWidthClass}`}>
+      <label className={`ui-label ${fullWidthClass}`}>
         {t.modules.items.description}
-        <textarea
-          className="mt-1 min-h-20 w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
+        <Textarea
+          className="mt-2"
           name="opis"
           onChange={(event) => setItemDescription(event.currentTarget.value)}
           value={itemDescription}
         />
       </label>
-      <label className={`block min-w-0 max-w-full text-sm font-medium ${halfWidthClass}`}>
+      <label className={`ui-label min-w-0 max-w-full ${halfWidthClass}`}>
         {t.modules.items.itemType}
-        <select
-          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+        <Select
+          className="mt-2"
           name="typ"
           onChange={(event) =>
             setItemType(event.currentTarget.value as ItemType)
@@ -495,13 +499,13 @@ export function ItemForm({
               {typeLabels[type]}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       {showsItemQuantity(itemType) ? (
-        <label className={`block text-sm font-medium ${halfWidthClass}`}>
+        <label className={`ui-label ${halfWidthClass}`}>
           {t.modules.items.quantity}
-          <input
-            className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+          <Input
+            className="mt-2"
             key={itemType}
             min="1"
             name="ilosc"
@@ -515,19 +519,19 @@ export function ItemForm({
       ) : (
         <input name="ilosc" type="hidden" value="1" />
       )}
-      <label className={`block text-sm font-medium ${halfWidthClass}`}>
+      <label className={`ui-label ${halfWidthClass}`}>
         {t.modules.items.unit}
-        <input
-          className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+        <Input
+          className="mt-2"
           name="jednostka"
           onChange={(event) => setItemUnit(event.currentTarget.value)}
           value={itemUnit}
         />
       </label>
-      <label className={`block min-w-0 max-w-full text-sm font-medium ${halfWidthClass}`}>
+      <label className={`ui-label min-w-0 max-w-full ${halfWidthClass}`}>
         {t.modules.items.category}
-        <select
-          className="mt-1 h-10 w-full min-w-0 max-w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+        <Select
+          className="mt-2"
           name="category_id"
           onChange={(event) => selectCategory(event.currentTarget.value)}
           required
@@ -553,23 +557,23 @@ export function ItemForm({
           <option value={ANOTHER_CATEGORY_VALUE}>
             {t.modules.items.anotherCategory}
           </option>
-        </select>
+        </Select>
       </label>
       {isAnotherCategorySelected ? (
         <div
           className={`space-y-2 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
         >
-          <label className="block text-sm font-medium">
+          <label className="ui-label">
             {t.modules.items.newCategoryName}
-            <input
-              className="mt-1 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+            <Input
+              className="mt-2"
               onChange={(event) => setNewCategoryName(event.currentTarget.value)}
               value={newCategoryName}
             />
           </label>
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              className="h-9 rounded-md bg-primary px-3 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+            <Button
+
               disabled={isQuickCategoryPending}
               onClick={createQuickCategory}
               type="button"
@@ -577,7 +581,7 @@ export function ItemForm({
               {isQuickCategoryPending
                 ? t.modules.items.saving
                 : t.modules.items.addQuickCategory}
-            </button>
+            </Button>
             <Link
               className="text-sm font-semibold text-primary-strong hover:text-primary"
               href={routes.categories}
@@ -601,9 +605,9 @@ export function ItemForm({
             {t.modules.items.photo.help}
           </p>
         </div>
-        <label className="inline-flex cursor-pointer items-center">
+        <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
           <span className="sr-only">{t.modules.items.photo.choose}</span>
-          <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-on-primary hover:bg-primary-strong">
+          <span className={buttonClassName()}>
             {t.modules.items.photo.choose}
           </span>
           <input
@@ -646,8 +650,8 @@ export function ItemForm({
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
               {photoDraft ? (
-                <button
-                  className="min-h-10 rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-on-primary hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+                <Button
+
                   disabled={isPhotoPending || isPhotoAnalysisPending}
                   onClick={applyPhotoSuggestions}
                   type="button"
@@ -655,10 +659,10 @@ export function ItemForm({
                   {isPhotoAnalysisPending
                     ? t.modules.items.photo.analyzing
                     : t.modules.items.photo.fillFromPhoto}
-                </button>
+                </Button>
               ) : null}
-              <button
-                className="min-h-10 rounded-md border border-line bg-surface px-4 py-2 text-sm font-semibold leading-5 text-primary-strong hover:border-primary/60 disabled:cursor-not-allowed disabled:opacity-70"
+              <Button
+                variant="secondary"
                 disabled={isPhotoPending || isPhotoAnalysisPending}
                 onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
                 type="button"
@@ -666,7 +670,7 @@ export function ItemForm({
                 {isPhotoPending
                   ? t.modules.items.photo.removing
                   : t.modules.items.photo.remove}
-              </button>
+              </Button>
             </div>
           </div>
         ) : null}
@@ -684,7 +688,7 @@ export function ItemForm({
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>
       <ItemSubmitButton
-        className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
+        className={`${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
         disabled={
           isAnotherCategorySelected ||
           isQuickCategoryPending ||

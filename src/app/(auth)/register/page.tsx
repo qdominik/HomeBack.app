@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { AppHeader } from "@/components/app-shell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -114,28 +117,28 @@ export default async function RegisterPage({
           </p>
           <AuthMessage message={errorMessage} />
           <form action={createHousehold} className="mt-6 space-y-4">
-            <label className="block text-sm font-medium">
+            <label className="ui-label">
               {t.auth.name}
-              <input
+              <Input
                 autoComplete="given-name"
-                className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+                className="mt-2"
                 defaultValue={suggestedName}
                 name="name"
                 required
               />
             </label>
-            <label className="block text-sm font-medium">
+            <label className="ui-label">
               {t.auth.householdName}
-              <input
-                className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              <Input
+                className="mt-2"
                 name="household_name"
                 required
               />
             </label>
-            <label className="block text-sm font-medium">
+            <label className="ui-label">
               {t.auth.householdType}
-              <select
-                className="mt-2 h-10 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+              <Select
+                className="mt-2"
                 defaultValue="dom"
                 name="household_type"
               >
@@ -144,22 +147,22 @@ export default async function RegisterPage({
                   {t.auth.householdTypes.apartment}
                 </option>
                 <option value="garaż">{t.auth.householdTypes.garage}</option>
-              </select>
+              </Select>
             </label>
-            <button
-              className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary hover:bg-primary-strong"
+            <Button
+              className="w-full"
               type="submit"
             >
               {t.auth.createHousehold}
-            </button>
+            </Button>
           </form>
           <form action="/auth/signout" className="mt-3" method="post">
-            <button
-              className="h-10 w-full rounded-md border border-line text-sm font-semibold text-foreground hover:bg-surface-muted"
+            <Button
+              className="w-full" variant="secondary"
               type="submit"
             >
               {t.auth.signOut}
-            </button>
+            </Button>
           </form>
         </section>
       </main>
@@ -179,31 +182,31 @@ export default async function RegisterPage({
         <AuthMessage message={errorMessage} />
         <form action={register} className="mt-6 space-y-4">
           {next ? <input name="next" type="hidden" value={next} /> : null}
-          <label className="block text-sm font-medium">
+          <label className="ui-label">
             {t.auth.name}
-            <input
+            <Input
               autoComplete="given-name"
-              className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              className="mt-2"
               name="name"
               required
             />
           </label>
-          <label className="block text-sm font-medium">
+          <label className="ui-label">
             {t.auth.email}
-            <input
+            <Input
               autoComplete="email"
-              className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              className="mt-2"
               defaultValue={params.email ?? ""}
               name="email"
               required
               type="email"
             />
           </label>
-          <label className="block text-sm font-medium">
+          <label className="ui-label">
             {t.auth.password}
-            <input
+            <Input
               autoComplete="new-password"
-              className="mt-2 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-primary"
+              className="mt-2"
               minLength={8}
               name="password"
               required
@@ -213,9 +216,9 @@ export default async function RegisterPage({
               {t.auth.passwordHint}
             </span>
           </label>
-          <button className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary" type="submit">
+          <Button className="w-full" type="submit">
             {t.auth.createAccount}
-          </button>
+          </Button>
         </form>
         <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={next ? `${routes.login}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.login}>
           {t.auth.signIn}
