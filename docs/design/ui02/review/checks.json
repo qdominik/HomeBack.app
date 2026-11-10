@@ -1,0 +1,88 @@
+[
+  {
+    "name": "desktop",
+    "validationValueRetained": true,
+    "registrationValueRetained": true,
+    "visibleKeyboardFocus": {
+      "style": "solid",
+      "width": "2px"
+    },
+    "dialogFocusOrder": [
+      {
+        "tag": "INPUT",
+        "text": ""
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Szukaj",
+        "within": true
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Wszystko",
+        "within": true
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Rzeczy",
+        "within": true
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Pomieszczenia",
+        "within": true
+      }
+    ],
+    "escapeAndFocusReturn": true,
+    "dialogBox": {
+      "x": 384,
+      "y": 272.5,
+      "width": 672,
+      "height": 355
+    },
+    "horizontalOverflow": false
+  },
+  {
+    "name": "phone",
+    "validationValueRetained": true,
+    "registrationValueRetained": true,
+    "visibleKeyboardFocus": {
+      "style": "solid",
+      "width": "2px"
+    },
+    "dialogFocusOrder": [
+      {
+        "tag": "INPUT",
+        "text": ""
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Szukaj",
+        "within": true
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Wszystko",
+        "within": true
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Rzeczy",
+        "within": true
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Pomieszczenia",
+        "within": true
+      }
+    ],
+    "escapeAndFocusReturn": true,
+    "dialogBox": {
+      "x": 0,
+      "y": 385,
+      "width": 390,
+      "height": 459
+    },
+    "horizontalOverflow": false
+  }
+]

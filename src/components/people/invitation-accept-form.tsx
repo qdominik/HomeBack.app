@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { useActionState } from "react";
 import {
   acceptInvitation,
@@ -22,9 +21,9 @@ export function InvitationAcceptForm({
     <form action={action} className="mt-6 space-y-4">
       <label className="block text-sm font-medium">
         Imię
-        <Input
+        <input
           autoComplete="given-name"
-          className="mt-2"
+          className="ui-control mt-2"
           defaultValue={suggestedName}
           disabled={pending}
           name="name"
