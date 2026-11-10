@@ -159,7 +159,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
           <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
           <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
         </label>
-        <button className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" type="submit">
+        <button className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" type="submit">
           <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
           {t.modules.items.search}
         </button>

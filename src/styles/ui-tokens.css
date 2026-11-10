@@ -1,0 +1,158 @@
+/* UI-01: primitive values -> semantic roles -> component aliases.
+   The clock and appearance preferences are introduced in later stages. */
+@layer base {
+  :root {
+    /* Approved B: warm white -> neutral white -> warm white. */
+    --paper-dawn: #f4e4cb;
+    --paper-warm: #f6eddc;
+    --paper-cool: #f5f5f2;
+    --paper-evening: #eedbbd;
+    --surface-dawn: #fff6e5;
+    --surface-warm: #fffbf2;
+    --surface-cool: #ffffff;
+    --surface-evening: #fff4df;
+    --sage-dawn: #ecdbc1;
+    --sage-warm: #ece5d8;
+    --sage-cool: #ebede7;
+    --sage-evening: #e6d5b9;
+    --ink-900: #1e382e;
+    --ink-700: #465e53;
+    --ink-600: #506457;
+    --green-700: #0d5f47;
+    --green-800: #0a4a38;
+    --green-900: #0a3d30;
+    --mint-300: #a2dfbb;
+    --mint-200: #c3ecd1;
+    --night-950: #122b29;
+    --night-900: #193431;
+    --night-800: #294a40;
+    --mist-100: #f3f4e8;
+    --mist-200: #c3d4c8;
+    --mist-300: #b8cfc1;
+    --red-700: #9b352d;
+    --coral-200: #ffb4a5;
+    --amber-700: #795025;
+    --amber-200: #f0ce92;
+    --blue-700: #255e85;
+    --blue-200: #b1d6f2;
+    --paper-white: #fffdf8;
+    --sage-line-light: #d2d9cc;
+    --sage-edge-light: #718779;
+    --sage-line-dark: #507166;
+    --sage-edge-dark: #82a293;
+    --red-950: #351a15;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-12: 3rem;
+    --radius-sm: 0.375rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.875rem;
+    --radius-xl: 1.375rem;
+  }
+
+  :root,
+  [data-theme="light"],
+  [data-theme="dark"] {
+    --daylight-mix: 0%;
+    --background: color-mix(in srgb, var(--paper-warm), var(--paper-cool) var(--daylight-mix));
+    --surface: color-mix(in srgb, var(--surface-warm), var(--surface-cool) var(--daylight-mix));
+    --surface-muted: color-mix(in srgb, var(--sage-warm), var(--sage-cool) var(--daylight-mix));
+    --foreground: var(--ink-900);
+    --foreground-secondary: var(--ink-700);
+    --foreground-muted: var(--ink-600);
+    --placeholder: var(--ink-600);
+    --line: var(--sage-line-light);
+    --control-border: var(--sage-edge-light);
+    --primary: var(--green-700);
+    --primary-hover: var(--green-800);
+    --primary-strong: var(--green-900);
+    --on-primary: var(--paper-white);
+    --success: var(--green-700);
+    --warning: var(--amber-700);
+    --danger: var(--red-700);
+    --info: var(--blue-700);
+    --on-danger: var(--paper-white);
+    --focus: var(--primary);
+    --disabled-opacity: 0.65;
+    --radius: var(--radius-md);
+    --card-radius: var(--radius-lg);
+    --dialog-radius: var(--radius-xl);
+    --shadow-card: 0 1px 2px rgb(30 56 46 / 0.04);
+    --shadow-floating: 0 16px 48px rgb(30 56 46 / 0.14);
+    --content-max-width: 80rem;
+    --page-gutter: clamp(1rem, 3vw, 2rem);
+    --control-min-height: 2.75rem;
+    /* 10 px vertical padding is the existing control's optical adjustment. */
+    --control-padding-block: 0.625rem;
+    --control-padding-inline: var(--space-3);
+    --control-background: var(--surface);
+    --control-foreground: var(--foreground);
+    --control-line: var(--control-border);
+    --control-radius: var(--radius);
+    --font-body: var(--font-inter, "Inter"), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-fraunces, "Fraunces"), Georgia, serif;
+    --font-size-body: 1rem;
+    --font-size-label: 0.875rem;
+    --font-size-meta: 0.8125rem;
+    --font-size-page-title: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
+    --font-size-section-title: clamp(1.375rem, 1.25rem + 0.35vw, 1.5rem);
+    --font-size-metric: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
+    --line-height-body: 1.5;
+    --line-height-title: 1.12;
+    --motion-fast: 150ms;
+    --motion-base: 240ms;
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  [data-tone="cool"] {
+    --daylight-mix: 100%;
+  }
+
+  [data-tone="dawn"] {
+    --daylight-mix: 0%;
+    --background: var(--paper-dawn);
+    --surface: var(--surface-dawn);
+    --surface-muted: var(--sage-dawn);
+  }
+
+  [data-tone="evening"] {
+    --daylight-mix: 0%;
+    --background: var(--paper-evening);
+    --surface: var(--surface-evening);
+    --surface-muted: var(--sage-evening);
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --background: var(--night-950);
+    --surface: var(--night-900);
+    --surface-muted: var(--night-800);
+    --foreground: var(--mist-100);
+    --foreground-secondary: var(--mist-200);
+    --foreground-muted: var(--mist-300);
+    --placeholder: var(--mist-300);
+    --line: var(--sage-line-dark);
+    --control-border: var(--sage-edge-dark);
+    --primary: var(--mint-300);
+    --primary-hover: var(--mint-200);
+    --primary-strong: var(--mint-200);
+    --on-primary: var(--night-950);
+    --success: var(--mint-300);
+    --warning: var(--amber-200);
+    --danger: var(--coral-200);
+    --info: var(--blue-200);
+    --on-danger: var(--red-950);
+    --shadow-card: none;
+    --shadow-floating: 0 16px 48px rgb(0 0 0 / 0.24);
+  }
+
+  :root,
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+}

@@ -108,7 +108,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               type="password"
             />
           </label>
-          <button className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-white" type="submit">
+          <button className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary" type="submit">
             {t.auth.signIn}
           </button>
         </form>

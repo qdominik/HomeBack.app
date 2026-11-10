@@ -1,14 +1,14 @@
 .ui-control {
   width: 100%;
   min-width: 0;
-  min-height: 2.75rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--foreground);
-  padding: 0.625rem 0.75rem;
+  min-height: var(--control-min-height);
+  border: 1px solid var(--control-line);
+  border-radius: var(--control-radius);
+  background: var(--control-background);
+  color: var(--control-foreground);
+  padding: var(--control-padding-block) var(--control-padding-inline);
   outline: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .ui-control::placeholder {
@@ -49,13 +49,13 @@
 .ui-label {
   display: block;
   color: var(--foreground);
-  font-size: 0.875rem;
+  font-size: var(--font-size-label);
   font-weight: 600;
   line-height: 1.5;
 }
 
 .ui-field-help {
   color: var(--foreground-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-label);
   line-height: 1.5;
 }

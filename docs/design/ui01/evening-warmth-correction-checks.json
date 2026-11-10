@@ -1,0 +1,3503 @@
+{
+  "date": "2026-10-31",
+  "scope": "Manual preview; adjusted dimming curve; 19 quarter-hour states across A/B/C",
+  "summary": {
+    "states": 19,
+    "text": 456,
+    "minText": 4.592696957877873,
+    "borders": 57,
+    "minBorder": 4.592696957877873,
+    "failText": [],
+    "failBorder": [],
+    "overflow": false
+  },
+  "referenceMatch": {
+    "newHour": 19.25,
+    "previousHour": 20.75,
+    "newBackground": "rgb(97, 106, 94)",
+    "previousBackground": "rgb(97, 106, 94)"
+  },
+  "states": [
+    {
+      "hour": "18",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3600 K",
+          "background": "rgb(244, 232, 214)",
+          "surface": "rgb(255, 248, 236)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2800 K",
+          "background": "rgb(238, 219, 189)",
+          "surface": "rgb(255, 244, 223)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2700 K",
+          "background": "rgb(239, 223, 197)",
+          "surface": "rgb(255, 245, 227)"
+        }
+      ]
+    },
+    {
+      "hour": "18.25",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3550 K",
+          "background": "rgb(213, 206, 191)",
+          "surface": "rgb(224, 222, 211)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2750 K",
+          "background": "rgb(208, 195, 169)",
+          "surface": "rgb(224, 218, 200)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2700 K",
+          "background": "rgb(209, 199, 176)",
+          "surface": "rgb(224, 219, 203)"
+        }
+      ]
+    },
+    {
+      "hour": "18.5",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3450 K",
+          "background": "rgb(184, 182, 168)",
+          "surface": "rgb(194, 196, 186)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2750 K",
+          "background": "rgb(179, 172, 150)",
+          "surface": "rgb(194, 193, 177)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2650 K",
+          "background": "rgb(180, 175, 156)",
+          "surface": "rgb(194, 194, 180)"
+        }
+      ]
+    },
+    {
+      "hour": "18.75",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3400 K",
+          "background": "rgb(155, 157, 145)",
+          "surface": "rgb(164, 171, 162)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2700 K",
+          "background": "rgb(151, 150, 131)",
+          "surface": "rgb(164, 168, 154)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2650 K",
+          "background": "rgb(152, 152, 136)",
+          "surface": "rgb(164, 169, 157)"
+        }
+      ]
+    },
+    {
+      "hour": "19",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3300 K",
+          "background": "rgb(126, 134, 124)",
+          "surface": "rgb(136, 146, 139)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2700 K",
+          "background": "rgb(124, 128, 112)",
+          "surface": "rgb(136, 144, 133)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2600 K",
+          "background": "rgb(124, 129, 116)",
+          "surface": "rgb(136, 145, 134)"
+        }
+      ]
+    },
+    {
+      "hour": "19.25",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3250 K",
+          "background": "rgb(99, 111, 103)",
+          "surface": "rgb(99, 111, 103)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2650 K",
+          "background": "rgb(97, 106, 94)",
+          "surface": "rgb(97, 106, 94)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2600 K",
+          "background": "rgb(98, 108, 97)",
+          "surface": "rgb(98, 108, 97)"
+        }
+      ]
+    },
+    {
+      "hour": "19.5",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3150 K",
+          "background": "rgb(93, 105, 98)",
+          "surface": "rgb(93, 105, 98)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2650 K",
+          "background": "rgb(91, 101, 90)",
+          "surface": "rgb(101, 115, 106)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2550 K",
+          "background": "rgb(91, 102, 92)",
+          "surface": "rgb(101, 116, 108)"
+        }
+      ]
+    },
+    {
+      "hour": "19.75",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3100 K",
+          "background": "rgb(86, 100, 93)",
+          "surface": "rgb(94, 111, 105)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2600 K",
+          "background": "rgb(85, 96, 86)",
+          "surface": "rgb(95, 110, 101)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2550 K",
+          "background": "rgb(85, 97, 88)",
+          "surface": "rgb(95, 110, 102)"
+        }
+      ]
+    },
+    {
+      "hour": "20",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "3000 K",
+          "background": "rgb(80, 94, 88)",
+          "surface": "rgb(88, 105, 100)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2600 K",
+          "background": "rgb(78, 91, 82)",
+          "surface": "rgb(88, 104, 96)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2500 K",
+          "background": "rgb(79, 92, 83)",
+          "surface": "rgb(88, 105, 97)"
+        }
+      ]
+    },
+    {
+      "hour": "20.25",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2950 K",
+          "background": "rgb(73, 89, 83)",
+          "surface": "rgb(81, 100, 94)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2550 K",
+          "background": "rgb(72, 86, 77)",
+          "surface": "rgb(82, 99, 91)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2500 K",
+          "background": "rgb(72, 87, 79)",
+          "surface": "rgb(82, 99, 92)"
+        }
+      ]
+    },
+    {
+      "hour": "20.5",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2900 K",
+          "background": "rgb(67, 83, 78)",
+          "surface": "rgb(75, 94, 89)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2500 K",
+          "background": "rgb(66, 81, 73)",
+          "surface": "rgb(75, 93, 86)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2500 K",
+          "background": "rgb(66, 82, 75)",
+          "surface": "rgb(75, 94, 87)"
+        }
+      ]
+    },
+    {
+      "hour": "20.75",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2800 K",
+          "background": "rgb(61, 78, 73)",
+          "surface": "rgb(69, 89, 84)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2500 K",
+          "background": "rgb(60, 76, 69)",
+          "surface": "rgb(69, 88, 82)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2450 K",
+          "background": "rgb(60, 77, 70)",
+          "surface": "rgb(69, 88, 82)"
+        }
+      ]
+    },
+    {
+      "hour": "21",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2750 K",
+          "background": "rgb(55, 73, 68)",
+          "surface": "rgb(62, 83, 79)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2450 K",
+          "background": "rgb(54, 71, 65)",
+          "surface": "rgb(62, 83, 77)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2450 K",
+          "background": "rgb(54, 72, 66)",
+          "surface": "rgb(62, 83, 77)"
+        }
+      ]
+    },
+    {
+      "hour": "21.25",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2650 K",
+          "background": "rgb(49, 68, 64)",
+          "surface": "rgb(56, 78, 74)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2450 K",
+          "background": "rgb(48, 66, 61)",
+          "surface": "rgb(56, 77, 72)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2400 K",
+          "background": "rgb(48, 67, 62)",
+          "surface": "rgb(56, 78, 73)"
+        }
+      ]
+    },
+    {
+      "hour": "21.5",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2600 K",
+          "background": "rgb(42, 63, 59)",
+          "surface": "rgb(50, 73, 69)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2400 K",
+          "background": "rgb(42, 62, 57)",
+          "surface": "rgb(50, 72, 67)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2400 K",
+          "background": "rgb(42, 62, 57)",
+          "surface": "rgb(50, 72, 68)"
+        }
+      ]
+    },
+    {
+      "hour": "21.75",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2500 K",
+          "background": "rgb(36, 58, 54)",
+          "surface": "rgb(44, 67, 64)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2400 K",
+          "background": "rgb(36, 57, 53)",
+          "surface": "rgb(44, 67, 63)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2350 K",
+          "background": "rgb(36, 57, 53)",
+          "surface": "rgb(44, 67, 63)"
+        }
+      ]
+    },
+    {
+      "hour": "22",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2450 K",
+          "background": "rgb(30, 53, 50)",
+          "surface": "rgb(37, 62, 59)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2350 K",
+          "background": "rgb(30, 52, 49)",
+          "surface": "rgb(38, 62, 58)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2350 K",
+          "background": "rgb(30, 52, 49)",
+          "surface": "rgb(38, 62, 58)"
+        }
+      ]
+    },
+    {
+      "hour": "22.25",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2350 K",
+          "background": "rgb(24, 48, 45)",
+          "surface": "rgb(31, 57, 54)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2350 K",
+          "background": "rgb(24, 48, 45)",
+          "surface": "rgb(31, 57, 53)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2300 K",
+          "background": "rgb(24, 48, 45)",
+          "surface": "rgb(31, 57, 54)"
+        }
+      ]
+    },
+    {
+      "hour": "22.5",
+      "overflow": false,
+      "panels": [
+        {
+          "id": "subtle",
+          "kelvin": "2300 K",
+          "background": "rgb(18, 43, 41)",
+          "surface": "rgb(25, 52, 49)"
+        },
+        {
+          "id": "distinct",
+          "kelvin": "2300 K",
+          "background": "rgb(18, 43, 41)",
+          "surface": "rgb(25, 52, 49)"
+        },
+        {
+          "id": "warm-range",
+          "kelvin": "2300 K",
+          "background": "rgb(18, 43, 41)",
+          "surface": "rgb(25, 52, 49)"
+        }
+      ]
+    }
+  ],
+  "textChecks": [
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 5.813097872034841
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 11.979697696995903
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 6.024431582302683
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 6.024431582302683
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 7.525574088791815
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 11.979697696995903
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 10.455950983858077
+    },
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 11.979697696995903
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 5.191142329725187
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 11.598826164216458
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 5.832896324159074
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 5.832896324159074
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 7.525574088791815
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 11.598826164216458
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 9.33724684233427
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 11.598826164216458
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 5.368143738424172
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 11.69781723261682
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 5.882677623647673
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 5.882677623647673
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 7.525574088791815
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 11.69781723261682
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 9.655617200819666
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 11.69781723261682
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 8.076774449749218
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 9.370817695898165
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 9.370817695898165
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 9.370817695898165
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 7.650320186489141
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 9.370817695898165
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 8.076774449749218
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 9.370817695898165
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 7.26420412433246
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 9.053679373747013
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 9.053679373747013
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 9.053679373747013
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 7.650320186489141
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 9.053679373747013
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 7.26420412433246
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 9.053679373747013
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 7.533074883171091
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 9.133410121659086
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 9.133410121659086
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 9.133410121659086
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 7.650320186489141
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 9.133410121659086
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 7.533074883171091
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 9.133410121659086
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 6.20040182459617
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 7.1665939259722595
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 7.1665939259722595
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 7.1665939259722595
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 7.650320186489141
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 7.1665939259722595
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 6.20040182459617
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 7.1665939259722595
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 5.576109959598009
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 6.960517018778237
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 6.960517018778237
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 6.960517018778237
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 7.650320186489141
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 6.960517018778237
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 5.576109959598009
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 6.960517018778237
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 5.753518753298321
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 7.028528712587553
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 7.028528712587553
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 7.028528712587553
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 7.650320186489141
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 7.028528712587553
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 5.753518753298321
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 7.028528712587553
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 4.592696957877873
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 5.375692052812543
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 5.375692052812543
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 5.375692052812543
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 13.92583583248156
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 5.375692052812543
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 4.592696957877873
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 5.375692052812543
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 6.3981522105790365
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 7.895866351239431
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 7.895866351239431
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 7.895866351239431
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 13.92583583248156
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 7.895866351239431
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 6.3981522105790365
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 7.895866351239431
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 6.558650917821424
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 7.9820557360459965
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 7.9820557360459965
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 7.9820557360459965
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 13.92583583248156
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 7.9820557360459965
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 6.558650917821424
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 7.9820557360459965
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 5.103269885447712
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 5.964444186817698
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 5.964444186817698
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 5.964444186817698
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 13.92583583248156
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 5.964444186817698
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 5.103269885447712
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 5.964444186817698
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 4.729256735992542
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 5.821639098975694
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 5.821639098975694
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 5.821639098975694
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 13.92583583248156
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 5.821639098975694
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 4.729256735992542
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 5.821639098975694
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 4.7937799884938554
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 5.882287093872141
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 5.882287093872141
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 5.882287093872141
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 13.92583583248156
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 5.882287093872141
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 4.7937799884938554
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 5.882287093872141
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 6.080015583855153
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 4.983678079695866
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 4.983678079695866
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 4.983678079695866
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 4.983678079695866
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 6.080015583855153
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 4.983678079695866
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 6.000138650240813
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 4.9202927830679455
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 4.9202927830679455
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 4.9202927830679455
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 14.830059196344408
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 4.9202927830679455
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 6.000138650240813
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 4.9202927830679455
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 6.2192406697084035
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 5.311484872112893
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 5.311484872112893
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 5.311484872112893
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 5.311484872112893
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 6.2192406697084035
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 5.311484872112893
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 6.575271375782096
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 5.377902082249995
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 5.377902082249995
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 5.377902082249995
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 5.377902082249995
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 6.575271375782096
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 5.377902082249995
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 6.487382678737854
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 5.372474690124798
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 5.372474690124798
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 5.372474690124798
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 5.372474690124798
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 6.487382678737854
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 5.372474690124798
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 6.8113433775353265
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 5.801759630324417
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 5.801759630324417
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 5.801759630324417
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 5.801759630324417
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 6.8113433775353265
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 5.801759630324417
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 6.42932561897483
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 5.307686254036473
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 5.307686254036473
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 5.307686254036473
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 5.307686254036473
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 6.42932561897483
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 5.307686254036473
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 6.330344531259113
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 5.2426496299007725
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 5.2426496299007725
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 5.2426496299007725
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 5.2426496299007725
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 6.330344531259113
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 5.2426496299007725
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 6.6674089633414
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 5.673178956006869
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 5.673178956006869
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 5.673178956006869
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 5.673178956006869
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 6.6674089633414
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 5.673178956006869
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 6.970405876384425
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 5.741705343748006
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 5.741705343748006
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 5.741705343748006
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 5.741705343748006
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 6.970405876384425
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 5.741705343748006
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 6.87439906659619
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 5.735655295663824
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 5.735655295663824
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 5.735655295663824
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 5.735655295663824
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 6.87439906659619
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 5.735655295663824
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 7.3150231754264645
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 6.213306095418642
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 6.213306095418642
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 6.213306095418642
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 6.213306095418642
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 7.3150231754264645
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 6.213306095418642
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 7.551989973616896
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 6.306978899540103
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 6.306978899540103
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 6.306978899540103
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 6.306978899540103
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 7.551989973616896
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 6.306978899540103
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 7.44693025539336
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 6.2268658509715324
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 6.2268658509715324
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 6.2268658509715324
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 6.2268658509715324
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 7.44693025539336
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 6.2268658509715324
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 7.933476219468615
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 6.73180425236936
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 6.73180425236936
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 6.73180425236936
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 6.73180425236936
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 7.933476219468615
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 6.73180425236936
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 8.182412779564467
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 8.182412779564467
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 8.076628967696827
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 8.076628967696827
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 8.602556726358353
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 7.403606277307076
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 7.403606277307076
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 7.403606277307076
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 7.403606277307076
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 8.602556726358353
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 7.403606277307076
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 8.862322299209882
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 8.862322299209882
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 8.747615057479855
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 8.747615057479855
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 9.311679846301212
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 8.026366239993525
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 8.026366239993525
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 8.026366239993525
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 8.026366239993525
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 9.311679846301212
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 8.026366239993525
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 9.5908377975345
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 8.142140003349638
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 8.142140003349638
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 8.142140003349638
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 8.142140003349638
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 9.5908377975345
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 8.142140003349638
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 9.46722966954643
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 8.035485379182857
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 8.035485379182857
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 8.035485379182857
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 8.035485379182857
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 9.46722966954643
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 8.035485379182857
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 10.10168066313565
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 8.698923735263833
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 8.698923735263833
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 8.698923735263833
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 8.698923735263833
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 10.10168066313565
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 8.698923735263833
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 10.244048791451434
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 8.824545741064922
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 8.824545741064922
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 8.824545741064922
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 8.824545741064922
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 10.244048791451434
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 8.824545741064922
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 10.244048791451434
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 8.814588488514614
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 8.814588488514614
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 8.814588488514614
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 8.814588488514614
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 10.244048791451434
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 8.814588488514614
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 10.912259621978903
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 9.53455113743118
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 9.53455113743118
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 9.53455113743118
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 9.53455113743118
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 10.912259621978903
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 9.53455113743118
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 11.051439891324284
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 11.051439891324284
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 11.051439891324284
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 11.051439891324284
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 11.7456785694611
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 10.33196795332732
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 10.33196795332732
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 10.33196795332732
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 10.33196795332732
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 11.7456785694611
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 10.33196795332732
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 11.891524065181954
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 11.891524065181954
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 11.891524065181954
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 11.891524065181954
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 12.615076502723566
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 12.615076502723566
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 12.615076502723566
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 11.160670620268128
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 11.160670620268128
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 11.160670620268128
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 11.160670620268128
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 12.615076502723566
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 11.160670620268128
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 12.615076502723566
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 12.610591755993955
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 12.615076502723566
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "phase",
+      "ratio": 9.671446932961024
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "body",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "muted",
+      "ratio": 8.074957180326516
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "note",
+      "ratio": 8.074957180326516
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "primary",
+      "ratio": 9.840391549969457
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "secondary",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "label",
+      "ratio": 13.480076462825513
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "role": "input",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "phase",
+      "ratio": 9.671446932961024
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "body",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "muted",
+      "ratio": 8.074957180326516
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "note",
+      "ratio": 8.074957180326516
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "primary",
+      "ratio": 9.840391549969457
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "secondary",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "label",
+      "ratio": 13.480076462825513
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "role": "input",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "phase",
+      "ratio": 9.671446932961024
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "body",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "muted",
+      "ratio": 8.074957180326516
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "note",
+      "ratio": 8.074957180326516
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "primary",
+      "ratio": 9.840391549969457
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "secondary",
+      "ratio": 11.996114282635094
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "label",
+      "ratio": 13.480076462825513
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "role": "input",
+      "ratio": 11.996114282635094
+    }
+  ],
+  "borderChecks": [
+    {
+      "hour": "18",
+      "palette": "subtle",
+      "ratio": 5.258159506475647
+    },
+    {
+      "hour": "18",
+      "palette": "distinct",
+      "ratio": 4.695577984644851
+    },
+    {
+      "hour": "18",
+      "palette": "warm-range",
+      "ratio": 4.855682228594964
+    },
+    {
+      "hour": "18.25",
+      "palette": "subtle",
+      "ratio": 8.076774449749218
+    },
+    {
+      "hour": "18.25",
+      "palette": "distinct",
+      "ratio": 7.26420412433246
+    },
+    {
+      "hour": "18.25",
+      "palette": "warm-range",
+      "ratio": 7.533074883171091
+    },
+    {
+      "hour": "18.5",
+      "palette": "subtle",
+      "ratio": 6.20040182459617
+    },
+    {
+      "hour": "18.5",
+      "palette": "distinct",
+      "ratio": 5.576109959598009
+    },
+    {
+      "hour": "18.5",
+      "palette": "warm-range",
+      "ratio": 5.753518753298321
+    },
+    {
+      "hour": "18.75",
+      "palette": "subtle",
+      "ratio": 4.592696957877873
+    },
+    {
+      "hour": "18.75",
+      "palette": "distinct",
+      "ratio": 6.3981522105790365
+    },
+    {
+      "hour": "18.75",
+      "palette": "warm-range",
+      "ratio": 6.558650917821424
+    },
+    {
+      "hour": "19",
+      "palette": "subtle",
+      "ratio": 5.103269885447712
+    },
+    {
+      "hour": "19",
+      "palette": "distinct",
+      "ratio": 4.729256735992542
+    },
+    {
+      "hour": "19",
+      "palette": "warm-range",
+      "ratio": 4.7937799884938554
+    },
+    {
+      "hour": "19.25",
+      "palette": "subtle",
+      "ratio": 4.728923194587222
+    },
+    {
+      "hour": "19.25",
+      "palette": "distinct",
+      "ratio": 5.069366462848211
+    },
+    {
+      "hour": "19.25",
+      "palette": "warm-range",
+      "ratio": 4.930045854119434
+    },
+    {
+      "hour": "19.5",
+      "palette": "subtle",
+      "ratio": 5.16500010921146
+    },
+    {
+      "hour": "19.5",
+      "palette": "distinct",
+      "ratio": 4.983678079695866
+    },
+    {
+      "hour": "19.5",
+      "palette": "warm-range",
+      "ratio": 4.9202927830679455
+    },
+    {
+      "hour": "19.75",
+      "palette": "subtle",
+      "ratio": 5.311484872112893
+    },
+    {
+      "hour": "19.75",
+      "palette": "distinct",
+      "ratio": 5.377902082249995
+    },
+    {
+      "hour": "19.75",
+      "palette": "warm-range",
+      "ratio": 5.372474690124798
+    },
+    {
+      "hour": "20",
+      "palette": "subtle",
+      "ratio": 5.801759630324417
+    },
+    {
+      "hour": "20",
+      "palette": "distinct",
+      "ratio": 5.307686254036473
+    },
+    {
+      "hour": "20",
+      "palette": "warm-range",
+      "ratio": 5.2426496299007725
+    },
+    {
+      "hour": "20.25",
+      "palette": "subtle",
+      "ratio": 5.673178956006869
+    },
+    {
+      "hour": "20.25",
+      "palette": "distinct",
+      "ratio": 5.741705343748006
+    },
+    {
+      "hour": "20.25",
+      "palette": "warm-range",
+      "ratio": 5.735655295663824
+    },
+    {
+      "hour": "20.5",
+      "palette": "subtle",
+      "ratio": 6.213306095418642
+    },
+    {
+      "hour": "20.5",
+      "palette": "distinct",
+      "ratio": 6.306978899540103
+    },
+    {
+      "hour": "20.5",
+      "palette": "warm-range",
+      "ratio": 6.2268658509715324
+    },
+    {
+      "hour": "20.75",
+      "palette": "subtle",
+      "ratio": 6.73180425236936
+    },
+    {
+      "hour": "20.75",
+      "palette": "distinct",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "20.75",
+      "palette": "warm-range",
+      "ratio": 6.827144343594385
+    },
+    {
+      "hour": "21",
+      "palette": "subtle",
+      "ratio": 7.403606277307076
+    },
+    {
+      "hour": "21",
+      "palette": "distinct",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21",
+      "palette": "warm-range",
+      "ratio": 7.420271169058601
+    },
+    {
+      "hour": "21.25",
+      "palette": "subtle",
+      "ratio": 8.026366239993525
+    },
+    {
+      "hour": "21.25",
+      "palette": "distinct",
+      "ratio": 8.142140003349638
+    },
+    {
+      "hour": "21.25",
+      "palette": "warm-range",
+      "ratio": 8.035485379182857
+    },
+    {
+      "hour": "21.5",
+      "palette": "subtle",
+      "ratio": 8.698923735263833
+    },
+    {
+      "hour": "21.5",
+      "palette": "distinct",
+      "ratio": 8.824545741064922
+    },
+    {
+      "hour": "21.5",
+      "palette": "warm-range",
+      "ratio": 8.814588488514614
+    },
+    {
+      "hour": "21.75",
+      "palette": "subtle",
+      "ratio": 9.53455113743118
+    },
+    {
+      "hour": "21.75",
+      "palette": "distinct",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "21.75",
+      "palette": "warm-range",
+      "ratio": 9.545409177498378
+    },
+    {
+      "hour": "22",
+      "palette": "subtle",
+      "ratio": 10.33196795332732
+    },
+    {
+      "hour": "22",
+      "palette": "distinct",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22",
+      "palette": "warm-range",
+      "ratio": 10.322410666828757
+    },
+    {
+      "hour": "22.25",
+      "palette": "subtle",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.25",
+      "palette": "distinct",
+      "ratio": 11.160670620268128
+    },
+    {
+      "hour": "22.25",
+      "palette": "warm-range",
+      "ratio": 11.14843591949028
+    },
+    {
+      "hour": "22.5",
+      "palette": "subtle",
+      "ratio": 4.780710933302078
+    },
+    {
+      "hour": "22.5",
+      "palette": "distinct",
+      "ratio": 4.780710933302078
+    },
+    {
+      "hour": "22.5",
+      "palette": "warm-range",
+      "ratio": 4.780710933302078
+    }
+  ]
+}

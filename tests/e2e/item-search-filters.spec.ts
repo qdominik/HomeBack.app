@@ -43,7 +43,7 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
     await expect(globalSearch).toHaveCSS("outline-style", "solid");
     await expect(globalSearch).toHaveCSS("outline-width", "2px");
     await expect(globalSearch).toHaveCSS("outline-offset", "2px");
-    await expect(globalSearch).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+    await expect(globalSearch).toHaveCSS("outline-color", "rgb(13, 95, 71)");
     await expect(globalSearch).toHaveCSS("box-shadow", "none");
     expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     await dialog.screenshot({ path: `test-results/ui-foundation/search-${name}.png` });

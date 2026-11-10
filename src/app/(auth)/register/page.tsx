@@ -147,7 +147,7 @@ export default async function RegisterPage({
               </select>
             </label>
             <button
-              className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-white hover:bg-primary-strong"
+              className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary hover:bg-primary-strong"
               type="submit"
             >
               {t.auth.createHousehold}
@@ -213,7 +213,7 @@ export default async function RegisterPage({
               {t.auth.passwordHint}
             </span>
           </label>
-          <button className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-white" type="submit">
+          <button className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary" type="submit">
             {t.auth.createAccount}
           </button>
         </form>

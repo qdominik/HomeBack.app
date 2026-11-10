@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { uiTokens } from "../../lib/ui/tokens";
 
 type SectionHeaderProps = {
   action?: ReactNode;
@@ -14,7 +15,7 @@ export function SectionHeader({
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h2 className="text-2xl font-semibold leading-8 text-foreground">
+        <h2 className={uiTokens.sectionTitle}>
           {children}
         </h2>
         {description ? (

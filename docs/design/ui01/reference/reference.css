@@ -1,0 +1,12 @@
+/* Layout belongs only to this review board. Components use application.css. */
+.ui01-hero{max-width:90rem;margin:auto;padding:var(--space-8) var(--page-gutter)}
+.ui01-hero>p{margin-bottom:var(--space-4)}
+.ui01-note{margin-top:var(--space-4);max-width:70rem;color:var(--foreground-muted);font-size:var(--font-size-label);line-height:1.6}
+.ui01-grid{display:grid;gap:var(--space-6);max-width:90rem;margin:auto;padding:0 var(--page-gutter) var(--space-8)}
+.ui01-panel{min-width:0;padding:var(--space-6);color:var(--foreground);background:var(--background);border:1px solid var(--line);border-radius:var(--card-radius)}
+.ui01-stack{display:grid;gap:var(--space-5)}
+.ui01-card{padding:var(--space-5)}
+.ui01-card p+p{margin-top:var(--space-2)}
+.ui01-actions,.ui01-badges{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+@media(min-width:1050px){.ui01-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:600px) and (max-width:1049px){.ui01-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -569,7 +569,7 @@ export function ItemForm({
           </label>
           <div className="flex flex-wrap items-center gap-3">
             <button
-              className="h-9 rounded-md bg-primary px-3 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+              className="h-9 rounded-md bg-primary px-3 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
               disabled={isQuickCategoryPending}
               onClick={createQuickCategory}
               type="button"
@@ -603,7 +603,7 @@ export function ItemForm({
         </div>
         <label className="inline-flex cursor-pointer items-center">
           <span className="sr-only">{t.modules.items.photo.choose}</span>
-          <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong">
+          <span className="inline-flex min-h-10 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-on-primary hover:bg-primary-strong">
             {t.modules.items.photo.choose}
           </span>
           <input
@@ -647,7 +647,7 @@ export function ItemForm({
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
               {photoDraft ? (
                 <button
-                  className="min-h-10 rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
+                  className="min-h-10 rounded-md bg-primary px-4 py-2 text-sm font-semibold leading-5 text-on-primary hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70"
                   disabled={isPhotoPending || isPhotoAnalysisPending}
                   onClick={applyPhotoSuggestions}
                   type="button"
@@ -684,7 +684,7 @@ export function ItemForm({
         <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       </div>
       <ItemSubmitButton
-        className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
+        className={`inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-70 ${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
         disabled={
           isAnotherCategorySelected ||
           isQuickCategoryPending ||

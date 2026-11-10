@@ -9,7 +9,7 @@ export function Card({ as: Component = "div", className, ...props }: CardProps) 
     <Component
       {...props}
       className={[
-        "rounded-control border border-line bg-surface shadow-card",
+        "rounded-card border border-line bg-surface shadow-card",
         className,
       ]
         .filter(Boolean)

@@ -1,0 +1,15 @@
+{
+  "cssFiles": [
+    ".next\\static\\css\\bc0b328d16c1d6be.css"
+  ],
+  "fontClasses": [
+    "__variable_510bb5",
+    "__variable_955eb7"
+  ],
+  "fontAssets": [
+    "67b6666595a787f5-s.p.woff2",
+    "3d6f63b39e0d1f3d-s.woff2",
+    "fc57de581968d0f5-s.woff2"
+  ],
+  "source": "Production components + compiled Next CSS; no application API"
+}

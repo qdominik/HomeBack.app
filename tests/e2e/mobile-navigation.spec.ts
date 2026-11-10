@@ -74,18 +74,18 @@ test("personalization, icon picker and invitation fields have one keyboard indic
       await expect(control).toHaveCSS("outline-style", "solid");
       await expect(control).toHaveCSS("outline-width", "2px");
       await expect(control).toHaveCSS("outline-offset", "2px");
-      await expect(control).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+      await expect(control).toHaveCSS("outline-color", "rgb(13, 95, 71)");
       await expect(control).toHaveCSS("box-shadow", "none");
     }
     await expect(page.getByLabel("Visible module", { exact: true })).toBeChecked();
     await expect(page.getByLabel("Hidden module", { exact: true })).not.toBeChecked();
     await expect(page.getByRole("button", { name: "Selected icon", exact: true })).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("button", { name: "Selected icon", exact: true })).toHaveCSS("border-color", "rgb(27, 111, 77)");
+    await expect(page.getByRole("button", { name: "Selected icon", exact: true })).toHaveCSS("border-color", "rgb(13, 95, 71)");
     await page.getByRole("button", { name: "Icon picker", exact: true }).click();
-    await expect(page.getByRole("button", { name: "Icon picker", exact: true })).toHaveCSS("border-color", "rgb(27, 111, 77)");
+    await expect(page.getByRole("button", { name: "Icon picker", exact: true })).toHaveCSS("border-color", "rgb(13, 95, 71)");
     const roleControl = page.getByLabel("Invitation role", { exact: true });
     await roleControl.click();
-    await expect(roleControl).toHaveCSS("border-color", "rgb(27, 111, 77)");
+    await expect(roleControl).toHaveCSS("border-color", "rgb(13, 95, 71)");
     if (!await roleControl.evaluate(element => element.matches(":focus-visible"))) {
       await expect(roleControl).not.toHaveCSS("box-shadow", "none");
     }
@@ -127,16 +127,16 @@ test("keyboard focus has one visible outline, including invalid controls", async
       await expect(control).toHaveCSS("outline-style", "solid");
       await expect(control).toHaveCSS("outline-width", "2px");
       await expect(control).toHaveCSS("outline-offset", "2px");
-      await expect(control).toHaveCSS("outline-color", "rgb(27, 111, 77)");
+      await expect(control).toHaveCSS("outline-color", "rgb(13, 95, 71)");
       await expect(control).toHaveCSS("box-shadow", "none");
       if (control === controls[0]) {
-        await expect(control).toHaveCSS("border-color", "rgb(231, 76, 60)");
+        await expect(control).toHaveCSS("border-color", "rgb(155, 53, 45)");
         await page.screenshot({ path: testInfo.outputPath(`focus-invalid-${width}.png`) });
       }
     }
     await expect(page.getByLabel("Invalid field", { exact: true })).toHaveAttribute("aria-invalid", "true");
     await expect(page.getByLabel("Invalid field", { exact: true })).toHaveAttribute("aria-errormessage", "invalid-focus-error");
-    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveCSS("border-color", "rgb(231, 76, 60)");
+    await expect(page.getByLabel("Invalid field", { exact: true })).toHaveCSS("border-color", "rgb(155, 53, 45)");
     await expect(page.getByRole("alert")).toHaveText("Check this value");
   }
 });
@@ -221,7 +221,7 @@ for (const width of [390, 768, 1280]) {
     const [red, green, blue] = color.match(/\d+/g)!.map(Number);
     expect(green).toBeGreaterThan(red);
     expect(green).toBeGreaterThan(blue);
-    await expect(add).toHaveCSS("color", "rgb(255, 255, 255)");
+    await expect(add).toHaveCSS("color", "rgb(255, 253, 248)");
     const beforeAddURL = page.url();
     const itemsRequests: string[] = [];
     const trackItems = (request: import("@playwright/test").Request) => {
