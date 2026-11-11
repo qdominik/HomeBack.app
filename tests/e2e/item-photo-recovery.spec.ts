@@ -81,6 +81,12 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
     });
 
     test("photo preview and fill action appear before the form fields", async ({ page }) => {
+      const addBox = await page.getByRole("button", { name: "Dodaj zdjęcie", exact: true }).boundingBox();
+      const addPointer = await page.locator('[data-photo-pointer="add"]').boundingBox();
+      expect(addPointer).not.toBeNull();
+      expect((addPointer?.x ?? 0) + (addPointer?.width ?? 0) / 2).toBeGreaterThanOrEqual(addBox?.x ?? 0);
+      expect((addPointer?.x ?? 0) + (addPointer?.width ?? 0) / 2).toBeLessThanOrEqual((addBox?.x ?? 0) + (addBox?.width ?? 0));
+      expect((addPointer?.y ?? 0) + (addPointer?.height ?? 0)).toBeLessThanOrEqual(addBox?.y ?? 0);
       await selectPhoto(page);
       await ready(page);
       const preview = page.getByAltText("Podgląd wybranego zdjęcia Rzeczy");
@@ -88,6 +94,11 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       const name = page.locator('[name="nazwa"]');
       const previewBox = await preview.locator("..").boundingBox();
       const fillBox = await fill.boundingBox();
+      const fillPointer = await page.locator('[data-photo-pointer="fill"]').boundingBox();
+      expect(fillPointer).not.toBeNull();
+      expect((fillPointer?.x ?? 0) + (fillPointer?.width ?? 0) / 2).toBeGreaterThanOrEqual(fillBox?.x ?? 0);
+      expect((fillPointer?.x ?? 0) + (fillPointer?.width ?? 0) / 2).toBeLessThanOrEqual((fillBox?.x ?? 0) + (fillBox?.width ?? 0));
+      expect((fillPointer?.y ?? 0) + (fillPointer?.height ?? 0)).toBeLessThanOrEqual(fillBox?.y ?? 0);
       const nameBox = await name.boundingBox();
       expect(previewBox?.width).toBeGreaterThanOrEqual(128);
       expect(previewBox?.height).toBeGreaterThanOrEqual(128);

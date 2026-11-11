@@ -484,17 +484,20 @@ export function ItemForm({
             tabIndex={-1}
             type="file"
           />
-          {!displayedPhoto ? (
-            <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
-              <ImageSquareIcon aria-hidden="true" size={18} />{t.modules.items.photo.add}
-            </Button>
-          ) : null}
       </div>
       <div className="-mt-2 rounded-control border border-primary/20 bg-primary/10 p-3">
         <p className="text-sm font-semibold text-primary-strong">{t.modules.items.photoAssistHeading}</p>
         <p className="mt-1 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
       </div>
       <section className="space-y-2">
+        {!displayedPhoto ? (
+          <div className="inline-flex max-w-full flex-col items-center gap-1">
+            <span aria-hidden="true" data-photo-pointer="add" className="text-2xl leading-none">👇🏻</span>
+            <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
+              <ImageSquareIcon aria-hidden="true" size={18} />{t.modules.items.photo.add}
+            </Button>
+          </div>
+        ) : null}
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
         ) : null}
@@ -517,16 +520,18 @@ export function ItemForm({
             <div className="min-w-0 flex-1 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               {photoDraft ? (
-                <Button
-
-                  disabled={isPhotoPending || isPhotoAnalysisPending}
-                  onClick={applyPhotoSuggestions}
-                  type="button"
-                >
-                  {isPhotoAnalysisPending
-                    ? t.modules.items.photo.analyzing
-                    : t.modules.items.photo.fillFromPhoto}
-                </Button>
+                <div className="inline-flex max-w-full flex-col items-center gap-1">
+                  <span aria-hidden="true" data-photo-pointer="fill" className="text-2xl leading-none">👇🏻</span>
+                  <Button
+                    disabled={isPhotoPending || isPhotoAnalysisPending}
+                    onClick={applyPhotoSuggestions}
+                    type="button"
+                  >
+                    {isPhotoAnalysisPending
+                      ? t.modules.items.photo.analyzing
+                      : t.modules.items.photo.fillFromPhoto}
+                  </Button>
+                </div>
               ) : null}
             </div>
             <button
