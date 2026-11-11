@@ -240,8 +240,8 @@ test("Structure search is removed while icon search remains and mobile filters d
 
   await page.keyboard.press("Escape");
   const card = itemCard(page, data.item.charger);
-  await card.getByText("Edytuj rzecz", { exact: true }).click();
-  const editForm = card.locator("details form");
+  await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
+  const editForm = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
   const editSelects = editForm.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
   await expect(editSelects).toHaveCount(5);
   const editFormBox = await editForm.boundingBox();

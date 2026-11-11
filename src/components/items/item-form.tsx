@@ -432,6 +432,7 @@ export function ItemForm({
   return (
     <form
       action={action}
+      aria-label={item ? t.modules.items.editItem : undefined}
       className="@container grid min-w-0 max-w-full gap-3"
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
@@ -480,55 +481,55 @@ export function ItemForm({
           value={itemDescription}
         />
       </label>
-      <div className="grid gap-3 @min-[17rem]:grid-cols-2">
-        <label className="ui-label min-w-0">
-          {t.modules.items.itemType}
-          <Select
-            className="mt-2"
-            name="typ"
-            onChange={(event) =>
-              setItemType(event.currentTarget.value as ItemType)
-            }
-            value={itemType}
-          >
-            {ITEM_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {typeLabels[type]}
+      <label className="ui-label min-w-0">
+        {t.modules.items.itemType}
+        <Select
+          className="mt-2"
+          name="typ"
+          onChange={(event) =>
+            setItemType(event.currentTarget.value as ItemType)
+          }
+          value={itemType}
+        >
+          {ITEM_TYPES.map((type) => (
+            <option key={type} value={type}>
+              {typeLabels[type]}
+            </option>
+          ))}
+        </Select>
+      </label>
+      <label className="ui-label min-w-0">
+        {t.modules.items.category}
+        <Select
+          className="mt-2"
+          name="category_id"
+          onChange={(event) => selectCategory(event.currentTarget.value)}
+          required
+          value={selectedCategoryId}
+        >
+          <option disabled value="">
+            {t.modules.items.selectCategory}
+          </option>
+          <optgroup label={t.modules.items.systemCategories}>
+            {systemCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.label}
               </option>
             ))}
-          </Select>
-        </label>
-        <label className="ui-label min-w-0">
-          {t.modules.items.category}
-          <Select
-            className="mt-2"
-            name="category_id"
-            onChange={(event) => selectCategory(event.currentTarget.value)}
-            required
-            value={selectedCategoryId}
-          >
-            <option disabled value="">
-              {t.modules.items.selectCategory}
-            </option>
-            <optgroup label={t.modules.items.systemCategories}>
-              {systemCategories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.label}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label={t.modules.items.customCategories}>
-              {customCategories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.label}
-                </option>
-              ))}
-            </optgroup>
-            <option value={ANOTHER_CATEGORY_VALUE}>
-              {t.modules.items.anotherCategory}
-            </option>
-          </Select>
-        </label>
+          </optgroup>
+          <optgroup label={t.modules.items.customCategories}>
+            {customCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.label}
+              </option>
+            ))}
+          </optgroup>
+          <option value={ANOTHER_CATEGORY_VALUE}>
+            {t.modules.items.anotherCategory}
+          </option>
+        </Select>
+      </label>
+      <div className="grid gap-3 @min-[17rem]:grid-cols-2">
         {showsItemQuantity(itemType) ? (
           <label className="ui-label min-w-0">
             {t.modules.items.quantity}

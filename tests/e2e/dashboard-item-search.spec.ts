@@ -178,8 +178,8 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
     await expect(page).toHaveURL(/status=item_created/);
     await page.reload();
     const card = itemCard(page, name);
-    await card.getByText("Edytuj rzecz", { exact: true }).click();
-    const edit = card.locator("details form");
+    await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
+    const edit = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
     for (const [field, label, selected] of [
       ["room_id", data.room.salon, level >= 1],
       ["storage_location_l2_id", data.furniture.chest, level >= 2],
@@ -203,8 +203,8 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
   for (const level of [2, 3, 1, 0]) {
     await page.goto("/items");
     const card = itemCard(page, names[0]);
-    await card.getByText("Edytuj rzecz", { exact: true }).click();
-    const edit = card.locator("details form");
+    await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
+    const edit = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
     await edit.locator('[name="room_id"]').selectOption("");
     if (level >= 1) await edit.locator('[name="room_id"]').selectOption({ label: data.room.salon });
     if (level >= 2) await edit.locator('[name="storage_location_l2_id"]').selectOption({ label: data.furniture.chest });
