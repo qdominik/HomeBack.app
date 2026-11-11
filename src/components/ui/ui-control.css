@@ -83,3 +83,30 @@
   height: var(--choice-size);
   accent-color: var(--primary);
 }
+
+.ui-icon-action[aria-label]::after {
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: calc(100% + var(--space-1));
+  z-index: 2;
+  display: none;
+  width: max-content;
+  max-width: 12rem;
+  border-radius: var(--radius-sm);
+  background: var(--foreground);
+  color: var(--surface);
+  padding: var(--space-1) var(--space-2);
+  content: attr(aria-label) / "";
+  font-size: var(--font-size-meta);
+  pointer-events: none;
+}
+
+.ui-icon-action:focus-visible::after {
+  display: block;
+}
+
+@media (hover: hover) {
+  .ui-icon-action:hover::after {
+    display: block;
+  }
+}

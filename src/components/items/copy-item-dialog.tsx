@@ -8,13 +8,14 @@ import { useEffect, useId, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { copyItem } from "@/app/(app)/items/actions";
 import { Alert } from "@/components/ui/alert";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ModalPortal } from "@/components/ui/modal-portal";
 import {
   defaultCopyName,
   resolveCopyDialogOutcome,
 } from "@/lib/copy-entities/copy-contract";
 import { t } from "@/lib/i18n";
+import { CopyIcon } from "@phosphor-icons/react/dist/ssr/Copy";
 import {
   getInitialItemLocationSelection,
   getPositionOptionsForStorage,
@@ -148,17 +149,16 @@ export function CopyItemDialog({
 
   return (
     <>
-      <button
-        className={buttonClassName({
-          className: "self-start",
-          variant: "secondary",
-        })}
+      <Button
+        aria-label={copy.item.action}
         onClick={openDialog}
         ref={triggerRef}
+        size="icon"
         type="button"
+        variant="secondary"
       >
-        {copy.item.action}
-      </button>
+        <CopyIcon aria-hidden="true" size={18} />
+      </Button>
       <ModalPortal>
         <Dialog
           aria-describedby={descriptionId}

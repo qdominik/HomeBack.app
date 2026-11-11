@@ -6,7 +6,7 @@ import { useId, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteItemPermanentlyFromDialog } from "@/app/(app)/items/actions";
 import { Alert } from "@/components/ui/alert";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { formatDeleteConfirmation } from "@/lib/confirm-delete";
 import { t } from "@/lib/i18n";
 import type { PermanentItemDeletionActionResult } from "@/lib/items/permanent-item-deletion";
@@ -137,18 +137,16 @@ export function ItemPermanentDeleteDialog({
 
   return (
     <>
-      <button
-        className={buttonClassName({
-          className: "w-full gap-2 sm:w-auto",
-          variant: "danger",
-        })}
+      <Button
+        aria-label={t.modules.items.deleteItem}
         onClick={openDialog}
         ref={triggerRef}
+        size="icon"
         type="button"
+        variant="secondary"
       >
-        <TrashIcon aria-hidden="true" size={18} weight="bold" />
-        {t.modules.items.deleteItem}
-      </button>
+        <TrashIcon aria-hidden="true" className="text-danger" size={18} />
+      </Button>
       <Dialog
         aria-describedby={descriptionId}
         aria-labelledby={titleId}

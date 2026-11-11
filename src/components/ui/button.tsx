@@ -4,6 +4,7 @@ export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 
 type ButtonStyleOptions = {
   className?: string;
+  size?: "default" | "icon";
   variant?: ButtonVariant;
 };
 
@@ -17,10 +18,12 @@ const variantClasses: Record<ButtonVariant, string> = {
 
 export function buttonClassName({
   className,
+  size = "default",
   variant = "primary",
 }: ButtonStyleOptions = {}) {
   return [
-    "ui-button inline-flex min-h-11 items-center justify-center gap-2 rounded-control px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed",
+    "ui-button inline-flex min-h-11 items-center justify-center gap-2 rounded-control text-sm font-semibold transition-colors disabled:cursor-not-allowed",
+    size === "icon" ? "ui-icon-action relative w-11 shrink-0" : "px-4 py-2",
     variantClasses[variant],
     className,
   ]
@@ -32,6 +35,7 @@ type ButtonProps = ComponentPropsWithRef<"button"> & ButtonStyleOptions;
 
 export function Button({
   className,
+  size,
   type = "button",
   variant,
   ...props
@@ -39,7 +43,7 @@ export function Button({
   return (
     <button
       {...props}
-      className={buttonClassName({ className, variant })}
+      className={buttonClassName({ className, size, variant })}
       type={type}
     />
   );

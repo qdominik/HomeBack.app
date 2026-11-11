@@ -3,14 +3,16 @@
 import { ArchiveIcon } from "@phosphor-icons/react/Archive";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/ArrowCounterClockwise";
 import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonVariant } from "@/components/ui/button";
 
 type ItemSubmitButtonProps = {
-  className: string;
+  className?: string;
   disabled?: boolean;
   icon?: "archive" | "restore";
   label: string;
   pendingLabel: string;
+  size?: "default" | "icon";
+  variant?: ButtonVariant;
 };
 
 export function ItemSubmitButton({
@@ -19,15 +21,21 @@ export function ItemSubmitButton({
   icon,
   label,
   pendingLabel,
+  size = "default",
+  variant,
 }: ItemSubmitButtonProps) {
   const { pending } = useFormStatus();
+  const currentLabel = pending ? pendingLabel : label;
 
   return (
     <Button
+      aria-label={size === "icon" ? currentLabel : undefined}
       className={className}
       disabled={pending || disabled}
       aria-busy={pending}
+      size={size}
       type="submit"
+      variant={variant}
     >
       {icon === "archive" ? (
         <ArchiveIcon aria-hidden="true" size={18} />
@@ -38,7 +46,7 @@ export function ItemSubmitButton({
           size={18}
         />
       ) : null}
-      {pending ? pendingLabel : label}
+      {size === "default" ? currentLabel : null}
     </Button>
   );
 }
