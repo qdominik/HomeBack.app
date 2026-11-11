@@ -39,14 +39,13 @@ import {
   replaceItemPhotoDraft,
 } from "@/lib/items/item-photo/draft-flow";
 import {
-  getItemLocationFieldKey,
-  getItemLocationFieldProps,
+  getInitialItemLocationSelection,
   type ItemCategoryOption,
   type ItemLocationSelectorOptions,
 } from "@/lib/items/item-options";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
-import { ItemLocationField } from "./item-location-field";
+import { ItemLocationField, ItemLocationSummary } from "./item-location-field";
 import { ItemPhotoImage } from "./item-photo-image";
 import { ItemSubmitButton } from "./item-submit-button";
 
@@ -68,7 +67,7 @@ type ItemFormProps = {
 const ANOTHER_CATEGORY_VALUE = "__another_category__";
 
 const typeLabels: Record<ItemType, string> = {
-  unikalny: t.modules.items.itemTypes.unique,
+  unikalny: t.modules.items.singleItemLabel,
   zapas: t.modules.items.itemTypes.stock,
   zestaw: t.modules.items.itemTypes.set,
 };
@@ -179,17 +178,8 @@ export function ItemForm({
   const initialQuantity = item?.ilosc ?? 1;
   const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
   const [itemUnit, setItemUnit] = useState(item ? (item.jednostka ?? "") : "szt.");
-  const locationFieldProps = getItemLocationFieldProps(
-    locationOptions,
-    selectedPositionId,
-    selectedStorageId,
-    selectedRoomId,
-  );
-  const locationFieldKey = getItemLocationFieldKey(
-    item?.id,
-    selectedPositionId,
-    selectedStorageId,
-    selectedRoomId,
+  const [locationSelection, setLocationSelection] = useState(() =>
+    getInitialItemLocationSelection(locationOptions, selectedPositionId, selectedStorageId, selectedRoomId),
   );
   const systemCategories = availableCategories.filter(
     (category) => category.isSystem,
@@ -437,7 +427,7 @@ export function ItemForm({
     <form
       action={action}
       aria-label={item ? t.modules.items.editItem : undefined}
-      className="@container grid min-w-0 max-w-full gap-3"
+      className="@container grid min-w-0 max-w-full gap-3 [&_.ui-control:not(:disabled):not([readonly])]:!bg-white"
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
       {photoDraft ? (
@@ -462,11 +452,13 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
+      <div className="grid min-w-0 gap-4 @min-[44rem]:grid-cols-[minmax(0,1fr)_14rem]">
+      <div className="grid min-w-0 content-start gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-semibold">{item ? t.modules.items.editItem : t.modules.items.addItem}</h3>
+        <h3 className="text-lg font-semibold">{t.modules.items.itemDetailsHeading}</h3>
           <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
             <span className={buttonClassName({ variant: "secondary" })}>
-              <ImageSquareIcon aria-hidden="true" size={18} className="mr-2" />{t.modules.items.photo.choose}
+              <ImageSquareIcon aria-hidden="true" size={18} className="mr-2" />{t.modules.items.photo.add}
             </span>
             <input
               accept="image/jpeg,image/webp"
@@ -478,9 +470,10 @@ export function ItemForm({
             />
           </label>
       </div>
-      <div className="grid min-w-0 gap-3 @min-[25rem]:grid-cols-[minmax(0,1fr)_minmax(9rem,11rem)]">
-      <label className="ui-label">
-        {t.modules.items.name}
+      <p className="-mt-2 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)_7.5rem] gap-3">
+      <label className="ui-label col-span-2 min-w-0">
+        {t.modules.items.name} <span aria-hidden="true">*</span>
         <Input
           className="mt-2"
           onChange={(event) => {
@@ -502,12 +495,10 @@ export function ItemForm({
             </div>
           ) : (<><input name="ilosc" type="hidden" value="1" /><Input id={quantityId} className="mt-2" value="1" readOnly /></>)}
         </div>
-      </div>
-      <div className="grid min-w-0 gap-3 @min-[25rem]:grid-cols-3">
       <label className="ui-label min-w-0">
         {t.modules.items.itemType}
         <Select
-          className="mt-2"
+          className="mt-2 !px-2 !text-sm"
           name="typ"
           onChange={(event) =>
             setItemType(event.currentTarget.value as ItemType)
@@ -522,9 +513,9 @@ export function ItemForm({
         </Select>
       </label>
       <label className="ui-label min-w-0">
-        {t.modules.items.category}
+        {t.modules.items.category} <span aria-hidden="true">*</span>
         <Select
-          className="mt-2"
+          className="mt-2 !px-2 !text-sm"
           name="category_id"
           onChange={(event) => selectCategory(event.currentTarget.value)}
           required
@@ -559,7 +550,7 @@ export function ItemForm({
       </label>
       </div>
       <label className="ui-label">
-        {t.modules.items.description}
+        {t.modules.items.description} <span className="font-normal text-muted">· {t.modules.items.optional}</span>
         <Textarea
           className="ui-item-description mt-2"
           name="opis"
@@ -667,9 +658,9 @@ export function ItemForm({
           </p>
         ) : null}
       </section>
-      <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
+      <ItemLocationField options={locationOptions} selection={locationSelection} setSelection={setLocationSelection} />
       <ItemSubmitButton
-        className="justify-self-start"
+        className="justify-self-end"
         disabled={
           isAnotherCategorySelected ||
           isQuickCategoryPending ||
@@ -679,6 +670,9 @@ export function ItemForm({
         label={submitLabel}
         pendingLabel={t.modules.items.saving}
       />
+      </div>
+      <ItemLocationSummary options={locationOptions} selection={locationSelection} />
+      </div>
     </form>
   );
 }

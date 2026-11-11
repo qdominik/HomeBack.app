@@ -253,9 +253,18 @@ for (const width of [390, 1440]) {
     const furniture = form.locator('[data-location-field="storage_location_l2_id"]');
     const position = form.locator('[data-location-field="storage_location_l3_id"]');
     await expect(form.locator('[name="jednostka"]')).toHaveValue("szt.");
+    const quantityBox = await form.getByLabel("Ilość", { exact: true }).boundingBox();
+    const unitBox = await form.locator('[name="jednostka"]').boundingBox();
+    expect(Math.abs((quantityBox?.width ?? 0) - (unitBox?.width ?? 0))).toBeLessThanOrEqual(1);
+    expect(Math.abs((quantityBox?.x ?? 0) - (unitBox?.x ?? 0))).toBeLessThanOrEqual(1);
+    await expect(room.locator("svg")).toHaveCount(2);
+
     await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("1");
     await expect(form.getByLabel("Ilość", { exact: true })).toHaveAttribute("readonly", "");
     await form.locator('[name="typ"]').selectOption("zapas");
+    const stepperBox = await form.getByLabel("Ilość", { exact: true }).locator("..").boundingBox();
+    expect(Math.abs((stepperBox?.width ?? 0) - (unitBox?.width ?? 0))).toBeLessThanOrEqual(1);
+    expect(Math.abs((stepperBox?.x ?? 0) - (unitBox?.x ?? 0))).toBeLessThanOrEqual(1);
     await form.getByRole("button", { name: "Zwiększ ilość" }).click();
     await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("2");
     await form.getByRole("button", { name: "Zmniejsz ilość" }).click();

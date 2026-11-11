@@ -210,7 +210,7 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
     const card = itemCard(page, names[0]);
     await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
     const edit = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
-    await chooseLocation(edit, "room_id", "Wybierz pomieszczenie");
+    await chooseLocation(edit, "room_id", "Wybierz");
     if (level >= 1) await chooseLocation(edit, "room_id", data.room.salon);
     if (level >= 2) await chooseLocation(edit, "storage_location_l2_id", data.furniture.chest);
     if (level >= 3) await chooseLocation(edit, "storage_location_l3_id", data.storageSpace.upperDrawer);
