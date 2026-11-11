@@ -330,8 +330,8 @@ test("JPEG upload through header add persists its thumbnail after reload and edi
     element.complete && element.naturalWidth > 0 && element.naturalHeight > 0,
   )).toBe(true);
 
-  await card.getByText("Edytuj rzecz", { exact: true }).click();
-  const edit = card.locator("details form");
+  await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
+  const edit = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
   const editPreview = edit.getByRole("img", { name: "Podgląd wybranego zdjęcia Rzeczy", exact: true });
   await expect(editPreview).toBeVisible();
   await expect.poll(() => editPreview.evaluate((element: HTMLImageElement) =>

@@ -5,7 +5,6 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import Image from "next/image";
 import {
   type ChangeEvent,
   useRef,
@@ -46,6 +45,7 @@ import {
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
 import { ItemLocationField } from "./item-location-field";
+import { ItemPhotoImage } from "./item-photo-image";
 import { ItemSubmitButton } from "./item-submit-button";
 
 type Item = Database["public"]["Tables"]["item"]["Row"];
@@ -55,7 +55,6 @@ type ItemFormProps = {
   categories: ItemCategoryOption[];
   defaultCategoryId?: string | null;
   item?: Item;
-  layout?: "default" | "compact";
   locationOptions: ItemLocationSelectorOptions;
   photo?: ItemPhotoPersistedState | null;
   selectedPositionId?: string | null;
@@ -141,7 +140,6 @@ export function ItemForm({
   categories,
   defaultCategoryId,
   item,
-  layout = "default",
   locationOptions,
   photo = null,
   selectedPositionId,
@@ -149,9 +147,6 @@ export function ItemForm({
   selectedRoomId,
   submitLabel,
 }: ItemFormProps) {
-  const isCompact = layout === "compact";
-  const fullWidthClass = isCompact ? "sm:col-span-2" : "";
-  const halfWidthClass = isCompact ? "sm:col-span-1" : "";
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
   const [itemName, setItemName] = useState(item?.nazwa ?? "");
   const [itemDescription, setItemDescription] = useState(item?.opis ?? "");
@@ -437,7 +432,8 @@ export function ItemForm({
   return (
     <form
       action={action}
-      className={isCompact ? "grid min-w-0 max-w-full gap-3 sm:grid-cols-2" : "min-w-0 max-w-full space-y-3"}
+      aria-label={item ? t.modules.items.editItem : undefined}
+      className="@container grid min-w-0 max-w-full gap-3"
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
       {photoDraft ? (
@@ -462,7 +458,7 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
-      <label className={`ui-label ${fullWidthClass}`}>
+      <label className="ui-label">
         {t.modules.items.name}
         <Input
           className="mt-2"
@@ -475,16 +471,17 @@ export function ItemForm({
           value={itemName}
         />
       </label>
-      <label className={`ui-label ${fullWidthClass}`}>
+      <label className="ui-label">
         {t.modules.items.description}
         <Textarea
-          className="mt-2"
+          className="ui-item-description mt-2"
           name="opis"
           onChange={(event) => setItemDescription(event.currentTarget.value)}
+          rows={2}
           value={itemDescription}
         />
       </label>
-      <label className={`ui-label min-w-0 max-w-full ${halfWidthClass}`}>
+      <label className="ui-label min-w-0">
         {t.modules.items.itemType}
         <Select
           className="mt-2"
@@ -501,34 +498,7 @@ export function ItemForm({
           ))}
         </Select>
       </label>
-      {showsItemQuantity(itemType) ? (
-        <label className={`ui-label ${halfWidthClass}`}>
-          {t.modules.items.quantity}
-          <Input
-            className="mt-2"
-            key={itemType}
-            min="1"
-            name="ilosc"
-            onChange={(event) => setItemQuantity(event.currentTarget.value)}
-            required
-            step="1"
-            type="number"
-            value={itemQuantity}
-          />
-        </label>
-      ) : (
-        <input name="ilosc" type="hidden" value="1" />
-      )}
-      <label className={`ui-label ${halfWidthClass}`}>
-        {t.modules.items.unit}
-        <Input
-          className="mt-2"
-          name="jednostka"
-          onChange={(event) => setItemUnit(event.currentTarget.value)}
-          value={itemUnit}
-        />
-      </label>
-      <label className={`ui-label min-w-0 max-w-full ${halfWidthClass}`}>
+      <label className="ui-label min-w-0">
         {t.modules.items.category}
         <Select
           className="mt-2"
@@ -559,9 +529,38 @@ export function ItemForm({
           </option>
         </Select>
       </label>
+      <div className="grid gap-3 @min-[17rem]:grid-cols-2">
+        {showsItemQuantity(itemType) ? (
+          <label className="ui-label min-w-0">
+            {t.modules.items.quantity}
+            <Input
+              className="mt-2"
+              key={itemType}
+              min="1"
+              name="ilosc"
+              onChange={(event) => setItemQuantity(event.currentTarget.value)}
+              required
+              step="1"
+              type="number"
+              value={itemQuantity}
+            />
+          </label>
+        ) : (
+          <input name="ilosc" type="hidden" value="1" />
+        )}
+        <label className="ui-label min-w-0">
+          {t.modules.items.unit}
+          <Input
+            className="mt-2"
+            name="jednostka"
+            onChange={(event) => setItemUnit(event.currentTarget.value)}
+            value={itemUnit}
+          />
+        </label>
+      </div>
       {isAnotherCategorySelected ? (
         <div
-          className={`space-y-2 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
+          className="space-y-2 rounded-md border border-line bg-surface-muted p-3"
         >
           <label className="ui-label">
             {t.modules.items.newCategoryName}
@@ -594,31 +593,26 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
-      <section
-        className={`space-y-3 rounded-md border border-line bg-surface-muted p-3 ${fullWidthClass}`}
-      >
-        <div>
+      <section className="space-y-2 rounded-md border border-line bg-surface-muted p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-semibold text-foreground">
             {t.modules.items.photo.title}
           </h3>
-          <p className="mt-1 text-xs leading-5 text-muted">
-            {t.modules.items.photo.help}
-          </p>
+          <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
+            <span className={buttonClassName({ variant: "secondary" })}>
+              {t.modules.items.photo.choose}
+            </span>
+            <input
+              accept="image/jpeg,image/webp"
+              className="sr-only"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onChange={uploadSelectedPhoto}
+              ref={fileInputRef}
+              type="file"
+            />
+          </label>
         </div>
-        <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
-          <span className="sr-only">{t.modules.items.photo.choose}</span>
-          <span className={buttonClassName()}>
-            {t.modules.items.photo.choose}
-          </span>
-          <input
-            accept="image/jpeg,image/webp"
-            className="sr-only"
-            disabled={isPhotoPending || isPhotoAnalysisPending}
-            onChange={uploadSelectedPhoto}
-            ref={fileInputRef}
-            type="file"
-          />
-        </label>
+        <p className="text-xs leading-5 text-muted">{t.modules.items.photo.help}</p>
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
         ) : null}
@@ -626,19 +620,17 @@ export function ItemForm({
           <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
         ) : null}
         {displayedPhoto ? (
-          <div className="grid gap-3 sm:grid-cols-[96px_minmax(0,1fr)_auto] sm:items-center">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
             {displayedPhoto.previewUrl && !photoPreviewFailed ? (
-              <Image
+              <ItemPhotoImage
                 alt={t.modules.items.photo.previewAlt}
-                className="h-24 w-24 rounded-md border border-line object-cover"
-                height={96}
+                className="h-16 w-16 rounded-md border border-line"
                 onError={() => setPhotoPreviewFailed(true)}
+                size={64}
                 src={displayedPhoto.previewUrl}
-                unoptimized
-                width={96}
               />
             ) : (
-              <div className="h-24 w-24 rounded-md border border-dashed border-line bg-surface" />
+              <div className="h-16 w-16 rounded-md border border-dashed border-line bg-surface" />
             )}
             <div className="min-w-0 text-xs leading-5 text-muted">
               <p className="truncate font-medium text-foreground">
@@ -648,7 +640,7 @@ export function ItemForm({
                 {displayedPhoto.mimeType} · {Math.ceil(displayedPhoto.sizeBytes / 1024)} KB
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <div className="col-span-full flex flex-wrap items-center gap-2">
               {photoDraft ? (
                 <Button
 
@@ -684,11 +676,9 @@ export function ItemForm({
           </p>
         ) : null}
       </section>
-      <div className={`min-w-0 max-w-full ${fullWidthClass}`}>
-        <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
-      </div>
+      <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
       <ItemSubmitButton
-        className={`${fullWidthClass} ${isCompact ? "justify-self-start" : ""}`}
+        className="justify-self-start"
         disabled={
           isAnotherCategorySelected ||
           isQuickCategoryPending ||

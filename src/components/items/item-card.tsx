@@ -4,8 +4,6 @@ import {
   updateItem,
 } from "@/app/(app)/items/actions";
 import { Badge } from "@/components/ui/badge";
-import { PencilSimpleLineIcon } from "@phosphor-icons/react/dist/ssr/PencilSimpleLine";
-import { buttonClassName } from "@/components/ui/button";
 import { activeLocale, t } from "@/lib/i18n";
 import { resolveItemIconKey } from "@/lib/icons/item-icon-resolution";
 import { getArchivedItemRestoreMode } from "@/lib/items/item-archive-restore";
@@ -17,6 +15,7 @@ import {
 } from "@/lib/items/item-options";
 import type { Database } from "@/types/database";
 import { ItemForm } from "./item-form";
+import { ItemCardActions } from "./item-card-actions";
 import { ItemPhotoThumbnail } from "./item-photo-thumbnail";
 import { ItemSubmitButton } from "./item-submit-button";
 import { LegacyItemRestoreForm } from "./legacy-item-restore-form";
@@ -167,96 +166,72 @@ export function ItemCard({
         </p>
       ) : null}
 
-      <div className="mt-4 border-t border-line pt-3">
-        <div
-          className="grid gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-center"
-
-        >
-          <p className="text-xs leading-5 text-muted">
-            {t.modules.items.addedOn}: {formatDate(item.created_at)}
-          </p>
-          {canCopy ? (
-            <CopyItemDialog
-              itemId={item.id}
-              itemName={item.nazwa}
-              location={location}
-              locationOptions={locationOptions}
-            />
-          ) : null}
-          {isAdmin && !isArchived ? (
-            <form action={archiveItem}>
-              <input name="item_id" type="hidden" value={item.id} />
-              <ItemSubmitButton
-                className={buttonClassName({
-                  className: "w-full sm:w-auto",
-                  variant: "secondary",
-                })}
-                icon="archive"
-                label={t.modules.items.archiveItem}
-                pendingLabel={t.modules.items.archiving}
+      <ItemCardActions
+        actions={
+          <>
+            {canCopy ? (
+              <CopyItemDialog
+                itemId={item.id}
+                itemName={item.nazwa}
+                location={location}
+                locationOptions={locationOptions}
               />
-            </form>
-          ) : null}
-          {isAdmin && isArchived ? (
-            restoreMode === "legacy" ? (
-              <LegacyItemRestoreForm itemId={item.id} />
-            ) : (
+            ) : null}
+            {isAdmin && !isArchived ? (
+              <form action={archiveItem}>
+                <input name="item_id" type="hidden" value={item.id} />
+                <ItemSubmitButton
+                  icon="archive"
+                  label={t.modules.items.archiveItem}
+                  pendingLabel={t.modules.items.archiving}
+                  size="icon"
+                  variant="secondary"
+                />
+              </form>
+            ) : null}
+            {isAdmin && isArchived && restoreMode !== "legacy" ? (
               <form action={restoreItem}>
                 <input name="item_id" type="hidden" value={item.id} />
                 <ItemSubmitButton
-                  className={buttonClassName({
-                    className: "w-full sm:w-auto",
-                    variant: "secondary",
-                  })}
                   icon="restore"
                   label={t.modules.items.restoreItem}
                   pendingLabel={t.modules.items.restoring}
+                  size="icon"
+                  variant="secondary"
                 />
               </form>
-            )
-          ) : null}
-          {isAdmin ? (
-            <ItemPermanentDeleteDialog
-              hasAttachedFiles={hasAttachedFiles}
-              itemId={item.id}
-              itemName={item.nazwa}
+            ) : null}
+            {isAdmin ? (
+              <ItemPermanentDeleteDialog
+                hasAttachedFiles={hasAttachedFiles}
+                itemId={item.id}
+                itemName={item.nazwa}
+              />
+            ) : null}
+          </>
+        }
+        date={`${t.modules.items.addedOn}: ${formatDate(item.created_at)}`}
+        editForm={
+          isAdmin && !isArchived ? (
+            <ItemForm
+              action={updateItem}
+              categories={categories}
+              item={item}
+              locationOptions={editLocationProps.locationOptions}
+              photo={photo}
+              selectedPositionId={editLocationProps.selectedPositionId}
+              selectedStorageId={editLocationProps.selectedStorageId}
+              selectedRoomId={editLocationProps.selectedRoomId}
+              submitLabel={t.modules.items.saveChanges}
             />
-          ) : null}
+          ) : null
+        }
+      />
+      {isAdmin && isArchived && restoreMode === "legacy" ? (
+        <div className="mt-3">
+          <LegacyItemRestoreForm itemId={item.id} />
         </div>
-        {isAdmin && !isArchived ? (
-          <details className="mt-3">
-            <summary
-              className={buttonClassName({
-                className:
-                  "w-full cursor-pointer list-none sm:w-auto [&::-webkit-details-marker]:hidden",
-                variant: "secondary",
-              })}
-            >
-              <PencilSimpleLineIcon
-                aria-hidden="true"
-                className="mr-2"
-                size={18}
-                weight="bold"
-              />
-              {t.modules.items.editItem}
-            </summary>
-            <div className="mt-3 rounded-md border border-line bg-surface-muted p-3 sm:p-4">
-              <ItemForm
-                action={updateItem}
-                categories={categories}
-                item={item}
-                layout="compact"
-                locationOptions={editLocationProps.locationOptions}
-                photo={photo}
-                selectedPositionId={editLocationProps.selectedPositionId}
-                selectedStorageId={editLocationProps.selectedStorageId}
-                selectedRoomId={editLocationProps.selectedRoomId}
-                submitLabel={t.modules.items.saveChanges}
-              />
-            </div>
-          </details>
-        ) : null}
-      </div>
+      ) : null}
     </article>
   );
 }

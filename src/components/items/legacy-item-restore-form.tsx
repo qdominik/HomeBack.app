@@ -3,7 +3,6 @@
 import { Select } from "@/components/ui/select";
 import { useState } from "react";
 import { restoreItem } from "@/app/(app)/items/actions";
-import { buttonClassName } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
 import {
   restorableItemStatuses,
@@ -47,14 +46,11 @@ export function LegacyItemRestoreForm({
         </Select>
       </label>
       <ItemSubmitButton
-        className={buttonClassName({
-          className: "w-full sm:w-auto",
-          variant: "secondary",
-        })}
         disabled={!targetStatus}
         icon="restore"
         label={t.modules.items.restoreItem}
         pendingLabel={t.modules.items.restoring}
+        variant="secondary"
       />
       <p className="w-full text-xs text-muted">
         {t.modules.items.previousStatusUnavailable}

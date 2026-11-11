@@ -43,8 +43,9 @@
   bottom: 0;
   z-index: 1;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
   gap: var(--space-2);
   margin-top: var(--space-5);
   border-top: 1px solid var(--line);
@@ -66,5 +67,4 @@
   }
   .ui-dialog[data-size="wide"] { max-width: var(--dialog-width-wide); }
   .ui-dialog[data-size="large"] { max-width: var(--dialog-width-large); }
-  .ui-dialog-actions { flex-direction: row; justify-content: flex-end; flex-wrap: wrap; }
 }

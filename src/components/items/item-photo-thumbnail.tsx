@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { EntityIcon } from "@/components/icons/entity-icon";
+import { ItemPhotoImage } from "./item-photo-image";
 
 type ItemPhotoThumbnailProps = {
   alt: string;
@@ -31,14 +31,12 @@ export function ItemPhotoThumbnail({
   }
 
   return (
-    <Image
+    <ItemPhotoImage
       alt={alt}
-      className="h-12 w-12 shrink-0 rounded-md border border-line object-cover"
-      height={48}
+      className="h-12 w-12 shrink-0 rounded-md border border-line"
       onError={() => setPreviewFailed(true)}
+      size={48}
       src={previewUrl}
-      unoptimized
-      width={48}
     />
   );
 }

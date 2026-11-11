@@ -518,9 +518,15 @@ test("item list creates signed previews only for household-scoped final photo pa
   assert.match(itemCard, /photo=/);
   assert.match(itemCard, /ItemPhotoThumbnail/);
   assert.match(itemCard, /previewUrl={photoPreviewUrl}/);
-  assert.match(itemPhotoThumbnail, /<Image/);
-  assert.match(itemPhotoThumbnail, /unoptimized/);
+  const itemPhotoImage = readFileSync(
+    "src/components/items/item-photo-image.tsx",
+    "utf8",
+  );
+  assert.match(itemPhotoThumbnail, /<ItemPhotoImage/);
   assert.match(itemPhotoThumbnail, /onError/);
+  assert.match(itemPhotoImage, /<Image/);
+  assert.match(itemPhotoImage, /unoptimized/);
+  assert.match(itemPhotoImage, /onError=\{onError\}/);
 });
 
 test("item edit form supports persisted photo replacement and removal", () => {
