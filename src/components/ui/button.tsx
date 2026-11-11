@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ComponentPropsWithRef } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 
@@ -20,7 +20,7 @@ export function buttonClassName({
   variant = "primary",
 }: ButtonStyleOptions = {}) {
   return [
-    "inline-flex min-h-11 items-center justify-center rounded-control px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none disabled:cursor-not-allowed",
+    "ui-button inline-flex min-h-11 items-center justify-center gap-2 rounded-control px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed",
     variantClasses[variant],
     className,
   ]
@@ -28,7 +28,7 @@ export function buttonClassName({
     .join(" ");
 }
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & ButtonStyleOptions;
+type ButtonProps = ComponentPropsWithRef<"button"> & ButtonStyleOptions;
 
 export function Button({
   className,

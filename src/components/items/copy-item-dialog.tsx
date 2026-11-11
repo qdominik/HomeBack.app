@@ -1,5 +1,9 @@
 "use client";
 
+import { FormActions } from "@/components/ui/form-actions";
+import { Select } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { copyItem } from "@/app/(app)/items/actions";
@@ -156,10 +160,10 @@ export function CopyItemDialog({
         {copy.item.action}
       </button>
       <ModalPortal>
-        <dialog
+        <Dialog
           aria-describedby={descriptionId}
           aria-labelledby={titleId}
-          className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-lg rounded-card border border-line bg-surface p-0 text-foreground shadow-card backdrop:bg-foreground/40"
+
           onCancel={(event) => {
           if (isSubmittingRef.current) {
             event.preventDefault();
@@ -170,7 +174,7 @@ export function CopyItemDialog({
       >
         <form
           aria-busy={isSubmitting}
-          className="max-h-[calc(100vh-2rem)] space-y-5 overflow-y-auto p-4 sm:p-6"
+          className="ui-dialog-body space-y-5"
           onSubmit={(event) => {
             event.preventDefault();
             void submitCopy();
@@ -178,7 +182,7 @@ export function CopyItemDialog({
         >
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold" id={titleId}>
+              <h2 className="ui-dialog-title" id={titleId}>
                 {copy.item.title}
               </h2>
               <p
@@ -197,9 +201,9 @@ export function CopyItemDialog({
 
           <label className="ui-label block">
             {copy.copyName}
-            <input
+            <Input
               autoFocus
-              className="ui-control mt-2 w-full"
+              className="mt-2 w-full"
               disabled={isSubmitting}
               onChange={(event) => {
                 const nextName = event.currentTarget.value;
@@ -213,7 +217,7 @@ export function CopyItemDialog({
           <fieldset className="space-y-3">
             <legend className="ui-label">{copy.item.targetStorage}</legend>
             <label className="flex cursor-pointer items-center gap-3 rounded-control border border-line p-3 focus-within:ring-2 focus-within:ring-primary">
-              <input
+              <input className="ui-choice"
                 checked={withoutLocation}
                 disabled={isSubmitting}
                 name={"copy-item-location-" + itemId}
@@ -228,8 +232,8 @@ export function CopyItemDialog({
 
             <label className="ui-label block">
               {copy.item.targetRoom}
-              <select
-                className="ui-control mt-2 w-full"
+              <Select
+                className="mt-2 w-full"
                 disabled={isSubmitting}
                 onChange={(event) => {
                   const roomId = event.currentTarget.value;
@@ -244,13 +248,13 @@ export function CopyItemDialog({
                     {room.label}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
 
             <label className="ui-label block">
               {copy.item.targetFurniture}
-              <select
-                className="ui-control mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
+              <Select
+                className="mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={
                   isSubmitting || !selection.roomId || !furnitureOptions.length
                 }
@@ -269,13 +273,13 @@ export function CopyItemDialog({
                     {furniture.label}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
 
             <label className="ui-label block">
               {copy.item.targetStorage}
-              <select
-                className="ui-control mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
+              <Select
+                className="mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={
                   isSubmitting || !selection.storageId || !storageOptions.length
                 }
@@ -295,11 +299,11 @@ export function CopyItemDialog({
                     {storage.positionName}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           </fieldset>
 
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <FormActions className="ui-dialog-actions">
             <Button disabled={isSubmitting} onClick={closeDialog} variant="secondary">
               {copy.cancel}
             </Button>
@@ -313,9 +317,9 @@ export function CopyItemDialog({
             >
               {isSubmitting ? copy.loading : copy.create}
             </Button>
-          </div>
+          </FormActions>
         </form>
-        </dialog>
+        </Dialog>
       </ModalPortal>
     </>
   );

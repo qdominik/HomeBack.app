@@ -1,5 +1,7 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { CUSTOM_TEMPLATE_VALUE } from "@/lib/home/home-template-options";
 import {
@@ -84,8 +86,8 @@ export function TemplateOrCustomField({
       <label className="ui-label" htmlFor={selectId}>
         {label}
       </label>
-      <select
-        className="ui-control"
+      <Select
+
         id={selectId}
         name={templateFieldName}
         onChange={(event) => {
@@ -104,12 +106,12 @@ export function TemplateOrCustomField({
             {option}
           </option>
         ))}
-      </select>
+      </Select>
       {selectedValue === customOption ? (
         <label className="ui-label" htmlFor={customInputId}>
           {customLabel}
-          <input
-            className="ui-control mt-2"
+          <Input
+            className="mt-2"
             id={customInputId}
             name={customFieldName}
             onChange={(event) => {

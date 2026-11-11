@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@/components/ui/select";
 import { useState } from "react";
 import { restoreItem } from "@/app/(app)/items/actions";
 import { buttonClassName } from "@/components/ui/button";
@@ -30,8 +31,8 @@ export function LegacyItemRestoreForm({
       <input name="item_id" type="hidden" value={itemId} />
       <label className="min-w-44 flex-1 text-sm font-medium sm:flex-none">
         {t.modules.items.restoreAs}
-        <select
-          className="mt-1 h-11 w-full rounded-md border border-line bg-surface px-3 outline-none focus:border-primary"
+        <Select
+          className="mt-2"
           name="legacy_target_status"
           onChange={(event) => setTargetStatus(event.currentTarget.value)}
           required
@@ -43,7 +44,7 @@ export function LegacyItemRestoreForm({
               {statusLabels[status]}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <ItemSubmitButton
         className={buttonClassName({

@@ -427,6 +427,7 @@ test("copy dialogs render through the shared modal portal", () => {
   for (const path of dialogs) {
     const dialog = source(path);
     assert.match(dialog, /ModalPortal/);
-    assert.match(dialog, /<ModalPortal>[\s\S]*<dialog/);
+    assert.match(dialog, /<ModalPortal>[\s\S]*<Dialog/);
+    assert.match(dialog, /import \{ Dialog \} from "@\/components\/ui\/dialog"/);
   }
 });

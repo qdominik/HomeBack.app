@@ -1,5 +1,8 @@
 "use client";
 
+import { FormActions } from "@/components/ui/form-actions";
+import { Select } from "@/components/ui/select";
+import { Dialog } from "@/components/ui/dialog";
 import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -164,10 +167,10 @@ export function StorageLocationL3DeleteDialog({
         <TrashIcon aria-hidden="true" size={18} />
         {t.modules.home.entityActions.delete}
       </button>
-      <dialog
+      <Dialog
         aria-describedby={descriptionId}
         aria-labelledby={titleId}
-        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-2xl rounded-card border border-line bg-surface p-0 text-foreground shadow-card backdrop:bg-foreground/40"
+        size="wide"
         onCancel={(event) => {
           if (isSubmitting) {
             event.preventDefault();
@@ -182,7 +185,7 @@ export function StorageLocationL3DeleteDialog({
         >
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold" id={titleId}>
+              <h2 className="ui-dialog-title" id={titleId}>
                 {copy.title}
               </h2>
               <p className="mt-1 break-words text-sm text-muted" id={descriptionId}>
@@ -217,7 +220,7 @@ export function StorageLocationL3DeleteDialog({
                   <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-primary">
                     <input
                       checked={resolution === "move"}
-                      className="mt-1"
+                      className="ui-choice mt-1"
                       disabled={context.targets.length === 0}
                       name={`position-resolution-${positionId}`}
                       onChange={() => {
@@ -234,8 +237,8 @@ export function StorageLocationL3DeleteDialog({
                   {resolution === "move" && context.targets.length > 0 ? (
                     <label className="ui-label block">
                       {copy.chooseTarget}
-                      <select
-                        className="ui-control mt-2 w-full"
+                      <Select
+                        className="mt-2 w-full"
                         onChange={(event) =>
                           setTargetPositionId(event.currentTarget.value || null)
                         }
@@ -247,13 +250,13 @@ export function StorageLocationL3DeleteDialog({
                             {target.label}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     </label>
                   ) : null}
                   <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-primary">
                     <input
                       checked={resolution === "detach"}
-                      className="mt-1"
+                      className="ui-choice mt-1"
                       name={`position-resolution-${positionId}`}
                       onChange={() => {
                         setResolution("detach");
@@ -264,7 +267,7 @@ export function StorageLocationL3DeleteDialog({
                     <span className="font-semibold">{copy.detachItems}</span>
                   </label>
                 </fieldset>
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <FormActions className="ui-dialog-actions">
                   <Button onClick={closeDialog} variant="secondary">
                     {copy.cancel}
                   </Button>
@@ -274,7 +277,7 @@ export function StorageLocationL3DeleteDialog({
                   >
                     {copy.continue}
                   </Button>
-                </div>
+                </FormActions>
               </>
             ) : (
               <>
@@ -297,7 +300,7 @@ export function StorageLocationL3DeleteDialog({
                   ) : null}
                 </dl>
                 <Alert variant="warning">{copy.permanentInfo}</Alert>
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <FormActions className="ui-dialog-actions">
                   {hasDependencies ? (
                     <Button
                       disabled={isSubmitting}
@@ -327,12 +330,12 @@ export function StorageLocationL3DeleteDialog({
                     <TrashIcon aria-hidden="true" size={18} />
                     {isSubmitting ? copy.loading : finalLabel}
                   </Button>
-                </div>
+                </FormActions>
               </>
             )}
           </div>
         </div>
-      </dialog>
+      </Dialog>
     </>
   );
 }

@@ -1,11 +1,15 @@
 .ui-control {
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   min-height: var(--control-min-height);
   border: 1px solid var(--control-line);
   border-radius: var(--control-radius);
   background: var(--control-background);
   color: var(--control-foreground);
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  line-height: var(--line-height-body);
   padding: var(--control-padding-block) var(--control-padding-inline);
   outline: none;
   transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
@@ -58,4 +62,24 @@
   color: var(--foreground-muted);
   font-size: var(--font-size-label);
   line-height: 1.5;
+}
+
+.ui-button:focus-visible,
+.ui-file-trigger:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.ui-button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.ui-choice {
+  flex-shrink: 0;
+  width: var(--choice-size);
+  height: var(--choice-size);
+  accent-color: var(--primary);
 }

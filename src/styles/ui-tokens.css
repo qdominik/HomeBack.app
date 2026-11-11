@@ -82,11 +82,20 @@
     --radius: var(--radius-md);
     --card-radius: var(--radius-lg);
     --dialog-radius: var(--radius-xl);
+    --dialog-width: 32rem;
+    --dialog-width-wide: 42rem;
+    --dialog-width-large: 48rem;
+    --dialog-padding: clamp(1rem, 3vw, 1.5rem);
+    --dialog-safe-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+    --dialog-max-height: calc(100dvh - var(--space-4));
+    --dialog-catalog-height: min(36rem, var(--dialog-max-height));
+    --overlay: rgb(7 17 13 / 0.48);
     --shadow-card: 0 1px 2px rgb(30 56 46 / 0.04);
     --shadow-floating: 0 16px 48px rgb(30 56 46 / 0.14);
     --content-max-width: 80rem;
     --page-gutter: clamp(1rem, 3vw, 2rem);
     --control-min-height: 2.75rem;
+    --choice-size: var(--space-5);
     /* 10 px vertical padding is the existing control's optical adjustment. */
     --control-padding-block: 0.625rem;
     --control-padding-inline: var(--space-3);
@@ -149,6 +158,7 @@
     --on-danger: var(--red-950);
     --shadow-card: none;
     --shadow-floating: 0 16px 48px rgb(0 0 0 / 0.24);
+    --overlay: rgb(0 0 0 / 0.64);
   }
 
   :root,

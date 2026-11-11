@@ -58,7 +58,7 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
             onChange={(event) => changeQuery(event.currentTarget.value)} placeholder={copy.placeholder} type="search" value={query} />}
         </Field>
         <FormActions className="sm:shrink-0">
-          {query ? <button aria-label={copy.clear} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-line bg-surface text-muted hover:border-primary focus-visible:outline-2 focus-visible:outline-primary" onClick={() => changeQuery("")} type="button"><XIcon aria-hidden="true" size={18} /></button> : null}
+          {query ? <Button aria-label={copy.clear} variant="secondary" onClick={() => changeQuery("")} type="button"><XIcon aria-hidden="true" size={18} /></Button> : null}
           <Button className="flex-1 sm:flex-none" disabled={isPending} type="submit"><MagnifyingGlassIcon aria-hidden="true" size={18} />{copy.submit}</Button>
         </FormActions>
       </form>

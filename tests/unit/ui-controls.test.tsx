@@ -7,6 +7,8 @@ import { LoadingState } from "../../src/components/ui/loading-state";
 import { Select } from "../../src/components/ui/select";
 import { Field } from "../../src/components/ui/field";
 import { ControlGroup } from "../../src/components/ui/control-group";
+import { Dialog } from "../../src/components/ui/dialog";
+import { Textarea } from "../../src/components/ui/textarea";
 
 function openingTag(markup: string, element: "input" | "select") {
   const match = markup.match(new RegExp(`<${element}\\b[^>]*>`));
@@ -147,4 +149,39 @@ test("LoadingState announces an active loading status by default", () => {
   assert.match(markup, /aria-live="polite"/);
   assert.match(markup, /aria-busy="true"/);
   assert.match(markup, />Loading items<\/div>/);
+});
+
+test("Dialog forwards its native ref and lifecycle guards to the caller", () => {
+  const ref = createRef<HTMLDialogElement>();
+  const onCancel = () => {};
+  const onClose = () => {};
+  const dialog = Dialog({ ref, onCancel, onClose, "aria-labelledby": "copy-title", "aria-describedby": "copy-description", size: "wide" });
+  assert.equal(dialog.type, "dialog");
+  assert.equal(dialog.props.ref, ref);
+  assert.equal(dialog.props.onCancel, onCancel);
+  assert.equal(dialog.props.onClose, onClose);
+  assert.equal(dialog.props["aria-labelledby"], "copy-title");
+  assert.equal(dialog.props["aria-describedby"], "copy-description");
+  assert.equal(dialog.props.open, undefined, "The shell must not override showModal ownership");
+});
+
+test("Textarea retains controlled editing and native validation attributes", () => {
+  const ref = createRef<HTMLTextAreaElement>();
+  const onChange = () => {};
+  const textarea = Textarea({ ref, onChange, value: "Zapasowe baterie", name: "opis", required: true, maxLength: 1000, rows: 4 });
+  assert.equal(textarea.props.ref, ref);
+  assert.equal(textarea.props.onChange, onChange);
+  assert.equal(textarea.props.value, "Zapasowe baterie");
+  assert.equal(textarea.props.name, "opis");
+  assert.equal(textarea.props.required, true);
+  assert.equal(textarea.props.maxLength, 1000);
+  assert.equal(textarea.props.rows, 4);
+});
+
+test("Textarea works with Field error and label associations", () => {
+  const markup = renderToStaticMarkup(<Field id="notes" label="Notatka" error="Uzupełnij notatkę">{props => <Textarea {...props} name="opis" defaultValue="" />}</Field>);
+  assert.match(markup, /<label[^>]*for="notes"/);
+  assert.match(markup, /<textarea[^>]*aria-describedby="notes-error"/);
+  assert.match(markup, /<textarea[^>]*aria-invalid="true"/);
+  assert.match(markup, /<textarea[^>]*aria-errormessage="notes-error"/);
 });

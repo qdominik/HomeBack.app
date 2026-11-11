@@ -1,5 +1,7 @@
 "use client";
 
+import { FormActions } from "@/components/ui/form-actions";
+import { Dialog } from "@/components/ui/dialog";
 import { useId, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteItemPermanentlyFromDialog } from "@/app/(app)/items/actions";
@@ -147,10 +149,10 @@ export function ItemPermanentDeleteDialog({
         <TrashIcon aria-hidden="true" size={18} weight="bold" />
         {t.modules.items.deleteItem}
       </button>
-      <dialog
+      <Dialog
         aria-describedby={descriptionId}
         aria-labelledby={titleId}
-        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-lg rounded-card border border-line bg-surface p-0 text-foreground shadow-card backdrop:bg-foreground/40"
+
         onCancel={(event) => {
           if (isSubmittingRef.current) {
             event.preventDefault();
@@ -161,11 +163,11 @@ export function ItemPermanentDeleteDialog({
       >
         <div
           aria-busy={isSubmitting}
-          className="max-h-[calc(100vh-2rem)] space-y-5 overflow-y-auto p-4 sm:p-6"
+          className="ui-dialog-body space-y-5"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold" id={titleId}>
+              <h2 className="ui-dialog-title" id={titleId}>
                 {copy.title}
               </h2>
               <p className="mt-1 break-words text-sm text-muted" id={descriptionId}>
@@ -186,7 +188,7 @@ export function ItemPermanentDeleteDialog({
             )}
           </Alert>
 
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <FormActions className="ui-dialog-actions">
             <Button
               disabled={isSubmitting}
               onClick={closeDialog}
@@ -202,9 +204,9 @@ export function ItemPermanentDeleteDialog({
               <TrashIcon aria-hidden="true" size={18} weight="bold" />
               {isSubmitting ? copy.pending : copy.confirm}
             </Button>
-          </div>
+          </FormActions>
         </div>
-      </dialog>
+      </Dialog>
     </>
   );
 }

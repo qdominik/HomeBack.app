@@ -190,8 +190,13 @@ test("inventory filter UI keeps required order, responsive row, removable filter
   assert.match(formSource, /name="typ"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="typ"/);
   assert.match(formSource, /name="category_id"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="category_id"/);
   assert.match(locationSource, /fieldset className="min-w-0 max-w-full/);
-  assert.equal((locationSource.match(/w-full min-w-0 max-w-full/g) ?? []).length, 3);
-  assert.match(dialogSource, /overflow-x-hidden/);
+  assert.equal((locationSource.match(/<Select\b/g) ?? []).length, 3);
+  const controlStyles = readFileSync("src/components/ui/ui-control.css", "utf8");
+  assert.match(controlStyles, /width: 100%/);
+  assert.match(controlStyles, /min-width: 0/);
+  assert.match(controlStyles, /max-width: 100%/);
+  assert.match(dialogSource, /<Dialog/);
+  assert.match(readFileSync("src/components/ui/dialog.css", "utf8"), /overflow-x: hidden/);
   assert.doesNotMatch(homeSource, /HomeSearch|modules\.home\.search/);
   assert.match(iconSource, /type="search"/);
 });

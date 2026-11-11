@@ -1,5 +1,9 @@
 "use client";
 
+import { FormActions } from "@/components/ui/form-actions";
+import { Select } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { copyStorageSpace } from "@/app/(app)/home/actions";
@@ -156,10 +160,10 @@ export function CopyStorageDialog({
         {copy.storage.action}
       </button>
       <ModalPortal>
-        <dialog
+        <Dialog
           aria-describedby={descriptionId}
           aria-labelledby={titleId}
-          className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-lg rounded-card border border-line bg-surface p-0 text-foreground shadow-card backdrop:bg-foreground/40"
+
           onCancel={(event) => {
           if (isSubmittingRef.current) {
             event.preventDefault();
@@ -170,7 +174,7 @@ export function CopyStorageDialog({
       >
         <form
           aria-busy={isSubmitting}
-          className="max-h-[calc(100vh-2rem)] space-y-5 overflow-y-auto p-4 sm:p-6"
+          className="ui-dialog-body space-y-5"
           onSubmit={(event) => {
             event.preventDefault();
             void submitCopy();
@@ -178,7 +182,7 @@ export function CopyStorageDialog({
         >
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold" id={titleId}>
+              <h2 className="ui-dialog-title" id={titleId}>
                 {copy.storage.title}
               </h2>
               <p
@@ -197,9 +201,9 @@ export function CopyStorageDialog({
 
           <label className="ui-label block">
             {copy.copyName}
-            <input
+            <Input
               autoFocus
-              className="ui-control mt-2 w-full"
+              className="mt-2 w-full"
               disabled={isSubmitting}
               onChange={(event) => setName(event.currentTarget.value)}
               required
@@ -209,8 +213,8 @@ export function CopyStorageDialog({
 
           <label className="ui-label block">
             {copy.storage.targetRoom}
-            <select
-              className="ui-control mt-2 w-full"
+            <Select
+              className="mt-2 w-full"
               disabled={isSubmitting}
               onChange={(event) => {
                 setTargetRoomId(event.currentTarget.value);
@@ -225,13 +229,13 @@ export function CopyStorageDialog({
                   {room.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
 
           <label className="ui-label block">
             {copy.storage.targetFurniture}
-            <select
-              className="ui-control mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
+            <Select
+              className="mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isSubmitting || !targetRoomId || !furnitureOptions.length}
               onChange={(event) => setTargetFurnitureId(event.currentTarget.value)}
               required
@@ -243,12 +247,12 @@ export function CopyStorageDialog({
                   {option.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
 
           <Alert variant="warning">{copy.storage.itemsExcluded}</Alert>
 
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <FormActions className="ui-dialog-actions">
             <Button disabled={isSubmitting} onClick={closeDialog} variant="secondary">
               {copy.cancel}
             </Button>
@@ -258,9 +262,9 @@ export function CopyStorageDialog({
             >
               {isSubmitting ? copy.loading : copy.create}
             </Button>
-          </div>
+          </FormActions>
         </form>
-        </dialog>
+        </Dialog>
       </ModalPortal>
     </>
   );

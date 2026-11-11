@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { TemplateOrCustomField } from "@/components/form/template-or-custom-field";
 import { EntityIconPicker } from "@/components/icons/entity-icon-picker";
 import { CATEGORY_TEMPLATE_OPTIONS } from "@/lib/categories/category-template-options";
@@ -40,12 +41,12 @@ export function CategoryForm({
         label={t.modules.categories.fields.icon}
         name="ikona"
       />
-      <button
-        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+      <Button
+
         type="submit"
       >
         {submitLabel}
-      </button>
+      </Button>
     </form>
   );
 }

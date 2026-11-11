@@ -134,7 +134,8 @@ test("permanent item delete dialog uses the native app dialog contract", () => {
     "utf8",
   );
 
-  assert.equal(source.includes("<dialog"), true);
+  assert.equal(source.includes("<Dialog"), true);
+  assert.match(readFileSync("src/components/ui/dialog.tsx", "utf8"), /return <dialog/);
   assert.equal(source.includes("window.confirm"), false);
   assert.equal(source.includes("alert("), false);
   assert.equal(source.includes("prompt("), false);
