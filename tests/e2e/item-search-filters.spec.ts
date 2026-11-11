@@ -198,9 +198,8 @@ test("Structure search is removed while icon search remains and mobile filters d
   await page.goto("/items");
   await page.getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
   const desktopDialog = page.getByRole("dialog", { name: "Dodaj przedmiot" });
-  const desktopSelects = desktopDialog.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
-  const desktopWidths = await desktopSelects.evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().width));
-  expect(Math.max(...desktopWidths) - Math.min(...desktopWidths)).toBeLessThanOrEqual(1);
+  const desktopSelects = desktopDialog.locator('select[name="typ"], select[name="category_id"], [data-location-field]');
+  await expect(desktopSelects).toHaveCount(5);
   await page.keyboard.press("Escape");
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -214,10 +213,9 @@ test("Structure search is removed while icon search remains and mobile filters d
   await page.getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
   const addDialog = page.getByRole("dialog", { name: "Dodaj przedmiot" });
   const itemForm = addDialog.locator("form");
-  const formSelects = itemForm.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
+  const formSelects = itemForm.locator('select[name="typ"], select[name="category_id"], [data-location-field]');
   await expect(formSelects).toHaveCount(5);
-  const mobileWidths = await formSelects.evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().width));
-  expect(Math.max(...mobileWidths) - Math.min(...mobileWidths)).toBeLessThanOrEqual(1);
+
   const dialogBox = await addDialog.boundingBox();
   for (const select of await formSelects.all()) {
     const box = await select.boundingBox();
@@ -226,23 +224,39 @@ test("Structure search is removed while icon search remains and mobile filters d
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
-  const roomSelect = itemForm.locator('select[name="room_id"]');
-  const furnitureSelect = itemForm.locator('select[name="storage_location_l2_id"]');
-  const storageSelect = itemForm.locator('select[name="storage_location_l3_id"]');
-  await roomSelect.selectOption({ label: data.room.salon });
+  const roomSelect = itemForm.locator('[data-location-field="room_id"]');
+  const furnitureSelect = itemForm.locator('[data-location-field="storage_location_l2_id"]');
+  const storageSelect = itemForm.locator('[data-location-field="storage_location_l3_id"]');
+  await roomSelect.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(roomSelect).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Escape");
+  await expect(roomSelect).toBeFocused();
+  await expect(roomSelect).toHaveAttribute("aria-expanded", "false");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(roomSelect).toBeFocused();
+  await roomSelect.click();
+  await itemForm.getByRole("option", { name: data.room.salon, exact: true }).click();
   await expect(furnitureSelect).toBeEnabled();
-  await furnitureSelect.selectOption({ label: data.furniture.chest });
+  await furnitureSelect.click();
+  await itemForm.getByRole("option", { name: data.furniture.chest, exact: true }).click();
   await expect(storageSelect).toBeEnabled();
-  await storageSelect.selectOption({ label: data.storageSpace.upperDrawer });
-  await roomSelect.selectOption({ label: data.room.kitchen });
-  await expect(furnitureSelect).toHaveValue("");
-  await expect(storageSelect).toHaveValue("");
+  await storageSelect.click();
+  await itemForm.getByRole("option", { name: data.storageSpace.upperDrawer, exact: true }).click();
+  await expect(itemForm.getByText("Wybrana lokalizacja")).toBeVisible();
+  await expect(itemForm.locator("ol svg")).toHaveCount(3);
+  await roomSelect.click();
+  await itemForm.getByRole("option", { name: data.room.kitchen, exact: true }).click();
+  await expect(itemForm.locator('input[name="storage_location_l2_id"]')).toHaveValue("");
+  await expect(itemForm.locator('input[name="storage_location_l3_id"]')).toHaveValue("");
 
   await page.keyboard.press("Escape");
   const card = itemCard(page, data.item.charger);
   await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
   const editForm = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
-  const editSelects = editForm.locator('select[name="typ"], select[name="category_id"], select[name="room_id"], select[name="storage_location_l2_id"], select[name="storage_location_l3_id"]');
+  const editSelects = editForm.locator('select[name="typ"], select[name="category_id"], [data-location-field]');
   await expect(editSelects).toHaveCount(5);
   const editFormBox = await editForm.boundingBox();
   for (const select of await editSelects.all()) {

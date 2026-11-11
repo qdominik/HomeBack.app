@@ -190,7 +190,7 @@ test("inventory filter UI keeps required order, responsive row, removable filter
   assert.match(formSource, /name="typ"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="typ"/);
   assert.match(formSource, /name="category_id"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="category_id"/);
   assert.match(locationSource, /fieldset className="min-w-0 max-w-full/);
-  assert.equal((locationSource.match(/<Select\b/g) ?? []).length, 3);
+  assert.equal((locationSource.match(/<IconSelect\b/g) ?? []).length, 3);
   const controlStyles = readFileSync("src/components/ui/ui-control.css", "utf8");
   assert.match(controlStyles, /width: 100%/);
   assert.match(controlStyles, /min-width: 0/);

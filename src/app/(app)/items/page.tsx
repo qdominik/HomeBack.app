@@ -119,7 +119,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       .order("created_at", { ascending: true }),
     supabase
       .from("room")
-      .select("id, nazwa")
+      .select("id, nazwa, ikona")
       .eq("household_id", profile?.household_id ?? "")
       .order(orderColumn, { ascending: true })
       .order("created_at", { ascending: true }),
@@ -133,7 +133,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     roomIds.length
       ? supabase
           .from("storage_location_l2")
-          .select("id, nazwa, room_id")
+          .select("id, nazwa, room_id, ikona, typ")
           .in("room_id", roomIds)
           .order(orderColumn, { ascending: true })
           .order("created_at", { ascending: true })
@@ -150,7 +150,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const positionsResponse = storageIds.length
     ? await supabase
         .from("storage_location_l3")
-        .select("id, nazwa, kod_lokalizacji, storage_location_l2_id")
+        .select("id, nazwa, kod_lokalizacji, storage_location_l2_id, ikona")
         .in("storage_location_l2_id", storageIds)
         .order(orderColumn, { ascending: true })
         .order("created_at", { ascending: true })

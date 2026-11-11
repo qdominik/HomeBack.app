@@ -185,6 +185,9 @@ export type Dictionary = {
       description: string;
       itemType: string;
       quantity: string;
+      increaseQuantity: string;
+      decreaseQuantity: string;
+      selectedLocation: string;
       unit: string;
       selectCategory: string;
       selectRoom: string;

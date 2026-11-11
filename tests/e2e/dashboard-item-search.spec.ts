@@ -159,6 +159,11 @@ test("an item without a persisted location displays Brak lokalizacji", async ({ 
 });
 
 
+async function chooseLocation(form: import("@playwright/test").Locator, field: string, label: string) {
+  await form.locator(`[data-location-field="${field}"]`).click();
+  await form.getByRole("option", { name: label, exact: true }).click();
+}
+
 test("direct L1/L2/L3 and empty locations persist in the mobile form and global search", async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -171,9 +176,9 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
     await page.locator("main details").first().locator("summary").first().click();
     const form = page.locator("form").filter({ has: page.getByRole("button", { name: "Utwórz rzecz", exact: true }) });
     await form.locator('[name="nazwa"]').fill(name);
-    if (level >= 1) await form.locator('[name="room_id"]').selectOption({ label: data.room.salon });
-    if (level >= 2) await form.locator('[name="storage_location_l2_id"]').selectOption({ label: data.furniture.chest });
-    if (level >= 3) await form.locator('[name="storage_location_l3_id"]').selectOption({ label: data.storageSpace.upperDrawer });
+    if (level >= 1) await chooseLocation(form, "room_id", data.room.salon);
+    if (level >= 2) await chooseLocation(form, "storage_location_l2_id", data.furniture.chest);
+    if (level >= 3) await chooseLocation(form, "storage_location_l3_id", data.storageSpace.upperDrawer);
     await form.getByRole("button", { name: "Utwórz rzecz", exact: true }).click();
     await expect(page).toHaveURL(/status=item_created/);
     await page.reload();
@@ -185,7 +190,7 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
       ["storage_location_l2_id", data.furniture.chest, level >= 2],
       ["storage_location_l3_id", data.storageSpace.upperDrawer, level >= 3],
     ] as const) {
-      if (selected) await expect(edit.locator(`[name="${field}"] option:checked`)).toHaveText(label);
+      if (selected) await expect(edit.locator(`[data-location-field="${field}"]`)).toContainText(label);
       else await expect(edit.locator(`[name="${field}"]`)).toHaveValue("");
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -205,10 +210,10 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
     const card = itemCard(page, names[0]);
     await card.getByRole("button", { name: "Edytuj rzecz", exact: true }).click();
     const edit = card.getByRole("form", { name: "Edytuj rzecz", exact: true });
-    await edit.locator('[name="room_id"]').selectOption("");
-    if (level >= 1) await edit.locator('[name="room_id"]').selectOption({ label: data.room.salon });
-    if (level >= 2) await edit.locator('[name="storage_location_l2_id"]').selectOption({ label: data.furniture.chest });
-    if (level >= 3) await edit.locator('[name="storage_location_l3_id"]').selectOption({ label: data.storageSpace.upperDrawer });
+    await chooseLocation(edit, "room_id", "Wybierz pomieszczenie");
+    if (level >= 1) await chooseLocation(edit, "room_id", data.room.salon);
+    if (level >= 2) await chooseLocation(edit, "storage_location_l2_id", data.furniture.chest);
+    if (level >= 3) await chooseLocation(edit, "storage_location_l3_id", data.storageSpace.upperDrawer);
     await edit.getByRole("button", { name: "Zapisz zmiany", exact: true }).click();
     await expect(page).toHaveURL(/status=item_updated/);
     await page.reload();

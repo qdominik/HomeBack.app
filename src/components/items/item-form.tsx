@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageSquareIcon } from "@phosphor-icons/react/dist/ssr/ImageSquare";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import {
   type ChangeEvent,
+  useId,
   useRef,
   useState,
   useTransition,
@@ -147,6 +149,8 @@ export function ItemForm({
   selectedRoomId,
   submitLabel,
 }: ItemFormProps) {
+  const quantityId = useId();
+  const unitListId = useId();
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
   const [itemName, setItemName] = useState(item?.nazwa ?? "");
   const [itemDescription, setItemDescription] = useState(item?.opis ?? "");
@@ -174,7 +178,7 @@ export function ItemForm({
   const photoMutationRunIdRef = useRef(0);
   const initialQuantity = item?.ilosc ?? 1;
   const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
-  const [itemUnit, setItemUnit] = useState(item?.jednostka ?? "");
+  const [itemUnit, setItemUnit] = useState(item ? (item.jednostka ?? "") : "szt.");
   const locationFieldProps = getItemLocationFieldProps(
     locationOptions,
     selectedPositionId,
@@ -458,6 +462,23 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-base font-semibold">{item ? t.modules.items.editItem : t.modules.items.addItem}</h3>
+          <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
+            <span className={buttonClassName({ variant: "secondary" })}>
+              <ImageSquareIcon aria-hidden="true" size={18} className="mr-2" />{t.modules.items.photo.choose}
+            </span>
+            <input
+              accept="image/jpeg,image/webp"
+              className="sr-only"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onChange={uploadSelectedPhoto}
+              ref={fileInputRef}
+              type="file"
+            />
+          </label>
+      </div>
+      <div className="grid min-w-0 gap-3 @min-[25rem]:grid-cols-[minmax(0,1fr)_minmax(9rem,11rem)]">
       <label className="ui-label">
         {t.modules.items.name}
         <Input
@@ -471,16 +492,18 @@ export function ItemForm({
           value={itemName}
         />
       </label>
-      <label className="ui-label">
-        {t.modules.items.description}
-        <Textarea
-          className="ui-item-description mt-2"
-          name="opis"
-          onChange={(event) => setItemDescription(event.currentTarget.value)}
-          rows={2}
-          value={itemDescription}
-        />
-      </label>
+        <div className="ui-label min-w-0">
+          <label htmlFor={quantityId}>{t.modules.items.quantity}</label>
+          {showsItemQuantity(itemType) ? (
+            <div className="mt-2 flex items-stretch">
+              <button type="button" aria-label={t.modules.items.decreaseQuantity} className="min-h-11 min-w-11 rounded-l-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.max(1, (Number.parseInt(current, 10) || 1) - 1)))}>−</button>
+              <Input id={quantityId} className="min-w-0 rounded-none text-center" min="1" name="ilosc" onChange={(event) => setItemQuantity(event.currentTarget.value)} required step="1" type="number" value={itemQuantity} />
+              <button type="button" aria-label={t.modules.items.increaseQuantity} className="min-h-11 min-w-11 rounded-r-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.min(Number.MAX_SAFE_INTEGER, (Number.parseInt(current, 10) || 0) + 1)))}>+</button>
+            </div>
+          ) : (<><input name="ilosc" type="hidden" value="1" /><output id={quantityId} className="ui-control mt-2 flex items-center">1</output></>)}
+        </div>
+      </div>
+      <div className="grid min-w-0 gap-3 @min-[25rem]:grid-cols-3">
       <label className="ui-label min-w-0">
         {t.modules.items.itemType}
         <Select
@@ -529,35 +552,22 @@ export function ItemForm({
           </option>
         </Select>
       </label>
-      <div className="grid gap-3 @min-[17rem]:grid-cols-2">
-        {showsItemQuantity(itemType) ? (
-          <label className="ui-label min-w-0">
-            {t.modules.items.quantity}
-            <Input
-              className="mt-2"
-              key={itemType}
-              min="1"
-              name="ilosc"
-              onChange={(event) => setItemQuantity(event.currentTarget.value)}
-              required
-              step="1"
-              type="number"
-              value={itemQuantity}
-            />
-          </label>
-        ) : (
-          <input name="ilosc" type="hidden" value="1" />
-        )}
-        <label className="ui-label min-w-0">
-          {t.modules.items.unit}
-          <Input
-            className="mt-2"
-            name="jednostka"
-            onChange={(event) => setItemUnit(event.currentTarget.value)}
-            value={itemUnit}
-          />
-        </label>
+      <label className="ui-label min-w-0">
+        {t.modules.items.unit}
+        <Input className="mt-2" list={unitListId} name="jednostka" onChange={(event) => setItemUnit(event.currentTarget.value)} value={itemUnit} />
+        <datalist id={unitListId}>{["szt.", "opak.", "kpl.", "kg", "g", "l", "ml", "m"].map((unit) => <option key={unit} value={unit} />)}</datalist>
+      </label>
       </div>
+      <label className="ui-label">
+        {t.modules.items.description}
+        <Textarea
+          className="ui-item-description mt-2"
+          name="opis"
+          onChange={(event) => setItemDescription(event.currentTarget.value)}
+          rows={2}
+          value={itemDescription}
+        />
+      </label>
       {isAnotherCategorySelected ? (
         <div
           className="space-y-2 rounded-md border border-line bg-surface-muted p-3"
@@ -593,26 +603,7 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
-      <section className="space-y-2 rounded-md border border-line bg-surface-muted p-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-foreground">
-            {t.modules.items.photo.title}
-          </h3>
-          <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
-            <span className={buttonClassName({ variant: "secondary" })}>
-              {t.modules.items.photo.choose}
-            </span>
-            <input
-              accept="image/jpeg,image/webp"
-              className="sr-only"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onChange={uploadSelectedPhoto}
-              ref={fileInputRef}
-              type="file"
-            />
-          </label>
-        </div>
-        <p className="text-xs leading-5 text-muted">{t.modules.items.photo.help}</p>
+      <section className="space-y-2">
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
         ) : null}
