@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageSquareIcon } from "@phosphor-icons/react/dist/ssr/ImageSquare";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -469,23 +469,26 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
-      <div className="grid min-w-0 gap-4 @min-[44rem]:grid-cols-[minmax(0,1fr)_14rem]">
+      <div className="grid min-w-0 gap-4 @min-[36rem]:grid-cols-[minmax(0,1fr)_14rem]">
       <div className="grid min-w-0 content-start gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-semibold">{t.modules.items.itemDetailsHeading}</h3>
-          <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
-            <span className={buttonClassName({ variant: "secondary" })}>
-              <ImageSquareIcon aria-hidden="true" size={18} className="mr-2" />{t.modules.items.photo.add}
-            </span>
-            <input
-              accept="image/jpeg,image/webp"
-              className="sr-only"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onChange={uploadSelectedPhoto}
-              ref={fileInputRef}
-              type="file"
-            />
-          </label>
+          <input
+            accept="image/jpeg,image/webp"
+            aria-label={t.modules.items.photo.add}
+            aria-hidden="true"
+            className="sr-only"
+            disabled={isPhotoPending || isPhotoAnalysisPending}
+            onChange={uploadSelectedPhoto}
+            ref={fileInputRef}
+            tabIndex={-1}
+            type="file"
+          />
+          {!displayedPhoto ? (
+            <Button variant="secondary" disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
+              <ImageSquareIcon aria-hidden="true" size={18} />{t.modules.items.photo.add}
+            </Button>
+          ) : null}
       </div>
       <p className="-mt-2 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
       <section className="space-y-2">
@@ -522,21 +525,19 @@ export function ItemForm({
                     : t.modules.items.photo.fillFromPhoto}
                 </Button>
               ) : null}
-              <Button
-                variant="secondary"
-                disabled={isPhotoPending || isPhotoAnalysisPending}
-                onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
-                type="button"
-              >
-                {isPhotoPending
-                  ? t.modules.items.photo.removing
-                  : t.modules.items.photo.remove}
+              <Button variant="secondary" disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
+                {t.modules.items.photo.change}
               </Button>
             </div>
-            <div className="min-w-0 text-xs leading-5 text-muted">
-              <p className="break-all font-medium">{displayedPhoto.filename}</p>
-              <p>{displayedPhoto.mimeType} · {Math.ceil(displayedPhoto.sizeBytes / 1024)} KB</p>
-            </div>
+            <button
+              aria-label={t.modules.items.photo.remove}
+              className="min-h-11 text-sm text-muted underline underline-offset-4 hover:text-foreground"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
+              type="button"
+            >
+              {isPhotoPending ? t.modules.items.photo.removing : t.modules.items.photo.removeShort}
+            </button>
             </div>
           </div>
         ) : null}
@@ -569,7 +570,7 @@ export function ItemForm({
           {showsItemQuantity(itemType) ? (
             <div className="mt-2 flex items-stretch">
               <button type="button" aria-label={t.modules.items.decreaseQuantity} className="min-h-11 min-w-11 rounded-l-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.max(1, (Number.parseInt(current, 10) || 1) - 1)))}>−</button>
-              <Input id={quantityId} className="min-w-0 rounded-none text-center" min="1" name="ilosc" onChange={(event) => setItemQuantity(event.currentTarget.value)} required step="1" type="number" value={itemQuantity} />
+              <Input id={quantityId} className="min-w-0 flex-1 rounded-none !px-0 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" min="1" name="ilosc" onChange={(event) => setItemQuantity(event.currentTarget.value)} required step="1" type="number" value={itemQuantity} />
               <button type="button" aria-label={t.modules.items.increaseQuantity} className="min-h-11 min-w-11 rounded-r-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.min(Number.MAX_SAFE_INTEGER, (Number.parseInt(current, 10) || 0) + 1)))}>+</button>
             </div>
           ) : (<><input name="ilosc" type="hidden" value="1" /><Input id={quantityId} className="mt-2" value="1" readOnly /></>)}

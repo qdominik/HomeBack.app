@@ -215,6 +215,8 @@ export type Dictionary = {
       quickCategoryMissing: string;
       photo: {
         add: string;
+        change: string;
+        removeShort: string;
         title: string;
         help: string;
         choose: string;

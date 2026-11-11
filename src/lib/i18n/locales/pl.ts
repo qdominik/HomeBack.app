@@ -239,6 +239,8 @@ export const pl: Dictionary = {
       categoryAlreadyExists: "Taka kategoria już istnieje.",
       quickCategoryMissing: "Podaj nazwę nowej kategorii.",
       photo: {
+        change: "Zmień zdjęcie",
+        removeShort: "Usuń",
         add: "Dodaj zdjęcie",
         analyzing: "Analizowanie zdjęcia...",
         fillFromPhoto: "Uzupełnij ze zdjęcia",
