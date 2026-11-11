@@ -242,3 +242,46 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
     });
   });
 }
+
+
+for (const width of [390, 1440]) {
+  test(`location picker and quantity work without a database at ${width}px`, async ({ page, photoURL }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${photoURL}?locations`);
+    const form = page.locator("form");
+    const room = form.locator('[data-location-field="room_id"]');
+    const furniture = form.locator('[data-location-field="storage_location_l2_id"]');
+    const position = form.locator('[data-location-field="storage_location_l3_id"]');
+    await expect(form.locator('[name="jednostka"]')).toHaveValue("szt.");
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("1");
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveAttribute("readonly", "");
+    await form.locator('[name="typ"]').selectOption("zapas");
+    await form.getByRole("button", { name: "Zwiększ ilość" }).click();
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("2");
+    await form.getByRole("button", { name: "Zmniejsz ilość" }).click();
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("1");
+    await room.focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(room).toContainText("Kuchnia z bardzo długą nazwą pomieszczenia");
+    await expect(room).toBeFocused();
+    await furniture.click();
+    await form.getByRole("option", { name: "Szafka", exact: true }).click();
+    await position.click();
+    await form.getByRole("option", { name: "Szuflada", exact: true }).click();
+    await expect(form.locator("ol svg")).toHaveCount(3);
+    await room.click();
+    await page.keyboard.press("Escape");
+    await expect(room).toBeFocused();
+    await expect(room).toHaveAttribute("aria-expanded", "false");
+    await room.click();
+    await form.getByRole("option", { name: "Salon", exact: true }).click();
+    await expect(form.locator('[name="storage_location_l2_id"]')).toHaveValue("");
+    await expect(form.locator('[name="storage_location_l3_id"]')).toHaveValue("");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.goto(`${photoURL}?edit&locations`);
+    await expect(form.locator('[name="jednostka"]')).toHaveValue("szt.");
+    await expect(form.locator('[name="nazwa"]')).toHaveValue("Istniejąca rzecz");
+  });
+}
