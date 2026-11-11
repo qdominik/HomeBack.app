@@ -23,6 +23,10 @@ createRoot(document.getElementById("root")!).render(<ItemForm
   item={item}
   photo={photo}
   layout="compact"
-  locationOptions={{ rooms: [], storageLocations: [], positions: [] }}
+  locationOptions={new URLSearchParams(location.search).has("locations") ? {
+    rooms: [{ id: "r1", label: "Kuchnia z bardzo długą nazwą pomieszczenia", iconKey: "kitchen" }, { id: "r2", label: "Salon", iconKey: null }],
+    storageLocations: [{ id: "f1", label: "Szafka", roomId: "r1", iconKey: "dresser" }],
+    positions: [{ id: "s1", positionName: "Szuflada", locationCode: "K-S-S", roomId: "r1", roomName: "Kuchnia z bardzo długą nazwą pomieszczenia", storageId: "f1", storageName: "Szafka", iconKey: "position" }],
+  } : { rooms: [], storageLocations: [], positions: [] }}
   submitLabel="Zapisz fixture"
 />);

@@ -1,12 +1,16 @@
 "use client";
 
-import { Button, buttonClassName } from "@/components/ui/button";
+import { ImageSquareIcon } from "@phosphor-icons/react/dist/ssr/ImageSquare";
+import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import {
   type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
+  useId,
   useRef,
   useState,
   useTransition,
@@ -37,14 +41,15 @@ import {
   replaceItemPhotoDraft,
 } from "@/lib/items/item-photo/draft-flow";
 import {
+  getInitialItemLocationSelection,
   getItemLocationFieldKey,
-  getItemLocationFieldProps,
+  type ItemLocationSelection,
   type ItemCategoryOption,
   type ItemLocationSelectorOptions,
 } from "@/lib/items/item-options";
 import { routes } from "@/lib/routes";
 import type { Database } from "@/types/database";
-import { ItemLocationField } from "./item-location-field";
+import { ItemLocationField, ItemLocationSummary } from "./item-location-field";
 import { ItemPhotoImage } from "./item-photo-image";
 import { ItemSubmitButton } from "./item-submit-button";
 
@@ -66,7 +71,7 @@ type ItemFormProps = {
 const ANOTHER_CATEGORY_VALUE = "__another_category__";
 
 const typeLabels: Record<ItemType, string> = {
-  unikalny: t.modules.items.itemTypes.unique,
+  unikalny: t.modules.items.singleItemLabel,
   zapas: t.modules.items.itemTypes.stock,
   zestaw: t.modules.items.itemTypes.set,
 };
@@ -147,6 +152,8 @@ export function ItemForm({
   selectedRoomId,
   submitLabel,
 }: ItemFormProps) {
+  const quantityId = useId();
+  const unitListId = useId();
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
   const [itemName, setItemName] = useState(item?.nazwa ?? "");
   const [itemDescription, setItemDescription] = useState(item?.opis ?? "");
@@ -174,19 +181,23 @@ export function ItemForm({
   const photoMutationRunIdRef = useRef(0);
   const initialQuantity = item?.ilosc ?? 1;
   const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
-  const [itemUnit, setItemUnit] = useState(item?.jednostka ?? "");
-  const locationFieldProps = getItemLocationFieldProps(
-    locationOptions,
-    selectedPositionId,
-    selectedStorageId,
-    selectedRoomId,
-  );
-  const locationFieldKey = getItemLocationFieldKey(
-    item?.id,
-    selectedPositionId,
-    selectedStorageId,
-    selectedRoomId,
-  );
+  const [itemUnit, setItemUnit] = useState(item ? (item.jednostka ?? "") : "szt.");
+  const locationKey = getItemLocationFieldKey(item?.id, selectedPositionId, selectedStorageId, selectedRoomId);
+  const [locationState, setLocationState] = useState(() => ({
+    key: locationKey,
+    selection: getInitialItemLocationSelection(locationOptions, selectedPositionId, selectedStorageId, selectedRoomId),
+  }));
+  let locationSelection = locationState.selection;
+  if (locationState.key !== locationKey) {
+    locationSelection = getInitialItemLocationSelection(locationOptions, selectedPositionId, selectedStorageId, selectedRoomId);
+    setLocationState({ key: locationKey, selection: locationSelection });
+  }
+  const setLocationSelection: Dispatch<SetStateAction<ItemLocationSelection>> = (update) => {
+    setLocationState((current) => ({
+      key: current.key,
+      selection: typeof update === "function" ? update(current.selection) : update,
+    }));
+  };
   const systemCategories = availableCategories.filter(
     (category) => category.isSystem,
   );
@@ -369,7 +380,7 @@ export function ItemForm({
       setPhotoPreviewFailed(false);
       setPhotoFeedback(outcome.cleanupFailed
         ? t.modules.items.photo.errors.replacementCleanupFailed
-        : t.modules.items.photo.ready);
+        : null);
     });
   }
 
@@ -458,8 +469,96 @@ export function ItemForm({
       {item && removePersistedPhoto && !photoDraft ? (
         <input name="item_photo_remove_current" type="hidden" value="1" />
       ) : null}
-      <label className="ui-label">
-        {t.modules.items.name}
+      <div className="grid min-w-0 gap-4 @min-[36rem]:grid-cols-[minmax(0,1fr)_14rem]">
+      <div className="grid min-w-0 content-start gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-lg font-semibold">{t.modules.items.itemDetailsHeading}</h3>
+          <input
+            accept="image/jpeg,image/webp"
+            aria-label={t.modules.items.photo.add}
+            aria-hidden="true"
+            className="sr-only"
+            disabled={isPhotoPending || isPhotoAnalysisPending}
+            onChange={uploadSelectedPhoto}
+            ref={fileInputRef}
+            tabIndex={-1}
+            type="file"
+          />
+      </div>
+      <div className="-mt-2 rounded-control border border-primary/20 bg-primary/10 p-3">
+        <p className="text-sm font-semibold text-primary-strong">{t.modules.items.photoAssistHeading}</p>
+        <p className="mt-1 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
+      </div>
+      <section className="space-y-2">
+        {!displayedPhoto ? (
+          <div className="inline-flex max-w-full flex-col items-center gap-1">
+            <span aria-hidden="true" data-photo-pointer="add" className="text-2xl leading-none">👇🏻</span>
+            <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
+              <ImageSquareIcon aria-hidden="true" size={18} />{t.modules.items.photo.add}
+            </Button>
+          </div>
+        ) : null}
+        {isPhotoPending ? (
+          <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
+        ) : null}
+        {isPhotoAnalysisPending ? (
+          <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
+        ) : null}
+        {displayedPhoto ? (
+          <div className="flex flex-wrap items-start gap-4">
+            {displayedPhoto.previewUrl && !photoPreviewFailed ? (
+              <ItemPhotoImage
+                alt={t.modules.items.photo.previewAlt}
+                className="h-32 w-32 shrink-0 rounded-md border border-line"
+                onError={() => setPhotoPreviewFailed(true)}
+                size={128}
+                src={displayedPhoto.previewUrl}
+              />
+            ) : (
+              <div className="h-32 w-32 shrink-0 rounded-md border border-dashed border-line bg-surface" />
+            )}
+            <div className="min-w-0 flex-1 space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {photoDraft ? (
+                <div className="inline-flex max-w-full flex-col items-center gap-1">
+                  <span aria-hidden="true" data-photo-pointer="fill" className="text-2xl leading-none">👇🏻</span>
+                  <Button
+                    disabled={isPhotoPending || isPhotoAnalysisPending}
+                    onClick={applyPhotoSuggestions}
+                    type="button"
+                  >
+                    {isPhotoAnalysisPending
+                      ? t.modules.items.photo.analyzing
+                      : t.modules.items.photo.fillFromPhoto}
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+            <button
+              aria-label={t.modules.items.photo.remove}
+              className="min-h-11 text-sm text-muted underline underline-offset-4 hover:text-foreground"
+              disabled={isPhotoPending || isPhotoAnalysisPending}
+              onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
+              type="button"
+            >
+              {isPhotoPending ? t.modules.items.photo.removing : t.modules.items.photo.removeShort}
+            </button>
+            </div>
+          </div>
+        ) : null}
+        {photoFeedback ? (
+          <p
+            className={`text-sm ${
+              displayedPhoto ? "text-primary-strong" : "text-danger"
+            }`}
+          >
+            {photoFeedback}
+          </p>
+        ) : null}
+      </section>
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)_7.5rem] gap-3">
+      <label className="ui-label col-span-2 min-w-0">
+        {t.modules.items.name} <span aria-hidden="true">*</span>
         <Input
           className="mt-2"
           onChange={(event) => {
@@ -471,20 +570,20 @@ export function ItemForm({
           value={itemName}
         />
       </label>
-      <label className="ui-label">
-        {t.modules.items.description}
-        <Textarea
-          className="ui-item-description mt-2"
-          name="opis"
-          onChange={(event) => setItemDescription(event.currentTarget.value)}
-          rows={2}
-          value={itemDescription}
-        />
-      </label>
+        <div className="ui-label min-w-0">
+          <label htmlFor={quantityId}>{t.modules.items.quantity}</label>
+          {showsItemQuantity(itemType) ? (
+            <div className="mt-2 flex items-stretch">
+              <button type="button" aria-label={t.modules.items.decreaseQuantity} className="min-h-11 min-w-11 rounded-l-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.max(1, (Number.parseInt(current, 10) || 1) - 1)))}>−</button>
+              <Input id={quantityId} className="min-w-0 flex-1 rounded-none !px-0 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" min="1" name="ilosc" onChange={(event) => setItemQuantity(event.currentTarget.value)} required step="1" type="number" value={itemQuantity} />
+              <button type="button" aria-label={t.modules.items.increaseQuantity} className="min-h-11 min-w-11 rounded-r-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.min(Number.MAX_SAFE_INTEGER, (Number.parseInt(current, 10) || 0) + 1)))}>+</button>
+            </div>
+          ) : (<><input name="ilosc" type="hidden" value="1" /><Input id={quantityId} className="mt-2" value="1" readOnly /></>)}
+        </div>
       <label className="ui-label min-w-0">
         {t.modules.items.itemType}
         <Select
-          className="mt-2"
+          className="mt-2 !px-2 !text-sm"
           name="typ"
           onChange={(event) =>
             setItemType(event.currentTarget.value as ItemType)
@@ -499,9 +598,9 @@ export function ItemForm({
         </Select>
       </label>
       <label className="ui-label min-w-0">
-        {t.modules.items.category}
+        {t.modules.items.category} <span aria-hidden="true">*</span>
         <Select
-          className="mt-2"
+          className="mt-2 !px-2 !text-sm"
           name="category_id"
           onChange={(event) => selectCategory(event.currentTarget.value)}
           required
@@ -529,35 +628,22 @@ export function ItemForm({
           </option>
         </Select>
       </label>
-      <div className="grid gap-3 @min-[17rem]:grid-cols-2">
-        {showsItemQuantity(itemType) ? (
-          <label className="ui-label min-w-0">
-            {t.modules.items.quantity}
-            <Input
-              className="mt-2"
-              key={itemType}
-              min="1"
-              name="ilosc"
-              onChange={(event) => setItemQuantity(event.currentTarget.value)}
-              required
-              step="1"
-              type="number"
-              value={itemQuantity}
-            />
-          </label>
-        ) : (
-          <input name="ilosc" type="hidden" value="1" />
-        )}
-        <label className="ui-label min-w-0">
-          {t.modules.items.unit}
-          <Input
-            className="mt-2"
-            name="jednostka"
-            onChange={(event) => setItemUnit(event.currentTarget.value)}
-            value={itemUnit}
-          />
-        </label>
+      <label className="ui-label min-w-0">
+        {t.modules.items.unit}
+        <Input className="mt-2" list={unitListId} name="jednostka" onChange={(event) => setItemUnit(event.currentTarget.value)} value={itemUnit} />
+        <datalist id={unitListId}>{["szt.", "opak.", "kpl.", "kg", "g", "l", "ml", "m"].map((unit) => <option key={unit} value={unit} />)}</datalist>
+      </label>
       </div>
+      <label className="ui-label">
+        {t.modules.items.description} <span className="font-normal text-muted">· {t.modules.items.optional}</span>
+        <Textarea
+          className="ui-item-description mt-2"
+          name="opis"
+          onChange={(event) => setItemDescription(event.currentTarget.value)}
+          rows={2}
+          value={itemDescription}
+        />
+      </label>
       {isAnotherCategorySelected ? (
         <div
           className="space-y-2 rounded-md border border-line bg-surface-muted p-3"
@@ -593,92 +679,10 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
-      <section className="space-y-2 rounded-md border border-line bg-surface-muted p-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-foreground">
-            {t.modules.items.photo.title}
-          </h3>
-          <label className="ui-file-trigger inline-flex cursor-pointer items-center rounded-control">
-            <span className={buttonClassName({ variant: "secondary" })}>
-              {t.modules.items.photo.choose}
-            </span>
-            <input
-              accept="image/jpeg,image/webp"
-              className="sr-only"
-              disabled={isPhotoPending || isPhotoAnalysisPending}
-              onChange={uploadSelectedPhoto}
-              ref={fileInputRef}
-              type="file"
-            />
-          </label>
-        </div>
-        <p className="text-xs leading-5 text-muted">{t.modules.items.photo.help}</p>
-        {isPhotoPending ? (
-          <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
-        ) : null}
-        {isPhotoAnalysisPending ? (
-          <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
-        ) : null}
-        {displayedPhoto ? (
-          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
-            {displayedPhoto.previewUrl && !photoPreviewFailed ? (
-              <ItemPhotoImage
-                alt={t.modules.items.photo.previewAlt}
-                className="h-16 w-16 rounded-md border border-line"
-                onError={() => setPhotoPreviewFailed(true)}
-                size={64}
-                src={displayedPhoto.previewUrl}
-              />
-            ) : (
-              <div className="h-16 w-16 rounded-md border border-dashed border-line bg-surface" />
-            )}
-            <div className="min-w-0 text-xs leading-5 text-muted">
-              <p className="truncate font-medium text-foreground">
-                {displayedPhoto.filename}
-              </p>
-              <p>
-                {displayedPhoto.mimeType} · {Math.ceil(displayedPhoto.sizeBytes / 1024)} KB
-              </p>
-            </div>
-            <div className="col-span-full flex flex-wrap items-center gap-2">
-              {photoDraft ? (
-                <Button
 
-                  disabled={isPhotoPending || isPhotoAnalysisPending}
-                  onClick={applyPhotoSuggestions}
-                  type="button"
-                >
-                  {isPhotoAnalysisPending
-                    ? t.modules.items.photo.analyzing
-                    : t.modules.items.photo.fillFromPhoto}
-                </Button>
-              ) : null}
-              <Button
-                variant="secondary"
-                disabled={isPhotoPending || isPhotoAnalysisPending}
-                onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
-                type="button"
-              >
-                {isPhotoPending
-                  ? t.modules.items.photo.removing
-                  : t.modules.items.photo.remove}
-              </Button>
-            </div>
-          </div>
-        ) : null}
-        {photoFeedback ? (
-          <p
-            className={`text-sm ${
-              displayedPhoto ? "text-primary-strong" : "text-danger"
-            }`}
-          >
-            {photoFeedback}
-          </p>
-        ) : null}
-      </section>
-      <ItemLocationField key={locationFieldKey} {...locationFieldProps} />
+      <ItemLocationField options={locationOptions} selection={locationSelection} setSelection={setLocationSelection} />
       <ItemSubmitButton
-        className="justify-self-start"
+        className="justify-self-end"
         disabled={
           isAnotherCategorySelected ||
           isQuickCategoryPending ||
@@ -688,6 +692,9 @@ export function ItemForm({
         label={submitLabel}
         pendingLabel={t.modules.items.saving}
       />
+      </div>
+      <ItemLocationSummary options={locationOptions} selection={locationSelection} />
+      </div>
     </form>
   );
 }

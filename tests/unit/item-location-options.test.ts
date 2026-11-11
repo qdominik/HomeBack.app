@@ -165,3 +165,15 @@ test("L2/L3 breadcrumbs follow reparented furniture instead of stored ancestors"
   }
   assert.equal(resolveItemLocation(movedOptions, getItemLocationTarget(roomSelection))?.roomName, "Salon");
 });
+
+
+test("location options preserve selected and missing icon keys", () => {
+  const result = buildItemLocationSelectorOptions({
+    rooms: [{ id: "r", nazwa: "Room", ikona: "kitchen" }],
+    storageLocations: [{ id: "f", nazwa: "Furniture", room_id: "r", ikona: null }],
+    positions: [{ id: "s", nazwa: "Shelf", kod_lokalizacji: "S", storage_location_l2_id: "f", ikona: "TrayIcon" }],
+  });
+  assert.equal(result.rooms[0].iconKey, "kitchen");
+  assert.equal(result.storageLocations[0].iconKey, "storage");
+  assert.equal(result.positions[0].iconKey, "TrayIcon");
+});

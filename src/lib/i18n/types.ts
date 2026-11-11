@@ -185,6 +185,19 @@ export type Dictionary = {
       description: string;
       itemType: string;
       quantity: string;
+      increaseQuantity: string;
+      decreaseQuantity: string;
+      selectedLocation: string;
+      singleItemLabel: string;
+      chooseLocation: string;
+      itemDetailsHeading: string;
+      itemDetailsIntro: string;
+      photoAssistHeading: string;
+      locationHeading: string;
+      locationIntro: string;
+      locationSummaryIntro: string;
+      locationOptional: string;
+      optional: string;
       unit: string;
       selectCategory: string;
       selectRoom: string;
@@ -202,6 +215,8 @@ export type Dictionary = {
       categoryAlreadyExists: string;
       quickCategoryMissing: string;
       photo: {
+        add: string;
+        removeShort: string;
         title: string;
         help: string;
         choose: string;
