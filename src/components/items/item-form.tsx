@@ -500,7 +500,7 @@ export function ItemForm({
               <Input id={quantityId} className="min-w-0 rounded-none text-center" min="1" name="ilosc" onChange={(event) => setItemQuantity(event.currentTarget.value)} required step="1" type="number" value={itemQuantity} />
               <button type="button" aria-label={t.modules.items.increaseQuantity} className="min-h-11 min-w-11 rounded-r-control border border-line bg-surface" onClick={() => setItemQuantity((current) => String(Math.min(Number.MAX_SAFE_INTEGER, (Number.parseInt(current, 10) || 0) + 1)))}>+</button>
             </div>
-          ) : (<><input name="ilosc" type="hidden" value="1" /><output id={quantityId} className="ui-control mt-2 flex items-center">1</output></>)}
+          ) : (<><input name="ilosc" type="hidden" value="1" /><Input id={quantityId} className="mt-2" value="1" readOnly /></>)}
         </div>
       </div>
       <div className="grid min-w-0 gap-3 @min-[25rem]:grid-cols-3">
