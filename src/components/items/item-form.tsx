@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import {
   type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
   useId,
   useRef,
   useState,
@@ -40,6 +42,8 @@ import {
 } from "@/lib/items/item-photo/draft-flow";
 import {
   getInitialItemLocationSelection,
+  getItemLocationFieldKey,
+  type ItemLocationSelection,
   type ItemCategoryOption,
   type ItemLocationSelectorOptions,
 } from "@/lib/items/item-options";
@@ -178,9 +182,22 @@ export function ItemForm({
   const initialQuantity = item?.ilosc ?? 1;
   const [itemQuantity, setItemQuantity] = useState(String(initialQuantity));
   const [itemUnit, setItemUnit] = useState(item ? (item.jednostka ?? "") : "szt.");
-  const [locationSelection, setLocationSelection] = useState(() =>
-    getInitialItemLocationSelection(locationOptions, selectedPositionId, selectedStorageId, selectedRoomId),
-  );
+  const locationKey = getItemLocationFieldKey(item?.id, selectedPositionId, selectedStorageId, selectedRoomId);
+  const [locationState, setLocationState] = useState(() => ({
+    key: locationKey,
+    selection: getInitialItemLocationSelection(locationOptions, selectedPositionId, selectedStorageId, selectedRoomId),
+  }));
+  let locationSelection = locationState.selection;
+  if (locationState.key !== locationKey) {
+    locationSelection = getInitialItemLocationSelection(locationOptions, selectedPositionId, selectedStorageId, selectedRoomId);
+    setLocationState({ key: locationKey, selection: locationSelection });
+  }
+  const setLocationSelection: Dispatch<SetStateAction<ItemLocationSelection>> = (update) => {
+    setLocationState((current) => ({
+      key: current.key,
+      selection: typeof update === "function" ? update(current.selection) : update,
+    }));
+  };
   const systemCategories = availableCategories.filter(
     (category) => category.isSystem,
   );
