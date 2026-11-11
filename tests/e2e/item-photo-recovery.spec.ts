@@ -66,6 +66,22 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       }
     });
 
+    test("photo preview and fill action appear before the form fields", async ({ page }) => {
+      await selectPhoto(page);
+      await ready(page);
+      const preview = page.getByAltText("Podgląd wybranego zdjęcia Rzeczy");
+      const fill = page.getByRole("button", { name: "Uzupełnij ze zdjęcia", exact: true });
+      const name = page.locator('[name="nazwa"]');
+      const previewBox = await preview.locator("..").boundingBox();
+      const fillBox = await fill.boundingBox();
+      const nameBox = await name.boundingBox();
+      expect(previewBox?.width).toBeGreaterThanOrEqual(128);
+      expect(previewBox?.height).toBeGreaterThanOrEqual(128);
+      expect((previewBox?.y ?? 0) + (previewBox?.height ?? 0)).toBeLessThanOrEqual(nameBox?.y ?? 0);
+      expect((fillBox?.y ?? 0) + (fillBox?.height ?? 0)).toBeLessThanOrEqual(nameBox?.y ?? 0);
+      await expect(page.getByText("Zdjęcie gotowe do podglądu.")).toHaveCount(0);
+    });
+
     test("upload exception preserves existing photo, values and same-file retry", async ({ page, photoURL }) => {
       await page.goto(`${photoURL}?edit`); await entered(page);
       await queue(page, "upload", { reject: true, gate: "upload" }); await selectPhoto(page);

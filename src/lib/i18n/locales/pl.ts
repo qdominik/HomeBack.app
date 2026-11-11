@@ -217,7 +217,7 @@ export const pl: Dictionary = {
       singleItemLabel: "Jedna rzecz",
       chooseLocation: "Wybierz",
       itemDetailsHeading: "Co dodajesz?",
-      itemDetailsIntro: "Dodaj zdjęcie lub wpisz nazwę i uzupełnij szczegóły.",
+      itemDetailsIntro: "Dodaj zdjęcie, aby uzupełnić szczegóły, lub wpisz je samodzielnie.",
       locationHeading: "Gdzie ją znajdziesz?",
       locationIntro: "Wybierz tyle szczegółów, ile potrzebujesz. Lokalizację możesz dodać później.",
       locationSummaryIntro: "Twoja ścieżka do rzeczy",

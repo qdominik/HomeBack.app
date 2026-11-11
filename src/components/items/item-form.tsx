@@ -380,7 +380,7 @@ export function ItemForm({
       setPhotoPreviewFailed(false);
       setPhotoFeedback(outcome.cleanupFailed
         ? t.modules.items.photo.errors.replacementCleanupFailed
-        : t.modules.items.photo.ready);
+        : null);
     });
   }
 
@@ -488,6 +488,68 @@ export function ItemForm({
           </label>
       </div>
       <p className="-mt-2 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
+      <section className="space-y-2">
+        {isPhotoPending ? (
+          <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
+        ) : null}
+        {isPhotoAnalysisPending ? (
+          <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
+        ) : null}
+        {displayedPhoto ? (
+          <div className="flex flex-wrap items-start gap-4">
+            {displayedPhoto.previewUrl && !photoPreviewFailed ? (
+              <ItemPhotoImage
+                alt={t.modules.items.photo.previewAlt}
+                className="h-32 w-32 shrink-0 rounded-md border border-line"
+                onError={() => setPhotoPreviewFailed(true)}
+                size={128}
+                src={displayedPhoto.previewUrl}
+              />
+            ) : (
+              <div className="h-32 w-32 shrink-0 rounded-md border border-dashed border-line bg-surface" />
+            )}
+            <div className="min-w-0 flex-1 space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {photoDraft ? (
+                <Button
+
+                  disabled={isPhotoPending || isPhotoAnalysisPending}
+                  onClick={applyPhotoSuggestions}
+                  type="button"
+                >
+                  {isPhotoAnalysisPending
+                    ? t.modules.items.photo.analyzing
+                    : t.modules.items.photo.fillFromPhoto}
+                </Button>
+              ) : null}
+              <Button
+                variant="secondary"
+                disabled={isPhotoPending || isPhotoAnalysisPending}
+                onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
+                type="button"
+              >
+                {isPhotoPending
+                  ? t.modules.items.photo.removing
+                  : t.modules.items.photo.remove}
+              </Button>
+            </div>
+            <div className="min-w-0 text-xs leading-5 text-muted">
+              <p className="break-all font-medium">{displayedPhoto.filename}</p>
+              <p>{displayedPhoto.mimeType} · {Math.ceil(displayedPhoto.sizeBytes / 1024)} KB</p>
+            </div>
+            </div>
+          </div>
+        ) : null}
+        {photoFeedback ? (
+          <p
+            className={`text-sm ${
+              displayedPhoto ? "text-primary-strong" : "text-danger"
+            }`}
+          >
+            {photoFeedback}
+          </p>
+        ) : null}
+      </section>
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)_7.5rem] gap-3">
       <label className="ui-label col-span-2 min-w-0">
         {t.modules.items.name} <span aria-hidden="true">*</span>
@@ -611,70 +673,7 @@ export function ItemForm({
           ) : null}
         </div>
       ) : null}
-      <section className="space-y-2">
-        {isPhotoPending ? (
-          <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
-        ) : null}
-        {isPhotoAnalysisPending ? (
-          <p className="text-sm text-muted">{t.modules.items.photo.analyzing}</p>
-        ) : null}
-        {displayedPhoto ? (
-          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
-            {displayedPhoto.previewUrl && !photoPreviewFailed ? (
-              <ItemPhotoImage
-                alt={t.modules.items.photo.previewAlt}
-                className="h-16 w-16 rounded-md border border-line"
-                onError={() => setPhotoPreviewFailed(true)}
-                size={64}
-                src={displayedPhoto.previewUrl}
-              />
-            ) : (
-              <div className="h-16 w-16 rounded-md border border-dashed border-line bg-surface" />
-            )}
-            <div className="min-w-0 text-xs leading-5 text-muted">
-              <p className="truncate font-medium text-foreground">
-                {displayedPhoto.filename}
-              </p>
-              <p>
-                {displayedPhoto.mimeType} · {Math.ceil(displayedPhoto.sizeBytes / 1024)} KB
-              </p>
-            </div>
-            <div className="col-span-full flex flex-wrap items-center gap-2">
-              {photoDraft ? (
-                <Button
 
-                  disabled={isPhotoPending || isPhotoAnalysisPending}
-                  onClick={applyPhotoSuggestions}
-                  type="button"
-                >
-                  {isPhotoAnalysisPending
-                    ? t.modules.items.photo.analyzing
-                    : t.modules.items.photo.fillFromPhoto}
-                </Button>
-              ) : null}
-              <Button
-                variant="secondary"
-                disabled={isPhotoPending || isPhotoAnalysisPending}
-                onClick={photoDraft ? removePhotoDraft : removeCurrentPhoto}
-                type="button"
-              >
-                {isPhotoPending
-                  ? t.modules.items.photo.removing
-                  : t.modules.items.photo.remove}
-              </Button>
-            </div>
-          </div>
-        ) : null}
-        {photoFeedback ? (
-          <p
-            className={`text-sm ${
-              displayedPhoto ? "text-primary-strong" : "text-danger"
-            }`}
-          >
-            {photoFeedback}
-          </p>
-        ) : null}
-      </section>
       <ItemLocationField options={locationOptions} selection={locationSelection} setSelection={setLocationSelection} />
       <ItemSubmitButton
         className="justify-self-end"
