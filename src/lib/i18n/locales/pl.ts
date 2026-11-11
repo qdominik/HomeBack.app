@@ -217,7 +217,8 @@ export const pl: Dictionary = {
       singleItemLabel: "Jedna rzecz",
       chooseLocation: "Wybierz",
       itemDetailsHeading: "Co dodajesz?",
-      itemDetailsIntro: "Dodaj zdjęcie, aby uzupełnić szczegóły, lub wpisz je samodzielnie.",
+      photoAssistHeading: "Wypróbuj uzupełnianie ze zdjęcia",
+      itemDetailsIntro: "Zdjęcie pomoże uzupełnić dane rzeczy. Sprawdź i popraw propozycje przed zapisaniem.",
       locationHeading: "Gdzie ją znajdziesz?",
       locationIntro: "Wybierz tyle szczegółów, ile potrzebujesz. Lokalizację możesz dodać później.",
       locationSummaryIntro: "Twoja ścieżka do rzeczy",
@@ -239,7 +240,6 @@ export const pl: Dictionary = {
       categoryAlreadyExists: "Taka kategoria już istnieje.",
       quickCategoryMissing: "Podaj nazwę nowej kategorii.",
       photo: {
-        change: "Zmień zdjęcie",
         removeShort: "Usuń",
         add: "Dodaj zdjęcie",
         analyzing: "Analizowanie zdjęcia...",

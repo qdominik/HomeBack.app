@@ -192,6 +192,7 @@ export type Dictionary = {
       chooseLocation: string;
       itemDetailsHeading: string;
       itemDetailsIntro: string;
+      photoAssistHeading: string;
       locationHeading: string;
       locationIntro: string;
       locationSummaryIntro: string;
@@ -215,7 +216,6 @@ export type Dictionary = {
       quickCategoryMissing: string;
       photo: {
         add: string;
-        change: string;
         removeShort: string;
         title: string;
         help: string;

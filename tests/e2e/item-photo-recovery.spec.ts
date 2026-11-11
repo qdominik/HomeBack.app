@@ -96,15 +96,18 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await expect(page.getByText("Zdjęcie gotowe do podglądu.")).toHaveCount(0);
       await expect(page.getByText("photo.jpg", { exact: true })).toHaveCount(0);
       await expect(page.getByText(/image\/jpeg/)).toHaveCount(0);
-      await expect(page.getByRole("button", { name: "Zmień zdjęcie", exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Zmień zdjęcie", exact: true })).toHaveCount(0);
     });
 
-    test("change photo opens the picker and replaces the current draft", async ({ page }) => {
+    test("remove and add another photo replaces the current draft", async ({ page }) => {
       await selectPhoto(page, "old.jpg");
       await ready(page);
       const oldPath = await path(page);
+      await page.getByRole("button", { name: "Usuń zdjęcie", exact: true }).click();
+      await ready(page);
+      await expect(page.getByAltText("Podgląd wybranego zdjęcia Rzeczy")).toHaveCount(0);
       const chooserPromise = page.waitForEvent("filechooser");
-      await page.getByRole("button", { name: "Zmień zdjęcie", exact: true }).click();
+      await page.getByRole("button", { name: "Dodaj zdjęcie", exact: true }).click();
       const chooser = await chooserPromise;
       const bytes = await page.evaluate(() => {
         const canvas = document.createElement("canvas"); canvas.width = 8; canvas.height = 8;

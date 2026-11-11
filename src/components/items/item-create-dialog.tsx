@@ -35,7 +35,7 @@ export function ItemCreateDialog({ options }: { options: ItemCreateOptions }) {
     <Dialog
       aria-labelledby="add-item-title"
       id="add-item-dialog"
-      size="large" className="ui-dialog-body !bg-white"
+      size="large" className="ui-dialog-body"
       onClose={() => { setOpen(false); trigger.current?.focus(); }}
       ref={dialog}
     >

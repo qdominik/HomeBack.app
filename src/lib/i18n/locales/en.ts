@@ -216,7 +216,8 @@ export const en: Dictionary = {
       singleItemLabel: "Single item",
       chooseLocation: "Select",
       itemDetailsHeading: "What are you adding?",
-      itemDetailsIntro: "Add a photo to fill in the details, or enter them yourself.",
+      photoAssistHeading: "Try filling in details from a photo",
+      itemDetailsIntro: "A photo can help fill in item details. Check and edit the suggestions before saving.",
       locationHeading: "Where can you find it?",
       locationIntro: "Choose as much detail as you need. You can add a location later.",
       locationSummaryIntro: "Your path to the item",
@@ -239,7 +240,6 @@ export const en: Dictionary = {
       categoryAlreadyExists: "This category already exists.",
       quickCategoryMissing: "Enter a new category name.",
       photo: {
-        change: "Change photo",
         removeShort: "Remove",
         add: "Add photo",
         analyzing: "Analyzing photo...",

@@ -444,7 +444,7 @@ export function ItemForm({
     <form
       action={action}
       aria-label={item ? t.modules.items.editItem : undefined}
-      className="@container grid min-w-0 max-w-full gap-3 [&_.ui-control:not(:disabled):not([readonly])]:!bg-white"
+      className="@container grid min-w-0 max-w-full gap-3"
     >
       {item ? <input name="item_id" type="hidden" value={item.id} /> : null}
       {photoDraft ? (
@@ -485,12 +485,15 @@ export function ItemForm({
             type="file"
           />
           {!displayedPhoto ? (
-            <Button variant="secondary" disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
+            <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
               <ImageSquareIcon aria-hidden="true" size={18} />{t.modules.items.photo.add}
             </Button>
           ) : null}
       </div>
-      <p className="-mt-2 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
+      <div className="-mt-2 rounded-control border border-primary/20 bg-primary/10 p-3">
+        <p className="text-sm font-semibold text-primary-strong">{t.modules.items.photoAssistHeading}</p>
+        <p className="mt-1 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
+      </div>
       <section className="space-y-2">
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
@@ -525,9 +528,6 @@ export function ItemForm({
                     : t.modules.items.photo.fillFromPhoto}
                 </Button>
               ) : null}
-              <Button variant="secondary" disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
-                {t.modules.items.photo.change}
-              </Button>
             </div>
             <button
               aria-label={t.modules.items.photo.remove}

@@ -80,7 +80,7 @@ export function ItemLocationSummary({ options, selection }: Pick<LocationProps, 
   if (room) path.push({ label: t.modules.items.room, choice: room, group: "room" });
   if (storage) path.push({ label: t.modules.items.storage, choice: storage, group: "storage" });
   if (position) path.push({ label: t.modules.items.position, choice: { ...position, label: position.positionName }, group: "position" });
-  return <aside data-location-summary className="min-w-0 self-start rounded-control border border-line bg-white p-4" aria-live="polite">
+  return <aside data-location-summary className="min-w-0 self-start rounded-control border border-line bg-surface p-4" aria-live="polite">
     <h3 className="text-base font-semibold">{t.modules.items.selectedLocation}</h3>
     <p className="mt-1 text-sm text-muted">{t.modules.items.locationSummaryIntro}</p>
     {path.length ? <ol className="mt-4">{path.map(({label, choice, group}) => <li className="relative flex min-h-14 items-start gap-3 after:absolute after:bottom-0 after:left-4 after:top-8 after:w-px after:bg-line last:min-h-8 last:after:hidden" key={group}><span className="relative z-10 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary"><EntityIcon group={group} iconKey={choice.iconKey} size={18} /></span><span className="min-w-0 break-words pt-0.5 text-sm font-semibold text-primary-strong"><span className="mb-1 block text-xs font-normal text-muted">{label}</span>{choice.label}</span></li>)}</ol> : <p className="mt-4 text-sm font-medium text-primary-strong">{t.modules.items.noLocation}</p>}
