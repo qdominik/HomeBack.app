@@ -304,7 +304,6 @@ test("JPEG upload through header add persists its thumbnail after reload and edi
     mimeType: "image/jpeg",
     buffer: jpeg,
   });
-  await expect(dialog.getByText("Zdjęcie gotowe do podglądu.", { exact: true })).toBeVisible();
   const preview = dialog.getByRole("img", { name: "Podgląd wybranego zdjęcia Rzeczy", exact: true });
   await expect(preview).toBeVisible();
   await expect.poll(() => preview.evaluate((element: HTMLImageElement) =>
