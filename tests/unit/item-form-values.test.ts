@@ -1,3 +1,4 @@
+import { shouldShowPhotoAssist, nextPhotoAssistCount } from "../../src/lib/items/photo-assist-preference";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -984,4 +985,17 @@ test("item photo analysis action and form keep the draft household-scoped", () =
   assert.match(analysisAction, /isItemPhotoDraftPathForHousehold/);
   assert.doesNotMatch(analysisAction, /getStringProperty\(value, "household_id"\)/);
   assert.doesNotMatch(form, /name="miniatura_url"|name="storagePath"/);
+});
+
+
+test("photo tip is per account and stops after the first three saved items", () => {
+  assert.equal(shouldShowPhotoAssist({}, 0), true);
+  assert.equal(shouldShowPhotoAssist({ photo_assist_created: 1 }, 0), true);
+  assert.equal(shouldShowPhotoAssist({ photo_assist_created: 2 }, 0), true);
+  assert.equal(shouldShowPhotoAssist({ photo_assist_created: 3 }, 0), false);
+  assert.equal(shouldShowPhotoAssist({}, 3), false);
+  assert.equal(shouldShowPhotoAssist({ photo_assist_dismissed: true }, 0), false);
+  assert.equal(shouldShowPhotoAssist({}, 0), true); // Another account has its own preference.
+  assert.equal(nextPhotoAssistCount({ photo_assist_created: 2 }, 1), 3); // Deleted items do not reset progress.
+  assert.equal(nextPhotoAssistCount({}, 3), 3); // Existing accounts use the visible history.
 });

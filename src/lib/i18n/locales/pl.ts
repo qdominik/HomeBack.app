@@ -217,6 +217,8 @@ export const pl: Dictionary = {
       singleItemLabel: "Jedna rzecz",
       chooseLocation: "Wybierz",
       itemDetailsHeading: "Co dodajesz?",
+      photoAssistClose: "Zamknij wskazówkę",
+      photoAssistCloseError: "Nie udało się zamknąć wskazówki. Spróbuj ponownie.",
       photoAssistHeading: "Wypróbuj uzupełnianie ze zdjęcia",
       itemDetailsIntro: "Zdjęcie pomoże uzupełnić dane rzeczy. Sprawdź i popraw propozycje przed zapisaniem.",
       locationHeading: "Gdzie ją znajdziesz?",

@@ -216,6 +216,8 @@ export const en: Dictionary = {
       singleItemLabel: "Single item",
       chooseLocation: "Select",
       itemDetailsHeading: "What are you adding?",
+      photoAssistClose: "Dismiss photo tip",
+      photoAssistCloseError: "Could not dismiss the tip. Please try again.",
       photoAssistHeading: "Try filling in details from a photo",
       itemDetailsIntro: "A photo can help fill in item details. Check and edit the suggestions before saving.",
       locationHeading: "Where can you find it?",

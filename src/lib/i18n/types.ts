@@ -193,6 +193,8 @@ export type Dictionary = {
       itemDetailsHeading: string;
       itemDetailsIntro: string;
       photoAssistHeading: string;
+      photoAssistClose: string;
+      photoAssistCloseError: string;
       locationHeading: string;
       locationIntro: string;
       locationSummaryIntro: string;

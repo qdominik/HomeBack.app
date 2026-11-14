@@ -1,5 +1,6 @@
 "use client";
 
+import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +17,7 @@ import {
 } from "react";
 import {
   analyzeItemPhotoDraft,
+  dismissPhotoAssist,
   cleanupItemPhotoDraft,
   createQuickCustomCategory,
   uploadItemPhotoDraft,
@@ -64,6 +66,7 @@ type ItemFormProps = {
   selectedPositionId?: string | null;
   selectedStorageId?: string | null;
   selectedRoomId?: string | null;
+  showPhotoAssist?: boolean;
   submitLabel: string;
 };
 
@@ -149,8 +152,12 @@ export function ItemForm({
   selectedPositionId,
   selectedStorageId,
   selectedRoomId,
+  showPhotoAssist = false,
   submitLabel,
 }: ItemFormProps) {
+  const [photoAssistVisible, setPhotoAssistVisible] = useState(!item && showPhotoAssist);
+  const [photoAssistError, setPhotoAssistError] = useState(false);
+  const [photoAssistPending, startPhotoAssistTransition] = useTransition();
   const quantityId = useId();
   const unitListId = useId();
   const [itemType, setItemType] = useState<ItemType>(item?.typ ?? "unikalny");
@@ -484,14 +491,32 @@ export function ItemForm({
             type="file"
           />
       </div>
-      <div className="-mt-2 rounded-control border border-primary/20 bg-primary/10 p-3">
-        <p className="text-sm font-semibold text-primary-strong">{t.modules.items.photoAssistHeading}</p>
-        <p className="mt-1 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
-      </div>
+      {showPhotoAssist && !item && photoAssistVisible ? (
+        <div data-photo-assist className="-mt-2 rounded-control border border-primary/20 bg-primary/10 p-3">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-primary-strong">{t.modules.items.photoAssistHeading}</p>
+              <p className="mt-1 text-sm text-muted">{t.modules.items.itemDetailsIntro}</p>
+              <span aria-hidden="true" data-photo-pointer={photoDraft ? "fill" : "add"} className="mt-1 inline-block text-xl leading-none">{photoDraft ? "👇🏻" : "👉🏻"}</span>
+            </div>
+            <button type="button" aria-label={t.modules.items.photoAssistClose} disabled={photoAssistPending} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-primary-strong hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => {
+              setPhotoAssistError(false);
+              startPhotoAssistTransition(async () => {
+                try {
+                  const result = await dismissPhotoAssist();
+                  if (result.ok) setPhotoAssistVisible(false);
+                  else setPhotoAssistError(true);
+                } catch { setPhotoAssistError(true); }
+              });
+            }}><XIcon aria-hidden="true" size={18} /></button>
+          </div>
+          {photoAssistError ? <p role="alert" className="mt-2 text-sm text-danger">{t.modules.items.photoAssistCloseError}</p> : null}
+        </div>
+      ) : null}
       <section className="space-y-2">
         {!displayedPhoto ? (
           <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
-            <span aria-hidden="true" data-photo-pointer="add" className="text-xl leading-none">👉🏻</span>{t.modules.items.photo.add}
+            {t.modules.items.photo.add}
           </Button>
         ) : null}
         {isPhotoPending ? (
@@ -517,7 +542,6 @@ export function ItemForm({
             <div className="flex flex-wrap items-center gap-2">
               {photoDraft ? (
                 <div className="inline-flex max-w-full flex-col items-center gap-1">
-                  <span aria-hidden="true" data-photo-pointer="fill" className="text-2xl leading-none">👇🏻</span>
                   <Button
                     disabled={isPhotoPending || isPhotoAnalysisPending}
                     onClick={applyPhotoSuggestions}

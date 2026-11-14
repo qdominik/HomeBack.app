@@ -33,6 +33,7 @@ import {
   parseItemView,
   type ItemView,
 } from "@/lib/items/item-view-filter";
+import { getPhotoAssistVisibility } from "@/lib/server/photo-assist-preference";
 import { getAppContext } from "@/lib/app-context";
 import { buildItemSearchLocationPath } from "@/lib/items/item-search";
 import {
@@ -88,7 +89,7 @@ const statusMessages: Record<string, string> = {
 
 export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const params = await searchParams;
-  const { profile, supabase } = await getAppContext();
+  const { profile, supabase, userId } = await getAppContext();
 
   const currentView = parseItemView(params);
   const parsedFilters = parseItemSearchParams(params);
@@ -291,9 +292,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     : null;
   const statusMessage = params.status ? statusMessages[params.status] : null;
 
+  const showPhotoAssist = isAdmin && userId && profile
+    ? await getPhotoAssistVisibility(supabase, userId, profile.household_id)
+    : false;
   const createForm = isAdmin ? (
     <ItemForm
       action={createItem}
+      showPhotoAssist={showPhotoAssist}
       categories={categoryOptions}
       defaultCategoryId={defaultCategoryId}
       locationOptions={locationSelectorOptions}

@@ -1,17 +1,19 @@
+import { getPhotoAssistVisibility } from "@/lib/server/photo-assist-preference";
 import { getAppContext } from "@/lib/app-context";
 import { getDefaultItemCategoryId, getItemCategoryOptions } from "@/lib/categories/category-selection";
 import { buildItemLocationSelectorOptions } from "@/lib/items/item-options";
 
 export async function getItemCreateOptions() {
-  const { supabase, profile } = await getAppContext();
-  if (!profile || profile.rola !== "admin" || profile.status !== "aktywny") return null;
+  const { supabase, profile, userId } = await getAppContext();
+  if (!userId || !profile || profile.rola !== "admin" || profile.status !== "aktywny") return null;
   const householdId = profile.household_id;
-  const [categories, rooms] = await Promise.all([
+  const [categories, rooms, showPhotoAssist] = await Promise.all([
     supabase.from("category").select("id, household_id, key, nazwa, czy_systemowa")
       .or(`household_id.eq.${householdId},and(household_id.is.null,czy_systemowa.eq.true)`)
       .order("czy_systemowa", { ascending: false }).order("created_at", { ascending: true }),
     supabase.from("room").select("id, nazwa, ikona").eq("household_id", householdId)
       .order("kolejność", { ascending: true }).order("created_at", { ascending: true }),
+    getPhotoAssistVisibility(supabase, userId, householdId),
   ]);
   const roomIds = (rooms.data ?? []).map(room => room.id);
   const furniture = roomIds.length ? await supabase.from("storage_location_l2")
@@ -23,6 +25,7 @@ export async function getItemCreateOptions() {
     .order("kolejność", { ascending: true }).order("created_at", { ascending: true }) : { data: [], error: null };
   if (categories.error || rooms.error || furniture.error || positions.error) throw new Error("Item form options unavailable");
   return {
+    showPhotoAssist,
     categories: getItemCategoryOptions(categories.data ?? [], householdId),
     defaultCategoryId: getDefaultItemCategoryId(categories.data ?? []),
     locationOptions: buildItemLocationSelectorOptions({ rooms: rooms.data ?? [], storageLocations: furniture.data ?? [], positions: positions.data ?? [] }),

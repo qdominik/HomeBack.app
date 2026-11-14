@@ -81,13 +81,9 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
     });
 
     test("photo preview and fill action appear before the form fields", async ({ page }) => {
-      const addBox = await page.getByRole("button", { name: "Dodaj zdjęcie", exact: true }).boundingBox();
-      const addPointer = await page.locator('[data-photo-pointer="add"]').boundingBox();
-      expect(addPointer).not.toBeNull();
-      expect(addPointer?.x).toBeGreaterThanOrEqual(addBox?.x ?? 0);
-      expect((addPointer?.x ?? 0) + (addPointer?.width ?? 0)).toBeLessThanOrEqual((addBox?.x ?? 0) + (addBox?.width ?? 0));
-      expect(addPointer?.y).toBeGreaterThanOrEqual(addBox?.y ?? 0);
-      expect((addPointer?.y ?? 0) + (addPointer?.height ?? 0)).toBeLessThanOrEqual((addBox?.y ?? 0) + (addBox?.height ?? 0));
+      const banner = page.locator("[data-photo-assist]");
+      await expect(banner).toBeVisible();
+      await expect(banner.locator('[data-photo-pointer="add"]')).toHaveText("👉🏻");
       await selectPhoto(page);
       await ready(page);
       const preview = page.getByAltText("Podgląd wybranego zdjęcia Rzeczy");
@@ -95,11 +91,7 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       const name = page.locator('[name="nazwa"]');
       const previewBox = await preview.locator("..").boundingBox();
       const fillBox = await fill.boundingBox();
-      const fillPointer = await page.locator('[data-photo-pointer="fill"]').boundingBox();
-      expect(fillPointer).not.toBeNull();
-      expect((fillPointer?.x ?? 0) + (fillPointer?.width ?? 0) / 2).toBeGreaterThanOrEqual(fillBox?.x ?? 0);
-      expect((fillPointer?.x ?? 0) + (fillPointer?.width ?? 0) / 2).toBeLessThanOrEqual((fillBox?.x ?? 0) + (fillBox?.width ?? 0));
-      expect((fillPointer?.y ?? 0) + (fillPointer?.height ?? 0)).toBeLessThanOrEqual(fillBox?.y ?? 0);
+      await expect(banner.locator('[data-photo-pointer="fill"]')).toHaveText("👇🏻");
       const nameBox = await name.boundingBox();
       expect(previewBox?.width).toBeGreaterThanOrEqual(128);
       expect(previewBox?.height).toBeGreaterThanOrEqual(128);
@@ -109,6 +101,24 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await expect(page.getByText("photo.jpg", { exact: true })).toHaveCount(0);
       await expect(page.getByText(/image\/jpeg/)).toHaveCount(0);
       await expect(page.getByRole("button", { name: "Zmień zdjęcie", exact: true })).toHaveCount(0);
+    });
+
+    test("the photo tip can be dismissed without hiding photo actions", async ({ page, photoURL }) => {
+      await queue(page, "dismissTip", { result: { ok: false } });
+      await page.getByRole("button", { name: "Zamknij wskazówkę", exact: true }).click();
+      await expect(page.getByRole("alert")).toContainText("Nie udało się zamknąć wskazówki");
+      await expect(page.locator("[data-photo-assist]")).toBeVisible();
+      await page.getByRole("button", { name: "Zamknij wskazówkę", exact: true }).click();
+      await expect(page.locator("[data-photo-assist]")).toHaveCount(0);
+      await expect(page.locator("[data-photo-pointer]")).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Dodaj zdjęcie", exact: true })).toBeVisible();
+      expect(await calls(page, "dismissTip")).toHaveLength(2);
+      await selectPhoto(page);
+      await ready(page);
+      await expect(page.getByRole("button", { name: "Uzupełnij ze zdjęcia", exact: true })).toBeVisible();
+      await expect(page.locator("[data-photo-pointer]")).toHaveCount(0);
+      await page.goto(`${photoURL}?hintHidden`);
+      await expect(page.locator("[data-photo-assist]")).toHaveCount(0);
     });
 
     test("remove and add another photo replaces the current draft", async ({ page }) => {

@@ -20,6 +20,7 @@ createRoot(document.getElementById("root")!).render(<ItemForm
   action={async (data) => { await window.photoHarness.invoke("save", Object.fromEntries(data), null); document.getElementById("saved")!.textContent = "Zapisano fixture"; }}
   categories={[{ id: "tools", label: "Narzędzia", isSystem: true }]}
   defaultCategoryId="tools"
+  showPhotoAssist={!new URLSearchParams(location.search).has("hintHidden")}
   item={item}
   photo={photo}
   layout="compact"

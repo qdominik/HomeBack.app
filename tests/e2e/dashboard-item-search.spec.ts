@@ -232,3 +232,41 @@ test("direct L1/L2/L3 and empty locations persist in the mobile form and global 
   await expect(results(dialog)).toHaveCount(0);
   await expect(dialog.getByRole("status")).toHaveText("Nie znaleziono obiektów o tej nazwie.");
 });
+
+
+test("photo tip ends after three saved items and dismissal follows the account", async ({ page, browser }) => {
+  test.setTimeout(180_000);
+  await registerAndCreateHousehold(page, "photo-tip-count");
+  for (let index = 0; index < 3; index++) {
+    await page.goto("/dashboard");
+    await page.getByRole("banner").getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Dodaj przedmiot", exact: true });
+    await expect(dialog.locator("[data-photo-assist]")).toBeVisible();
+    await dialog.locator('[name="nazwa"]').fill(`Rzecz wskazówka ${index}`);
+    await dialog.getByRole("button", { name: "Utwórz rzecz", exact: true }).click();
+    await expect(page).toHaveURL(/status=item_created/);
+  }
+  await page.goto("/dashboard");
+  await page.getByRole("banner").getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Dodaj przedmiot" }).locator("[data-photo-assist]")).toHaveCount(0);
+  await page.context().clearCookies();
+  await registerAndCreateHousehold(page, "photo-tip-dismiss");
+  await page.getByRole("banner").getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Dodaj przedmiot", exact: true });
+  await expect(dialog.locator("[data-photo-assist]")).toBeVisible();
+  await dialog.getByRole("button", { name: "Zamknij wskazówkę", exact: true }).click();
+  await expect(dialog.locator("[data-photo-assist]")).toHaveCount(0);
+  const storageState = await page.context().storageState();
+  storageState.origins = [];
+  const otherDevice = await browser.newContext({ storageState });
+  try {
+    const otherPage = await otherDevice.newPage();
+    await otherPage.goto(new URL("/dashboard", page.url()).toString());
+    await otherPage.getByRole("banner").getByRole("button", { name: "Dodaj przedmiot", exact: true }).click();
+    const otherDialog = otherPage.getByRole("dialog", { name: "Dodaj przedmiot", exact: true });
+    await expect(otherDialog.locator("[data-photo-assist]")).toHaveCount(0);
+    await expect(otherDialog.getByRole("button", { name: "Dodaj zdjęcie", exact: true })).toBeVisible();
+  } finally {
+    await otherDevice.close();
+  }
+});
