@@ -84,9 +84,10 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       const addBox = await page.getByRole("button", { name: "Dodaj zdjęcie", exact: true }).boundingBox();
       const addPointer = await page.locator('[data-photo-pointer="add"]').boundingBox();
       expect(addPointer).not.toBeNull();
-      expect((addPointer?.x ?? 0) + (addPointer?.width ?? 0) / 2).toBeGreaterThanOrEqual(addBox?.x ?? 0);
-      expect((addPointer?.x ?? 0) + (addPointer?.width ?? 0) / 2).toBeLessThanOrEqual((addBox?.x ?? 0) + (addBox?.width ?? 0));
-      expect((addPointer?.y ?? 0) + (addPointer?.height ?? 0)).toBeLessThanOrEqual(addBox?.y ?? 0);
+      expect(addPointer?.x).toBeGreaterThanOrEqual(addBox?.x ?? 0);
+      expect((addPointer?.x ?? 0) + (addPointer?.width ?? 0)).toBeLessThanOrEqual((addBox?.x ?? 0) + (addBox?.width ?? 0));
+      expect(addPointer?.y).toBeGreaterThanOrEqual(addBox?.y ?? 0);
+      expect((addPointer?.y ?? 0) + (addPointer?.height ?? 0)).toBeLessThanOrEqual((addBox?.y ?? 0) + (addBox?.height ?? 0));
       await selectPhoto(page);
       await ready(page);
       const preview = page.getByAltText("Podgląd wybranego zdjęcia Rzeczy");

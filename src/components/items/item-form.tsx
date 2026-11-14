@@ -1,6 +1,5 @@
 "use client";
 
-import { ImageSquareIcon } from "@phosphor-icons/react/dist/ssr/ImageSquare";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -491,12 +490,9 @@ export function ItemForm({
       </div>
       <section className="space-y-2">
         {!displayedPhoto ? (
-          <div className="inline-flex max-w-full flex-col items-center gap-1">
-            <span aria-hidden="true" data-photo-pointer="add" className="text-2xl leading-none">👇🏻</span>
-            <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
-              <ImageSquareIcon aria-hidden="true" size={18} />{t.modules.items.photo.add}
-            </Button>
-          </div>
+          <Button disabled={isPhotoPending || isPhotoAnalysisPending} onClick={() => fileInputRef.current?.click()}>
+            <span aria-hidden="true" data-photo-pointer="add" className="text-xl leading-none">👉🏻</span>{t.modules.items.photo.add}
+          </Button>
         ) : null}
         {isPhotoPending ? (
           <p className="text-sm text-muted">{t.modules.items.photo.uploading}</p>
