@@ -32,7 +32,7 @@ export async function showRoomsDashboardModule(page: Page) {
 
   if (!(await roomsToggle.isChecked())) {
     await roomsToggle.check();
-    await page.getByRole("button", { name: "Zapisz widoczność", exact: true }).click();
+    await page.getByRole("button", { name: "Zapisz widok", exact: true }).click();
     await expect(page).toHaveURL(/status=dashboard_preferences_saved/);
   }
 }

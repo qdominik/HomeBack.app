@@ -2,6 +2,7 @@
 @import "../styles/ui-tokens.css";
 @import "../components/ui/ui-control.css";
 @import "../components/ui/dialog.css";
+@import "../styles/rhythm-shell.css";
 
 @theme inline {
   --color-background: var(--background);

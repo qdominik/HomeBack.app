@@ -14,6 +14,7 @@ import {
   resolveCopyDialogOutcome,
 } from "@/lib/copy-entities/copy-contract";
 import { t } from "@/lib/i18n";
+import { CopyIcon } from "@phosphor-icons/react/dist/ssr/Copy";
 
 type CopyRoomDialogProps = {
   furnitureCount: number;
@@ -123,15 +124,18 @@ export function CopyRoomDialog({
   return (
     <>
       <button
+        aria-label={copy.room.action}
+        title={copy.room.action}
         className={buttonClassName({
           className: "self-start",
+          size: "icon",
           variant: "secondary",
         })}
         onClick={openDialog}
         ref={triggerRef}
         type="button"
       >
-        {copy.room.action}
+        <CopyIcon aria-hidden="true" size={18} />
       </button>
       <ModalPortal>
         <Dialog

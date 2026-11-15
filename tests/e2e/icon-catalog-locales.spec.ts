@@ -130,7 +130,13 @@ test.describe("localized Phosphor icon catalog", () => {
     const roomName = `${suffix} room`;
     const room = await createRoom(page, roomName);
     await expect(room).toBeVisible();
-    await room.getByText("Edytuj pomieszczenie", { exact: true }).click();
+    await expect(room.getByRole("button", { name: "Dodaj mebel", exact: true })).toBeVisible();
+    for (const name of ["Edytuj pomieszczenie", "Kopiuj pomieszczenie", "Usuń Pomieszczenie"]) {
+      const action = room.getByRole("button", { name, exact: true });
+      await expect(action).toBeVisible();
+      expect((await action.boundingBox())?.width).toBeLessThanOrEqual(48);
+    }
+    await room.getByRole("button", { name: "Edytuj pomieszczenie", exact: true }).click();
     const roomForm = room.locator("details[open] form").first();
     await expect(roomForm.locator('input[name="ikona"]')).toHaveValue("AirplaneIcon");
     await expectReopenedIcon(roomForm, "AirplaneIcon");

@@ -25,6 +25,8 @@ export const pl: Dictionary = {
     tagline: "Wszystko o Twoim domu w jednym miejscu",
   },
   navigation: {
+    skipToContent: "Przejdź do treści",
+    shortcuts: "Skróty nawigacyjne",
     closeAddItem: "Zamknij dodawanie przedmiotu",
     openMenu: "Otwórz menu",
     closeMenu: "Zamknij menu",
@@ -794,7 +796,7 @@ fields: {
         "Wybierz, które moduły mają być widoczne na Twoim Dashboardzie. Sterujesz widocznością modułów, nie ich aktywacją.",
       dashboardPersonalizationScopeHint:
         "Zaznaczone moduły pojawią się na Dashboardzie, odznaczone zostaną ukryte. Moduły oznaczone jako „Wkrótce” pozostają nieaktywne funkcjonalnie, nawet gdy są widoczne.",
-      dashboardPersonalizationSave: "Zapisz widoczność",
+      dashboardPersonalizationSave: "Zapisz widok",
       dashboardPersonalizationSaving: "Zapisywanie...",
       testData: "Dane testowe",
       testDataTabs: {

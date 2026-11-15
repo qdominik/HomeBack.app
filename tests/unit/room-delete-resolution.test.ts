@@ -330,7 +330,7 @@ test("M4D.7 wires an enabled button trigger to open and cancel the dialog", () =
     "utf8",
   ).replace(/\r\n/g, "\n");
   const triggerStart = dialog.indexOf(
-    '<button\n        className={buttonClassName({ variant: "danger" })}',
+    '<button\n        aria-label={`${t.modules.home.entityActions.delete}',
   );
   const triggerEnd = dialog.indexOf("</button>", triggerStart) + 9;
   const trigger = dialog.slice(triggerStart, triggerEnd);
@@ -349,6 +349,8 @@ test("M4D.7 wires an enabled button trigger to open and cancel the dialog", () =
 
   assert.notEqual(triggerStart, -1);
   assert.match(trigger, /onClick=\{openDialog\}/);
+  assert.match(trigger, /aria-label=/);
+  assert.match(trigger, /size: "icon"/);
   assert.match(trigger, /type="button"/);
   assert.doesNotMatch(trigger, /disabled=/);
   assert.match(openDialog, /dialog\.showModal\(\)/);

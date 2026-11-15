@@ -1,0 +1,72 @@
+/* UI-03: the existing menu remains the complete navigation at every size. */
+.rhythm-navigation {
+  display: flex;
+  gap: .25rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: .5rem var(--page-gutter);
+}
+
+.rhythm-navigation-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: .5rem 1rem;
+  border-radius: var(--radius);
+  white-space: nowrap;
+  color: var(--foreground-secondary);
+}
+
+.rhythm-navigation-link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.rhythm-navigation-link[aria-current="page"] {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.rhythm-skip {
+  position: fixed;
+  top: -10rem;
+  left: 1rem;
+  z-index: 100;
+  background: var(--surface);
+  color: var(--foreground);
+  padding: 1rem;
+}
+
+.rhythm-skip:focus { top: 1rem; }
+
+@media (min-width: 1024px) {
+  .rhythm-shell { display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: start; }
+  .rhythm-shell > header { grid-column: 1 / -1; }
+  .rhythm-navigation {
+    position: sticky;
+    top: 0;
+    grid-row: 2;
+    min-height: calc(100dvh - 7rem);
+    padding: 1rem .75rem;
+    flex-direction: column;
+    border-right: 1px solid var(--line);
+  }
+  .rhythm-main { grid-column: 2; }
+}
+
+@media (max-width: 599px) {
+  .rhythm-shell { padding-bottom: calc(4rem + env(safe-area-inset-bottom)); }
+  .rhythm-navigation {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 15;
+    border-top: 1px solid var(--line);
+    padding: .5rem .5rem max(.5rem, env(safe-area-inset-bottom));
+  }
+  .rhythm-navigation-link { padding: .5rem .25rem; font-size: .75rem; flex: 1; justify-content: center; }
+  .rhythm-navigation-family, .rhythm-navigation-categories { display: none; }
+  .rhythm-main { padding-top: 1.5rem; }
+}

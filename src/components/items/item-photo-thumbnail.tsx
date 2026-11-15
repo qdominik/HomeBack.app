@@ -8,18 +8,20 @@ type ItemPhotoThumbnailProps = {
   alt: string;
   iconKey: string | null;
   previewUrl: string | null;
+  size?: "compact" | "card";
 };
 
 export function ItemPhotoThumbnail({
   alt,
   iconKey,
   previewUrl,
+  size = "compact",
 }: ItemPhotoThumbnailProps) {
   const [previewFailed, setPreviewFailed] = useState(false);
 
   if (!previewUrl || previewFailed) {
     return (
-      <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+      <span className={`mt-0.5 inline-flex shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary ${size === "card" ? "h-18 w-18" : "h-10 w-10"}`}>
         <EntityIcon
           group="item"
           iconKey={iconKey}
@@ -33,9 +35,9 @@ export function ItemPhotoThumbnail({
   return (
     <ItemPhotoImage
       alt={alt}
-      className="h-12 w-12 shrink-0 rounded-md border border-line"
+      className={`${size === "card" ? "h-18 w-18" : "h-12 w-12"} shrink-0 rounded-md border border-line`}
       onError={() => setPreviewFailed(true)}
-      size={48}
+      size={size === "card" ? 72 : 48}
       src={previewUrl}
     />
   );

@@ -25,6 +25,8 @@ export const en: Dictionary = {
     tagline: "Everything about your home in one place",
   },
   navigation: {
+    skipToContent: "Skip to content",
+    shortcuts: "Navigation shortcuts",
     closeAddItem: "Close add item",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -795,7 +797,7 @@ fields: {
         "Choose which modules are visible on your Dashboard. You control module visibility, not their activation.",
       dashboardPersonalizationScopeHint:
         "Selected modules appear on the Dashboard; deselected ones stay hidden. Modules marked as \u201cSoon\u201d remain functionally inactive, even when visible.",
-      dashboardPersonalizationSave: "Save visibility",
+      dashboardPersonalizationSave: "Save view",
       dashboardPersonalizationSaving: "Saving...",
       testData: "Test data",
       testDataTabs: {
