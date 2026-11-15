@@ -7,13 +7,13 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
   await page.goto("/items");
   const search = page.getByRole("searchbox", { name: "Szukaj", exact: true });
   const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
-  await page.getByRole("button", { name: "Filtry", exact: true }).click();
   await search.focus();
   await expect(search).toBeFocused();
   await search.pressSequentially("latarka");
   await search.press("Enter");
   await expect(page).toHaveURL(/q=latarka/);
   await expect(search).toHaveValue("latarka");
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
   await category.focus();
   await category.press("Home");
   await category.press("ArrowDown");
@@ -21,7 +21,9 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
   await expect(category).not.toHaveValue("");
   await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
   await expect(search).toHaveValue("");
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
   await expect(category).toHaveValue("");
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
 
   for (const [name, viewport] of [
     ["desktop", { width: 1440, height: 1000 }],
@@ -135,10 +137,10 @@ test("Items share normalized search and combine category and location filters", 
   await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
   await expect(page).toHaveURL(/\/items$/);
   expect(new URL(page.url()).searchParams.has("category")).toBe(false);
+  await more.click();
   await expect(category).toHaveValue("");
   await expect(page.getByLabel("Aktywne filtry")).toHaveCount(0);
 
-  await more.click();
   await page.locator('select[name="itemStatus"]').selectOption("archived");
   await expect(itemCard(page, data.item.oldDocument)).toBeVisible();
   await expect(itemCard(page, data.item.charger)).toHaveCount(0);

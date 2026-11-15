@@ -23,7 +23,7 @@ test("global search defaults to all, finds four types and applies every type fil
     await expect(list.getByRole("link").filter({ hasText: name }).first()).toBeVisible();
   }
   const cases = [
-    ["Rzeczy", "Rzecz", "/items#item-"],
+    ["Rzeczy", "Rzecz", "/items\\?focus="],
     ["Pomieszczenia", "Pomieszczenie", "/home#room-"],
     ["Meble", "Mebel", "/home#furniture-"],
     ["Schowki", "Schowek", "/home#storage-"],
@@ -42,7 +42,7 @@ test("global search defaults to all, finds four types and applies every type fil
   await expect(list.getByRole("link").filter({ hasText: data.item.charger })).toBeVisible();
 });
 
-test("Polish normalization preserves item breadcrumbs and the item hash link", async ({ page }) => {
+test("Polish normalization preserves item breadcrumbs and the focused item link", async ({ page }) => {
   const data = await prepareDeletionDataset(page, "global-item");
   await page.goto("/dashboard");
   await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
@@ -53,10 +53,11 @@ test("Polish normalization preserves item breadcrumbs and the item hash link", a
   await expect(result).not.toContainText("Brak lokalizacji");
   await expect(result).toContainText(`${data.room.salon} → ${data.furniture.chest} → ${data.storageSpace.upperDrawer}`);
   const href = await result.getAttribute("href");
-  expect(href).toMatch(/^\/items#item-[0-9a-f-]+$/);
+  expect(href).toMatch(/^\/items\?focus=[0-9a-f-]+#item-[0-9a-f-]+$/);
   await result.click();
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
+  await expect(page).toHaveURL(new URL(href!, page.url()).href);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
+  await expect(page.getByRole("article")).toHaveCount(1);
   await expect(page.locator(href!.slice(href!.indexOf("#")))).toBeInViewport();
 });
 
