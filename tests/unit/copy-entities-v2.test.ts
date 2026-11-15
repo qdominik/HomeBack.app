@@ -375,7 +375,8 @@ test("copy actions pass entity data to dialogs from current cards", () => {
 test("Room edit form layout does not stretch the delete action", () => {
   const roomCard = source("src/components/home/room-card.tsx");
 
-  assert.match(roomCard, /grid items-start gap-3 border-t border-line pt-5 lg:grid-cols-\[1fr_auto\]/);
+  assert.match(roomCard, /flex flex-wrap items-start gap-2 border-t border-line pt-5/);
+  assert.match(roomCard, /<details className="open:basis-full">/);
   assert.match(roomCard, /<div className="self-start">\s*<RoomDeleteDialog/);
 });
 

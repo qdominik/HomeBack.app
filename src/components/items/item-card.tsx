@@ -134,6 +134,7 @@ export function ItemCard({
             alt={item.nazwa}
             iconKey={itemIconKey}
             previewUrl={photoPreviewUrl}
+            size="card"
           />
           <div className="min-w-0">
             <h2 className="break-words text-lg font-semibold leading-snug text-foreground">

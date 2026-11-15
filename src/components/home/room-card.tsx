@@ -96,28 +96,8 @@ export function RoomCard({
       </header>
 
       {isAdmin ? (
-        <div className="mt-5 grid items-start gap-3 border-t border-line pt-5 lg:grid-cols-[1fr_auto]">
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <details>
-              <summary
-                className={buttonClassName({
-                  className:
-                    "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
-                  variant: "ghost",
-                })}
-              >
-                <PencilSimpleLineIcon aria-hidden="true" size={18} />
-                {editRoomLabel}
-              </summary>
-              <Card className="mt-3 p-5">
-                <RoomForm
-                  action={updateRoom}
-                  room={room}
-                  submitLabel={t.modules.home.saveChanges}
-                />
-              </Card>
-            </details>
-            <details>
+        <div className="mt-5 flex flex-wrap items-start gap-2 border-t border-line pt-5">
+            <details className="open:basis-full">
               <summary
                 className={buttonClassName({
                   className:
@@ -136,13 +116,33 @@ export function RoomCard({
                 />
               </Card>
             </details>
+            <details className="open:basis-full">
+              <summary
+                aria-label={editRoomLabel}
+                title={editRoomLabel}
+                className={buttonClassName({
+                  className:
+                    "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+                  size: "icon",
+                  variant: "secondary",
+                })}
+              >
+                <PencilSimpleLineIcon aria-hidden="true" size={18} />
+              </summary>
+              <Card className="mt-3 p-5">
+                <RoomForm
+                  action={updateRoom}
+                  room={room}
+                  submitLabel={t.modules.home.saveChanges}
+                />
+              </Card>
+            </details>
             <CopyRoomDialog
               furnitureCount={room.locations.length}
               roomId={room.id}
               roomName={room.nazwa}
               storageCount={positionCount}
             />
-          </div>
           <div className="self-start">
             <RoomDeleteDialog roomId={room.id} roomName={room.nazwa} />
           </div>
