@@ -99,6 +99,7 @@ export function RoomCard({
         <div className="mt-5 flex flex-wrap items-start gap-2 border-t border-line pt-5">
             <details className="open:basis-full">
               <summary
+                role="button"
                 className={buttonClassName({
                   className:
                     "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
@@ -118,6 +119,7 @@ export function RoomCard({
             </details>
             <details className="open:basis-full">
               <summary
+                role="button"
                 aria-label={editRoomLabel}
                 title={editRoomLabel}
                 className={buttonClassName({
