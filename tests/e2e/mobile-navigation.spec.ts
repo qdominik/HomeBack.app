@@ -146,6 +146,19 @@ for (const width of [390, 768, 1280]) {
     await page.setViewportSize({ width, height: 844 });
     await registerAndCreateHousehold(page, `navigation-${width}`);
     const header = page.getByRole("banner");
+    const shortcuts = page.getByRole("navigation", { name: "Skróty nawigacyjne" });
+    await expect(shortcuts).toBeVisible();
+    await expect(shortcuts.getByRole("link", { name: "Dashboard" })).toHaveAttribute("aria-current", "page");
+    await expect(shortcuts.getByRole("link", { name: "Rzeczy" })).toHaveAttribute("href", "/items");
+    await expect(shortcuts.getByRole("link", { name: "Pomieszczenia" })).toBeVisible();
+    if (width === 390) {
+      await expect(shortcuts.getByRole("link", { name: "Ustawienia" })).toBeVisible();
+      await expect(shortcuts.locator('a[href="/family"]')).not.toBeVisible();
+      await expect(shortcuts).toHaveCSS("position", "fixed");
+    } else if (width === 1280) {
+      await expect(shortcuts).toHaveCSS("position", "sticky");
+      await expect(shortcuts.getByRole("link", { name: "Osoby" })).toBeVisible();
+    }
     await expect(page.getByRole("main").getByRole("searchbox")).toHaveCount(0);
     await expect(page.getByRole("main").getByRole("button", { name: "Dodaj przedmiot", exact: true })).toHaveCount(0);
     const toggle = header.getByRole("button", { name: /menu$/ });

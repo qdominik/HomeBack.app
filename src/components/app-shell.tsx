@@ -133,9 +133,24 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
   </>;
 }
 
+function PersistentNavigation() {
+  const pathname = usePathname();
+
+  return <nav aria-label={t.navigation.shortcuts} className="rhythm-navigation">
+    {navigationKeys.filter((key) => appModuleDefinitions[key].status === "available").map((key) =>
+      <Link aria-current={isNavigationActive(pathname, routes[key]) ? "page" : undefined}
+        className={`rhythm-navigation-link rhythm-navigation-${key}`} href={routes[key]} key={key}>
+        {t.navigation[key]}
+      </Link>,
+    )}
+  </nav>;
+}
+
 export function AppShell({ children, ...account }: AppShellProps) {
-  return <div className="min-h-dvh bg-background text-foreground">
+  return <div className="rhythm-shell min-h-dvh bg-background text-foreground">
+    <a className="rhythm-skip" href="#app-content">{t.navigation.skipToContent}</a>
     <AppHeader authenticated account={account} />
-    <main className="mx-auto w-full max-w-content px-4 py-8 sm:px-6 sm:py-10 lg:px-8">{children}</main>
+    <PersistentNavigation />
+    <main id="app-content" tabIndex={-1} className="rhythm-main mx-auto w-full max-w-content px-4 py-8 sm:px-6 sm:py-10 lg:px-8">{children}</main>
   </div>;
 }
