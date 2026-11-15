@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { quickItemFilterSearch } from "../../src/lib/items/item-quick-filters";
 import {
   applyItemFilters,
   hasItemFilters,
@@ -22,6 +23,16 @@ import {
 import { readFileSync } from "node:fs";
 
 const validUuid = "11111111-2222-3333-4444-555555555555";
+
+test("room shortcuts preserve independent filters and discard conflicting location and status", () => {
+  const params = new URLSearchParams(quickItemFilterSearch("q=Latarka&category=electronics&sort=name&added=custom&from=2026-10-01&to=2026-11-04&view=unlocated&room=old&storage=old&position=old&focus=item&itemStatus=archived", { kind: "room", id: "new-room" }));
+  assert.deepEqual(Object.fromEntries(params), { q: "Latarka", category: "electronics", sort: "name", added: "custom", from: "2026-10-01", to: "2026-11-04", room: "new-room" });
+  for (const kind of ["all", "unlocated", "archived"] as const) {
+    const result = new URLSearchParams(quickItemFilterSearch(params.toString(), { kind }));
+    assert.equal(result.has("room"), false);
+    assert.equal(result.get("view"), kind === "all" ? null : kind);
+  }
+});
 
 test("item filters use safe defaults for empty and unknown parameters", () => {
   assert.deepEqual(parseItemSearchParams({}), {
@@ -169,7 +180,7 @@ test("inventory text search applies the global 40-result contract", () => {
   assert.equal(results.at(-1)?.id, "item-39");
 });
 
-test("inventory filter UI keeps required order, responsive row, removable filters, and separate icon search", () => {
+test("inventory filter UI exposes room shortcuts, advanced filters and separate icon search", () => {
   const filtersSource = readFileSync("src/components/items/item-filters.tsx", "utf8");
   const formSource = readFileSync("src/components/items/item-form.tsx", "utf8");
   const locationSource = readFileSync("src/components/items/item-location-field.tsx", "utf8");
@@ -178,14 +189,15 @@ test("inventory filter UI keeps required order, responsive row, removable filter
   const iconSource = readFileSync("src/components/icons/entity-icon-picker.tsx", "utf8");
   const searchIndex = filtersSource.indexOf("placeholder={t.modules.items.searchPlaceholder}");
   const submitIndex = filtersSource.indexOf('type="submit"', searchIndex);
-  const categoryIndex = filtersSource.indexOf("label={t.modules.items.category}", submitIndex);
-  const roomIndex = filtersSource.indexOf("label={t.modules.items.room}", categoryIndex);
-  const storageIndex = filtersSource.indexOf("label={t.modules.items.storage}", roomIndex);
-  const moreIndex = filtersSource.indexOf("t.modules.items.moreFilters", storageIndex);
-  assert.ok(searchIndex < submitIndex && submitIndex < categoryIndex && categoryIndex < roomIndex && roomIndex < storageIndex && storageIndex < moreIndex);
-  assert.match(filtersSource.slice(searchIndex, categoryIndex), /MagnifyingGlassIcon[\s\S]*t\.modules\.items\.search/);
-  assert.match(filtersSource, /xl:flex-row/);
-  assert.match(filtersSource, /xl:absolute/);
+  const moreIndex = filtersSource.indexOf("t.modules.items.filtersLabel", submitIndex);
+  const categoryIndex = filtersSource.indexOf("label={t.modules.items.category}", moreIndex);
+  const storageIndex = filtersSource.indexOf("label={t.modules.items.storage}", categoryIndex);
+  assert.ok(searchIndex < submitIndex && submitIndex < moreIndex && moreIndex < categoryIndex && categoryIndex < storageIndex);
+  assert.match(filtersSource.slice(searchIndex, moreIndex), /MagnifyingGlassIcon/);
+  assert.match(filtersSource, /aria-label=\{t\.modules\.items\.search\}/);
+  assert.match(filtersSource, /rooms\.map/);
+  assert.match(filtersSource, /EntityIcon group="room"/);
+  assert.doesNotMatch(filtersSource, /FilterSelect label=\{t\.modules\.items\.room\}/);
   assert.match(filtersSource, /clearFilters/);
   assert.match(formSource, /name="typ"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="typ"/);
   assert.match(formSource, /name="category_id"[\s\S]*?min-w-0 max-w-full|className="[^"]*min-w-0 max-w-full[^"]*"[\s\S]*?name="category_id"/);

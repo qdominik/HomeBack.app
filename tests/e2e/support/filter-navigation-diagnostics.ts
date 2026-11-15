@@ -20,7 +20,7 @@ export function filterNavigationDiagnostics(page: Page, testInfo: TestInfo) {
         type Hook = { memoizedState: unknown; baseState?: unknown; next: Hook | null };
         type Fiber = { type?: { name?: string }; return: Fiber | null; child: Fiber | null; sibling: Fiber | null; memoizedState: Hook | null; stateNode?: { current?: Fiber } };
         const category = document.querySelector<HTMLSelectElement>('select[name="category"]');
-        const room = document.querySelector<HTMLSelectElement>('select[name="room"]');
+        const room = document.querySelector<HTMLInputElement>('input[name="room"]');
         const uuid = (value: string | null) => value && /^[0-9a-f-]{36}$/i.test(value) ? value : null;
         const filters = (value: string) => { const params = new URLSearchParams(value); return { category: uuid(params.get("category")), room: uuid(params.get("room")) }; };
         const property = category && Object.getOwnPropertyNames(category).find((key) => key.startsWith("__reactFiber$"));
@@ -45,7 +45,7 @@ export function filterNavigationDiagnostics(page: Page, testInfo: TestInfo) {
         }
         return { category: uuid(category?.value ?? null), room: uuid(room?.value ?? null), mounted: Boolean(fiber), intended, optimistic, base, pending,
           firstChip: Boolean(document.querySelector('[aria-label="Aktywne filtry"]')?.textContent?.includes(firstLabel)),
-          firstValue: firstField === "category" ? category?.value : room?.value };
+          firstValue: firstField === "category" ? category?.value : room?.value ?? "" };
       }, { firstField, firstLabel });
       const { firstValue, ...diagnostic } = state;
       events.push({ phase, time: Date.now(), ...diagnostic });

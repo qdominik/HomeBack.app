@@ -9,6 +9,8 @@ import { ItemCard } from "@/components/items/item-card";
 import { ItemForm } from "@/components/items/item-form";
 import { ItemFilters } from "@/components/items/item-filters";
 import { EmptyState } from "@/components/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { buttonClassName } from "@/components/ui/button";
 import {
   getDefaultItemCategoryId,
   getItemCategoryOptions,
@@ -31,7 +33,6 @@ import {
   filterItemsForFocus,
   filterItemsForView,
   parseItemView,
-  type ItemView,
 } from "@/lib/items/item-view-filter";
 import { getAppContext } from "@/lib/app-context";
 import { buildItemSearchLocationPath } from "@/lib/items/item-search";
@@ -119,7 +120,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       .order("created_at", { ascending: true }),
     supabase
       .from("room")
-      .select("id, nazwa")
+      .select("id, nazwa, ikona")
       .eq("household_id", profile?.household_id ?? "")
       .order(orderColumn, { ascending: true })
       .order("created_at", { ascending: true }),
@@ -254,26 +255,6 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     ) : (
       <PackageIcon aria-hidden="true" size={28} />
     );
-  const viewLinks: { href: string; icon: "all" | "unlocated" | "archived"; label: string; view: ItemView }[] = [
-    {
-      href: "/items",
-      icon: "all",
-      label: t.modules.items.views.all,
-      view: "all",
-    },
-    {
-      href: "/items?view=unlocated",
-      icon: "unlocated",
-      label: t.modules.items.views.unlocated,
-      view: "unlocated",
-    },
-    {
-      href: "/items?view=archived",
-      icon: "archived",
-      label: t.modules.items.views.archived,
-      view: "archived",
-    },
-  ];
   const isAdmin = profile?.rola === "admin" && profile.status === "aktywny";
   const canCopy = profile?.status === "aktywny" &&
     (profile.rola === "admin" || isAdultProfileRole(profile.rola));
@@ -303,29 +284,26 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
 
   return (
     <div className="space-y-6">
+      <PageHeader title={t.modules.items.title} />
       {isAdmin ? (
-        <details className="space-y-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-line pb-6 [&::-webkit-details-marker]:hidden">
-            <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground sm:text-3xl">
-              {t.modules.items.title}
-            </h1>
-            <span className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong">
+        <div className="flex justify-end">
+          <details className="w-full text-right">
+            <summary
+              className={buttonClassName({
+                className:
+                  "w-full cursor-pointer list-none sm:w-auto [&::-webkit-details-marker]:hidden",
+              })}
+            >
               <PlusIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.items.addItem}
-            </span>
-          </summary>
-          <div className="w-full rounded-md border border-line bg-surface p-5">
-            {createForm}
-          </div>
-        </details>
-      ) : (
-        <header className="border-b border-line pb-6">
-          <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground sm:text-3xl">
-            {t.modules.items.title}
-          </h1>
-        </header>
-      )}
-      <section className="border-b border-line pb-5">
+            </summary>
+            <div className="mt-3 rounded-card border border-line bg-surface p-4 text-left shadow-card sm:p-5">
+              {createForm}
+            </div>
+          </details>
+        </div>
+      ) : null}
+      <section className="min-w-0 border-b border-line pb-1">
         {!isAdmin ? (
           <p className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-muted">
             {t.modules.items.readOnly}
@@ -346,32 +324,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             {t.modules.items.errors.actionFailed}
           </p>
         ) : null}
-        <nav
-          aria-label={t.modules.items.viewSelector}
-          className="mt-4 flex flex-wrap gap-2"
-        >
-          {viewLinks.map((link) => (
-            <Link
-              className={`inline-flex items-center rounded-md border px-3 py-2 text-sm font-semibold ${
-                currentView === link.view
-                  ? "border-primary bg-primary text-on-primary"
-                  : "border-line bg-surface text-primary-strong hover:border-primary/60"
-              }`}
-              href={link.href}
-              key={link.view}
-            >
-              {link.icon === "all" ? (
-                <ListBulletsIcon aria-hidden="true" className="mr-2" size={18} />
-              ) : link.icon === "unlocated" ? (
-                <MapPinLineIcon aria-hidden="true" className="mr-2" size={18} />
-              ) : (
-                <ArchiveIcon aria-hidden="true" className="mr-2" size={18} />
-              )}
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="mt-4">
+        <div>
           <ItemFilters
             categories={categoryOptions.map((category) => ({ id: category.id, label: category.label }))}
             filters={filters}
@@ -379,7 +332,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
               id: position.id,
               label: `${position.roomName} / ${position.storageName} / ${position.positionName}`,
             }))}
-            rooms={locationSelectorOptions.rooms}
+            rooms={locationSelectorOptions.rooms.map(room=>({...room,iconKey:rooms.find(source=>source.id===room.id)?.ikona??null}))}
             storageLocations={locationSelectorOptions.storageLocations}
             view={currentView}
           />
@@ -431,7 +384,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         </section>
       ) : null}
       {visibleItems.length ? (
-        <section className="grid gap-3 lg:grid-cols-2">
+        <section aria-label={t.modules.items.title} className="grid gap-4 xl:grid-cols-2">
           {visibleItems.map((item) => {
             const location = locationByItemId.get(item.id) ?? null;
 
