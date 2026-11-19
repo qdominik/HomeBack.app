@@ -47,6 +47,7 @@ import {
 } from "@/lib/items/permanent-item-deletion";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
+import { recordPhotoAssistCreation } from "@/lib/server/photo-assist-preference";
 import { uploadItemPhotoWithPreview } from "@/lib/items/item-photo/upload-with-preview";
 import type { Database } from "@/types/database";
 
@@ -985,9 +986,25 @@ export async function createItem(formData: FormData) {
   }
 
   await setPrimaryLocation(supabase, item.id, location);
+  try {
+    await recordPhotoAssistCreation(supabase, userId, profile.household_id);
+  } catch {
+    // A preference update must never make a successfully saved item appear to fail.
+    console.error("Unable to record photo assistance progress");
+  }
 
+  revalidatePath("/", "layout");
   revalidatePath(routes.items);
   redirectWithStatus("item_created");
+}
+
+export async function dismissPhotoAssist(): Promise<{ ok: boolean }> {
+  const supabase = await createClient();
+  await getActiveProfile(supabase);
+  const { error } = await supabase.auth.updateUser({ data: { photo_assist_dismissed: true } });
+  if (error) return { ok: false };
+  revalidatePath("/", "layout");
+  return { ok: true };
 }
 
 export async function updateItem(formData: FormData) {

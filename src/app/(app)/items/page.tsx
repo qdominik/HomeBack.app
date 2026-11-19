@@ -34,6 +34,7 @@ import {
   filterItemsForView,
   parseItemView,
 } from "@/lib/items/item-view-filter";
+import { getPhotoAssistVisibility } from "@/lib/server/photo-assist-preference";
 import { getAppContext } from "@/lib/app-context";
 import { buildItemSearchLocationPath } from "@/lib/items/item-search";
 import {
@@ -89,7 +90,7 @@ const statusMessages: Record<string, string> = {
 
 export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const params = await searchParams;
-  const { profile, supabase } = await getAppContext();
+  const { profile, supabase, userId } = await getAppContext();
 
   const currentView = parseItemView(params);
   const parsedFilters = parseItemSearchParams(params);
@@ -134,7 +135,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     roomIds.length
       ? supabase
           .from("storage_location_l2")
-          .select("id, nazwa, room_id")
+          .select("id, nazwa, room_id, ikona, typ")
           .in("room_id", roomIds)
           .order(orderColumn, { ascending: true })
           .order("created_at", { ascending: true })
@@ -151,7 +152,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const positionsResponse = storageIds.length
     ? await supabase
         .from("storage_location_l3")
-        .select("id, nazwa, kod_lokalizacji, storage_location_l2_id")
+        .select("id, nazwa, kod_lokalizacji, storage_location_l2_id, ikona")
         .in("storage_location_l2_id", storageIds)
         .order(orderColumn, { ascending: true })
         .order("created_at", { ascending: true })
@@ -272,9 +273,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     : null;
   const statusMessage = params.status ? statusMessages[params.status] : null;
 
+  const showPhotoAssist = isAdmin && userId && profile
+    ? await getPhotoAssistVisibility(supabase, userId, profile.household_id)
+    : false;
   const createForm = isAdmin ? (
     <ItemForm
       action={createItem}
+      showPhotoAssist={showPhotoAssist}
       categories={categoryOptions}
       defaultCategoryId={defaultCategoryId}
       locationOptions={locationSelectorOptions}

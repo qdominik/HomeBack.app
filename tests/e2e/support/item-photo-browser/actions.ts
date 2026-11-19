@@ -56,3 +56,7 @@ export async function createQuickCustomCategory(name: string) {
     status: "created", category: { id: "custom-tools", label: name, isSystem: false },
   });
 }
+
+export async function dismissPhotoAssist() {
+  return window.photoHarness.invoke("dismissTip", {}, { ok: true });
+}

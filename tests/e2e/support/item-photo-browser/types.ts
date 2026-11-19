@@ -1,4 +1,4 @@
-export type ActionName = "upload" | "analyze" | "cleanup" | "category" | "save" | "storageUpload" | "preview" | "rollback";
+export type ActionName = "dismissTip" | "upload" | "analyze" | "cleanup" | "category" | "save" | "storageUpload" | "preview" | "rollback";
 export type Step = { result?: unknown; reject?: boolean; gate?: string };
 export type Call = { action: ActionName; input: Record<string, unknown> };
 export type PhotoHarness = {

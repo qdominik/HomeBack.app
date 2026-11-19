@@ -1,3 +1,5 @@
+import { resolveStorageLocationIconKey } from "../icons/home-structure-icons";
+
 export type ItemCategoryOption = {
   id: string;
   isSystem: boolean;
@@ -5,17 +7,20 @@ export type ItemCategoryOption = {
 };
 
 export type ItemRoomOption = {
+  iconKey?: string | null;
   id: string;
   label: string;
 };
 
 export type ItemStorageOption = {
+  iconKey?: string | null;
   id: string;
   label: string;
   roomId: string;
 };
 
 export type ItemLocationOption = {
+  iconKey?: string | null;
   id: string;
   locationCode: string;
   positionName: string;
@@ -38,17 +43,21 @@ export type ItemLocationSelection = {
 };
 
 type RoomSource = {
+  ikona?: string | null;
   id: string;
   nazwa: string;
 };
 
 type StorageSource = {
+  typ?: string | null;
+  ikona?: string | null;
   id: string;
   nazwa: string;
   room_id: string;
 };
 
 type PositionSource = {
+  ikona?: string | null;
   id: string;
   kod_lokalizacji: string;
   nazwa: string;
@@ -67,6 +76,7 @@ export function buildItemLocationSelectorOptions({
   const roomOptions = rooms.map((room) => ({
     id: room.id,
     label: room.nazwa,
+    ...(room.ikona !== undefined ? { iconKey: room.ikona } : {}),
   }));
   const roomsById = new Map(rooms.map((room) => [room.id, room]));
   const storageOptions = storageLocations.flatMap((storage) =>
@@ -75,6 +85,7 @@ export function buildItemLocationSelectorOptions({
           {
             id: storage.id,
             label: storage.nazwa,
+            ...(storage.ikona !== undefined ? { iconKey: resolveStorageLocationIconKey(storage.typ, storage.ikona) } : {}),
             roomId: storage.room_id,
           },
         ]
@@ -91,6 +102,7 @@ export function buildItemLocationSelectorOptions({
       ? [
           {
             id: position.id,
+            ...(position.ikona !== undefined ? { iconKey: position.ikona } : {}),
             locationCode: position.kod_lokalizacji,
             positionName: position.nazwa,
             roomId: room.id,

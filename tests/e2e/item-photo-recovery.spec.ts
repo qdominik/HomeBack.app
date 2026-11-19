@@ -25,6 +25,20 @@ async function selectPhoto(page: Page, name = "photo.jpg", padded = false) {
   await page.locator('input[type="file"]').setInputFiles({ name, mimeType: "image/jpeg", buffer });
 }
 async function path(page: Page) { return page.locator('[name="item_photo_draft_path"]').inputValue(); }
+async function expectPhoto(page: Page, name: string) {
+  const preview = page.getByAltText("Podgląd wybranego zdjęcia Rzeczy");
+  await expect(preview).toBeVisible();
+  if (name === "existing.webp") {
+    await expect(page.locator('[name="item_photo_draft_path"]')).toHaveCount(0);
+    await expect(preview).toHaveAttribute("src", /^data:image/);
+  } else {
+    await expect.poll(async () => {
+      const matching = (await calls(page, "upload")).filter((entry) => entry.input.filename === name);
+      const current = await page.locator('[name="item_photo_draft_path"]').inputValue().catch(() => "");
+      return matching.some((entry) => entry.input.storagePath === current);
+    }).toBe(true);
+  }
+}
 async function ready(page: Page) {
   await expect(page.locator('input[type="file"]')).toBeEnabled();
   await expect(page.getByRole("button", { name: "Zapisz fixture", exact: true })).toBeEnabled();
@@ -66,6 +80,67 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       }
     });
 
+    test("photo preview and fill action appear before the form fields", async ({ page }) => {
+      const banner = page.locator("[data-photo-assist]");
+      await expect(banner).toBeVisible();
+      await expect(banner.locator('[data-photo-pointer="add"]')).toHaveText("👉🏻");
+      await selectPhoto(page);
+      await ready(page);
+      const preview = page.getByAltText("Podgląd wybranego zdjęcia Rzeczy");
+      const fill = page.getByRole("button", { name: "Uzupełnij ze zdjęcia", exact: true });
+      const name = page.locator('[name="nazwa"]');
+      const previewBox = await preview.locator("..").boundingBox();
+      const fillBox = await fill.boundingBox();
+      await expect(banner.locator('[data-photo-pointer="fill"]')).toHaveText("👇🏻");
+      const nameBox = await name.boundingBox();
+      expect(previewBox?.width).toBeGreaterThanOrEqual(128);
+      expect(previewBox?.height).toBeGreaterThanOrEqual(128);
+      expect((previewBox?.y ?? 0) + (previewBox?.height ?? 0)).toBeLessThanOrEqual(nameBox?.y ?? 0);
+      expect((fillBox?.y ?? 0) + (fillBox?.height ?? 0)).toBeLessThanOrEqual(nameBox?.y ?? 0);
+      await expect(page.getByText("Zdjęcie gotowe do podglądu.")).toHaveCount(0);
+      await expect(page.getByText("photo.jpg", { exact: true })).toHaveCount(0);
+      await expect(page.getByText(/image\/jpeg/)).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Zmień zdjęcie", exact: true })).toHaveCount(0);
+    });
+
+    test("the photo tip can be dismissed without hiding photo actions", async ({ page, photoURL }) => {
+      await queue(page, "dismissTip", { result: { ok: false } });
+      await page.getByRole("button", { name: "Zamknij wskazówkę", exact: true }).click();
+      await expect(page.getByRole("alert")).toContainText("Nie udało się zamknąć wskazówki");
+      await expect(page.locator("[data-photo-assist]")).toBeVisible();
+      await page.getByRole("button", { name: "Zamknij wskazówkę", exact: true }).click();
+      await expect(page.locator("[data-photo-assist]")).toHaveCount(0);
+      await expect(page.locator("[data-photo-pointer]")).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Dodaj zdjęcie", exact: true })).toBeVisible();
+      expect(await calls(page, "dismissTip")).toHaveLength(2);
+      await selectPhoto(page);
+      await ready(page);
+      await expect(page.getByRole("button", { name: "Uzupełnij ze zdjęcia", exact: true })).toBeVisible();
+      await expect(page.locator("[data-photo-pointer]")).toHaveCount(0);
+      await page.goto(`${photoURL}?hintHidden`);
+      await expect(page.locator("[data-photo-assist]")).toHaveCount(0);
+    });
+
+    test("remove and add another photo replaces the current draft", async ({ page }) => {
+      await selectPhoto(page, "old.jpg");
+      await ready(page);
+      const oldPath = await path(page);
+      await page.getByRole("button", { name: "Usuń zdjęcie", exact: true }).click();
+      await ready(page);
+      await expect(page.getByAltText("Podgląd wybranego zdjęcia Rzeczy")).toHaveCount(0);
+      const chooserPromise = page.waitForEvent("filechooser");
+      await page.getByRole("button", { name: "Dodaj zdjęcie", exact: true }).click();
+      const chooser = await chooserPromise;
+      const bytes = await page.evaluate(() => {
+        const canvas = document.createElement("canvas"); canvas.width = 8; canvas.height = 8;
+        return Array.from(atob(canvas.toDataURL("image/jpeg").split(",")[1]), (c) => c.charCodeAt(0));
+      });
+      await chooser.setFiles({ name: "replacement.jpg", mimeType: "image/jpeg", buffer: Buffer.from(bytes) });
+      await expectPhoto(page, "replacement.jpg");
+      await ready(page);
+      expect((await calls(page, "cleanup")).map((entry) => entry.input.storagePath)).toContain(oldPath);
+    });
+
     test("upload exception preserves existing photo, values and same-file retry", async ({ page, photoURL }) => {
       await page.goto(`${photoURL}?edit`); await entered(page);
       await queue(page, "upload", { reject: true, gate: "upload" }); await selectPhoto(page);
@@ -75,10 +150,10 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await page.evaluate(() => window.photoHarness.release("upload"));
       await expect(page.getByText(messages.upload, { exact: true })).toBeVisible();
       await ready(page); await retained(page);
-      await expect(page.getByText("existing.webp", { exact: true })).toBeVisible();
+      await expectPhoto(page, "existing.webp");
       expect(await calls(page, "cleanup")).toEqual([]);
       await expect(page.locator('input[type="file"]')).toHaveValue("");
-      await selectPhoto(page); await expect(page.getByText("photo.jpg", { exact: true })).toBeVisible();
+      await selectPhoto(page); await expectPhoto(page, "photo.jpg");
       await ready(page); expect(await calls(page, "upload")).toHaveLength(2);
       expect(await calls(page, "cleanup")).toEqual([]);
     });
@@ -90,9 +165,9 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await selectPhoto(page, "new.jpg"); await expect(page.getByText(messages.upload, { exact: true })).toBeVisible();
       await retained(page); await ready(page); expect(await path(page)).toBe(original);
       expect(await calls(page, "cleanup")).toEqual([]);
-      await expect(page.getByText("old.jpg", { exact: true })).toBeVisible();
+      await expectPhoto(page, "old.jpg");
       await selectPhoto(page, "new.jpg"); await ready(page);
-      await expect(page.getByText("new.jpg", { exact: true })).toBeVisible();
+      await expectPhoto(page, "new.jpg");
       expect((await calls(page, "cleanup")).map((call) => call.input.storagePath)).toEqual([original]);
     });
 
@@ -122,7 +197,7 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       expect(await path(page)).toBe(original); await retained(page); await ready(page);
       await page.getByRole("button", { name: "Usuń zdjęcie", exact: true }).click();
       await ready(page); await expect(page.locator('[name="item_photo_draft_path"]')).toHaveCount(0);
-      await expect(page.getByText("existing.webp", { exact: true })).toBeVisible();
+      await expectPhoto(page, "existing.webp");
       expect((await calls(page, "cleanup")).map((call) => call.input.storagePath)).toEqual([original, original]);
       await page.getByRole("button", { name: "Usuń zdjęcie", exact: true }).click();
       await expect(page.locator('[name="item_photo_remove_current"]')).toHaveValue("1");
@@ -134,10 +209,10 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       const original = await path(page); await queue(page, "cleanup", { result: { ok: false, code: "cleanup_failed" } });
       await selectPhoto(page, "new.jpg"); await expect(page.getByText(messages.replacement, { exact: true })).toBeVisible();
       await ready(page); await retained(page); const replacement = await path(page); expect(replacement).not.toBe(original);
-      await expect(page.getByText("new.jpg", { exact: true })).toBeVisible();
+      await expectPhoto(page, "new.jpg");
       await page.getByRole("button", { name: "Usuń zdjęcie", exact: true }).click(); await ready(page);
       expect((await calls(page, "cleanup")).map((call) => call.input.storagePath)).toEqual([original, replacement]);
-      await expect(page.getByText("existing.webp", { exact: true })).toBeVisible();
+      await expectPhoto(page, "existing.webp");
     });
 
     test("quick category exception keeps submitted name and permits existing-category retry", async ({ page }) => {
@@ -172,11 +247,11 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await selectPhoto(page);
       await expect(page.getByText("Nie udało się przygotować podglądu zdjęcia.", { exact: true })).toBeVisible();
       await expect(page.getByText(messages.cleanup, { exact: true })).toHaveCount(0);
-      await retained(page); await ready(page); await expect(page.getByText("existing.webp", { exact: true })).toBeVisible();
+      await retained(page); await ready(page); await expectPhoto(page, "existing.webp");
       const uploaded = (await calls(page, "upload"))[0].input;
       expect((await calls(page, "rollback")).map((call) => call.input.storagePath)).toEqual([uploaded.storagePath]);
       expect(await calls(page, "cleanup")).toEqual([]);
-      await selectPhoto(page); await expect(page.getByText("photo.jpg", { exact: true })).toBeVisible(); await ready(page);
+      await selectPhoto(page); await expectPhoto(page, "photo.jpg"); await ready(page);
     });
 
     test("invalid large image fails compression locally without discarding previous draft", async ({ page }) => {
@@ -185,7 +260,7 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await expect(page.getByText("Nie udało się odczytać lub skompresować zdjęcia.", { exact: true })).toBeVisible();
       await retained(page); await ready(page); expect(await path(page)).toBe(original);
       expect(await calls(page, "upload")).toHaveLength(1); expect(await calls(page, "cleanup")).toEqual([]);
-      await selectPhoto(page, "valid.jpg"); await expect(page.getByText("valid.jpg", { exact: true })).toBeVisible(); await ready(page);
+      await selectPhoto(page, "valid.jpg"); await expectPhoto(page, "valid.jpg"); await ready(page);
     });
 
     test("manual typing and intentional clearing during late strong AI are preserved", async ({ page }) => {
@@ -207,7 +282,7 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       await selectPhoto(page, "new.jpg"); await expect.poll(async () => (await calls(page, "upload")).length).toBe(2);
       await page.evaluate(() => window.photoHarness.release("old-upload")); await ready(page);
       const uploaded = await calls(page, "upload"); expect(await path(page)).toBe(uploaded[1].input.storagePath);
-      await expect(page.getByText("new.jpg", { exact: true })).toBeVisible();
+      await expectPhoto(page, "new.jpg");
       expect((await calls(page, "cleanup")).map((call) => call.input.storagePath)).toEqual([uploaded[0].input.storagePath]);
     });
 
@@ -240,5 +315,65 @@ for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "
       expect(saved).not.toHaveProperty("photo"); expect(await calls(page, "cleanup")).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
+  });
+}
+
+
+for (const width of [390, 1440]) {
+  test(`location picker and quantity work without a database at ${width}px`, async ({ page, photoURL }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${photoURL}?locations`);
+    if (width === 1440) await page.locator("main").evaluate((element) => { element.style.maxWidth = "48rem"; });
+    const form = page.locator("form");
+    const room = form.locator('[data-location-field="room_id"]');
+    const furniture = form.locator('[data-location-field="storage_location_l2_id"]');
+    const position = form.locator('[data-location-field="storage_location_l3_id"]');
+    await expect(form.locator('[name="jednostka"]')).toHaveValue("szt.");
+    const quantityBox = await form.getByLabel("Ilość", { exact: true }).boundingBox();
+    const unitBox = await form.locator('[name="jednostka"]').boundingBox();
+    expect(Math.abs((quantityBox?.width ?? 0) - (unitBox?.width ?? 0))).toBeLessThanOrEqual(1);
+    expect(Math.abs((quantityBox?.x ?? 0) - (unitBox?.x ?? 0))).toBeLessThanOrEqual(1);
+    await expect(room.locator("svg")).toHaveCount(2);
+
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("1");
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveAttribute("readonly", "");
+    await form.locator('[name="typ"]').selectOption("zapas");
+    const stepperBox = await form.getByLabel("Ilość", { exact: true }).locator("..").boundingBox();
+    expect(Math.abs((stepperBox?.width ?? 0) - (unitBox?.width ?? 0))).toBeLessThanOrEqual(1);
+    expect(Math.abs((stepperBox?.x ?? 0) - (unitBox?.x ?? 0))).toBeLessThanOrEqual(1);
+    await form.getByRole("button", { name: "Zwiększ ilość" }).click();
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("2");
+    await form.getByRole("button", { name: "Zmniejsz ilość" }).click();
+    await expect(form.getByLabel("Ilość", { exact: true })).toHaveValue("1");
+    await room.focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(room).toContainText("Kuchnia z bardzo długą nazwą pomieszczenia");
+    await expect(room).toBeFocused();
+    await furniture.click();
+    await form.getByRole("option", { name: "Szafka", exact: true }).click();
+    await position.click();
+    await form.getByRole("option", { name: "Szuflada", exact: true }).click();
+    await expect(form.locator("ol svg")).toHaveCount(3);
+    const summaryBox = await form.locator("[data-location-summary]").boundingBox();
+    const roomBox = await room.boundingBox();
+    if (width === 1440) expect(summaryBox?.x).toBeGreaterThan((roomBox?.x ?? 0) + (roomBox?.width ?? 0));
+    else expect(summaryBox?.y).toBeGreaterThan(roomBox?.y ?? 0);
+    await expect(form.locator("[data-location-summary] li.rounded-full")).toHaveCount(0);
+    await expect(form.locator("[data-location-summary] li > span.rounded-full")).toHaveCount(3);
+    await test.info().attach("location-summary", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    await room.click();
+    await page.keyboard.press("Escape");
+    await expect(room).toBeFocused();
+    await expect(room).toHaveAttribute("aria-expanded", "false");
+    await room.click();
+    await form.getByRole("option", { name: "Salon", exact: true }).click();
+    await expect(form.locator('[name="storage_location_l2_id"]')).toHaveValue("");
+    await expect(form.locator('[name="storage_location_l3_id"]')).toHaveValue("");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.goto(`${photoURL}?edit&locations`);
+    await expect(form.locator('[name="jednostka"]')).toHaveValue("szt.");
+    await expect(form.locator('[name="nazwa"]')).toHaveValue("Istniejąca rzecz");
   });
 }
