@@ -13,6 +13,7 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
   await search.press("Enter");
   await expect(page).toHaveURL(/q=latarka/);
   await expect(search).toHaveValue("latarka");
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
   await category.focus();
   await category.press("Home");
   await category.press("ArrowDown");
@@ -20,18 +21,20 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
   await expect(category).not.toHaveValue("");
   await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
   await expect(search).toHaveValue("");
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
   await expect(category).toHaveValue("");
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
 
   for (const [name, viewport] of [
     ["desktop", { width: 1440, height: 1000 }],
     ["mobile", { width: 390, height: 844 }],
   ] as const) {
     await page.setViewportSize(viewport);
-    await page.locator("summary").filter({ hasText: "Więcej filtrów" }).click();
+    await page.getByRole("button", { name: "Filtry", exact: true }).click();
     await expect(page.getByRole("combobox", { name: "Czas dodania", exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `test-results/ui-foundation/filters-${name}.png`, fullPage: true });
-    await page.locator("summary").filter({ hasText: "Więcej filtrów" }).click();
+    await page.getByRole("button", { name: "Filtry", exact: true }).click();
     await page.getByRole("banner").getByRole("button", { name: "Wyszukiwarka", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Wyszukiwarka", exact: true });
     const globalSearch = dialog.getByRole("searchbox", { name: "Nazwa obiektu", exact: true });
@@ -76,12 +79,11 @@ test("Items share normalized search and combine category and location filters", 
   const search = page.getByRole("searchbox", { name: "Szukaj", exact: true });
   const searchButton = page.getByRole("button", { name: "Szukaj", exact: true });
   const category = page.getByRole("combobox", { name: "Kategoria", exact: true });
-  const room = page.getByRole("combobox", { name: "Pomieszczenie", exact: true });
   const furniture = page.getByRole("combobox", { name: "Mebel", exact: true });
-  const more = page.locator("summary").filter({ hasText: "Więcej filtrów" });
+  const more = page.getByRole("button", { name: "Filtry", exact: true });
   await expect(searchButton).toBeVisible();
   await expect(searchButton.locator("svg")).toHaveCount(1);
-  const tops = await Promise.all([search, searchButton, category, room, furniture, more].map(async (locator) => (await locator.boundingBox())?.y));
+  const tops = await Promise.all([search, searchButton, more].map(async (locator) => (await locator.boundingBox())?.y));
   const visibleTops = tops.filter((top): top is number => top !== undefined);
   expect(Math.max(...visibleTops) - Math.min(...visibleTops)).toBeLessThanOrEqual(2);
 
@@ -100,6 +102,7 @@ test("Items share normalized search and combine category and location filters", 
   await search.fill("ladowarka");
   await searchButton.click();
 
+  await more.click();
   await category.selectOption({ label: "Elektronika" });
   await expect(page).toHaveURL(/category=/);
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
@@ -113,14 +116,14 @@ test("Items share normalized search and combine category and location filters", 
   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("");
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Elektronika");
   await expect(itemCard(page, data.item.charger)).toBeVisible();
-  await room.selectOption({ label: data.room.salon });
+  await more.click();
+  await page.getByRole("navigation", { name: "Widok Rzeczy" }).getByRole("link", { name: data.room.salon, exact: true }).click();
   await expect(page.getByLabel("Aktywne filtry")).toContainText(data.room.salon);
   await furniture.selectOption({ label: data.furniture.chest });
   await expect(page.getByLabel("Aktywne filtry")).toContainText(data.furniture.chest);
   await expect(itemCard(page, data.item.charger)).toBeVisible();
 
-  await more.click();
-  const morePanel = page.locator("summary").filter({ hasText: "Więcej filtrów" }).locator("xpath=following-sibling::div[1]");
+  const morePanel = page.locator('select[name="position"]').locator("xpath=../..");
   const moreBox = await more.boundingBox();
   const morePanelBox = await morePanel.boundingBox();
   expect(morePanelBox?.y).toBeGreaterThanOrEqual((moreBox?.y ?? 0) + (moreBox?.height ?? 0));
@@ -134,15 +137,14 @@ test("Items share normalized search and combine category and location filters", 
   await page.getByRole("link", { name: "Wyczyść filtry", exact: true }).click();
   await expect(page).toHaveURL(/\/items$/);
   expect(new URL(page.url()).searchParams.has("category")).toBe(false);
+  await more.click();
   await expect(category).toHaveValue("");
   await expect(page.getByLabel("Aktywne filtry")).toHaveCount(0);
 
-  await more.click();
   await page.locator('select[name="itemStatus"]').selectOption("archived");
   await expect(itemCard(page, data.item.oldDocument)).toBeVisible();
   await expect(itemCard(page, data.item.charger)).toHaveCount(0);
 
-  await more.click();
   await page.locator('select[name="added"]').selectOption("7d");
   await expect(page).toHaveURL(/added=7d/);
   await expect(page.getByLabel("Aktywne filtry")).toContainText("Ostatnie 7 dni");
@@ -158,8 +160,8 @@ test("Item filters and results remain isolated to the active household", async (
     await registerAndCreateHousehold(otherPage, "item-filter-isolation-target");
     await otherPage.goto("/items");
 
+    await expect(otherPage.getByRole("navigation", { name: "Widok Rzeczy" }).getByRole("link", { name: data.room.salon, exact: true })).toHaveCount(0);
     for (const [name, label] of [
-      ["room", data.room.salon],
       ["storage", data.furniture.chest],
       ["position", data.storageSpace.upperDrawer],
     ] as const) {
@@ -207,7 +209,7 @@ test("Structure search is removed while icon search remains and mobile filters d
   await page.goto("/items");
   await expect(page.getByRole("searchbox", { name: "Szukaj", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Szukaj", exact: true })).toBeVisible();
-  await page.locator("summary").filter({ hasText: "Więcej filtrów" }).click();
+  await page.getByRole("button", { name: "Filtry", exact: true }).click();
   await expect(page.getByText("Czas dodania", { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 

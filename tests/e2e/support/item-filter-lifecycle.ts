@@ -31,6 +31,10 @@ export function itemFilterLifecycleBundle({ strictEffects = false, firstFilter =
   }
   function projectModule(id: string): string {
     if (modules.has(id)) return id;
+    if (id === "src/components/icons/entity-icon") {
+      modules.set(id, "exports.EntityIcon = () => null;");
+      return id;
+    }
     const path = [id, `${id}.ts`, `${id}.tsx`, `${id}/index.ts`]
       .find((candidate) => existsSync(resolve(candidate)) && statSync(resolve(candidate)).isFile());
     if (!path) throw new Error(`Cannot bundle project module ${id}`);
@@ -98,6 +102,10 @@ export function itemFilterLifecycleBundle({ strictEffects = false, firstFilter =
     };
     const { ItemFilters } = require("src/components/items/item-filters");
     function choose(name, value) {
+      if (name === "room") {
+        document.querySelector('a[href*="room=' + value + '"]').click();
+        return;
+      }
       const select = document.querySelector('select[name="' + name + '"]');
       select.value = value; select.dispatchEvent(new Event("change", { bubbles: true }));
     }

@@ -1,16 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useOptimistic, useRef, useState, useTransition, type FormEvent } from "react";
+import { useEffect, useId, useLayoutEffect, useOptimistic, useRef, useState, useTransition, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FunnelIcon } from "@phosphor-icons/react/dist/ssr/Funnel";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { MapPinLineIcon } from "@phosphor-icons/react/dist/ssr/MapPinLine";
+import { EntityIcon } from "@/components/icons/entity-icon";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { t } from "@/lib/i18n";
 import { parseItemSearchParams, type ItemFilters } from "@/lib/items/item-search-params";
 import { parseItemView } from "@/lib/items/item-view-filter";
+import { quickItemFilterSearch, type QuickItemSelection } from "@/lib/items/item-quick-filters";
 import { routes } from "@/lib/routes";
 
 type FilterOption = { id: string; label: string };
@@ -19,12 +22,12 @@ type ItemFiltersProps = {
   categories: FilterOption[];
   filters: ItemFilters;
   positions: FilterOption[];
-  rooms: FilterOption[];
+  rooms: (FilterOption & { iconKey?: string | null })[];
   storageLocations: FilterOption[];
   view: string;
 };
 
-const selectClassName = "h-11 min-w-0 rounded-control border border-line bg-surface px-3 text-sm font-medium text-foreground outline-none focus:border-primary";
+const selectClassName = "h-11 min-w-0 rounded-control border border-line bg-surface px-3 text-sm font-medium text-foreground outline-none focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 export function ItemFilters({ categories, filters, positions, rooms, storageLocations, view }: ItemFiltersProps) {
   const router = useRouter();
@@ -35,7 +38,8 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   const intendedSearch = useRef(committedSearch);
   const [intentRevision, setIntentRevision] = useState(0);
   const latestIntentRevision = useRef(0);
-  const moreFilters = useRef<HTMLDetailsElement>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filterPanelId = useId();
 
   // An intermediate route must not become the base of the next user choice.
   // Next's navigation queue discards superseded responses; reconcile only when
@@ -113,9 +117,19 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   }
 
   function update(name: string, value: string) {
-    if (name !== "from" && name !== "to") moreFilters.current?.removeAttribute("open");
     navigate(filterSearch(name, value, intendedSearch.current));
   }
+
+  function quickHref(selection: QuickItemSelection) {
+    const search = quickItemFilterSearch(optimisticSearch, selection);
+    return search ? `${routes.items}?${search}` : routes.items;
+  }
+
+  const shortcuts = [
+    { selection: { kind: "all" } as QuickItemSelection, label: t.modules.items.views.all, icon: null, active: activeView === "all" && !activeFilters.roomId && activeFilters.status !== "archived", key: "all" },
+    { selection: { kind: "unlocated" } as QuickItemSelection, label: t.modules.items.views.unlocated, icon: <MapPinLineIcon aria-hidden="true" size={20}/>, active: activeView === "unlocated", key: "unlocated" },
+    ...rooms.map(room=>({selection: { kind: "room", id: room.id } as QuickItemSelection, label: room.label, icon: <EntityIcon group="room" iconKey={room.iconKey} size={22} weight="duotone"/>, active: activeFilters.roomId === room.id && activeView !== "unlocated", key: room.id})),
+  ];
 
   function removeFilter(name: string) {
     if (name === "q") setQueryDraft({ source: "", value: "" });
@@ -123,7 +137,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   }
 
   function reset() {
-    moreFilters.current?.removeAttribute("open");
+    setFiltersOpen(false);
     setQueryDraft({ source: "", value: "" });
     navigate("", "push");
   }
@@ -136,7 +150,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
     for (const [name, value] of new FormData(event.currentTarget)) {
       if (typeof value === "string") params.append(name, value);
     }
-    moreFilters.current?.removeAttribute("open");
+    setFiltersOpen(false);
     navigate(params.toString(), "push");
   }
 
@@ -151,27 +165,27 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
   ].filter((chip): chip is { key: string; label: string } => Boolean(chip));
 
   return (
-    <div className="space-y-3">
-      <form action={routes.items} className="flex min-w-0 flex-col gap-2 xl:flex-row xl:items-end" method="get" onSubmit={submit}>
+    <div className="min-w-0 space-y-4">
+      <form action={routes.items} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3" method="get" onSubmit={submit}>
         {activeView !== "all" ? <input name="view" type="hidden" value={activeView} /> : null}
-        <label className="relative min-w-0 flex-1">
+        {activeFilters.roomId ? <input name="room" type="hidden" value={activeFilters.roomId}/> : null}
+        {activeFilters.sort !== "recent" ? <input name="sort" type="hidden" value={activeFilters.sort}/> : null}
+        <div className="relative min-w-0">
+        <label>
           <span className="sr-only">{t.modules.items.search}</span>
-          <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
+          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-3 pr-12 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
         </label>
-        <button className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" type="submit">
+        <button aria-label={t.modules.items.search} title={t.modules.items.search} className="absolute right-0 top-0 inline-flex h-11 w-11 items-center justify-center rounded-control text-foreground hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus" type="submit">
           <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
-          {t.modules.items.search}
         </button>
-        <FilterSelect label={t.modules.items.category} name="category" options={categories} value={activeFilters.categoryId ?? ""} onChange={update} />
-        <FilterSelect label={t.modules.items.room} name="room" options={rooms} value={activeFilters.roomId ?? ""} onChange={update} />
-        <FilterSelect label={t.modules.items.storage} name="storage" options={storageLocations} value={activeFilters.storageId ?? ""} onChange={update} />
-        <details className="relative min-w-0 xl:w-40 xl:shrink-0" ref={moreFilters}>
-          <summary className={`${selectClassName} flex cursor-pointer list-none items-center justify-center gap-2 [&::-webkit-details-marker]:hidden`}>
+        </div>
+          <button type="button" aria-expanded={filtersOpen} aria-controls={filterPanelId} onClick={()=>setFiltersOpen(!filtersOpen)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control px-3 text-sm font-semibold text-foreground hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
             <FunnelIcon aria-hidden="true" size={18} />
-            {t.modules.items.moreFilters}
-          </summary>
-          <div className="mt-2 grid gap-3 rounded-control border border-line bg-surface p-4 shadow-card xl:absolute xl:right-0 xl:top-full xl:z-20 xl:w-80">
+            {t.modules.items.filtersLabel}
+          </button>
+          <div id={filterPanelId} className={`${filtersOpen ? "grid" : "hidden"} col-span-2 min-w-0 gap-4 border-t border-line pt-4 sm:grid-cols-2 lg:grid-cols-3`}>
+            <FilterSelect label={t.modules.items.category} name="category" options={categories} value={activeFilters.categoryId ?? ""} onChange={update} />
+            <FilterSelect label={t.modules.items.storage} name="storage" options={storageLocations} value={activeFilters.storageId ?? ""} onChange={update} />
             <label className="ui-label">
               <span>{t.modules.items.position}</span>
               <Select className="mt-1" name="position" onChange={(event) => update("position", event.currentTarget.value)} value={activeFilters.positionId ?? ""}>
@@ -205,16 +219,24 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
               </div>
             ) : null}
           </div>
-        </details>
       </form>
+      <nav aria-label={t.modules.items.viewSelector} className="flex min-w-0 gap-5 overflow-x-auto px-1 py-1">
+        {shortcuts.map(shortcut=><Link
+          aria-current={shortcut.active ? "page" : undefined}
+          className={`inline-flex min-h-11 shrink-0 items-center gap-2 border-b-2 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${shortcut.active ? "border-primary text-primary-strong" : "border-transparent text-muted hover:text-foreground"}`}
+          href={quickHref(shortcut.selection)} key={shortcut.key}
+          onNavigate={event=>{event.preventDefault();navigate(quickItemFilterSearch(intendedSearch.current,shortcut.selection),"push");}}>
+          {shortcut.icon}<span>{shortcut.label}</span>
+        </Link>)}
+      </nav>
       {chips.length ? (
         <div aria-label={t.modules.items.activeFilters} className="flex flex-wrap items-center gap-2">
           {chips.map((chip) => (
-            <Link className="inline-flex min-h-8 items-center gap-1 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary-strong hover:bg-primary/10" href={filterHref(chip.key)} key={chip.key} onNavigate={(event) => { event.preventDefault(); removeFilter(chip.key); }}>
+            <Link className="inline-flex min-h-11 items-center gap-1 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary-strong hover:bg-primary/10" href={filterHref(chip.key)} key={chip.key} onNavigate={(event) => { event.preventDefault(); removeFilter(chip.key); }}>
               {chip.label}<XIcon aria-hidden="true" size={14} />
             </Link>
           ))}
-          <Link className="inline-flex min-h-8 items-center px-2 text-xs font-semibold text-primary-strong hover:text-primary" href={routes.items} onNavigate={(event) => { event.preventDefault(); reset(); }}>{t.modules.items.clearFilters}</Link>
+          <Link className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-primary-strong hover:text-primary" href={routes.items} onNavigate={(event) => { event.preventDefault(); reset(); }}>{t.modules.items.clearFilters}</Link>
         </div>
       ) : null}
     </div>
@@ -223,8 +245,8 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
 
 function FilterSelect({ label, name, onChange, options, value }: { label: string; name: string; onChange: (name: string, value: string) => void; options: FilterOption[]; value: string }) {
   return (
-    <label className="min-w-0 xl:w-36 xl:shrink-0">
-      <span className="sr-only">{label}</span>
+    <label className="ui-label min-w-0">
+      <span>{label}</span>
       <Select aria-label={label} className={`${selectClassName} w-full`} name={name} onChange={(event) => onChange(name, event.currentTarget.value)} unstyled value={value}>
         <option value="">{label}</option>
         {options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}

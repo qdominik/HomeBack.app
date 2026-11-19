@@ -49,7 +49,7 @@ test("empty, punctuation-only, missing and unknown queries never match everythin
 
 test("breadcrumbs and hrefs identify each target on existing pages", () => {
   const byType = new Map(searchGlobalSources(sources, "home", "garaż").map((r) => [r.type, r]));
-  assert.equal(byType.get("item")?.href, "/items#item-i");
+  assert.equal(byType.get("item")?.href, "/items?focus=i#item-i");
   assert.equal(byType.get("room")?.href, "/home#room-r");
   assert.equal(byType.get("furniture")?.href, "/home#furniture-f");
   assert.equal(byType.get("storage")?.href, "/home#storage-s");
@@ -182,7 +182,7 @@ test("L1/L2/L3 and no assignment preserve global search breadcrumb and href", ()
   for (const [locations, breadcrumb] of cases) {
     const result = searchGlobalSources({ ...sources, locations }, "home", "ładowarka")[0];
     assert.deepEqual(result.breadcrumb, breadcrumb);
-    assert.equal(result.href, "/items#item-i");
+    assert.equal(result.href, "/items?focus=i#item-i");
   }
 });
 

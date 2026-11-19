@@ -341,6 +341,7 @@ export type Dictionary = {
       clearFilters: string;
       activeFilters: string;
       moreFilters: string;
+      filtersLabel: string;
       addedTime: string;
       anyTime: string;
       dateFrom: string;

@@ -67,7 +67,7 @@ export function searchGlobalSources(sources: SearchSources, householdId: string,
   const candidates: GlobalSearchResult[] = [
     ...sources.items.filter((item) => item.household_id === householdId && item.status !== "archiwalne").map((item): GlobalSearchResult => ({
       id: item.id, type: "item", name: item.nazwa, icon: item.ikona,
-      href: `${routes.items}#item-${item.id}`,
+      href: `${routes.items}?focus=${item.id}#item-${item.id}`,
       breadcrumb: locations.has(item.id) ? [locations.get(item.id)!.roomName, locations.get(item.id)!.storageName, locations.get(item.id)!.positionName].filter(Boolean) : [],
     })),
     ...Array.from(rooms.values(), (room): GlobalSearchResult => ({

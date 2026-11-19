@@ -370,6 +370,7 @@ export const pl: Dictionary = {
       clearFilters: "Wyczyść filtry",
       activeFilters: "Aktywne filtry",
       moreFilters: "Więcej filtrów",
+      filtersLabel: "Filtry",
       addedTime: "Czas dodania",
       anyTime: "Dowolny czas",
       dateFrom: "Od",
