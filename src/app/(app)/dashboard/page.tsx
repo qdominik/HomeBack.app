@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RhythmWelcome } from "@/components/rhythm/welcome";
 import { DashboardModuleCard } from "@/components/dashboard-module-card";
 import {
   dashboardModuleRegistrations,
@@ -57,6 +58,8 @@ export default async function DashboardPage() {
         description={greeting}
         title={t.dashboard.title}
       />
+
+      <RhythmWelcome count={widgetData.unlocatedItemCount} />
 
       {registrations.length > 0 ? (
         <section

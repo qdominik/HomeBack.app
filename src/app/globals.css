@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../styles/weather-scene.css";
+@import "../styles/rhythm-welcome.css";
 @import "../styles/ui-tokens.css";
 @import "../components/ui/ui-control.css";
 @import "../components/ui/dialog.css";
