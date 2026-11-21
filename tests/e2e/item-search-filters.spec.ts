@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { itemCard, prepareDeletionDataset } from "./support/m4d8";
 import { registerAndCreateHousehold } from "./support/auth";
+import { expectFocusToken } from "./support/appearance";
 
 test("UI foundation retains native keyboard filtering and responsive search fields", async ({ page }) => {
   await registerAndCreateHousehold(page, "ui-foundation");
@@ -46,7 +47,7 @@ test("UI foundation retains native keyboard filtering and responsive search fiel
     await expect(globalSearch).toHaveCSS("outline-style", "solid");
     await expect(globalSearch).toHaveCSS("outline-width", "2px");
     await expect(globalSearch).toHaveCSS("outline-offset", "2px");
-    await expect(globalSearch).toHaveCSS("outline-color", "rgb(13, 95, 71)");
+    await expectFocusToken(globalSearch);
     await expect(globalSearch).toHaveCSS("box-shadow", "none");
     expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     await dialog.screenshot({ path: `test-results/ui-foundation/search-${name}.png` });

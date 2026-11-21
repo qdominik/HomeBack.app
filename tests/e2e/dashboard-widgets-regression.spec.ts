@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { itemCard } from "./support/m4d8";
 import { registerAndCreateHousehold } from "./support/auth";
+import { expectFocusToken } from "./support/appearance";
 import {
   dashboardModule,
   dashboardModuleTitles,
@@ -74,7 +75,7 @@ test.describe("Dashboard widget regression", () => {
       await expect(recentItemsAction).toHaveCSS("outline-style", "solid");
       await expect(recentItemsAction).toHaveCSS("outline-width", "2px");
       await expect(recentItemsAction).toHaveCSS("outline-offset", "2px");
-      await expect(recentItemsAction).toHaveCSS("outline-color", "rgb(13, 95, 71)");
+      await expectFocusToken(recentItemsAction);
       await expect(recentItemsAction).toHaveCSS("box-shadow", "none");
       await expect(dashboardModule(otherPage, dashboardModuleTitles.categories)
         .getByRole("link", { name: "Rzeczy", exact: true }))
