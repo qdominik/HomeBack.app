@@ -18,13 +18,17 @@ test("focus and button contrast use the composited Oklab background", async ({ p
   await expectPrimaryTextToken(page.getByRole("button", { name: "Button" }));
 });
 
-test("shared button has a visible hover indicator independent of fill color", async ({ page }) => {
+test("buttons and filter links have a visible hover indicator independent of fill color", async ({ page }) => {
   const css = readFileSync("src/components/ui/ui-control.css", "utf8");
-  await page.setContent(`<style>${css}</style><style>:root { --focus: #0d5f47; }</style><button class="ui-button">Action</button>`);
+  await page.setContent(`<style>${css}</style><style>:root { --focus: #0d5f47; }</style><button class="ui-button">Action</button><a class="ui-hover-indicator" href="#filter">Filter</a>`);
   const button = page.getByRole("button", { name: "Action" });
   await expect(button).toHaveCSS("box-shadow", "none");
   await button.hover();
   await expect(button).not.toHaveCSS("box-shadow", "none");
+  const link = page.getByRole("link", { name: "Filter" });
+  await expect(link).toHaveCSS("box-shadow", "none");
+  await link.hover();
+  await expect(link).not.toHaveCSS("box-shadow", "none");
 });
 
 test("browser-composited primary tint retains text contrast every twilight minute", async ({ page }) => {
