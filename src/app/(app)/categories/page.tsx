@@ -80,12 +80,12 @@ export default async function CategoriesPage({
           </p>
         ) : null}
         {errorMessage ? (
-          <p className="mt-3 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+          <p className="ui-status-danger mt-3 rounded-md border px-3 py-2 text-sm">
             {errorMessage}
           </p>
         ) : null}
         {statusMessage ? (
-          <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-primary-strong">
+          <p className="mt-3 rounded-md border border-primary/30 bg-primary/[var(--primary-tint-subtle)] px-3 py-2 text-sm text-primary-strong">
             {statusMessage}
           </p>
         ) : null}

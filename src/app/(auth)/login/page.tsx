@@ -60,7 +60,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <h1 className="mt-4 text-2xl font-semibold">{t.auth.loginTitle}</h1>
         {errorMessage ? (
-          <p className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+          <p className="ui-status-danger mt-4 rounded-md border px-3 py-2 text-sm">
             {errorMessage}
           </p>
         ) : null}

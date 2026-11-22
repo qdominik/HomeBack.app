@@ -52,7 +52,7 @@ function WidgetMessage({
     <div
       className={`mt-4 rounded-control border px-4 py-3 text-sm font-medium ${
         error
-          ? "border-danger/30 bg-danger/5 text-danger"
+          ? "ui-status-danger"
           : "border-dashed border-line bg-surface-muted/60 text-center text-muted"
       }`}
     >
@@ -154,7 +154,7 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
             </span>
             <span
               aria-label={formatItemCount(category.count)}
-              className="inline-flex min-w-7 justify-center rounded-full bg-primary/10 px-2 py-1 text-xs font-bold text-primary-strong"
+              className="inline-flex min-w-7 justify-center rounded-full bg-primary/[var(--primary-tint)] px-2 py-1 text-xs font-bold text-primary-strong"
             >
               {category.count}
             </span>
@@ -177,7 +177,7 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
           </span>
           <span
             aria-label={formatItemCount(data.unlocatedItemCount.data)}
-            className="inline-flex min-w-7 justify-center rounded-full bg-primary/10 px-2 py-1 text-xs font-bold text-primary-strong"
+            className="inline-flex min-w-7 justify-center rounded-full bg-primary/[var(--primary-tint)] px-2 py-1 text-xs font-bold text-primary-strong"
           >
             {data.unlocatedItemCount.data}
           </span>

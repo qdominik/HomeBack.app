@@ -2,10 +2,11 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { daylight } from "@/lib/ui/daylight";
+import { startMinuteClock } from "@/lib/ui/minute-clock";
 
 type State = ReturnType<typeof daylight>;
 const ClockContext = createContext<State | null>(null);
-const roles = ["background", "surface", "surface-muted", "foreground", "foreground-secondary", "foreground-muted", "placeholder", "control-border", "line", "primary", "primary-hover", "primary-strong", "on-primary", "focus", "success", "warning", "danger", "info"];
+const roles = ["background", "surface", "surface-muted", "foreground", "foreground-secondary", "foreground-muted", "placeholder", "control-border", "line", "primary", "primary-hover", "primary-strong", "primary-tint", "primary-tint-subtle", "on-primary", "focus", "success", "warning", "danger", "info"];
 
 export function RhythmClock({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State | null>(null);
@@ -20,14 +21,17 @@ export function RhythmClock({ children }: { children: ReactNode }) {
       for (const [name, value] of Object.entries(next.styles)) root.style.setProperty(name, value);
       setState(next);
     };
-    tick();
-    const timer = window.setInterval(tick, 60_000);
-    document.addEventListener("visibilitychange", tick);
-    window.addEventListener("focus", tick);
+    const clock = startMinuteClock(tick, {
+      now: () => Date.now(),
+      setTimeout: (callback, delay) => window.setTimeout(callback, delay),
+      clearTimeout: (id) => window.clearTimeout(id),
+    });
+    document.addEventListener("visibilitychange", clock.update);
+    window.addEventListener("focus", clock.update);
     return () => {
-      window.clearInterval(timer);
-      document.removeEventListener("visibilitychange", tick);
-      window.removeEventListener("focus", tick);
+      clock.stop();
+      document.removeEventListener("visibilitychange", clock.update);
+      window.removeEventListener("focus", clock.update);
     };
   }, []);
   return <ClockContext.Provider value={state}>{children}</ClockContext.Provider>;

@@ -30,7 +30,7 @@ export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/10 text-primary">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/[var(--primary-tint)] text-primary">
               <EntityIcon
                 group="category"
                 iconKey={iconKey}

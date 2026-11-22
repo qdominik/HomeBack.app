@@ -669,7 +669,7 @@ export function ItemForm({
         {photoFeedback ? (
           <p
             className={`text-sm ${
-              displayedPhoto ? "text-primary-strong" : "text-danger"
+              displayedPhoto ? "text-primary-strong" : "ui-status-danger rounded-control px-2 py-1"
             }`}
           >
             {photoFeedback}

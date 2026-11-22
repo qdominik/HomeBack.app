@@ -1,12 +1,12 @@
 // UI-01 approved B, including the corrected evening transition.
 export type Appearance = "auto" | "light" | "dark";
-export const phaseHours = [5.75,8,13,18,23] as const;
 export function daylight(hour:number,mode:Appearance){
 const palette={backgrounds:["#f4e4cb","#f6eddc","#f5f5f2","#eedbbd","#122b29"],surfaces:["#fff6e5","#fffbf2","#ffffff","#fff4df","#193431"],muted:["#ecdbc1","#ece5d8","#ebede7","#e6d5b9","#294a40"]};
 const fromSrgb=(v: number)=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
 const toSrgb=(v: number)=>Math.max(0,Math.min(1,v<=.0031308?12.92*v:1.055*v**(1/2.4)-.055));
 function toLab(hex: string){
-  const [r,g,b]=hex.slice(1).match(/../g)!.map(v=>fromSrgb(parseInt(v,16)/255));
+  const values=hex.startsWith('#')?hex.slice(1).match(/../g)!.map(v=>parseInt(v,16)):hex.match(/[\d.]+/g)!.map(Number);
+  const [r,g,b]=values.map(v=>fromSrgb(v/255));
   const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b);
   const m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b);
   const s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
@@ -39,14 +39,76 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
   }
   for(const [i,role] of ['background','surface','surface-muted'].entries())panel.style.setProperty(`--${role}`,colors[i]);
   const lightText=luminance(foreground)>.5;
-  for(const role of ['foreground','foreground-secondary','foreground-muted','placeholder','control-border','line'])panel.style.setProperty(`--${role}`,foreground);
-  const accent=(lightText?['#a2dfbb','#c3ecd1']:['#0d5f47','#063325']).find(color=>minimum(color,colors)>=3)||foreground;
-  for(const role of ['primary','primary-hover','primary-strong','focus','success'])panel.style.setProperty(`--${role}`,accent);
-  panel.style.setProperty('--on-primary',contrast('#07110d',accent)>=4.5?'#07110d':'#ffffff');
-  for(const [role,light,dark] of [['danger','#9b352d','#ffb4a5'],['warning','#795025','#f0ce92'],['info','#255e85','#b1d6f2']]){
-    const color=lightText?dark:light;
-    panel.style.setProperty(`--${role}`,minimum(color,colors)>=4.5?color:foreground);
+  panel.style.setProperty('--foreground',foreground);
+  // Keep the approved endpoint roles: separators are decorative, while
+  // muted text and control boundaries have their own contrast requirements.
+  for(const [role,start,end,threshold] of [
+    ['foreground-secondary','#465e53','#c3d4c8',4.5],
+    ['foreground-muted','#506457','#b8cfc1',4.5],
+    ['placeholder','#506457','#b8cfc1',4.5],
+    ['control-border','#506457','#82a293',3],
+    ['line','#d2d9cc','#507166',0],
+  ] as const){
+    let color=mix(start,end,dimming);
+    if(minimum(color,colors)<threshold){
+      let low=0,high=1;
+      for(let i=0;i<12;i++){
+        const middle=(low+high)/2;
+        if(minimum(mix(color,foreground,middle),colors)>=threshold)high=middle;
+        else low=middle;
+      }
+      color=mix(color,foreground,high);
+    }
+    panel.style.setProperty(`--${role}`,color);
   }
+  // Text and control colors must keep their hue. Approach a tinted extreme
+  // instead of falling back to the unrelated foreground token.
+  function accessibleColor(dark: string,light: string,darkEnd: string,lightEnd: string){
+    const options=lightText?[[light,lightEnd],[dark,darkEnd]]:[[dark,darkEnd],[light,lightEnd]];
+    for(const [base,end] of options){
+      if(minimum(base,colors)>=4.5)return base;
+      if(minimum(end,colors)>=4.5){
+        let low=0,high=1;
+        for(let i=0;i<12;i++){
+          const middle=(low+high)/2;
+          if(minimum(mix(base,end,middle),colors)>=4.5)high=middle;
+          else low=middle;
+        }
+        return mix(base,end,high);
+      }
+    }
+    // Existing surface convergence ensures black or white is available; the
+    // chosen endpoints are just off neutral so the hue is retained.
+    return lightText?lightEnd:darkEnd;
+  }
+  const accent=accessibleColor('#0d5f47','#a2dfbb','#000100','#fefffe');
+  let accentHover=accessibleColor('#0a4a38','#c3ecd1','#000100','#fefffe');
+  const accentStrong=accessibleColor('#0a3d30','#c3ecd1','#000100','#fefffe');
+  const onAccent=(lightText?['#122b29','#07110d','#fffdf8','#ffffff']:['#fffdf8','#ffffff','#122b29','#07110d']).find(color=>contrast(color,accent)>=4.5&&contrast(color,accentHover)>=4.5);
+  // If the two fills fall on opposite sides of the contrast crossover, keep
+  // the safe fill rather than switching the button label to an unsafe color.
+  if(!onAccent)accentHover=accent;
+  for(const [role,color] of [['primary',accent],['primary-hover',accentHover],['primary-strong',accentStrong],['focus',accent]])panel.style.setProperty(`--${role}`,color);
+  // Tailwind's mix with transparent retains the source color at this alpha;
+  // compositing then happens over the actual surface. Limit the tint so both
+  // normal and accent text remain readable on each surface.
+  const rgb=(value: string)=>value.startsWith('#')?value.slice(1).match(/../g)!.map(v=>parseInt(v,16)):value.match(/[\d.]+/g)!.map(Number);
+  const blend=(front: string,back: string,alpha: number)=>`rgb(${rgb(front).map((v,i)=>(v*alpha+rgb(back)[i]*(1-alpha)).toFixed(4)).join(' ')})`;
+  let low=0,high=.1;
+  for(let i=0;i<12;i++){
+    const middle=(low+high)/2;
+    if(colors.every(color=>[accent,accentHover,accentStrong,foreground].every(text=>contrast(text,blend(accent,color,middle))>=4.5)))low=middle;
+    else high=middle;
+  }
+  panel.style.setProperty('--primary-tint',`${Math.floor(low*100000)/1000}%`);
+  panel.style.setProperty('--primary-tint-subtle',`${Math.floor(low*50000)/1000}%`);
+  panel.style.setProperty('--on-primary',onAccent||(contrast('#07110d',accent)>=4.5?'#07110d':'#ffffff'));
+  for(const [role,dark,light,darkEnd,lightEnd] of [
+    ['success','#0d5f47','#a2dfbb','#000100','#fefffe'],
+    ['danger','#9b352d','#ffb4a5','#010000','#fffefe'],
+    ['warning','#795025','#f0ce92','#010100','#fffffe'],
+    ['info','#255e85','#b1d6f2','#000001','#fefeff'],
+  ])panel.style.setProperty(`--${role}`,accessibleColor(dark,light,darkEnd,lightEnd));
   return lightText;
 }
 

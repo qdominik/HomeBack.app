@@ -24,6 +24,6 @@
 :root { --sky-a: #d9ecd9; --sky-b: #b5dadd; }
 :root[data-rhythm-phase=dawn] { --sky-a: #f8cda0; --sky-b: #cbdfe0; }
 :root[data-rhythm-phase=noon] { --sky-a: #d3eaf0; --sky-b: #a8d1df; }
-:root[data-rhythm-phase=evening] { --sky-a: #eed2b2; --sky-b: #b6c8c4; }
 :root[data-theme=dark] { --sky-a: #294c4b; --sky-b: #1c3941; }
+:root[data-rhythm-phase=evening] { --sky-a: #eed2b2; --sky-b: #b6c8c4; }
 :root[data-rhythm-phase=night][data-theme=dark] { --sky-a: #1f4549; --sky-b: #102e3a; }

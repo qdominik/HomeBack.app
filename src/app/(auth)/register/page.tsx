@@ -32,7 +32,7 @@ const errorMessages: Record<string, string> = {
 
 function AuthMessage({ message }: { message: string | null }) {
   return message ? (
-    <p className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+    <p className="ui-status-danger mt-4 rounded-md border px-3 py-2 text-sm">
       {message}
     </p>
   ) : null;

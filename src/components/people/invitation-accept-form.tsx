@@ -33,7 +33,7 @@ export function InvitationAcceptForm({
       {state.error ? (
         <p
           aria-live="assertive"
-          className="rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger"
+          className="ui-status-danger rounded-md border px-3 py-2 text-sm"
         >
           {state.error}
         </p>

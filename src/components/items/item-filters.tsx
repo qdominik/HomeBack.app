@@ -232,7 +232,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
       {chips.length ? (
         <div aria-label={t.modules.items.activeFilters} className="flex flex-wrap items-center gap-2">
           {chips.map((chip) => (
-            <Link className="inline-flex min-h-11 items-center gap-1 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary-strong hover:bg-primary/10" href={filterHref(chip.key)} key={chip.key} onNavigate={(event) => { event.preventDefault(); removeFilter(chip.key); }}>
+            <Link className="inline-flex min-h-11 items-center gap-1 rounded-full border border-primary/30 bg-primary/[var(--primary-tint-subtle)] px-3 py-1 text-xs font-semibold text-primary-strong hover:bg-primary/[var(--primary-tint)]" href={filterHref(chip.key)} key={chip.key} onNavigate={(event) => { event.preventDefault(); removeFilter(chip.key); }}>
               {chip.label}<XIcon aria-hidden="true" size={14} />
             </Link>
           ))}
