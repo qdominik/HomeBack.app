@@ -25,30 +25,41 @@ async function colors(locator: Locator, property: "outlineColor" | "color", toke
     document.body.append(probe);
     const expected = getComputedStyle(probe).color;
     probe.remove();
+    // Chromium returns color-mix(in oklab, ..., transparent) as oklab(),
+    // including an alpha channel. Rasterize the actual stack instead of
+    // treating Oklab coordinates as sRGB or ignoring the layer underneath.
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext("2d")!;
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 1, 1);
+    const ancestors: Element[] = [];
     let parent: Element | null = args.outside ? element.parentElement : element;
-    let background = "";
-    while (parent) {
-      const value = getComputedStyle(parent).backgroundColor;
-      if (value !== "rgba(0, 0, 0, 0)" && value !== "transparent") {
-        background = value;
-        break;
-      }
-      parent = parent.parentElement;
+    while (parent) { ancestors.push(parent); parent = parent.parentElement; }
+    for (const ancestor of ancestors.reverse()) {
+      context.fillStyle = getComputedStyle(ancestor).backgroundColor;
+      context.fillRect(0, 0, 1, 1);
     }
-    return { actual: getComputedStyle(element)[args.property], expected, background };
+    const backgroundChannels = Array.from(context.getImageData(0, 0, 1, 1).data).slice(0, 3);
+    const actual = getComputedStyle(element)[args.property];
+    context.clearRect(0, 0, 1, 1);
+    context.fillStyle = actual;
+    context.fillRect(0, 0, 1, 1);
+    const actualChannels = Array.from(context.getImageData(0, 0, 1, 1).data).slice(0, 3);
+    return { actual, expected, color: `rgb(${actualChannels.join(", ")})`, background: `rgb(${backgroundChannels.join(", ")})` };
   }, { property, token, outside });
 }
 
 export async function expectFocusToken(locator: Locator) {
   await expect.poll(async () => {
     const result = await colors(locator, "outlineColor", "--focus", true);
-    return { token: result.actual === result.expected, visible: contrast(result.actual, result.background) >= 3 };
+    return { token: result.actual === result.expected, visible: contrast(result.color, result.background) >= 3 };
   }).toEqual({ token: true, visible: true });
 }
 
 export async function expectPrimaryTextToken(locator: Locator) {
   await expect.poll(async () => {
     const result = await colors(locator, "color", "--on-primary", false);
-    return { token: result.actual === result.expected, readable: contrast(result.actual, result.background) >= 4.5 };
+    return { token: result.actual === result.expected, readable: contrast(result.color, result.background) >= 4.5 };
   }).toEqual({ token: true, readable: true });
 }
