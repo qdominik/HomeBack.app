@@ -6,7 +6,7 @@ import { startMinuteClock } from "@/lib/ui/minute-clock";
 
 type State = ReturnType<typeof daylight>;
 const ClockContext = createContext<State | null>(null);
-const roles = ["background", "surface", "surface-muted", "foreground", "foreground-secondary", "foreground-muted", "placeholder", "control-border", "line", "primary", "primary-hover", "primary-strong", "primary-tint", "primary-tint-subtle", "on-primary", "focus", "success", "warning", "danger", "info"];
+const roles = ["background", "surface", "surface-muted", "foreground", "foreground-secondary", "foreground-muted", "placeholder", "control-border", "line", "primary", "primary-hover", "primary-strong", "primary-tint", "primary-tint-subtle", "on-primary", "focus", "success", "warning", "danger", "danger-graphic", "info"];
 
 export function RhythmClock({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State | null>(null);

@@ -81,7 +81,7 @@ export function AppHeader({ authenticated = false, account }: { authenticated?: 
           <div ref={menuRoot} onBlur={(event) => {
             if (!event.currentTarget.contains(event.relatedTarget)) setMenuOpen(false);
           }}>
-            <button aria-label={menuOpen ? t.navigation.closeMenu : t.navigation.openMenu} aria-expanded={menuOpen} aria-controls="main-navigation" className={`${iconButton} ${menuOpen ? "border-primary bg-primary text-on-primary hover:bg-primary-hover" : "hover:bg-surface-muted"}`} ref={menuTrigger} type="button" onClick={() => setMenuOpen(!menuOpen)}>
+            <button aria-label={menuOpen ? t.navigation.closeMenu : t.navigation.openMenu} aria-expanded={menuOpen} aria-controls="main-navigation" className={`${iconButton} ui-hover-indicator ${menuOpen ? "border-primary bg-primary text-on-primary hover:bg-primary-hover" : "hover:bg-surface-muted"}`} ref={menuTrigger} type="button" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <XIcon aria-hidden="true" size={22} weight="bold" /> : <ListIcon aria-hidden="true" size={22} weight="bold" />}
             </button>
             <nav aria-label={t.navigation.main} id="main-navigation" hidden={!menuOpen} className="absolute right-4 top-full mt-2 max-h-[calc(100dvh-7rem)] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-control border border-line bg-surface p-2 shadow-card sm:right-6 lg:right-8">

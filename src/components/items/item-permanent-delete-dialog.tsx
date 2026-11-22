@@ -145,7 +145,7 @@ export function ItemPermanentDeleteDialog({
         type="button"
         variant="secondary"
       >
-        <TrashIcon aria-hidden="true" className="text-danger" size={18} />
+        <TrashIcon aria-hidden="true" className="text-danger-graphic" size={18} />
       </Button>
       <Dialog
         aria-describedby={descriptionId}

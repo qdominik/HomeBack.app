@@ -22,6 +22,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-danger-graphic: var(--danger-graphic);
   --color-danger-button: var(--danger-button);
   --color-danger-button-hover: var(--danger-button-hover);
   --color-info: var(--info);

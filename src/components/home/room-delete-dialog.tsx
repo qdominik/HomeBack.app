@@ -173,7 +173,7 @@ export function RoomDeleteDialog({
       <button
         aria-label={`${t.modules.home.entityActions.delete} ${t.modules.home.entityLabels.room.singular}`}
         title={`${t.modules.home.entityActions.delete} ${t.modules.home.entityLabels.room.singular}`}
-        className={buttonClassName({ size: "icon", variant: "secondary", className: "text-danger" })}
+        className={buttonClassName({ size: "icon", variant: "secondary", className: "text-danger-graphic" })}
         onClick={openDialog}
         ref={triggerRef}
         type="button"

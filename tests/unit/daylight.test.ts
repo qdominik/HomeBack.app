@@ -115,6 +115,18 @@ test("evening accent text and hover have AA contrast on all surfaces every minut
   }
 });
 
+test("danger borders and icons keep a red graphic role with 3:1 contrast", () => {
+  for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
+    const { styles } = daylight(minute / 60, "auto");
+    const color = styles["--danger-graphic"];
+    for (const surface of ["background", "surface", "surface-muted"]) {
+      assert.ok(contrastRatio(color, styles[`--${surface}`]) >= 3, `${minute}: danger graphic on ${surface}`);
+    }
+    const [red, green, blue] = channels(color);
+    assert.ok(red - Math.max(green, blue) >= 20, `${minute}: red graphic channel separation`);
+  }
+});
+
 test("evening status roles retain red, amber, blue and green hues with AA contrast", () => {
   for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
     const { styles } = daylight(minute / 60, "auto");

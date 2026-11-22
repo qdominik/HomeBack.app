@@ -77,6 +77,7 @@
     --success: var(--green-700);
     --warning: var(--amber-700);
     --danger: var(--red-700);
+    --danger-graphic: var(--red-700);
     --info: var(--blue-700);
     --on-danger: var(--paper-white);
     /* Status text has an opaque companion surface. A single translucent
@@ -168,6 +169,7 @@
     --success: var(--mint-300);
     --warning: var(--amber-200);
     --danger: var(--coral-200);
+    --danger-graphic: var(--coral-200);
     --info: var(--blue-200);
     --on-danger: var(--red-950);
     --status-danger-text: #ffb4a5;

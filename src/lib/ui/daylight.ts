@@ -63,15 +63,15 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
   }
   // Text and control colors must keep their hue. Approach a tinted extreme
   // instead of falling back to the unrelated foreground token.
-  function accessibleColor(dark: string,light: string,darkEnd: string,lightEnd: string){
+  function accessibleColor(dark: string,light: string,darkEnd: string,lightEnd: string,threshold=4.5){
     const options=lightText?[[light,lightEnd],[dark,darkEnd]]:[[dark,darkEnd],[light,lightEnd]];
     for(const [base,end] of options){
-      if(minimum(base,colors)>=4.5)return base;
-      if(minimum(end,colors)>=4.5){
+      if(minimum(base,colors)>=threshold)return base;
+      if(minimum(end,colors)>=threshold){
         let low=0,high=1;
         for(let i=0;i<12;i++){
           const middle=(low+high)/2;
-          if(minimum(mix(base,end,middle),colors)>=4.5)high=middle;
+          if(minimum(mix(base,end,middle),colors)>=threshold)high=middle;
           else low=middle;
         }
         return mix(base,end,high);
@@ -93,12 +93,17 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
   // compositing then happens over the actual surface. Limit the tint so both
   // normal and accent text remain readable on each surface.
   const rgb=(value: string)=>value.startsWith('#')?value.slice(1).match(/../g)!.map(v=>parseInt(v,16)):value.match(/[\d.]+/g)!.map(Number);
-  const blend=(front: string,back: string,alpha: number)=>`rgb(${rgb(front).map((v,i)=>(v*alpha+rgb(back)[i]*(1-alpha)).toFixed(4)).join(' ')})`;
+  const blend=(front: string,back: string,alpha: number,rounded: boolean)=>`rgb(${rgb(front).map((v,i)=>{const n=v*alpha+rgb(back)[i]*(1-alpha);return rounded?Math.round(n):n.toFixed(4);}).join(' ')})`;
+  const safeTint=(alpha: number)=>colors.every(color=>[accent,accentHover,accentStrong,foreground].every(text=>[false,true].every(rounded=>contrast(text,blend(accent,color,alpha,rounded))>=4.6)));
   let low=0,high=.1;
-  for(let i=0;i<12;i++){
-    const middle=(low+high)/2;
-    if(colors.every(color=>[accent,accentHover,accentStrong,foreground].every(text=>contrast(text,blend(accent,color,middle))>=4.5)))low=middle;
-    else high=middle;
+  // When the untinted surface itself has less than 4.6:1, remove the tint.
+  // Otherwise retain a margin for 8-bit browser compositing and rounding.
+  if(safeTint(0)){
+    for(let i=0;i<12;i++){
+      const middle=(low+high)/2;
+      if(safeTint(middle))low=middle;
+      else high=middle;
+    }
   }
   panel.style.setProperty('--primary-tint',`${Math.floor(low*100000)/1000}%`);
   panel.style.setProperty('--primary-tint-subtle',`${Math.floor(low*50000)/1000}%`);
@@ -109,6 +114,9 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
     ['warning','#795025','#f0ce92','#010100','#fffffe'],
     ['info','#255e85','#b1d6f2','#000001','#fefeff'],
   ])panel.style.setProperty(`--${role}`,accessibleColor(dark,light,darkEnd,lightEnd));
+  // Control borders and icons have a 3:1 non-text requirement; a separate
+  // graphic token can retain a recognizably red color near the crossover.
+  panel.style.setProperty('--danger-graphic',accessibleColor('#9b352d','#ffb4a5','#4c0000','#ffe0d6',3));
   return lightText;
 }
 
