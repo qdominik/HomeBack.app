@@ -15,6 +15,10 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-strong: var(--primary-strong);
+  --color-accent-text: var(--accent-text);
+  --color-primary-graphic: var(--primary-graphic);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-text: var(--accent-soft-text);
   --color-on-primary: var(--on-primary);
   --color-on-danger: var(--on-danger);
   --color-muted: var(--foreground-muted);
@@ -50,6 +54,22 @@
 .ui-status-success { color: var(--status-success-text); background-color: var(--status-success-surface); border-color: var(--status-success-text); }
 .ui-status-warning { color: var(--status-warning-text); background-color: var(--status-warning-surface); border-color: var(--status-warning-text); }
 .ui-status-info { color: var(--status-info-text); background-color: var(--status-info-surface); border-color: var(--status-info-text); }
+
+/* A chromatic underline preserves the identity of links when ordinary text
+   needs a lighter or darker neutral value on mid-tone twilight surfaces. */
+a.text-accent-text, summary.text-accent-text {
+  text-decoration-line: underline;
+  text-decoration-color: var(--primary-graphic);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .2em;
+}
+@media (hover: hover) {
+  a.text-accent-text:hover, summary.text-accent-text:hover {
+    color: var(--accent-soft-text);
+    background-color: var(--accent-soft);
+    text-decoration-thickness: 3px;
+  }
+}
 
 /* Preserve item image colors when the browser applies automatic darkening. */
 .ui-item-photo {

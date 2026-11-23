@@ -30,12 +30,20 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
   const colors=['backgrounds','surfaces','muted'].map(key=>mix(palette[key][3],palette[key][4],dimming));
   const minimum=(color: string,backgrounds: string[])=>Math.min(...backgrounds.map(background=>contrast(color,background)));
   // Keep text readable throughout dimming, including the middle luminances.
-  // Surfaces briefly converge when different fills would need opposite text colors.
   const ink=['#1e382e','#07110d','#000000','#f3f4e8','#ffffff'];
-  let foreground=ink.find(color=>minimum(color,colors)>=4.5);
+  let foreground=ink.find(color=>minimum(color,colors)>=4.55);
   if(!foreground){
-    foreground=ink.find(color=>contrast(color,colors[0])>=4.5)!;
-    for(let i=1;i<colors.length;i++)if(contrast(foreground,colors[i])<4.5)colors[i]=colors[0];
+    foreground=ink.find(color=>contrast(color,colors[0])>=4.55)!;
+    for(let i=1;i<colors.length;i++)if(contrast(foreground,colors[i])<4.55){
+      const end=luminance(foreground)>.5?'#000000':'#ffffff';
+      let low=0,high=1;
+      for(let n=0;n<12;n++){
+        const middle=(low+high)/2;
+        if(contrast(foreground,mix(colors[i],end,middle))>=4.55)high=middle;
+        else low=middle;
+      }
+      colors[i]=mix(colors[i],end,high);
+    }
   }
   for(const [i,role] of ['background','surface','surface-muted'].entries())panel.style.setProperty(`--${role}`,colors[i]);
   const lightText=luminance(foreground)>.5;
@@ -43,9 +51,9 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
   // Keep the approved endpoint roles: separators are decorative, while
   // muted text and control boundaries have their own contrast requirements.
   for(const [role,start,end,threshold] of [
-    ['foreground-secondary','#465e53','#c3d4c8',4.5],
-    ['foreground-muted','#506457','#b8cfc1',4.5],
-    ['placeholder','#506457','#b8cfc1',4.5],
+    ['foreground-secondary','#465e53','#c3d4c8',4.55],
+    ['foreground-muted','#506457','#b8cfc1',4.55],
+    ['placeholder','#506457','#b8cfc1',4.55],
     ['control-border','#506457','#82a293',3],
     ['line','#d2d9cc','#507166',0],
   ] as const){
@@ -61,8 +69,8 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
     }
     panel.style.setProperty(`--${role}`,color);
   }
-  // Text and control colors must keep their hue. Approach a tinted extreme
-  // instead of falling back to the unrelated foreground token.
+  // Graphics use chromatic endpoints. The separate text role may approach a
+  // neutral endpoint when that is required for 4.55:1 on twilight surfaces.
   function accessibleColor(dark: string,light: string,darkEnd: string,lightEnd: string,threshold=4.5){
     const options=lightText?[[light,lightEnd],[dark,darkEnd]]:[[dark,darkEnd],[light,lightEnd]];
     for(const [base,end] of options){
@@ -77,43 +85,17 @@ function applyTwilight(panel: {style: {setProperty: (key: string,value: string)=
         return mix(base,end,high);
       }
     }
-    // Existing surface convergence ensures black or white is available; the
-    // chosen endpoints are just off neutral so the hue is retained.
+    // Surface adjustment ensures an appropriate endpoint is available.
     return lightText?lightEnd:darkEnd;
   }
-  const accent=accessibleColor('#0d5f47','#a2dfbb','#000100','#fefffe');
-  let accentHover=accessibleColor('#0a4a38','#c3ecd1','#000100','#fefffe');
-  const accentStrong=accessibleColor('#0a3d30','#c3ecd1','#000100','#fefffe');
-  const onAccent=(lightText?['#122b29','#07110d','#fffdf8','#ffffff']:['#fffdf8','#ffffff','#122b29','#07110d']).find(color=>contrast(color,accent)>=4.5&&contrast(color,accentHover)>=4.5);
-  // If the two fills fall on opposite sides of the contrast crossover, keep
-  // the safe fill rather than switching the button label to an unsafe color.
-  if(!onAccent)accentHover=accent;
-  for(const [role,color] of [['primary',accent],['primary-hover',accentHover],['primary-strong',accentStrong],['focus',accent]])panel.style.setProperty(`--${role}`,color);
-  // Tailwind's mix with transparent retains the source color at this alpha;
-  // compositing then happens over the actual surface. Limit the tint so both
-  // normal and accent text remain readable on each surface.
-  const rgb=(value: string)=>value.startsWith('#')?value.slice(1).match(/../g)!.map(v=>parseInt(v,16)):value.match(/[\d.]+/g)!.map(Number);
-  const blend=(front: string,back: string,alpha: number,rounded: boolean)=>`rgb(${rgb(front).map((v,i)=>{const n=v*alpha+rgb(back)[i]*(1-alpha);return rounded?Math.round(n):n.toFixed(4);}).join(' ')})`;
-  const safeTint=(alpha: number)=>colors.every(color=>[accent,accentHover,accentStrong,foreground].every(text=>[false,true].every(rounded=>contrast(text,blend(accent,color,alpha,rounded))>=4.6)));
-  let low=0,high=.1;
-  // When the untinted surface itself has less than 4.6:1, remove the tint.
-  // Otherwise retain a margin for 8-bit browser compositing and rounding.
-  if(safeTint(0)){
-    for(let i=0;i<12;i++){
-      const middle=(low+high)/2;
-      if(safeTint(middle))low=middle;
-      else high=middle;
-    }
-  }
-  panel.style.setProperty('--primary-tint',`${Math.floor(low*100000)/1000}%`);
-  panel.style.setProperty('--primary-tint-subtle',`${Math.floor(low*50000)/1000}%`);
-  panel.style.setProperty('--on-primary',onAccent||(contrast('#07110d',accent)>=4.5?'#07110d':'#ffffff'));
-  for(const [role,dark,light,darkEnd,lightEnd] of [
-    ['success','#0d5f47','#a2dfbb','#000100','#fefffe'],
-    ['danger','#9b352d','#ffb4a5','#010000','#fffefe'],
-    ['warning','#795025','#f0ce92','#010100','#fffffe'],
-    ['info','#255e85','#b1d6f2','#000001','#fefeff'],
-  ])panel.style.setProperty(`--${role}`,accessibleColor(dark,light,darkEnd,lightEnd));
+  // A fill, text on an arbitrary twilight panel and a subtle selected surface
+  // have different contrast constraints. Keep the approved chromatic primary
+  // fills and use separate text / graphic roles over the interpolated panels.
+  const accentText=accessibleColor('#0a3d30','#c3ecd1','#000000','#ffffff',4.55);
+  const accentGraphic=accessibleColor('#0d5f47','#a2dfbb','#003a19','#d0ffd8',3.05);
+  panel.style.setProperty('--accent-text',accentText);
+  panel.style.setProperty('--primary-graphic',accentGraphic);
+  panel.style.setProperty('--focus',accentText);
   // Control borders and icons have a 3:1 non-text requirement; a separate
   // graphic token can retain a recognizably red color near the crossover.
   panel.style.setProperty('--danger-graphic',accessibleColor('#9b352d','#ffb4a5','#4c0000','#ffe0d6',3));

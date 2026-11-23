@@ -241,7 +241,7 @@ export function RoomDeleteDialog({
                 <DependencyCounts context={context} />
                 <fieldset className="space-y-3">
                   <legend className="ui-label">{copy.operation}</legend>
-                  <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-primary">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-focus">
                     <input
                       checked={resolution === "move"}
                       className="ui-choice mt-1"
@@ -286,7 +286,7 @@ export function RoomDeleteDialog({
                       </Select>
                     </label>
                   ) : null}
-                  <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-primary">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-focus">
                     <input
                       checked={resolution === "detach"}
                       className="ui-choice mt-1"

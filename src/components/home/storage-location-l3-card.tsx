@@ -38,11 +38,11 @@ export function StorageLocationL3Card({
   roomOptions,
 }: StorageLocationL3CardProps) {
   return (
-    <li id={`storage-${position.id}`} className="scroll-mt-4 rounded-control border border-line bg-surface p-4 target:ring-2 target:ring-primary">
+    <li id={`storage-${position.id}`} className="scroll-mt-4 rounded-control border border-line bg-surface p-4 target:ring-2 target:ring-focus">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/[var(--primary-tint)] text-primary">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-accent-soft text-accent-soft-text">
               <EntityIcon
                 group="position"
                 iconKey={resolvePositionIconKey(position.ikona)}

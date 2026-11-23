@@ -21,7 +21,7 @@ export function ItemPhotoThumbnail({
 
   if (!previewUrl || previewFailed) {
     return (
-      <span className={`mt-0.5 inline-flex shrink-0 items-center justify-center rounded-control bg-primary/[var(--primary-tint)] text-primary ${size === "card" ? "h-18 w-18" : "h-10 w-10"}`}>
+      <span className={`mt-0.5 inline-flex shrink-0 items-center justify-center rounded-control bg-accent-soft text-accent-soft-text ${size === "card" ? "h-18 w-18" : "h-10 w-10"}`}>
         <EntityIcon
           group="item"
           iconKey={iconKey}

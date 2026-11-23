@@ -71,8 +71,10 @@
     --primary: var(--green-700);
     --primary-hover: var(--green-800);
     --primary-strong: var(--green-900);
-    --primary-tint: 10%;
-    --primary-tint-subtle: 5%;
+    --accent-text: var(--primary-strong);
+    --primary-graphic: var(--primary);
+    --accent-soft: #ddf2df;
+    --accent-soft-text: #0a3d30;
     --on-primary: var(--paper-white);
     --success: var(--green-700);
     --warning: var(--amber-700);
@@ -165,6 +167,8 @@
     --primary: var(--mint-300);
     --primary-hover: var(--mint-200);
     --primary-strong: var(--mint-200);
+    --accent-soft: #244d35;
+    --accent-soft-text: #c3ecd1;
     --on-primary: var(--night-950);
     --success: var(--mint-300);
     --warning: var(--amber-200);

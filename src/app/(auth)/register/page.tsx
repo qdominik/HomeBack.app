@@ -220,7 +220,7 @@ export default async function RegisterPage({
             {t.auth.createAccount}
           </Button>
         </form>
-        <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={next ? `${routes.login}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.login}>
+        <Link className="mt-4 block text-center text-sm font-medium text-accent-text" href={next ? `${routes.login}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.login}>
           {t.auth.signIn}
         </Link>
       </section>

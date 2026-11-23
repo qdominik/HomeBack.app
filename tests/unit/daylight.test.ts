@@ -40,6 +40,36 @@ test("approved evening curve matches the accepted 19:15 reference",()=>{
   assert.equal(daylight(19.25,"auto").styles["--background"],"rgb(97 106 94)");
   assert.equal(daylight(19.25,"auto").theme,"dark");
 });
+test("semantic status colors retain their approved palette and paired contrast during twilight", () => {
+  for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
+    const { styles, theme } = daylight(minute / 60, "auto");
+    for (const role of ["success", "danger", "warning", "info"]) {
+      assert.equal(styles[`--${role}`], undefined, `${minute}: theme's chromatic ${role} must not be neutralized`);
+      assert.ok(contrastRatio(cssColor(`status-${role}-text`, theme), cssColor(`status-${role}-surface`, theme)) >= 4.5,
+        `${minute}: ${role} paired text`);
+    }
+  }
+});
+test("twilight keeps a visible accent fill separate from its readable text", () => {
+  for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
+    const { styles } = daylight(minute / 60, "auto");
+    assert.equal(styles["--primary"], undefined, `${minute}: do not neutralize the green fill`);
+    assert.ok(styles["--accent-text"], `${minute}: adaptive text role`);
+    for (const surface of ["background", "surface", "surface-muted"]) {
+      assert.ok(contrastRatio(styles["--accent-text"], styles[`--${surface}`]) >= 4.55, `${minute}: accent text on ${surface}`);
+      assert.ok(contrastRatio(styles["--primary-graphic"], styles[`--${surface}`]) >= 3, `${minute}: green graphic on ${surface}`);
+    }
+    const [red, green, blue] = channels(styles["--primary-graphic"]);
+    assert.ok(green - Math.max(red, blue) >= 16, `${minute}: graphic remains recognizably green`);
+  }
+});
+test("twilight keeps cards separate from the approved background", () => {
+  for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
+    const { styles } = daylight(minute / 60, "auto");
+    const background = channels(styles["--background"]), surface = channels(styles["--surface"]);
+    assert.ok(Math.max(...surface.map((v,i) => Math.abs(v-background[i]))) >= 5, `${minute}: card separation`);
+  }
+});
 test("twilight keeps foreground contrast across all three surfaces each minute",()=>{
   const luminance=(color:string)=>{
     const channels=color.startsWith("#") ? color.slice(1).match(/../g)!.map(v=>parseInt(v,16)) : color.match(/[\d.]+/g)!.map(Number);
@@ -78,9 +108,9 @@ test("twilight focus and button text remain legible including destructive hover"
       assert.ok(contrastRatio(onDanger, cssColor("danger-button", theme)) >= 4.5, `${minute}: destructive button`);
       assert.ok(contrastRatio(onDanger, cssColor("danger-button-hover", theme)) >= 4.5, `${minute}: destructive hover`);
     }
-    for (const name of ["primary", "primary-hover"]) {
-      assert.ok(contrastRatio(styles["--on-primary"], styles[`--${name}`]) >= 4.5,
-        `${minute}: button text on ${name}`);
+    const onPrimary = theme === "dark" ? "#122b29" : "#fffdf8";
+    for (const fill of theme === "dark" ? ["#a2dfbb", "#c3ecd1"] : ["#0d5f47", "#0a4a38"]) {
+      assert.ok(contrastRatio(onPrimary, fill) >= 4.5, `${minute}: button text on ${fill}`);
     }
   }
 });
@@ -106,7 +136,7 @@ const cssColor = (name: string, theme: string) => {
 test("evening accent text and hover have AA contrast on all surfaces every minute", () => {
   for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
     const { styles } = daylight(minute / 60, "auto");
-    for (const role of ["primary", "primary-hover", "primary-strong", "success"]) {
+    for (const role of ["accent-text"]) {
       for (const surface of ["background", "surface", "surface-muted"]) {
         assert.ok(contrastRatio(styles[`--${role}`], styles[`--${surface}`]) >= 4.5,
           `${minute}: ${role} on ${surface}`);
@@ -129,13 +159,6 @@ test("danger borders and icons keep a red graphic role with 3:1 contrast", () =>
 
 test("evening status roles retain red, amber, blue and green hues with AA contrast", () => {
   for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
-    const { styles } = daylight(minute / 60, "auto");
-    for (const role of ["danger", "warning", "info", "success"]) {
-      for (const surface of ["background", "surface", "surface-muted"]) {
-        assert.ok(contrastRatio(styles[`--${role}`], styles[`--${surface}`]) >= 4.5,
-          `${minute}: ${role} on ${surface}`);
-      }
-    }
     const theme = daylight(minute / 60, "auto").theme;
     const [dr, dg, db] = channels(cssColor("status-danger-text", theme));
     const [wr, wg, wb] = channels(cssColor("status-warning-text", theme));
@@ -160,18 +183,11 @@ test("status text stays readable on the paired surfaces used by badges and alert
   }
 });
 
-test("adaptive translucent primary backgrounds preserve text contrast after compositing", () => {
+test("accent soft surface keeps its paired text readable throughout twilight", () => {
   for (let minute = 18 * 60 + 1; minute < 22 * 60 + 30; minute++) {
-    const { styles } = daylight(minute / 60, "auto");
-    const alpha = Number.parseFloat(styles["--primary-tint"]) / 100;
-    for (const surface of ["background", "surface", "surface-muted"]) {
-      const under = channels(styles[`--${surface}`]);
-      const tinted = channels(styles["--primary"]).map((value, index) => value * alpha + under[index] * (1-alpha));
-      for (const text of ["primary", "primary-hover", "primary-strong", "foreground"]) {
-        assert.ok(contrastRatio(styles[`--${text}`], `rgb(${tinted.join(" ")})`) >= 4.5,
-          `${minute}: ${text} on tint over ${surface}`);
-      }
-    }
+    const { theme } = daylight(minute / 60, "auto");
+    assert.ok(contrastRatio(cssColor("accent-soft-text", theme), cssColor("accent-soft", theme)) >= 4.5,
+      `${minute}: soft accent text on paired surface`);
   }
 });
 

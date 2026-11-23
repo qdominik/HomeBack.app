@@ -18,7 +18,7 @@ export function EmptyState({
   return (
     <div className="rounded-control border border-dashed border-line bg-surface-muted px-5 py-10 text-center">
       {icon ? (
-        <div className="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/[var(--primary-tint)] text-primary">
+        <div className="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent-soft-text">
           {icon}
         </div>
       ) : null}

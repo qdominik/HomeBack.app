@@ -223,7 +223,7 @@ export function CopyFurnitureDialog({
             <dd className="mt-1 text-lg font-semibold">{storageCount}</dd>
           </dl>
 
-          <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-primary">
+          <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4 focus-within:ring-2 focus-within:ring-focus">
             <input className="ui-choice"
               checked={copyStorage}
               disabled={isSubmitting}

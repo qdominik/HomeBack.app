@@ -55,11 +55,11 @@ export function RoomCard({
   );
 
   return (
-    <Card as="article" id={`room-${room.id}`} className="scroll-mt-4 p-5 sm:p-6 target:ring-2 target:ring-primary">
+    <Card as="article" id={`room-${room.id}`} className="scroll-mt-4 p-5 sm:p-6 target:ring-2 target:ring-focus">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-control bg-primary/[var(--primary-tint)] text-primary">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-control bg-accent-soft text-accent-soft-text">
               <EntityIcon
                 group="room"
                 iconKey={room.ikona}

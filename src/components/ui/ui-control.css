@@ -20,11 +20,11 @@
 }
 
 .ui-control:hover:not(:disabled):not([readonly]):not([aria-invalid="true"]) {
-  border-color: var(--primary);
+  border-color: var(--primary-graphic);
 }
 
 .ui-control:focus {
-  border-color: var(--primary);
+  border-color: var(--primary-graphic);
 }
 
 .ui-control:focus:not(:focus-visible) {

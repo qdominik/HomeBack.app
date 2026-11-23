@@ -91,7 +91,7 @@ export function RecentItemsDashboardModule({ data }: { data: DashboardWidgetData
       {data.recentItems.data.map((item) => (
         <li key={item.id}>
           <Link
-            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-primary-strong ${uiTokens.focusRing}`}
+            className={`flex min-w-0 items-center gap-3 rounded-control py-3 first:pt-0 last:pb-0 hover:text-accent-text ${uiTokens.focusRing}`}
             href={`${routes.items}?focus=${item.id}`}
           >
             <ItemPhotoThumbnail
@@ -139,11 +139,11 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
       {data.categories.data.map((category) => (
         <li className="min-w-0" key={category.id}>
           <Link
-            className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50 ${uiTokens.focusRing}`}
+            className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary-graphic/50 ${uiTokens.focusRing}`}
             href={`${routes.items}?category=${category.id}`}
           >
             <EntityIcon
-              className="shrink-0 text-primary"
+              className="shrink-0 text-accent-text"
               group="item"
               iconKey={category.iconKey}
               size={20}
@@ -154,7 +154,7 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
             </span>
             <span
               aria-label={formatItemCount(category.count)}
-              className="inline-flex min-w-7 justify-center rounded-full bg-primary/[var(--primary-tint)] px-2 py-1 text-xs font-bold text-primary-strong"
+              className="inline-flex min-w-7 justify-center rounded-full bg-accent-soft px-2 py-1 text-xs font-bold text-accent-soft-text"
             >
               {category.count}
             </span>
@@ -163,12 +163,12 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
       ))}
       <li className="min-w-0">
         <Link
-          className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50 ${uiTokens.focusRing}`}
+          className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary-graphic/50 ${uiTokens.focusRing}`}
           href={`${routes.items}?view=unlocated`}
         >
           <MapPinLineIcon
             aria-hidden="true"
-            className="shrink-0 text-primary"
+            className="shrink-0 text-accent-text"
             size={20}
             weight="duotone"
           />
@@ -177,7 +177,7 @@ export function CategoryCountDashboardModule({ data }: { data: DashboardWidgetDa
           </span>
           <span
             aria-label={formatItemCount(data.unlocatedItemCount.data)}
-            className="inline-flex min-w-7 justify-center rounded-full bg-primary/[var(--primary-tint)] px-2 py-1 text-xs font-bold text-primary-strong"
+            className="inline-flex min-w-7 justify-center rounded-full bg-accent-soft px-2 py-1 text-xs font-bold text-accent-soft-text"
           >
             {data.unlocatedItemCount.data}
           </span>
@@ -209,11 +209,11 @@ export function RoomsDashboardModule({ data }: { data: DashboardWidgetData }) {
       {data.rooms.data.map((room) => (
         <li className="min-w-0" key={room.id}>
           <Link
-            className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary/50 ${uiTokens.focusRing}`}
+            className={`flex min-h-12 min-w-0 items-center gap-3 rounded-control border border-line bg-surface-muted/40 px-3 py-2 hover:border-primary-graphic/50 ${uiTokens.focusRing}`}
             href={`${routes.home}#room-${room.id}`}
           >
             <EntityIcon
-              className="shrink-0 text-primary"
+              className="shrink-0 text-accent-text"
               group="room"
               iconKey={room.iconKey}
               size={20}
@@ -292,7 +292,7 @@ export function DashboardModuleIcon({
   return (
     <EntityIcon
       aria-hidden="true"
-      className="shrink-0 text-primary"
+      className="shrink-0 text-accent-text"
       iconKey={definition.icon}
       size={size}
       weight="duotone"

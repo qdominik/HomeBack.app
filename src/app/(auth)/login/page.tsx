@@ -114,7 +114,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             {t.auth.signIn}
           </Button>
         </form>
-        <Link className="mt-4 block text-center text-sm font-medium text-primary-strong" href={next ? `${routes.register}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.register}>
+        <Link className="mt-4 block text-center text-sm font-medium text-accent-text" href={next ? `${routes.register}?${new URLSearchParams({ email: params.email ?? "", next }).toString()}` : routes.register}>
           {t.auth.createAccount}
         </Link>
       </section>

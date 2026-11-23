@@ -582,7 +582,7 @@ export function ItemForm({
                 : t.modules.items.addQuickCategory}
             </Button>
             <Link
-              className="text-sm font-semibold text-primary-strong hover:text-primary"
+              className="text-sm font-semibold text-accent-text hover:text-accent-text"
               href={routes.categories}
             >
               {t.modules.items.manageCategories}
@@ -669,7 +669,7 @@ export function ItemForm({
         {photoFeedback ? (
           <p
             className={`text-sm ${
-              displayedPhoto ? "text-primary-strong" : "ui-status-danger rounded-control px-2 py-1"
+              displayedPhoto ? "text-accent-text" : "ui-status-danger rounded-control px-2 py-1"
             }`}
           >
             {photoFeedback}

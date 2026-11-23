@@ -8,7 +8,7 @@ type BadgeProps = ComponentPropsWithRef<"span"> & {
 
 const toneClasses: Record<BadgeTone, string> = {
   neutral: "bg-surface-muted text-muted",
-  primary: "bg-primary/[var(--primary-tint)] text-primary-hover",
+  primary: "bg-accent-soft text-accent-soft-text",
   success: "ui-status-success",
   warning: "ui-status-warning",
   danger: "ui-status-danger",

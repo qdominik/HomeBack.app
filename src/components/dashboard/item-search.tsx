@@ -63,7 +63,7 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
         </FormActions>
       </form>
       <div aria-label={copy.filter} className="mt-3 flex flex-wrap gap-2" role="group">
-        {GLOBAL_SEARCH_FILTERS.map((value) => <button aria-pressed={filter === value} className={`min-h-11 rounded-control border px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${filter === value ? "border-primary-hover bg-primary text-on-primary" : "border-line bg-surface text-foreground hover:border-primary"}`} key={value} type="button" onClick={() => {
+        {GLOBAL_SEARCH_FILTERS.map((value) => <button aria-pressed={filter === value} className={`min-h-11 rounded-control border px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${filter === value ? "border-primary-graphic bg-primary text-on-primary" : "border-line bg-surface text-foreground hover:border-primary-graphic"}`} key={value} type="button" onClick={() => {
           setFilter(value);
           setResponse(null);
           submitSearch(value);
@@ -73,10 +73,10 @@ export function GlobalSearch({ onNavigate }: { onNavigate?: () => void }) {
       {!isPending && response?.kind === "error" ? <p className="ui-status-danger mt-2 rounded-control px-2 py-1 text-sm" id={`${id}-error`} role="alert">{copy.error}</p> : null}
       {results.length ? <ul aria-label={copy.results} className="mt-4 divide-y divide-line border-y border-line">
         {results.map((result) => <li key={`${result.type}-${result.id}`}>
-          <Link className="block rounded-md py-3 outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-primary" href={result.href} onClick={onNavigate}>
+          <Link className="block rounded-md py-3 outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-focus" href={result.href} onClick={onNavigate}>
             <span className="flex min-w-0 items-start gap-3">
               {result.type === "item" ? <ItemPhotoThumbnail alt={result.name} iconKey={result.icon ?? null} previewUrl={result.previewUrl ?? null} />
-                : <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/[var(--primary-tint)] text-primary"><EntityIcon group={result.type === "room" ? "room" : result.type === "furniture" ? "storage" : "position"} iconKey={result.icon} size={22} /></span>}
+                : <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-accent-soft text-accent-soft-text"><EntityIcon group={result.type === "room" ? "room" : result.type === "furniture" ? "storage" : "position"} iconKey={result.icon} size={22} /></span>}
               <span className="min-w-0">
                 <span className="block break-words font-semibold text-foreground">{result.name}</span>
                 <Badge tone="primary">{copy.types[result.type]}</Badge>

@@ -92,7 +92,7 @@ function HomeStatIcon({ icon }: { icon: CompactHomeStatProps["icon"] }) {
 
   return (
     <EntityIcon
-      className="text-primary"
+      className="text-accent-text"
       group={icon}
       iconKey={iconKey}
       size={22}
