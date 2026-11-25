@@ -10,6 +10,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   testMatch: [
     "appearance-contrast.spec.ts",
+    "weather-appearance.spec.ts",
     "item-photo-recovery.spec.ts",
     "auth-regression.spec.ts",
     "mobile-navigation.spec.ts",

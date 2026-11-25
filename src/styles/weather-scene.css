@@ -27,3 +27,57 @@
 :root[data-theme=dark] { --sky-a: #294c4b; --sky-b: #1c3941; }
 :root[data-rhythm-phase=evening] { --sky-a: #eed2b2; --sky-b: #b6c8c4; }
 :root[data-rhythm-phase=night][data-theme=dark] { --sky-a: #1f4549; --sky-b: #102e3a; }
+
+/* Weather-only decorative layers; shared 6A palette remains authoritative. */
+:where(.ambient-scene-host)[data-weather=cloud] .cloud,:where(.ambient-scene-host)[data-weather=rain] .cloud,:where(.ambient-scene-host)[data-weather=snow] .cloud,:where(.ambient-scene-host)[data-weather=storm] .cloud{width:180px;height:37px;opacity:.9}
+:where(.ambient-scene-host) .cloud-bank{position:absolute;left:-8%;top:4px;width:116%;height:97px;color:#e7eef0;animation:cloud-drift 28s ease-in-out infinite alternate}
+:where(.ambient-scene-host)[data-theme=dark] .cloud-bank{color:#9bb0bd}
+:where(.ambient-scene-host)[data-weather=cloud] .orb{opacity:0;animation:none}
+:where(.ambient-scene-host) .fog-belt{position:absolute;left:-12%;width:124%;height:42px;border-radius:50%;background:linear-gradient(90deg,transparent,#edf3e9ba 20%,#f7f9efe8 55%,transparent);filter:blur(7px);animation:fog-drift 25s ease-in-out infinite alternate}
+:where(.ambient-scene-host) .fog-belt.far{bottom:42px;opacity:.58;transform:translateX(-8px)}
+:where(.ambient-scene-host) .fog-belt.middle{bottom:15px;height:35px;animation-direction:alternate-reverse}
+:where(.ambient-scene-host) .fog-belt.near{bottom:-13px;height:40px;opacity:.8;animation-duration:32s}
+:where(.ambient-scene-host)[data-weather=fog] .orb{opacity:.13;filter:blur(5px);box-shadow:none}
+:where(.ambient-scene-host)[data-weather=fog] .landscape{opacity:.22}
+:where(.ambient-scene-host)[data-weather=fog] .scene-house{opacity:.34}
+:where(.ambient-scene-host)[data-theme=dark] .fog-belt{background:linear-gradient(90deg,transparent,#acbfc58a 22%,#d4e0dfb0 58%,transparent)}
+:where(.ambient-scene-host) .sky-scene{--cloud-light:#f0f4f4;--cloud-mid:#d0dce1;--cloud-shade:#91a7b5;--rain-color:#e4f2fa}
+:where(.ambient-scene-host)[data-theme=dark] .sky-scene{--cloud-light:#8ba2b3;--cloud-mid:#627b90;--cloud-shade:#344d64;--rain-color:#c7e3f5}
+:where(.ambient-scene-host) .weather-cloud{position:absolute;width:min(86%,430px);height:112px;filter:blur(.7px);animation:cloud-float 34s cubic-bezier(.4,0,.2,1) infinite alternate}
+:where(.ambient-scene-host) .weather-cloud-0{left:-15%;top:-18px;opacity:.56;filter:blur(2px);animation-duration:43s}
+:where(.ambient-scene-host) .weather-cloud-1{right:-25%;top:-25px;opacity:.87;animation-duration:37s;animation-direction:alternate-reverse}
+:where(.ambient-scene-host) .weather-cloud-2{left:7%;top:3px;opacity:.88;animation-duration:29s}
+:where(.ambient-scene-host)[data-weather=rain] .sky-scene{--cloud-light:#b5c6ce;--cloud-mid:#899eac;--cloud-shade:#526f84}
+:where(.ambient-scene-host)[data-weather=storm] .sky-scene{--cloud-light:#8393a2;--cloud-mid:#54697d;--cloud-shade:#2c4258}
+:where(.ambient-scene-host)[data-theme=dark][data-weather=rain] .sky-scene{--cloud-light:#8198aa;--cloud-mid:#536c82;--cloud-shade:#2d455d}
+:where(.ambient-scene-host)[data-theme=dark][data-weather=storm] .sky-scene{--cloud-light:#617d95;--cloud-mid:#364f68;--cloud-shade:#1b3148}
+:where(.ambient-scene-host)[data-weather=rain] .orb,:where(.ambient-scene-host)[data-weather=storm] .orb{opacity:0;animation:none}
+:where(.ambient-scene-host)[data-weather=storm] .weather-cloud{height:128px;top:-12px;opacity:.95;animation-duration:19s}
+:where(.ambient-scene-host)[data-weather=storm] .weather-cloud-0{top:-34px;opacity:.7;animation-duration:27s}
+:where(.ambient-scene-host)[data-weather=storm] .weather-cloud-1{top:-28px;animation-duration:23s}
+:where(.ambient-scene-host)[data-weather=cloud] .sky-scene::before,:where(.ambient-scene-host)[data-weather=rain] .sky-scene::before,:where(.ambient-scene-host)[data-weather=storm] .sky-scene::before{background:radial-gradient(ellipse at 35% 30%,#e8f5f524,transparent 70%)}
+:where(.ambient-scene-host) .rainfall,:where(.ambient-scene-host) .rain-surface{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+:where(.ambient-scene-host) .raindrop{position:absolute;left:var(--x);top:var(--y);width:var(--width);height:var(--length);border-radius:999px;background:linear-gradient(transparent,var(--rain-color));opacity:var(--drop-opacity);transform:rotate(var(--angle));animation:rain-fall var(--fall) linear var(--delay) infinite}
+:where(.ambient-scene-host) .raindrop:nth-child(3n+1){filter:blur(.35px)}
+:where(.ambient-scene-host) .rain-haze{position:absolute;inset:45% -10% -15%;background:radial-gradient(ellipse at 50% 100%,#a5c8d42e,transparent 72%);pointer-events:none}
+:where(.ambient-scene-host)[data-weather=storm] .rain-haze{background:radial-gradient(ellipse at 70% 100%,#91bed449,transparent 80%)}
+:where(.ambient-scene-host) .rain-ripple{position:absolute;left:var(--x);bottom:var(--bottom);width:var(--ring);height:3px;border:1px solid var(--rain-color);border-top-color:transparent;border-radius:50%;opacity:.18;animation:rain-ripple var(--fall) cubic-bezier(0,0,.58,1) var(--delay) infinite}
+@keyframes cloud-float{from{transform:translate3d(-13px,0,0)}to{transform:translate3d(17px,-3px,0)}}
+@keyframes rain-fall{0%{transform:translate3d(0,-180px,0) rotate(var(--angle));opacity:0}10%,85%{opacity:var(--drop-opacity)}100%{transform:translate3d(var(--wind),180px,0) rotate(var(--angle));opacity:0}}
+@keyframes rain-ripple{0%{transform:scale(.35);opacity:0}18%{opacity:.3}100%{transform:scale(1.8);opacity:0}}
+:where(.ambient-scene-host) .snow-cover{fill:#f8fcff}.snow-cover.far{fill:#dbeaf2;opacity:.94}
+:where(.ambient-scene-host)[data-weather=snow] .landscape{opacity:1}
+:where(.ambient-scene-host) .roof-snow{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+:where(.ambient-scene-host)[data-weather=snow] .scene-house{color:#355062;opacity:1}
+:where(.ambient-scene-host)[data-weather=snow] .orb{opacity:.12;box-shadow:none}
+:where(.ambient-scene-host)[data-weather=snow] .cloud-bank{height:82px;top:-15px;opacity:.7}
+:where(.ambient-scene-host) .snowfall{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+:where(.ambient-scene-host) .snowflake{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:#fff;opacity:var(--flake-opacity);box-shadow:0 0 3px #ffffff60;animation:snow-fall var(--fall) linear var(--delay) infinite}
+:where(.ambient-scene-host) .snowflake:nth-child(3n){filter:blur(.4px)}
+@keyframes snow-fall{0%{transform:translate3d(0,-155px,0);opacity:0}12%,82%{opacity:var(--flake-opacity)}100%{transform:translate3d(var(--drift),155px,0);opacity:0}}
+@keyframes fog-drift{to{transform:translateX(18px)}}
+[data-motion="off"] .ambient-scene-host *,[data-motion="off"] .ambient-scene-host .sky-scene::before{animation:none!important}
+.ambient-scene-host[data-intensity="subtle"] .raindrop:nth-child(even),
+.ambient-scene-host[data-intensity="subtle"] .snowflake:nth-child(even){display:none}
+.ambient-scene-host[data-windy="true"] .cloud,
+.ambient-scene-host[data-windy="true"] .cloud-bank{animation-duration:18s}

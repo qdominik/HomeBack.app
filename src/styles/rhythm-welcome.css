@@ -1,3 +1,11 @@
 .rhythm-welcome { display: grid; overflow: hidden; border: 1px solid var(--line); border-radius: var(--card-radius); background: var(--surface); }
 .rhythm-caption { padding: clamp(1.25rem, 3vw, 2rem); }
 @media (min-width: 600px) { .rhythm-welcome { grid-template-columns: minmax(220px, 1fr) 1.4fr; } }
+
+.rhythm-landscape{position:relative;min-width:0;min-height:180px}
+.rhythm-landscape>.ambient-scene-host{position:absolute;inset:0}
+.rhythm-temperature{position:relative;z-index:1;display:inline-grid;gap:.125rem;margin:1rem;padding:.625rem .875rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--foreground)}
+.rhythm-temperature-label{font-size:.75rem;color:var(--foreground-secondary)}
+.rhythm-temperature-value{font-size:clamp(1.75rem,3vw,2.25rem);font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(min-width:600px){.rhythm-landscape{min-height:220px}}
+.rhythm-controls{display:flex;gap:1rem;flex-wrap:wrap;align-items:end}.rhythm-controls label{display:grid;gap:.5rem;min-width:10rem}.rhythm-controls .rhythm-motion{display:flex;align-items:center;min-height:44px}.rhythm-motion input{width:20px;height:20px;accent-color:var(--primary)}

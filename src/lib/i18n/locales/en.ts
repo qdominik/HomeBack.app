@@ -1,6 +1,9 @@
+import { weatherCopyEn } from "../../weather/copy";
 import type { Dictionary } from "../types";
 
 export const en: Dictionary = {
+  weatherSettings: weatherCopyEn,
+ rhythm: {"title": "Home rhythm", "appearance": "Appearance and weather", "auto": "Dynamic", "light": "Day", "dark": "Night", "motion": "Animations", "preview": "Appearance preview", "now": "Now", "phase": "Time of day", "weather": "Weather — sample data", "none": "Weather is not configured", "sample": "Sample data", "unlocated": "Items without location", "failed": "Could not load count.", "skip": "Skip to content", "dawn": "Dawn", "morning": "Morning", "day": "Day", "evening": "Evening", "night": "Night", "clear": "Clear", "cloud": "Cloudy", "rain": "Rain", "fog": "Fog", "snow": "Snow", "storm": "Storm"},
   globalSearch: {
     title: "Search",
     label: "Object name",

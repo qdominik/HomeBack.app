@@ -1,6 +1,9 @@
+import { weatherCopyPl } from "../../weather/copy";
 import type { Dictionary } from "../types";
 
 export const pl: Dictionary = {
+  weatherSettings: weatherCopyPl,
+ rhythm: {"title": "Rytm domu", "appearance": "Wygląd i pogoda", "auto": "Dynamiczny", "light": "Dzienny", "dark": "Nocny", "motion": "Animacje", "preview": "Podgląd wyglądu", "now": "Teraz", "phase": "Pora dnia", "weather": "Pogoda — dane przykładowe", "none": "Pogoda nie jest ustawiona", "sample": "Dane przykładowe", "unlocated": "Rzeczy bez lokalizacji", "failed": "Nie udało się pobrać liczby rzeczy.", "skip": "Przejdź do treści", "dawn": "Świt", "morning": "Rano", "day": "Dzień", "evening": "Wieczór", "night": "Noc", "clear": "Pogodnie", "cloud": "Pochmurnie", "rain": "Deszcz", "fog": "Mgła", "snow": "Śnieg", "storm": "Burza"},
   globalSearch: {
     title: "Wyszukiwarka",
     label: "Nazwa obiektu",
