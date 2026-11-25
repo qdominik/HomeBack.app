@@ -35,7 +35,7 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
-    "supabase": "^2.120.0",
+    "supabase": "^3.2.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "fast-glob": "file:tools/next-eslint-glob"
