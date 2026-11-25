@@ -65,7 +65,7 @@
 @keyframes cloud-float{from{transform:translate3d(-13px,0,0)}to{transform:translate3d(17px,-3px,0)}}
 @keyframes rain-fall{0%{transform:translate3d(0,-180px,0) rotate(var(--angle));opacity:0}10%,85%{opacity:var(--drop-opacity)}100%{transform:translate3d(var(--wind),180px,0) rotate(var(--angle));opacity:0}}
 @keyframes rain-ripple{0%{transform:scale(.35);opacity:0}18%{opacity:.3}100%{transform:scale(1.8);opacity:0}}
-:where(.ambient-scene-host) .snow-cover{fill:#f8fcff}.snow-cover.far{fill:#dbeaf2;opacity:.94}
+:where(.ambient-scene-host) .snow-cover{fill:#f8fcff}:where(.ambient-scene-host) .snow-cover.far{fill:#dbeaf2;opacity:.94}
 :where(.ambient-scene-host)[data-weather=snow] .landscape{opacity:1}
 :where(.ambient-scene-host) .roof-snow{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
 :where(.ambient-scene-host)[data-weather=snow] .scene-house{color:#355062;opacity:1}
