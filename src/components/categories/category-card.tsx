@@ -30,7 +30,7 @@ export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-primary/10 text-primary">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-accent-soft text-accent-soft-text">
               <EntityIcon
                 group="category"
                 iconKey={iconKey}
@@ -59,7 +59,7 @@ export function CategoryCard({ category, isAdmin }: CategoryCardProps) {
       {isAdmin && !category.czy_systemowa ? (
         <div className="mt-4 grid gap-3 border-t border-line pt-4 lg:grid-cols-2">
           <details>
-            <summary className="inline-flex list-none cursor-pointer items-center gap-2 text-sm font-semibold text-primary-strong [&::-webkit-details-marker]:hidden">
+            <summary className="inline-flex list-none cursor-pointer items-center gap-2 text-sm font-semibold text-accent-text [&::-webkit-details-marker]:hidden">
               <PencilSimpleLineIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.categories.editCategory}
             </summary>

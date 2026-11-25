@@ -8,11 +8,11 @@ type BadgeProps = ComponentPropsWithRef<"span"> & {
 
 const toneClasses: Record<BadgeTone, string> = {
   neutral: "bg-surface-muted text-muted",
-  primary: "bg-primary/10 text-primary-hover",
-  success: "bg-success/10 text-success",
-  warning: "bg-warning/15 text-foreground",
-  danger: "bg-danger/10 text-danger",
-  info: "bg-info/10 text-info",
+  primary: "bg-accent-soft text-accent-soft-text",
+  success: "ui-status-success",
+  warning: "ui-status-warning",
+  danger: "ui-status-danger",
+  info: "ui-status-info",
 };
 
 export function Badge({ children, className, tone = "neutral", ...props }: BadgeProps) {

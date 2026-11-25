@@ -8,10 +8,10 @@ type AlertProps = {
 };
 
 const alertClasses: Record<AlertVariant, string> = {
-  info: "border-info/40 bg-info/10 text-foreground",
-  success: "border-success/40 bg-success/10 text-foreground",
-  warning: "border-warning/50 bg-warning/10 text-foreground",
-  danger: "border-danger/40 bg-danger/10 text-foreground",
+  info: "ui-status-info",
+  success: "ui-status-success",
+  warning: "ui-status-warning",
+  danger: "ui-status-danger",
 };
 
 export function Alert({ children, variant = "info" }: AlertProps) {

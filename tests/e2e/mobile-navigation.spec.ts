@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { expectFocusToken, expectPrimaryTextToken } from "./support/appearance";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import ts from "typescript";
@@ -141,6 +142,30 @@ test("keyboard focus has one visible outline, including invalid controls", async
   }
 });
 
+test("focus and primary action retain their tokens and contrast in both themes", async ({ page }) => {
+  await page.goto("/login");
+  const stylesheets = await page.locator('link[rel="stylesheet"]').evaluateAll(
+    links => links.map(link => (link as HTMLLinkElement).href),
+  );
+  expect(stylesheets.length).toBeGreaterThan(0);
+  const css = await Promise.all(stylesheets.map(async href => {
+    const response = await page.request.get(href);
+    expect(response.ok()).toBe(true);
+    return response.text();
+  }));
+  for (const theme of ["light", "dark"]) {
+    await page.setContent(`<!doctype html><html data-theme="${theme}"><head><style>${css.join("\n")}</style></head><body><main><button type="button" class="${buttonClassName()}">Action</button></main></body></html>`);
+    const action = page.getByRole("button", { name: "Action" });
+    await expectPrimaryTextToken(action);
+    await page.keyboard.press("Tab");
+    await expect(action).toBeFocused();
+    await expect(action).toHaveCSS("outline-style", "solid");
+    await expect(action).toHaveCSS("outline-width", "2px");
+    await expect(action).toHaveCSS("outline-offset", "2px");
+    await expectFocusToken(action);
+  }
+});
+
 for (const width of [390, 768, 1280]) {
   test(`header and menu work at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
@@ -234,7 +259,7 @@ for (const width of [390, 768, 1280]) {
     const [red, green, blue] = color.match(/\d+/g)!.map(Number);
     expect(green).toBeGreaterThan(red);
     expect(green).toBeGreaterThan(blue);
-    await expect(add).toHaveCSS("color", "rgb(255, 253, 248)");
+    await expectPrimaryTextToken(add);
     const beforeAddURL = page.url();
     const itemsRequests: string[] = [];
     const trackItems = (request: import("@playwright/test").Request) => {

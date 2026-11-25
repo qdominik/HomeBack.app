@@ -27,7 +27,7 @@ export function ItemCreateDialog({ options }: { options: ItemCreateOptions }) {
       aria-haspopup="dialog"
       aria-controls="add-item-dialog"
       id="add-item-trigger"
-      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-primary bg-primary text-on-primary hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="ui-hover-indicator inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-primary-graphic bg-primary text-on-primary hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       onClick={() => setOpen(true)}
       ref={trigger}
       type="button"
@@ -41,7 +41,7 @@ export function ItemCreateDialog({ options }: { options: ItemCreateOptions }) {
     >
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="ui-dialog-title" id="add-item-title">{t.dashboard.addItem}</h2>
-        <button aria-label={t.navigation.closeAddItem} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-line hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-primary" onClick={() => dialog.current?.close()} type="button">
+        <button aria-label={t.navigation.closeAddItem} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-line hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-focus" onClick={() => dialog.current?.close()} type="button">
           <XIcon aria-hidden="true" size={22} />
         </button>
       </div>

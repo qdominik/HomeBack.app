@@ -27,7 +27,7 @@ type ItemFiltersProps = {
   view: string;
 };
 
-const selectClassName = "h-11 min-w-0 rounded-control border border-line bg-surface px-3 text-sm font-medium text-foreground outline-none focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+const selectClassName = "h-11 min-w-0 rounded-control border border-line bg-surface px-3 text-sm font-medium text-foreground outline-none focus:border-primary-graphic focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 export function ItemFilters({ categories, filters, positions, rooms, storageLocations, view }: ItemFiltersProps) {
   const router = useRouter();
@@ -173,7 +173,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
         <div className="relative min-w-0">
         <label>
           <span className="sr-only">{t.modules.items.search}</span>
-          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-3 pr-12 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
+          <Input className="h-11 w-full rounded-control border border-line bg-surface py-2 pl-3 pr-12 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary-graphic focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus" name="q" onChange={(event) => setQueryDraft({ source: activeFilters.query, value: event.currentTarget.value })} placeholder={t.modules.items.searchPlaceholder} type="search" unstyled value={queryDraft.value} />
         </label>
         <button aria-label={t.modules.items.search} title={t.modules.items.search} className="absolute right-0 top-0 inline-flex h-11 w-11 items-center justify-center rounded-control text-foreground hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus" type="submit">
           <MagnifyingGlassIcon aria-hidden="true" size={18} weight="bold" />
@@ -223,7 +223,7 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
       <nav aria-label={t.modules.items.viewSelector} className="flex min-w-0 gap-5 overflow-x-auto px-1 py-1">
         {shortcuts.map(shortcut=><Link
           aria-current={shortcut.active ? "page" : undefined}
-          className={`inline-flex min-h-11 shrink-0 items-center gap-2 border-b-2 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${shortcut.active ? "border-primary text-primary-strong" : "border-transparent text-muted hover:text-foreground"}`}
+          className={`inline-flex min-h-11 shrink-0 items-center gap-2 border-b-2 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${shortcut.active ? "border-primary-graphic text-accent-text" : "border-transparent text-muted hover:text-foreground"}`}
           href={quickHref(shortcut.selection)} key={shortcut.key}
           onNavigate={event=>{event.preventDefault();navigate(quickItemFilterSearch(intendedSearch.current,shortcut.selection),"push");}}>
           {shortcut.icon}<span>{shortcut.label}</span>
@@ -232,11 +232,11 @@ export function ItemFilters({ categories, filters, positions, rooms, storageLoca
       {chips.length ? (
         <div aria-label={t.modules.items.activeFilters} className="flex flex-wrap items-center gap-2">
           {chips.map((chip) => (
-            <Link className="inline-flex min-h-11 items-center gap-1 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary-strong hover:bg-primary/10" href={filterHref(chip.key)} key={chip.key} onNavigate={(event) => { event.preventDefault(); removeFilter(chip.key); }}>
+            <Link className="ui-hover-indicator inline-flex min-h-11 items-center gap-1 rounded-full border border-primary-graphic/30 bg-accent-soft px-3 py-1 text-xs font-semibold text-accent-soft-text hover:bg-accent-soft hover:text-accent-soft-text" href={filterHref(chip.key)} key={chip.key} onNavigate={(event) => { event.preventDefault(); removeFilter(chip.key); }}>
               {chip.label}<XIcon aria-hidden="true" size={14} />
             </Link>
           ))}
-          <Link className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-primary-strong hover:text-primary" href={routes.items} onNavigate={(event) => { event.preventDefault(); reset(); }}>{t.modules.items.clearFilters}</Link>
+          <Link className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-accent-text hover:text-accent-text" href={routes.items} onNavigate={(event) => { event.preventDefault(); reset(); }}>{t.modules.items.clearFilters}</Link>
         </div>
       ) : null}
     </div>

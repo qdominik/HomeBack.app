@@ -58,11 +58,11 @@ export function StorageLocationL2Card({
   const iconKey = resolveStorageLocationIconKey(location.typ, location.ikona);
 
   return (
-    <section id={`furniture-${location.id}`} className="scroll-mt-4 rounded-control border border-line bg-surface-muted p-4 sm:p-5 target:ring-2 target:ring-primary">
+    <section id={`furniture-${location.id}`} className="scroll-mt-4 rounded-control border border-line bg-surface-muted p-4 sm:p-5 target:ring-2 target:ring-focus">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-surface text-primary">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-control bg-surface text-accent-text">
               <EntityIcon
                 group="storage"
                 iconKey={iconKey}

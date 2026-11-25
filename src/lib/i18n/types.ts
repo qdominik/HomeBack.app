@@ -98,6 +98,12 @@ export type Dictionary = {
     emptyRooms: string;
     itemCount: string;
     unlocatedItems: string;
+    rhythmTitle: string;
+    rhythmDawn: string;
+    rhythmMorning: string;
+    rhythmDay: string;
+    rhythmEvening: string;
+    rhythmNight: string;
     widgetReadError: string;
     allHidden: string;
     allHiddenHint: string;

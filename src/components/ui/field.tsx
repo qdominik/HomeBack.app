@@ -32,7 +32,7 @@ export function Field({ id, label, description, error, describedBy, className, c
       <Label htmlFor={controlId}>{label}</Label>
       {children({ id: controlId, "aria-describedby": descriptions || undefined, "aria-invalid": hasError ? true : undefined, "aria-errormessage": hasError ? errorId : undefined })}
       {hasDescription ? <p className="ui-field-help" id={descriptionId}>{description}</p> : null}
-      {hasError ? <p className="text-sm text-danger" id={errorId} role="alert">{error}</p> : null}
+      {hasError ? <p className="ui-status-danger rounded-control px-2 py-1 text-sm" id={errorId} role="alert">{error}</p> : null}
     </div>
   );
 }

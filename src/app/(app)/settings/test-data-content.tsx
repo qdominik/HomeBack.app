@@ -71,7 +71,7 @@ export function TestDataGuard({ children }: { children: ReactNode }) {
 export function TestDataContent() {
   return (
     <div className="space-y-6">
-      <p className="rounded-md border border-warning/50 bg-warning/10 px-4 py-3 text-sm leading-6 text-foreground">
+      <p className="ui-status-warning rounded-md border px-4 py-3 text-sm leading-6">
         {t.modules.settings.envGuard}
       </p>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

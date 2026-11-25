@@ -98,6 +98,12 @@ export const pl: Dictionary = {
     emptyRooms: "Nie dodano jeszcze żadnych Pomieszczeń.",
     itemCount: "Liczba Rzeczy: {count}",
     unlocatedItems: "Bez lokalizacji",
+    rhythmTitle: "Rytm domu",
+    rhythmDawn: "Świt",
+    rhythmMorning: "Poranek",
+    rhythmDay: "Dzień",
+    rhythmEvening: "Wieczór",
+    rhythmNight: "Noc",
     widgetReadError: "Nie udało się odczytać danych modułu.",
     allHidden: "Wszystkie moduły Dashboardu są ukryte.",
     allHiddenHint:

@@ -216,7 +216,7 @@ export function CopyItemDialog({
 
           <fieldset className="space-y-3">
             <legend className="ui-label">{copy.item.targetStorage}</legend>
-            <label className="flex cursor-pointer items-center gap-3 rounded-control border border-line p-3 focus-within:ring-2 focus-within:ring-primary">
+            <label className="flex cursor-pointer items-center gap-3 rounded-control border border-line p-3 focus-within:ring-2 focus-within:ring-focus">
               <input className="ui-choice"
                 checked={withoutLocation}
                 disabled={isSubmitting}

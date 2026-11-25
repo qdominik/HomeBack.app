@@ -137,8 +137,8 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
           <Link
             className={`inline-flex items-center rounded-control border px-3 py-2 text-sm font-semibold ${
               currentTab === tab.id
-                ? "border-primary bg-primary text-on-primary"
-                : "border-line bg-surface text-primary-strong hover:border-primary/60"
+                ? "border-primary-graphic bg-primary text-on-primary"
+                : "border-line bg-surface text-accent-text hover:border-primary-graphic/60"
             }`}
             href={tab.href}
             key={tab.id}

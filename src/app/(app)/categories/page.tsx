@@ -58,7 +58,7 @@ export default async function CategoriesPage({
       action={
         isAdmin ? (
           <details className="w-full rounded-md border border-line bg-surface p-3 sm:w-auto sm:min-w-80">
-            <summary className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-primary-strong">
+            <summary className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-accent-text">
               <PlusIcon aria-hidden="true" size={18} weight="bold" />
               {t.modules.categories.addCategory}
             </summary>
@@ -80,12 +80,12 @@ export default async function CategoriesPage({
           </p>
         ) : null}
         {errorMessage ? (
-          <p className="mt-3 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+          <p className="ui-status-danger mt-3 rounded-md border px-3 py-2 text-sm">
             {errorMessage}
           </p>
         ) : null}
         {statusMessage ? (
-          <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-primary-strong">
+          <p className="mt-3 rounded-md border border-primary-graphic/30 bg-accent-soft px-3 py-2 text-sm text-accent-soft-text">
             {statusMessage}
           </p>
         ) : null}

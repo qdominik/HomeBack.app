@@ -310,17 +310,17 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           </p>
         ) : null}
         {errorMessage ? (
-          <p className="mt-3 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+          <p className="ui-status-danger mt-3 rounded-md border px-3 py-2 text-sm">
             {errorMessage}
           </p>
         ) : null}
         {statusMessage ? (
-          <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-primary-strong">
+          <p className="mt-3 rounded-md border border-primary-graphic/30 bg-accent-soft px-3 py-2 text-sm text-accent-soft-text">
             {statusMessage}
           </p>
         ) : null}
         {hasReadError ? (
-          <p className="mt-3 rounded-md border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
+          <p className="ui-status-danger mt-3 rounded-md border px-3 py-2 text-sm">
             {t.modules.items.errors.actionFailed}
           </p>
         ) : null}
@@ -348,7 +348,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
               {focusItem.nazwa}
             </h2>
             <Link
-              className="inline-flex min-h-10 items-center rounded-md border border-line bg-surface px-3 py-2 text-sm font-semibold text-primary-strong hover:border-primary/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="inline-flex min-h-10 items-center rounded-md border border-line bg-surface px-3 py-2 text-sm font-semibold text-accent-text hover:border-primary-graphic/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
               href="/items"
             >
               <ListBulletsIcon aria-hidden="true" className="mr-2" size={18} />

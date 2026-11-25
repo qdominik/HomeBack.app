@@ -37,8 +37,8 @@ function SaveButton() {
 const moduleToggleClassName =
   "h-6 w-10 shrink-0 cursor-pointer appearance-none rounded-full border border-line bg-surface-muted transition-colors " +
   "before:absolute before:left-0.5 before:top-1/2 before:h-5 before:w-5 before:-translate-y-1/2 " +
-  "before:rounded-full before:bg-white before:shadow before:transition-transform before:content-[''] " +
-  "checked:border-primary checked:bg-primary checked:before:translate-x-4";
+  "before:rounded-full before:bg-foreground before:shadow before:transition-transform before:content-[''] " +
+  "checked:border-primary-graphic checked:bg-primary checked:before:translate-x-4 checked:before:bg-on-primary";
 
 export function DashboardPersonalizationContent({
   modules,

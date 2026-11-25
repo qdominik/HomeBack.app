@@ -9,11 +9,11 @@ type ButtonStyleOptions = {
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-on-primary hover:bg-primary-hover",
+  primary: "border border-primary-graphic bg-primary text-on-primary hover:bg-primary-hover",
   secondary:
-    "border border-line bg-surface text-foreground hover:border-primary hover:bg-surface-muted",
-  ghost: "text-primary hover:bg-primary/10 hover:text-primary-hover",
-  danger: "bg-danger text-on-danger hover:bg-danger/90",
+    "border border-line bg-surface text-foreground hover:border-primary-graphic hover:bg-surface-muted",
+  ghost: "text-accent-text hover:bg-accent-soft hover:text-accent-soft-text",
+  danger: "border border-focus bg-danger-button text-on-danger hover:bg-danger-button-hover",
 };
 
 export function buttonClassName({
