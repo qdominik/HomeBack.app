@@ -82,13 +82,13 @@ export function AmbientScene(){
   <p className="rhythm-temperature" title={conditions?undefined:sample?c.sample:copy.temperatureUnavailable}><span className="rhythm-temperature-label">{copy.temperature}</span><span className="rhythm-temperature-value">{temperature}</span></p>
  </div>;
 }
-export function WeatherCaption(){
+export function WeatherCaption({showAttribution=true}:{showAttribution?:boolean}){
  const {data,weather,sample,preferences,now,windy}=useAppearance();
  const conditions=data.weather.snapshot?currentConditions(data.weather.snapshot,now):null;
  const status=data.weather.status==='ready'&&!conditions?'stale':data.weather.status;
  const caption=!preferences.weatherEnabled?copy.disabled:sample?weatherLabels[weather]:status==='ready'?weatherLabels[weather]:conditions?copy.currentWeather:copy.status[status];
- return <><h2 className="font-display text-section-title">{caption}</h2>{sample?<p className="text-sm text-muted">{c.sample}</p>:conditions?<div className="space-y-1 text-sm text-muted"><p>{data.location?.name}, {data.location?.provider_country} {windy?`· ${copy.wind} ${Math.round(conditions.wind)} km/h`:''}</p><p><a className="underline" href="https://www.weatherapi.com/" target="_blank" rel="noreferrer">{copy.source}</a> · {copy.updated}: {new Intl.DateTimeFormat(activeLocale,{timeZone:data.location?.timezone??undefined,hour:'2-digit',minute:'2-digit'}).format(conditions.epoch)}</p></div>:null}</>;
+ return <><h2 className="font-display text-section-title">{caption}</h2>{sample?<p className="text-sm text-muted">{c.sample}</p>:conditions?<div className="text-sm text-muted"><p>{data.location?.name}, {data.location?.provider_country} {windy?`· ${copy.wind} ${Math.round(conditions.wind)} km/h`:''}</p>{showAttribution?<p className="mt-1"><a className="underline" href="https://www.weatherapi.com/" target="_blank" rel="noreferrer">{copy.source}</a> · {copy.updated}: {new Intl.DateTimeFormat(activeLocale,{timeZone:data.location?.timezone??undefined,hour:'2-digit',minute:'2-digit'}).format(conditions.epoch)}</p>:null}</div>:null}</>;
 }
 export function RhythmWelcome({count}:{count:{kind:'error'}|{kind:'success';data:number}}){
- const {phase}=useAppearance();return <section className="rhythm-welcome" aria-label={c.title}><AmbientScene/><div className="rhythm-caption"><p className="text-meta text-muted">{c.title} · {phaseLabels[phase]}</p><WeatherCaption/><p className="mt-3">{count.kind==='success'?<a className="underline" href="/items?view=unlocated">{c.unlocated}: {count.data}</a>:c.failed}</p></div></section>;
+ const {phase}=useAppearance();return <section className="rhythm-welcome" aria-label={c.title}><AmbientScene/><div className="rhythm-caption"><p className="text-meta text-muted">{c.title} · {phaseLabels[phase]}</p><WeatherCaption showAttribution={false}/><p className="mt-3">{count.kind==='success'?<a className="underline" href="/items?view=unlocated">{c.unlocated}: {count.data}</a>:c.failed}</p></div></section>;
 }
