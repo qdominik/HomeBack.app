@@ -12,3 +12,7 @@ Status: implementacja do Preview i odbioru; nie jest decyzją o wdrożeniu Produ
 ## Weryfikacja
 
 Wyniki bieżącej pracy należy przypisać do konkretnego SHA PR. Testy logiki obejmują parsowanie, limity, brak klucza, timeout i referencyjne sceny; pgTAP obejmuje RLS i cache. Wspólny resolver i bootstrap są testowane dla trybów. Historyczne wyniki i zrzuty starego worktree nie stanowią dowodu działania tego brancha. Zrzuty lokalne w `output/ui06b-local-20261125` są emulacją Chromium, nie próbą na telefonie fizycznym. Dostępność hostowanego Preview, jego izolacja, migracja i konfiguracja sekretów muszą zostać potwierdzone osobno.
+
+## Preview — 26.11.2026
+
+Po zielonym CI commita `934c470` i potwierdzeniu przez właściciela adresu odizolowanego `homeback-preview`, identyczny SQL migracji zastosowano w tym projekcie. Supabase zapisał wersję `20261126145354`; nazwę pliku w branchu wyrównano do tej wersji, bez zmiany SQL. Nie stosowano migracji w Production. Kontrole po migracji: RLS włączony na trzech nowych tabelach, `anon` nie ma SELECT lokalizacji, a `authenticated` nie ma SELECT cache ani EXECUTE na funkcji lease. Informacja advisora o tabeli cache bez polityk jest zgodna z serwerowym cache pozbawionym grantów dla ról publicznych; wcześniejsze ostrzeżenia istniejących funkcji wymagają osobnego przeglądu. Pełne testy uprawnień na świeżej bazie wykonało CI, nie na żywych danych Preview.
