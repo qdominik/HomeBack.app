@@ -28,12 +28,16 @@ export function providerRequest(endpoint:'search'|'timezone'|'forecast',q:string
 }
 export async function findLocations(address:Pick<LocationRow,'city'|'postal_code'|'country'>):Promise<Candidate[]>{
  const country=new Intl.DisplayNames(['en'],{type:'region'}).of(address.country)??address.country;
- const query=[address.city,country].filter(Boolean).join(' ');
- let candidates=parseCandidates(await providerRequest('search',query));
- if(!candidates.length)candidates=parseCandidates(await providerRequest('search',address.city));
  const aliases:Record<string,string[]>={US:['United States of America','USA'],GB:['UK','Great Britain'],KR:['South Korea'],RU:['Russian Federation']};
  const allowed=[country,...aliases[address.country]??[]].map(s=>s.toLowerCase());
- return candidates.filter(c=>allowed.includes(c.country.toLowerCase()));
+ const city=address.city.normalize('NFC');
+ const alternate=address.country==='PL'?city.replace(/Ł/g,'L').replace(/ł/g,'l').normalize('NFD').replace(/\p{M}/gu,'').normalize('NFC'):city;
+ const queries=[...new Set([`${city} ${country}`,city,...(alternate!==city?[`${alternate} ${country}`,alternate]:[])])];
+ for(const query of queries){
+  const candidates=parseCandidates(await providerRequest('search',query)).filter(c=>allowed.includes(c.country.toLowerCase()));
+  if(candidates.length)return candidates;
+ }
+ return [];
 }
 export async function locationTimezone(candidate:Candidate){
  const data=await providerRequest('timezone',`${candidate.lat},${candidate.lon}`) as {location?:{tz_id?:unknown}};
