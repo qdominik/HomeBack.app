@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useId,useState,useTransition} from 'react';
-import {AppearanceControls,AmbientScene,WeatherCaption,phaseLabels,weatherLabels,useAppearance} from './appearance';
+import {AppearanceControls,AmbientScene,WeatherCaption,WeatherInformation,phaseLabels,weatherLabels,useAppearance} from './appearance';
 import {Button} from '@/components/ui/button';
 import {Select} from '@/components/ui/select';
 import {Input} from '@/components/ui/input';
@@ -28,6 +28,7 @@ export function AppearanceSettings(){
    </form>
   </Card>
   <section className="rhythm-welcome" aria-label={t.rhythm.preview}><AmbientScene/><div className="rhythm-caption"><WeatherCaption/></div></section>
+  <WeatherInformation/>
   <LocationSettings/>
  </div>;
 }
