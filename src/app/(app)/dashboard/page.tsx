@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { RhythmWelcome } from "@/components/rhythm/welcome";
+import { WeatherInformation } from "@/components/rhythm/appearance";
 import { DashboardModuleCard } from "@/components/dashboard-module-card";
 import {
   dashboardModuleRegistrations,
@@ -60,6 +61,7 @@ export default async function DashboardPage() {
       />
 
       <RhythmWelcome count={widgetData.unlocatedItemCount} />
+      <WeatherInformation />
 
       {registrations.length > 0 ? (
         <section

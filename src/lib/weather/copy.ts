@@ -1,0 +1,38 @@
+export const weatherCopyPl = {
+ temperature:'Temperatura',temperatureUnavailable:'Brak aktualnych danych o temperaturze.',currentWeather:'Aktualna pogoda',
+ tabs:"Zakładki ustawień",
+ description:'Ustawienia są przypisane do Twojego konta. Lokalizacja pogody jest wspólna dla gospodarstwa.',
+ enabled:'Dostosuj wygląd do pogody',intensity:'Intensywność efektów',subtle:'Subtelna',standard:'Standardowa',
+ save:'Zapisz preferencje',cancel:'Przywróć zapisane',saving:'Zapisywanie…',saved:'Preferencje zapisane.',
+ previewHint:'Podgląd przed zapisem. Wybrane warianty pogody to dane przykładowe.',
+ location:'Lokalizacja pogody',unknown:'Nie wybrano miejscowości.',editLocation:'Popraw dopasowanie',
+ householdAddress:'Adres gospodarstwa — miejscowość',city:'Miejscowość',postal:'Kod pocztowy',country:'Kraj (nazwa lub kod)',
+ countryHint:'Wpisz nazwę lub kod kraju, np. Polska, Poland lub PL.',
+ confirmLocation:'Zapisz wybraną miejscowość',selectionHint:'Zaznacz miejscowość i zapisz wybór. Samo zaznaczenie nie zmienia lokalizacji pogody.',locationSaved:'Miejscowość zapisana. Pogoda korzysta z tej lokalizacji.',
+ addressInfo:'Do WeatherAPI przekazujemy tylko miejscowość i kraj. Dopasowanie dotyczy centrum miejscowości, bez ulicy, numeru lokalu i danych domowników.',
+ saveAddress:'Zapisz adres i dopasuj pogodę',findLocation:'Znajdź miejscowość',chooseLocation:'Wybierz właściwą miejscowość',noMatches:'Nie znaleziono dopasowania. Sprawdź miejscowość, kod i kraj.',
+ removeLocation:'Usuń lokalizację pogody',editNotAllowed:'Dopasowanie lokalizacji może zmienić administrator gospodarstwa.',
+ source:'Pogoda: WeatherAPI.com',updated:'Aktualizacja',wind:'Wiatr',disabled:'Wpływ pogody wyłączony',reload:'Wczytaj zapisane ustawienia',
+ disclosureTitle:'Informacja o danych pogodowych',disclosureSource:'Źródło danych pogodowych: WeatherAPI.com',disclosure:'Dane pogodowe służą wyłącznie ogólnej informacji. Prognozy i warunki są probabilistyczne i mogą być niedokładne dla Twojego miejsca lub czasu. Nie wykorzystuj ich jako jedynej podstawy decyzji dotyczących bezpieczeństwa osobistego, lotnictwa, żeglugi, planowania awaryjnego ani innych działań krytycznych dla bezpieczeństwa. Gdy dokładność jest kluczowa, korzystaj z oficjalnych służb meteorologicznych i właściwych władz.',
+ status:{ready:'Aktualne dane pogodowe',no_location:'Pogoda nie jest ustawiona',missing_key:'Pogoda jest chwilowo niedostępna — brak konfiguracji usługi.',cache_unavailable:'Pogoda jest chwilowo niedostępna — brak konfiguracji pamięci danych.',unavailable:'Nie udało się pobrać pogody. Rytm dnia działa dalej.',stale:'Dane pogodowe nieaktualne. Rytm dnia działa dalej.',pending:'Pogoda jest odświeżana. Rytm dnia działa dalej.',database_unavailable:'Ustawienia wyglądu są chwilowo niedostępne.'},
+ error:{unauthorized:'Zaloguj się ponownie.',forbidden:'Nie masz uprawnień do zmiany lokalizacji.',invalid:'Sprawdź wprowadzone wartości.',conflict:'Ustawienia zmieniono w innym oknie. Wczytaj je ponownie i sprawdź swój wybór.',unavailable:'Nie udało się wykonać operacji. Spróbuj ponownie.',missing_key:'Adres zapisany. Dopasowanie pogody będzie dostępne po skonfigurowaniu usługi.'}
+};
+export const weatherCopyEn:typeof weatherCopyPl = {
+ temperature:'Temperature',temperatureUnavailable:'Current temperature is unavailable.',currentWeather:'Current weather',
+ tabs:"Settings tabs",
+ description:'Preferences belong to your account. The weather location is shared by the household.',
+ enabled:'Adapt appearance to weather',intensity:'Effect intensity',subtle:'Subtle',standard:'Standard',
+ save:'Save preferences',cancel:'Restore saved',saving:'Saving…',saved:'Preferences saved.',
+ previewHint:'Preview before saving. Selected weather variants use sample data.',
+ location:'Weather location',unknown:'No town selected.',editLocation:'Correct location match',
+ householdAddress:'Household address — town',city:'Town or city',postal:'Postal code',country:'Country (name or code)',
+ countryHint:'Enter a country name or code, e.g. United Kingdom, Poland or PL.',
+ confirmLocation:'Save selected town',selectionHint:'Select a town, then save your choice. Selecting alone does not change the weather location.',locationSaved:'Town saved. Weather now uses this location.',
+ addressInfo:'Only town and country are sent to WeatherAPI. The match uses the town centre, without street, apartment number or household members’ details.',
+ saveAddress:'Save address and match weather',findLocation:'Find town',chooseLocation:'Choose the correct town',noMatches:'No matches found. Check town, postal code and country.',
+ removeLocation:'Remove weather location',editNotAllowed:'Only a household administrator can correct the location match.',
+ source:'Weather: WeatherAPI.com',updated:'Updated',wind:'Wind',disabled:'Weather adaptation is off',reload:'Reload saved preferences',
+ disclosureTitle:'About weather data',disclosureSource:'Weather data source: WeatherAPI.com',disclosure:'Weather data is for general information only. Forecasts and conditions are probabilistic and may be inaccurate for your location or time. Do not use them as the sole basis for decisions involving personal safety, aviation, marine navigation, emergency planning or other safety-critical activities. When accuracy is critical, consult official meteorological services and relevant authorities.',
+ status:{ready:'Current weather data',no_location:'Weather is not configured',missing_key:'Weather is temporarily unavailable — service is not configured.',cache_unavailable:'Weather is temporarily unavailable — data cache is not configured.',unavailable:'Could not load weather. The daily rhythm remains available.',stale:'Weather data is out of date. The daily rhythm remains available.',pending:'Weather is refreshing. The daily rhythm remains available.',database_unavailable:'Appearance preferences are temporarily unavailable.'},
+ error:{unauthorized:'Please sign in again.',forbidden:'You cannot change this location.',invalid:'Check the entered values.',conflict:'Settings changed in another window. Reload them and review your choice.',unavailable:'The operation failed. Please try again.',missing_key:'Address saved. Weather matching will be available once the service is configured.'}
+};

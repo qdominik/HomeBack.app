@@ -1,3 +1,7 @@
+import type { LocationRow, PreferenceRow } from "../lib/weather/contracts";
+
+type RhythmTable<R, I> = { Row: R; Insert: I; Update: Partial<I>; Relationships: [] };
+
 export type Json =
   | string
   | number
@@ -148,6 +152,9 @@ export type InvitationAcceptanceRow = {
 export type Database = {
   public: {
     Tables: {
+      household_weather_location: RhythmTable<LocationRow, Pick<LocationRow, "household_id" | "city" | "country"> & Partial<Omit<LocationRow, "household_id" | "city" | "country">>>;
+      profile_appearance_preferences: RhythmTable<PreferenceRow, Pick<PreferenceRow, "profil_id" | "household_id"> & Partial<Omit<PreferenceRow, "profil_id" | "household_id">>>;
+      weather_location_cache: RhythmTable<{location_key:string;payload:Json|null;expires_at:string|null;retry_at:string|null;lease_until:string|null;lease_token:string|null},{location_key:string;payload?:Json|null;expires_at?:string|null;retry_at?:string|null;lease_until?:string|null;lease_token?:string|null}>;
       household_invitation: {
         Row: HouseholdInvitationRow;
         Insert: never;
@@ -598,6 +605,8 @@ export type Database = {
     };
     Views: Record<never, never>;
     Functions: {
+      weather_cache_claim: {Args: {p_key:string}; Returns:Json};
+      weather_cache_finish: {Args: {p_key:string;p_token:string;p_payload:Json;p_retry_seconds?:number}; Returns:boolean};
       get_household_members: {
         Args: Record<PropertyKey, never>;
         Returns: HouseholdMemberRow[];

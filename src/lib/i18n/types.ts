@@ -1,9 +1,40 @@
+import type { weatherCopyPl } from "../weather/copy";
 type ModuleCopy = {
   title: string;
   description: string;
 };
 
 export type Dictionary = {
+ weatherSettings: typeof weatherCopyPl;
+ rhythm: {
+title:string;
+appearance:string;
+auto:string;
+light:string;
+dark:string;
+motion:string;
+preview:string;
+now:string;
+phase:string;
+weather:string;
+none:string;
+sample:string;
+unlocated:string;
+failed:string;
+skip:string;
+dawn:string;
+morning:string;
+day:string;
+evening:string;
+night:string;
+clear:string;
+cloud:string;
+rain:string;
+fog:string;
+snow:string;
+storm:string;
+};
+
   globalSearch: {
     title: string;
     label: string;

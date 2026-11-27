@@ -1,3 +1,4 @@
+import { AppearanceSettings, LocationSettings } from "@/components/rhythm/appearance-settings";
 import Link from "next/link";
 import { HouseIcon } from "@phosphor-icons/react/dist/ssr/House";
 import { UserIcon } from "@phosphor-icons/react/dist/ssr/User";
@@ -20,6 +21,7 @@ import {
 import type { ReactNode } from "react";
 
 type SettingsTab =
+  | "appearance"
   | "household"
   | "account"
   | "export"
@@ -36,6 +38,7 @@ type SettingsPageProps = {
 
 function parseSettingsTab(raw: string | undefined): SettingsTab {
   if (
+    raw === "appearance" ||
     raw === "account" ||
     raw === "export" ||
     raw === "dashboard-personalization" ||
@@ -47,6 +50,7 @@ function parseSettingsTab(raw: string | undefined): SettingsTab {
 }
 
 const tabs: { id: SettingsTab; label: string; href: string; icon: ReactNode }[] = [
+  { id: "appearance", label: t.rhythm.appearance, href: "/settings?tab=appearance", icon: <GearSixIcon aria-hidden="true" size={18} /> },
   { id: "household", label: t.modules.settings.household, href: "/settings", icon: <HouseIcon aria-hidden="true" size={18} /> },
   { id: "account", label: t.modules.settings.account, href: "/settings?tab=account", icon: <UserIcon aria-hidden="true" size={18} /> },
   { id: "export", label: t.modules.settings.export, href: "/settings?tab=export", icon: <DownloadSimpleIcon aria-hidden="true" size={18} /> },
@@ -158,9 +162,9 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
       <section className="mt-6">
         {currentTab === "household" ? (
-          <div className="rounded-control border border-line bg-surface p-4">
-            <h2 className="text-base font-semibold">{t.modules.settings.household}</h2>
-          </div>
+          <LocationSettings addressEditor />
+        ) : currentTab === "appearance" ? (
+          <AppearanceSettings />
         ) : currentTab === "account" ? (
           <div className="rounded-control border border-line bg-surface p-4">
             <h2 className="text-base font-semibold">{t.modules.settings.account}</h2>

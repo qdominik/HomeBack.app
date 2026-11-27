@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import https from 'node:https';
+import {EventEmitter} from 'node:events';
+import type {ClientRequest,IncomingMessage} from 'node:http';
+import {providerRequest,findLocations,locationTimezone,fetchForecast,ProviderFailure} from '../../src/lib/weather/weatherapi';
+
+type FakeReply={status:number;body:unknown;raw?:Buffer;silent?:boolean};
+let reply:(path:URL)=>FakeReply=()=>({status:200,body:{}}),destroyed=false;
+const requests:URL[]=[];
+const original=https.request,previousKey=process.env.WEATHERAPI_KEY;
+const mutable=https as {request:typeof https.request};
+mutable.request=((options:https.RequestOptions,callback:(res:IncomingMessage)=>void)=>{
+ const url=new URL('https://'+options.hostname+options.path);requests.push(url);
+ const req=new EventEmitter() as EventEmitter&{end:()=>ClientRequest;destroy:()=>ClientRequest};
+ req.destroy=()=>{destroyed=true;return req as unknown as ClientRequest;};
+ req.end=()=>{setImmediate(()=>{const response=reply(url);if(response.silent)return;const res=new EventEmitter() as EventEmitter&{statusCode:number;destroy:()=>void};res.statusCode=response.status;res.destroy=()=>{};callback(res as unknown as IncomingMessage);res.emit('data',response.raw??Buffer.from(JSON.stringify(response.body)));res.emit('end');});return req as unknown as ClientRequest;};
+ return req as unknown as ClientRequest;
+}) as typeof https.request;
+test.beforeEach(()=>{requests.length=0;destroyed=false;process.env.WEATHERAPI_KEY='fixture-test-only';reply=()=>({status:200,body:{}});});
+test.after(()=>{mutable.request=original;if(previousKey===undefined)delete process.env.WEATHERAPI_KEY;else process.env.WEATHERAPI_KEY=previousKey;});
+const unavailable=(error:unknown)=>error instanceof ProviderFailure&&error.reason==='unavailable'&&error.message==='unavailable';
+test('missing key performs no outbound request',async()=>{delete process.env.WEATHERAPI_KEY;await assert.rejects(providerRequest('forecast','51,20'),e=>e instanceof ProviderFailure&&e.reason==='missing_key');assert.equal(requests.length,0);});
+test('forecast requests only one day without alerts/AQI and uses HTTPS provider host',async()=>{await providerRequest('forecast','51,20');const url=requests[0];assert.equal(url.hostname,'api.weatherapi.com');assert.equal(url.protocol,'https:');assert.equal(url.searchParams.get('days'),'1');assert.equal(url.searchParams.get('alerts'),'no');assert.equal(url.searchParams.get('aqi'),'no');});
+test('provider quota errors expose closed errors rather than provider body or key',async()=>{reply=()=>({status:403,body:{error:{code:2007,message:'Secret fixture-test-only'}}});await assert.rejects(providerRequest('forecast','51,20'),e=>e instanceof ProviderFailure&&e.reason==='quota'&&!e.message.includes('fixture'));});
+test('HTTP 429 activates quota handling even without JSON',async()=>{reply=()=>({status:429,body:null,raw:Buffer.from('rate limited')});await assert.rejects(providerRequest('forecast','51,20'),e=>e instanceof ProviderFailure&&e.reason==='quota');});
+test('malformed and oversized responses fail safely',async()=>{reply=()=>({status:200,body:null,raw:Buffer.from('{')});await assert.rejects(providerRequest('forecast','51,20'),unavailable);reply=()=>({status:200,body:null,raw:Buffer.alloc(1024*1024+1)});await assert.rejects(providerRequest('forecast','51,20'),unavailable);});
+test('town fallback filters country without sending the postal code',async()=>{reply=url=>({status:200,body:url.searchParams.get('q')==='Warszawa'?[{id:1,name:'Warszawa',region:'A',country:'Poland',lat:51,lon:20},{id:2,name:'Warszawa',region:'B',country:'Poland',lat:52,lon:21},{id:3,name:'Warszawa',region:'C',country:'Germany',lat:53,lon:22}]:[]});const result=await findLocations({city:'Warszawa',postal_code:'00-001',country:'PL'});assert.equal(result.length,2);assert.deepEqual(requests.map(r=>r.searchParams.get('q')),['Warszawa Poland','Warszawa']);});
+test('retries after all candidates fail the country filter',async()=>{reply=url=>({status:200,body:url.searchParams.get('q')==='Gdańsk Poland'?[{id:1,name:'Other',region:'',country:'Germany',lat:51,lon:20}]:[{id:2,name:'Gdańsk',region:'',country:'Poland',lat:54,lon:18}]});const result=await findLocations({city:'Gdańsk',postal_code:'',country:'PL'});assert.equal(result[0]?.name,'Gdańsk');assert.deepEqual(requests.map(r=>r.searchParams.get('q')),['Gdańsk Poland','Gdańsk']);});
+test('normalizes NFD and falls back to Polish ASCII including Ł and ł',async()=>{reply=url=>({status:200,body:url.searchParams.get('q')==='Lodz Poland'?[{id:1,name:'Lodz',region:'',country:'Poland',lat:51,lon:19}]:[]});const city='Łódź'.normalize('NFD');const result=await findLocations({city,postal_code:'',country:'PL'});assert.equal(result[0]?.name,'Lodz');assert.deepEqual(requests.map(r=>r.searchParams.get('q')),['Łódź Poland','Łódź','Lodz Poland']);assert.equal(city,'Łódź'.normalize('NFD'));});
+test('lowercase Polish ł has a bounded fallback and no foreign results escape',async()=>{reply=url=>({status:200,body:url.searchParams.get('q')==='wroclaw'?[{id:1,name:'Wroclaw',region:'',country:'Poland',lat:51,lon:17},{id:2,name:'Other',region:'',country:'Germany',lat:52,lon:18}]:[]});const result=await findLocations({city:'wrocław',postal_code:'50-001',country:'PL'});assert.deepEqual(result.map(c=>c.country),['Poland']);assert.deepEqual(requests.map(r=>r.searchParams.get('q')),['wrocław Poland','wrocław','wroclaw Poland','wroclaw']);});
+test('an empty result is distinct from a provider failure during fallback',async()=>{reply=()=>({status:200,body:[]});assert.deepEqual(await findLocations({city:'Łódź',postal_code:'',country:'PL'}),[]);reply=url=>url.searchParams.get('q')==='Łódź'?{status:503,body:{}}:{status:200,body:[]};await assert.rejects(findLocations({city:'Łódź',postal_code:'',country:'PL'}),unavailable);});
+test('selected town timezone is verified and invalid IANA identifiers fail',async()=>{const candidate={id:1,name:'A',region:'B',country:'Poland',lat:51,lon:20};reply=()=>({status:200,body:{location:{tz_id:'Europe/Warsaw'}}});assert.equal(await locationTimezone(candidate),'Europe/Warsaw');assert.equal(requests[0].searchParams.get('q'),'51,20');reply=()=>({status:200,body:{location:{tz_id:'invalid/zone'}}});await assert.rejects(locationTimezone(candidate),unavailable);});
+test('forecast normalization rejects valid JSON without weather fields',async()=>{reply=()=>({status:200,body:{unexpected:true}});await assert.rejects(fetchForecast(51,20),unavailable);});
+test('absolute deadline also ends a connection that never returns response headers',{timeout:12000},async()=>{reply=()=>({status:200,body:null,silent:true});await assert.rejects(providerRequest('forecast','51,20'),unavailable);assert.equal(destroyed,true);});

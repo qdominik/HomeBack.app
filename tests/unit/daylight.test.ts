@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {daylight} from "../../src/lib/ui/daylight";
-import {daylightBootstrap} from "../../src/lib/ui/daylight-bootstrap";
+import {daylightBootstrap, appearanceBootstrap} from "../../src/lib/ui/daylight-bootstrap";
 import {startMinuteClock} from "../../src/lib/ui/minute-clock";
 import vm from "node:vm";
 import { readFileSync } from "node:fs";
@@ -95,6 +95,23 @@ test("pre-paint bootstrap and hydrated resolver use identical local time",()=>{
     const expected=daylight(hours+minutes/60,"auto");
     assert.equal(root.dataset.theme,expected.theme);
     assert.deepEqual(properties,expected.styles);
+  }
+});
+
+test("saved appearance bootstrap uses device time and the same 6A resolver", () => {
+  for (const mode of ["auto", "light", "dark"] as const) {
+    for (const [hours, minutes] of [[5, 0], [13, 0], [18, 0], [19, 15], [22, 30]]) {
+      const properties: Record<string,string> = {};
+      const root = {dataset: {theme:"", motion:"", rhythmPhase:""},style:{setProperty:(name:string,value:string)=>{properties[name]=value;}}};
+      class FixedDate extends Date { getHours(){return hours;} getMinutes(){return minutes;} }
+      vm.runInNewContext(appearanceBootstrap(mode, false), {Date:FixedDate, document:{documentElement:root}});
+      const hour = hours + minutes / 60;
+      const expected = daylight(mode === "light" ? 13 : hour, mode);
+      assert.equal(root.dataset.theme, expected.theme);
+      assert.equal(root.dataset.motion, "off");
+      assert.equal(root.dataset.rhythmPhase, ["dawn","morning","noon","evening","night"][daylight(hour,"auto").phase]);
+      assert.deepEqual(properties, expected.styles);
+    }
   }
 });
 
